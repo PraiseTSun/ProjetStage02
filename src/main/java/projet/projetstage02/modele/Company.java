@@ -12,9 +12,11 @@ import javax.persistence.Entity;
 @ToString(callSuper = true)
 public class Company extends AbstractUser{
     private  Department department;
+    private String name;
 
-    public Company(String firstName, String lastName, String email, String password, Department department) {
+    public Company(String firstName, String lastName, String email, String password, Department department, String name) {
         super(firstName, lastName, email, password);
         this.department = department;
+        this.name = name;
     }
 }

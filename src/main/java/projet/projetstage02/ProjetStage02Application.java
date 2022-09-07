@@ -27,6 +27,7 @@ public class ProjetStage02Application implements CommandLineRunner {
     @Override
     public void run(String... args) throws Exception {
         var user1 = studentService.createStudent("Samir", "Badi", "email", "password", AbstractUser.Department.Informatique);
+        var user2 = companyService.createCompany("Bob", "Marley", "Bell", "email", "password", AbstractUser.Department.Civil);
 
         System.out.println(user1);
     }
