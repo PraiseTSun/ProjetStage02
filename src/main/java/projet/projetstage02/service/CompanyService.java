@@ -15,6 +15,7 @@ public class CompanyService {
 
     public Company createCompany(String firstName, String lastName, String name, String email, String password, AbstractUser.Department department) {
         Company company = new Company(firstName, lastName, email, password, department, name);
-        return null;
+        companyRepository.save(company);
+        return company;
     }
 }
