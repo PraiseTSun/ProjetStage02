@@ -2,6 +2,7 @@ package projet.projetstage02.modele;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 import javax.persistence.*;
 
@@ -23,6 +24,7 @@ public abstract class AbstractUser {
     private String firstName;
     private String lastName;
     private String email;
+    @ToString.Exclude
     private String password;
 
     public AbstractUser(String firstName, String lastName, String email, String password) {
