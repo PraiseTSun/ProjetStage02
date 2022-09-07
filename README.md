@@ -12,3 +12,6 @@ Version de Java
 
 Version de REACT
 > 17
+
+Lien important:
+ - [Jira](https://420565a22.atlassian.net/jira/software/c/projects/EQ2/boards/2/backlog?issueLimit=100)
