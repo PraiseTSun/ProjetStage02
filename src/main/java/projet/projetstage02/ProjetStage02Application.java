@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import projet.projetstage02.service.CompanyService;
 import projet.projetstage02.service.StudentService;
 
 @SpringBootApplication
@@ -11,6 +12,9 @@ public class ProjetStage02Application implements CommandLineRunner {
 
     @Autowired
     private StudentService studentService;
+
+    @Autowired
+    private CompanyService companyService;
     public static void main(String[] args) {
         SpringApplication.run(ProjetStage02Application.class, args);
     }
