@@ -9,7 +9,7 @@ import javax.persistence.*;
 @Data
 @NoArgsConstructor
 @Inheritance(strategy =  InheritanceType.JOINED)
-public class AbstractUser {
+public abstract class AbstractUser {
     public enum Department {
         Informatique,
         Civil,
