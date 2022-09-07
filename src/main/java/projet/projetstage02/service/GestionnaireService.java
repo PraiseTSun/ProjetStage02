@@ -13,6 +13,8 @@ public class GestionnaireService {
     }
 
     public Gestionnaire createGestionnaire(String firstname, String lastname, String email, String password) {
-        return null;
+        Gestionnaire gestionnaire = new Gestionnaire(firstname, lastname, email, password);
+        gestionnaireRepository.save(gestionnaire);
+        return gestionnaire;
     }
 }
