@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import projet.projetstage02.modele.AbstractUser;
 import projet.projetstage02.service.CompanyService;
 import projet.projetstage02.service.GestionnaireService;
 import projet.projetstage02.service.StudentService;
@@ -25,6 +26,8 @@ public class ProjetStage02Application implements CommandLineRunner {
 
     @Override
     public void run(String... args) throws Exception {
-        var user1 = studentService.createStudent("Samir", "Badi", "email", "password");
+        var user1 = studentService.createStudent("Samir", "Badi", "email", "password", AbstractUser.Department.Informatique);
+
+        System.out.println(user1);
     }
 }

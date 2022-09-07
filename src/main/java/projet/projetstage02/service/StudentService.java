@@ -1,6 +1,7 @@
 package projet.projetstage02.service;
 
 import org.springframework.stereotype.Component;
+import projet.projetstage02.modele.AbstractUser;
 import projet.projetstage02.modele.Student;
 import projet.projetstage02.repository.StudentRepository;
 
@@ -8,8 +9,13 @@ import projet.projetstage02.repository.StudentRepository;
 public class StudentService {
     private StudentRepository studentRepository;
 
-    public Student createStudent(String firstName, String lastName, String email, String password) {
+    public StudentService(StudentRepository studentRepository) {
+        this.studentRepository = studentRepository;
+    }
 
-        return null;
+    public Student createStudent(String firstName, String lastName, String email, String password, AbstractUser.Department department) {
+        Student student = new Student(firstName, lastName, email, password, department);
+        studentRepository.save(student);
+        return student;
     }
 }
