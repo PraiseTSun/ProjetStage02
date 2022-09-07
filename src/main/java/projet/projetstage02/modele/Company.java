@@ -10,10 +10,10 @@ import javax.persistence.Entity;
 @Data
 @NoArgsConstructor
 @ToString(callSuper = true)
-public class Compagny extends AbstractUser{    
+public class Company extends AbstractUser{
     private  Department department;
 
-    public Compagny(String firstName, String lastName, String email, String password, Department department) {
+    public Company(String firstName, String lastName, String email, String password, Department department) {
         super(firstName, lastName, email, password);
         this.department = department;
     }
