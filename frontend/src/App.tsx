@@ -1,25 +1,17 @@
 import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import { Row, Col, Container } from 'react-bootstrap';
+import LoginPage from './pages/LoginPage';
 
 function App() {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <Container>
+      <Row className="vh-100">
+        <Col m-auto className="m-auto col-4">
+          <h1 className="text-warning fw-bold text-center">OSE KILLER</h1>
+          <LoginPage />
+        </Col>
+      </Row>
+    </Container>
   );
 }
 
