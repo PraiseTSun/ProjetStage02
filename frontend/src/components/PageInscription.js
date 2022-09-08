@@ -74,7 +74,7 @@ const PageInscription = ({onInscrire}) => {
                            onChange={(e) => setCourriel(e.target.value)}
                            required/>
                 </div>
-                {courrielErr && <p>Your email is invalid</p>}
+
                 <div className='form-control'>
                     <label>Mot de pass</label>
                     <input type='text' placeholder='Mot de passe'
