@@ -1,25 +1,24 @@
-import React from 'react';
-import logo from './logo.svg';
+import React, {useState} from 'react';
 import './App.css';
+import PageInscription from "./components/PageInscription";
 
 function App() {
+  const [utilisateurs, setUtilisateurs] = useState([])
+
+  const onInscrire = async  (compte : object) => {
+    const res = await fetch('http://localhost:8080/utilisateurs',
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(compte)
+        })
+      const data = await res.json();
+      utilisateurs.join(data)
+  }
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <PageInscription onInscrire={onInscrire}/>
   );
 }
 
