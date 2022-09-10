@@ -18,6 +18,7 @@ public class StudentDTO extends AbstractUserDTO<Student> {
     }
 
     public StudentDTO(Student student){
+        id = student.getId().toString();
         firstName = student.getFirstName();
         lastName = getLastName();
         email = student.getEmail();

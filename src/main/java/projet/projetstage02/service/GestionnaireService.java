@@ -2,6 +2,7 @@ package projet.projetstage02.service;
 
 import org.hibernate.ObjectNotFoundException;
 import org.springframework.stereotype.Component;
+import projet.projetstage02.DTO.GestionnaireDTO;
 import projet.projetstage02.modele.AbstractUser;
 import projet.projetstage02.modele.Gestionnaire;
 import projet.projetstage02.repository.GestionnaireRepository;
@@ -14,10 +15,12 @@ public class GestionnaireService {
         this.gestionnaireRepository = gestionnaireRepository;
     }
 
-    public Gestionnaire createGestionnaire(String firstname, String lastname, String email, String password) {
-        Gestionnaire gestionnaire = new Gestionnaire(firstname, lastname, email, password);
-        gestionnaireRepository.save(gestionnaire);
-        return gestionnaire;
+    public void createGestionnaire(String firstname, String lastname, String email, String password) {
+        GestionnaireDTO dto = new GestionnaireDTO(firstname, lastname, email, password, false);
+        createGestionnaire(dto);
+    }
+    public void createGestionnaire(GestionnaireDTO dto) {
+        gestionnaireRepository.save(dto.getOrigin());
     }
 
     public void ConfirmUser(AbstractUser user) {
