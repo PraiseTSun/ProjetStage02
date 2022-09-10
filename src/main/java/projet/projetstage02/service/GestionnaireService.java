@@ -1,6 +1,5 @@
 package projet.projetstage02.service;
 
-import org.hibernate.ObjectNotFoundException;
 import org.springframework.stereotype.Component;
 import projet.projetstage02.DTO.GestionnaireDTO;
 import projet.projetstage02.modele.AbstractUser;
@@ -8,7 +7,7 @@ import projet.projetstage02.modele.Gestionnaire;
 import projet.projetstage02.repository.GestionnaireRepository;
 
 @Component
-public class GestionnaireService {
+public class GestionnaireService extends AbstractService<GestionnaireDTO>{
     private GestionnaireRepository gestionnaireRepository;
 
     public GestionnaireService(GestionnaireRepository gestionnaireRepository) {
@@ -23,12 +22,12 @@ public class GestionnaireService {
         gestionnaireRepository.save(dto.getOrigin());
     }
 
-    public void ConfirmUser(AbstractUser user) {
+    public void confirmUser(AbstractUser user) {
         if(user.getClass() == Gestionnaire.class)
-            ConfirmGestionaire(user);
+            confirmGestionaire(user);
     }
 
-    private void ConfirmGestionaire(AbstractUser user) {
+    private void confirmGestionaire(AbstractUser user) {
         var gestionnaireOpt = gestionnaireRepository.findById(user.getId());
         if(gestionnaireOpt.isEmpty())
             return;
@@ -42,5 +41,13 @@ public class GestionnaireService {
         if(gestionnaireOpt.isEmpty())
             return null;
         return gestionnaireOpt.get();
+    }
+
+    @Override
+    public GestionnaireDTO getUserById(Long id) {
+        var gestionnaireOpt = gestionnaireRepository.findById(id);
+        if(gestionnaireOpt.isEmpty())
+            return null;
+        return new GestionnaireDTO(gestionnaireOpt.get());
     }
 }

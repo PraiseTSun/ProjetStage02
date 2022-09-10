@@ -1,13 +1,14 @@
 package projet.projetstage02.service;
 
 import org.springframework.stereotype.Component;
+import projet.projetstage02.DTO.CompanyDTO;
 import projet.projetstage02.DTO.StudentDTO;
 import projet.projetstage02.modele.AbstractUser;
 import projet.projetstage02.modele.Student;
 import projet.projetstage02.repository.StudentRepository;
 
 @Component
-public class StudentService {
+public class StudentService extends AbstractService<StudentDTO> {
     private StudentRepository studentRepository;
 
     public StudentService(StudentRepository studentRepository) {
@@ -20,5 +21,13 @@ public class StudentService {
     }
     public void createStudent(StudentDTO dto) {
         studentRepository.save(dto.getOrigin());
+    }
+
+    @Override
+    public StudentDTO getUserById(Long id) {
+        var studentOpt = studentRepository.findById(id);
+        if(studentOpt.isEmpty())
+            return null;
+        return new StudentDTO(studentOpt.get());
     }
 }

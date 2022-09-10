@@ -29,5 +29,11 @@ public class ProjetStage02Application implements CommandLineRunner {
         studentService.createStudent("Samir", "Badi", "email", "password", AbstractUser.Department.Informatique);
         companyService.createCompany("Bob", "Marley", "Bell", "email", "password", AbstractUser.Department.Informatique);
         gestionnaireService.createGestionnaire("Dave", "Douch", "email", "password");
+
+        System.out.println(studentService.getUserById(1L));
+        System.out.println(companyService.getUserById(2L));
+        System.out.println(gestionnaireService.getGestionnaire(3L));
+        gestionnaireService.confirmUser(gestionnaireService.getGestionnaire(3L));
+        System.out.println(gestionnaireService.getGestionnaire(3L));
     }
 }
