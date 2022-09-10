@@ -15,5 +15,5 @@ public abstract class AbstractUserDTO<T> {
     protected String password;
     protected Boolean isConfirmed;
 
-    public abstract T GetClass();
+    public abstract T getOrigin();
 }

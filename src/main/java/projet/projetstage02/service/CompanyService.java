@@ -14,9 +14,12 @@ public class CompanyService {
         this.companyRepository = companyRepository;
     }
 
-    public CompanyDTO createCompany(String firstName, String lastName, String name, String email, String password, AbstractUser.Department department) {
-        Company company = new Company(firstName, lastName, email, password, department, name);
-        companyRepository.save(company);
-        return new CompanyDTO(company);
+    public void createCompany(String firstName, String lastName, String name, String email, String password, AbstractUser.Department department) {
+        CompanyDTO dto = new CompanyDTO(firstName, lastName, email, password, false, department.toString(), name);
+        createCompany(dto);
+    }
+
+    public void createCompany(CompanyDTO dto) {
+        companyRepository.save(dto.getOrigin());
     }
 }

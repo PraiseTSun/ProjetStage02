@@ -12,7 +12,7 @@ public class GestionnaireDTO extends AbstractUserDTO<Gestionnaire> {
     }
 
     @Override
-    public Gestionnaire GetClass() {
+    public Gestionnaire getOrigin() {
         Gestionnaire gestionnaire = new Gestionnaire(
                 firstName,
                 lastName,

@@ -1,6 +1,7 @@
 package projet.projetstage02.service;
 
 import org.springframework.stereotype.Component;
+import projet.projetstage02.DTO.StudentDTO;
 import projet.projetstage02.modele.AbstractUser;
 import projet.projetstage02.modele.Student;
 import projet.projetstage02.repository.StudentRepository;
@@ -13,9 +14,11 @@ public class StudentService {
         this.studentRepository = studentRepository;
     }
 
-    public Student createStudent(String firstName, String lastName, String email, String password, AbstractUser.Department department) {
-        Student student = new Student(firstName, lastName, email, password, department);
-        studentRepository.save(student);
-        return student;
+    public void createStudent(String firstName, String lastName, String email, String password, AbstractUser.Department department) {
+        StudentDTO dto = new StudentDTO(firstName, lastName, email, password, false,department.toString());
+        createStudent(dto);
+    }
+    public void createStudent(StudentDTO dto) {
+        studentRepository.save(dto.getOrigin());
     }
 }
