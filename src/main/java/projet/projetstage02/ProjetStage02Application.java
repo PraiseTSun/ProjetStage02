@@ -33,5 +33,7 @@ public class ProjetStage02Application implements CommandLineRunner {
         System.out.println(user1);
         System.out.println(user2);
         System.out.println(user3);
+        gestionnaireService.ConfirmUser(user3);
+        System.out.println(gestionnaireService.getGestionnaire(user3.getId()));
     }
 }

@@ -26,11 +26,13 @@ public abstract class AbstractUser {
     private String email;
     @ToString.Exclude
     private String password;
+    private Boolean isConfirm;
 
     public AbstractUser(String firstName, String lastName, String email, String password) {
         this.firstName = firstName;
         this.lastName = lastName;
         this.email = email;
         this.password = password;
+        isConfirm = false;
     }
 }
