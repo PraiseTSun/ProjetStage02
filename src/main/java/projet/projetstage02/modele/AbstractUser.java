@@ -20,13 +20,13 @@ public abstract class AbstractUser {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "id", nullable = false)
-    private Long id;
-    private String firstName;
-    private String lastName;
-    private String email;
+    protected Long id;
+    protected String firstName;
+    protected String lastName;
+    protected String email;
     @ToString.Exclude
-    private String password;
-    private Boolean isConfirm;
+    protected String password;
+    protected Boolean isConfirm;
 
     public AbstractUser(String firstName, String lastName, String email, String password) {
         this.firstName = firstName;
