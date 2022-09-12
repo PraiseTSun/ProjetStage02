@@ -26,12 +26,14 @@ public class ProjetStage02Application implements CommandLineRunner {
 
     @Override
     public void run(String... args) throws Exception {
-        var user1 = studentService.createStudent("Samir", "Badi", "email", "password", AbstractUser.Department.Informatique);
-        var user2 = companyService.createCompany("Bob", "Marley", "Bell", "email", "password", AbstractUser.Department.Informatique);
-        var user3 = gestionnaireService.createGestionnaire("Dave", "Douch", "email", "password");
+        studentService.createStudent("Samir", "Badi", "email", "password", AbstractUser.Department.Informatique);
+        companyService.createCompany("Bob", "Marley", "Bell", "email", "password", AbstractUser.Department.Informatique);
+        gestionnaireService.createGestionnaire("Dave", "Douch", "email", "password");
 
-        System.out.println(user1);
-        System.out.println(user2);
-        System.out.println(user3);
+        System.out.println(studentService.getUserById(1L));
+        System.out.println(companyService.getUserById(2L));
+        System.out.println(gestionnaireService.getGestionnaire(3L));
+        gestionnaireService.confirmUser(gestionnaireService.getGestionnaire(3L));
+        System.out.println(gestionnaireService.getGestionnaire(3L));
     }
 }

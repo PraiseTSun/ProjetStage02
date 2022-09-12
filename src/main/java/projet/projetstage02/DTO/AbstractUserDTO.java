@@ -1,16 +1,19 @@
 package projet.projetstage02.DTO;
 
-import lombok.*;
-import lombok.experimental.SuperBuilder;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
-@SuperBuilder
-@AllArgsConstructor
 @NoArgsConstructor
-public abstract class AbstractUserDTO {
-    private String firstName;
-    private String lastName;
-    private String email;
-    private String password;
+@AllArgsConstructor
+public abstract class AbstractUserDTO<T> {
+    protected String id;
+    protected String firstName;
+    protected String lastName;
+    protected String email;
+    protected String password;
+    protected Boolean isConfirmed;
 
+    public abstract T getOrigin();
 }
