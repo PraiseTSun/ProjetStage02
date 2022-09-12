@@ -5,6 +5,8 @@ import lombok.NoArgsConstructor;
 import lombok.ToString;
 
 import javax.persistence.*;
+import java.sql.Timestamp;
+import java.util.Date;
 
 @Entity
 @Data
@@ -27,12 +29,15 @@ public abstract class AbstractUser {
     @ToString.Exclude
     protected String password;
     protected boolean isConfirm;
+    protected Timestamp inscriptionTimestamp;
+    protected Timestamp confirmationTimestamp;
 
     public AbstractUser(String firstName, String lastName, String email, String password) {
         this.firstName = firstName;
         this.lastName = lastName;
         this.email = email;
         this.password = password;
+        inscriptionTimestamp = new Timestamp(new Date().getTime());
         isConfirm = false;
     }
 }
