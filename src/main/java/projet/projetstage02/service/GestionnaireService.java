@@ -32,7 +32,7 @@ public class GestionnaireService extends AbstractService<GestionnaireDTO>{
         if(gestionnaireOpt.isEmpty())
             return;
         Gestionnaire gestionnaire = gestionnaireOpt.get();
-        gestionnaire.setIsConfirm(true);
+        gestionnaire.setConfirm(true);
         gestionnaireRepository.save(gestionnaire);
     }
 
