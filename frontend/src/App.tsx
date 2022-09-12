@@ -1,6 +1,6 @@
 import React from 'react';
 import { Row, Col, Container } from 'react-bootstrap';
-import LoginPage from './pages/LoginPage';
+import LoginPage from './components/LoginForm';
 
 function App() {
   return (
