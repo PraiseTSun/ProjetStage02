@@ -18,12 +18,12 @@ public class StudentDTO extends AbstractUserDTO<Student> {
     }
 
     public StudentDTO(Student student){
-        id = student.getId().toString();
+        id = String.valueOf(student.getId());
         firstName = student.getFirstName();
         lastName = getLastName();
         email = student.getEmail();
         password = student.getPassword();
-        isConfirmed = student.getIsConfirm();
+        isConfirmed = student.isConfirm();
         department = student.getDepartment().toString();
     }
 

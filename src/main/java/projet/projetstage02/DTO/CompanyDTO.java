@@ -26,11 +26,11 @@ public class CompanyDTO extends AbstractUserDTO<Company>{
     }
 
     public CompanyDTO(Company company){
-        id = company.getId().toString();
+        id = String.valueOf(company.getId());
         firstName = company.getFirstName();
         lastName = company.getLastName();
         email = company.getEmail();
-        isConfirmed = company.getIsConfirm();
+        isConfirmed = company.isConfirm();
         department = company.getDepartment().toString();
         name = company.getName();
     }

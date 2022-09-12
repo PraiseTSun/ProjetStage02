@@ -13,7 +13,7 @@ public class GestionnaireDTO extends AbstractUserDTO<Gestionnaire> {
     }
 
     public GestionnaireDTO(Gestionnaire gestionnaire){
-        id = gestionnaire.getId().toString();
+        id = String.valueOf(gestionnaire.getId());
         firstName = gestionnaire.getFirstName();
         lastName = gestionnaire.getLastName();
         email = gestionnaire.getEmail();
