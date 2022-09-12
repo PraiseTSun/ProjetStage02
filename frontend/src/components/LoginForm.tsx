@@ -6,15 +6,15 @@ function LoginPage() {
         <Form>
             <Form.Group>
                 <Form.Label>Adresse courriel</Form.Label>
-                <Form.Control type="email"></Form.Control>
+                <Form.Control type="email" required></Form.Control>
             </Form.Group>
             <Form.Group>
                 <Form.Label>Mot de passe</Form.Label>
-                <Form.Control type="password"></Form.Control>
+                <Form.Control type="password" required></Form.Control>
             </Form.Group>
             <Row className="mt-3">
-                <Col>
-                    <Button className="btn-success" type="submit">
+                <Col className="text-center">
+                    <Button className="btn-success mx-auto w-75" type="submit">
                         Connecter
                     </Button>
                 </Col>
