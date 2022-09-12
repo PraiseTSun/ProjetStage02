@@ -5,11 +5,11 @@ function LoginForm() {
     return (
         <Form>
             <Form.Group>
-                <Form.Label>Adresse courriel</Form.Label>
+                <Form.Label className="text-white fw-bold h5">Adresse courriel</Form.Label>
                 <Form.Control type="email" required></Form.Control>
             </Form.Group>
             <Form.Group>
-                <Form.Label>Mot de passe</Form.Label>
+                <Form.Label className="text-white fw-bold mt-2 h5">Mot de passe</Form.Label>
                 <Form.Control type="password" required></Form.Control>
             </Form.Group>
             <Row className="mt-3">

@@ -7,10 +7,14 @@ function App() {
   return (
     <Container>
       <Row className="vh-100">
-        <Col m-auto className="m-auto col-4 text-center">
-          <h1 className="text-warning fw-bold text-center">OSE KILLER</h1>
+        <Col className="m-auto col-lg-4 col-md-6">
+          <h1 className="text-warning fw-bold text-center display-3">OSE KILLER</h1>
           <LoginForm />
-          <Link to="/register" className="link-warning">Nouveau utilisateur? Inscrivez vous ici.</Link>
+          <Row>
+            <Col className="text-center">
+              <Link to="/register" className="link-warning">Nouveau utilisateur? Inscrivez vous ici.</Link>
+            </Col>
+          </Row>
         </Col>
       </Row>
     </Container>
