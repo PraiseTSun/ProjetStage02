@@ -13,7 +13,7 @@ public abstract class AbstractUserDTO<T> {
     protected String lastName;
     protected String email;
     protected String password;
-    protected Boolean isConfirmed;
+    protected boolean isConfirmed;
 
     public abstract T getOrigin();
 }
