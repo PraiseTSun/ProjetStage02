@@ -1,7 +1,7 @@
 import React from "react";
 import { Form, Button, Row, Col } from "react-bootstrap";
 
-function LoginPage() {
+function LoginForm() {
     return (
         <Form>
             <Form.Group>
@@ -23,4 +23,4 @@ function LoginPage() {
     );
 }
 
-export default LoginPage;
+export default LoginForm;
