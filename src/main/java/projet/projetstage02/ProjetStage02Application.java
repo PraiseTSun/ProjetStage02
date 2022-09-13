@@ -20,20 +20,24 @@ public class ProjetStage02Application implements CommandLineRunner {
 
     @Autowired
     private GestionnaireService gestionnaireService;
+
     public static void main(String[] args) {
         SpringApplication.run(ProjetStage02Application.class, args);
     }
 
     @Override
     public void run(String... args) throws Exception {
-        studentService.createStudent("Samir", "Badi", "email", "password", AbstractUser.Department.Informatique);
-        companyService.createCompany("Bob", "Marley", "Bell", "email", "password", AbstractUser.Department.Informatique);
-        gestionnaireService.createGestionnaire("Dave", "Douch", "email", "password");
+        studentService.createStudent("Samir", "Badi", "Samir@gmail.ca", "cooldude", AbstractUser.Department.Informatique);
+        companyService.createCompany("Bob", "Marley", "Bell", "Bob@bell.com", "bestcompany", AbstractUser.Department.Informatique);
+        gestionnaireService.createGestionnaire("Dave", "Douch", "Dave@gmail.com", "Dave69");
 
         System.out.println(studentService.getUserById(1L));
         System.out.println(companyService.getUserById(2L));
-        System.out.println(gestionnaireService.getGestionnaire(3L));
-        gestionnaireService.confirmUser(gestionnaireService.getGestionnaire(3L));
-        System.out.println(gestionnaireService.getGestionnaire(3L));
+        System.out.println(gestionnaireService.getUserById(3L));
+        gestionnaireService.confirmUser(gestionnaireService.getUserById(3L));
+        System.out.println(gestionnaireService.getUserById(3L));
+        System.out.println(gestionnaireService.getUserByEmailPassword("Dave@gmail.com", "Dave69"));
+        System.out.println(companyService.getUserByEmailPassword("Bob@bell.com", "bestcompany"));
+        System.out.println(studentService.getUserByEmailPassword("Samir@gmail.ca", "cooldude"));
     }
 }

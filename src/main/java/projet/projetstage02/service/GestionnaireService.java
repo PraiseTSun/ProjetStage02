@@ -1,6 +1,7 @@
 package projet.projetstage02.service;
 
 import org.springframework.stereotype.Component;
+import projet.projetstage02.DTO.AbstractUserDTO;
 import projet.projetstage02.DTO.GestionnaireDTO;
 import projet.projetstage02.modele.AbstractUser;
 import projet.projetstage02.modele.Gestionnaire;
@@ -22,12 +23,12 @@ public class GestionnaireService extends AbstractService<GestionnaireDTO>{
         gestionnaireRepository.save(dto.getOrigin());
     }
 
-    public void confirmUser(AbstractUser user) {
-        if(user.getClass() == Gestionnaire.class)
-            confirmGestionaire(user);
+    public void confirmUser(AbstractUserDTO user) {
+        if(user.getClass() == GestionnaireDTO.class)
+            confirmGestionaire((Gestionnaire) user.getOrigin());
     }
 
-    private void confirmGestionaire(AbstractUser user) {
+    private void confirmGestionaire(Gestionnaire user) {
         var gestionnaireOpt = gestionnaireRepository.findById(user.getId());
         if(gestionnaireOpt.isEmpty())
             return;
@@ -36,16 +37,17 @@ public class GestionnaireService extends AbstractService<GestionnaireDTO>{
         gestionnaireRepository.save(gestionnaire);
     }
 
-    public Gestionnaire getGestionnaire(Long id) {
-        var gestionnaireOpt = gestionnaireRepository.findById(id);
-        if(gestionnaireOpt.isEmpty())
-            return null;
-        return gestionnaireOpt.get();
-    }
-
     @Override
     public GestionnaireDTO getUserById(Long id) {
         var gestionnaireOpt = gestionnaireRepository.findById(id);
+        if(gestionnaireOpt.isEmpty())
+            return null;
+        return new GestionnaireDTO(gestionnaireOpt.get());
+    }
+
+    @Override
+    public GestionnaireDTO getUserByEmailPassword(String email, String password) {
+        var gestionnaireOpt = gestionnaireRepository.findByEmailAndPassword(email, password);
         if(gestionnaireOpt.isEmpty())
             return null;
         return new GestionnaireDTO(gestionnaireOpt.get());
