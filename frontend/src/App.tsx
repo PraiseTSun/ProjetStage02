@@ -1,7 +1,7 @@
 import React from 'react';
 import { useState } from 'react';
 import { Container } from 'react-bootstrap';
-import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom';
+import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import LoginPage from './pages/LoginPage';
 
 function App() {
