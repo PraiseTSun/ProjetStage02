@@ -1,22 +1,23 @@
 import React from 'react';
-import { Col, Container, Row } from 'react-bootstrap';
-import { Link } from 'react-router-dom';
-import LoginForm from './components/LoginForm';
+import { useState } from 'react';
+import { Container } from 'react-bootstrap';
+import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom';
+import LoginPage from './pages/LoginPage';
 
 function App() {
+  const [user, setUser] = useState("")
+
+  if (!user || window.location.href != "/register") {
+    return <LoginPage setUser={setUser} />;
+  }
+
   return (
-    <Container>
-      <Row className="vh-100">
-        <Col className="m-auto col-lg-4 col-md-6">
-          <h1 className="text-warning fw-bold text-center display-3">OSE KILLER</h1>
-          <LoginForm />
-          <Row>
-            <Col className="text-center">
-              <Link to="/register" className="link-warning">Nouveau utilisateur? Inscrivez vous ici.</Link>
-            </Col>
-          </Row>
-        </Col>
-      </Row>
+    <Container className="vh-100">
+      <BrowserRouter>
+        <Routes>
+          <Route path="/dashboard" element={<h1>Dashboard</h1>} />
+        </Routes>
+      </BrowserRouter>
     </Container>
   );
 }
