@@ -7,7 +7,7 @@ import LoginPage from './pages/LoginPage';
 function App() {
   const [user, setUser] = useState("")
 
-  if (!user || window.location.href != "/register") {
+  if (!user) {
     return <LoginPage setUser={setUser} />;
   }
 
