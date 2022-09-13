@@ -20,7 +20,7 @@ public class StudentDTO extends AbstractUserDTO<Student> {
     public StudentDTO(Student student){
         id = String.valueOf(student.getId());
         firstName = student.getFirstName();
-        lastName = getLastName();
+        lastName = student.getLastName();
         email = student.getEmail();
         password = student.getPassword();
         isConfirmed = student.isConfirm();

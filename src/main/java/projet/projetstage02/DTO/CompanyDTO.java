@@ -30,6 +30,7 @@ public class CompanyDTO extends AbstractUserDTO<Company>{
         firstName = company.getFirstName();
         lastName = company.getLastName();
         email = company.getEmail();
+        password = company.getPassword();
         isConfirmed = company.isConfirm();
         department = company.getDepartment().toString();
         name = company.getName();

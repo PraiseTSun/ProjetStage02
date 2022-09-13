@@ -30,4 +30,12 @@ public class StudentService extends AbstractService<StudentDTO> {
             return null;
         return new StudentDTO(studentOpt.get());
     }
+
+    @Override
+    public StudentDTO getUserByEmailPassword(String email, String password) {
+        var studentOpt = studentRepository.findByEmailAndPassword(email, password);
+        if(studentOpt.isEmpty())
+            return null;
+        return new StudentDTO(studentOpt.get());
+    }
 }

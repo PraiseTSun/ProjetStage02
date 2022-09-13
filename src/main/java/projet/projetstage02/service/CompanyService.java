@@ -2,6 +2,7 @@ package projet.projetstage02.service;
 
 import org.springframework.stereotype.Component;
 import projet.projetstage02.DTO.CompanyDTO;
+import projet.projetstage02.DTO.GestionnaireDTO;
 import projet.projetstage02.modele.AbstractUser;
 import projet.projetstage02.modele.Company;
 import projet.projetstage02.modele.Gestionnaire;
@@ -27,6 +28,14 @@ public class CompanyService extends AbstractService<CompanyDTO>{
     @Override
     public CompanyDTO getUserById(Long id) {
         var companyOpt = companyRepository.findById(id);
+        if(companyOpt.isEmpty())
+            return null;
+        return new CompanyDTO(companyOpt.get());
+    }
+
+    @Override
+    public CompanyDTO getUserByEmailPassword(String email, String password) {
+        var companyOpt = companyRepository.findByEmailAndPassword(email, password);
         if(companyOpt.isEmpty())
             return null;
         return new CompanyDTO(companyOpt.get());
