@@ -6,7 +6,7 @@ function App() {
   const [utilisateurs, setUtilisateurs] = useState([])
 
   const onInscrire = async  (compte : object) => {
-    const res = await fetch('http://localhost:8080/utilisateurs',
+    const res = await fetch('http://localhost:8080/createUser',
         {
           method: 'POST',
           headers: {
