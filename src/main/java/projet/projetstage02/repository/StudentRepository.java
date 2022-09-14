@@ -3,7 +3,6 @@ package projet.projetstage02.repository;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
-import projet.projetstage02.modele.Gestionnaire;
 import projet.projetstage02.modele.Student;
 
 import java.util.Optional;

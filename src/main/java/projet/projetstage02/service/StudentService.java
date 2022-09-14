@@ -1,10 +1,8 @@
 package projet.projetstage02.service;
 
 import org.springframework.stereotype.Component;
-import projet.projetstage02.DTO.CompanyDTO;
 import projet.projetstage02.DTO.StudentDTO;
 import projet.projetstage02.modele.AbstractUser;
-import projet.projetstage02.modele.Student;
 import projet.projetstage02.repository.StudentRepository;
 
 @Component
@@ -20,7 +18,7 @@ public class StudentService extends AbstractService<StudentDTO> {
         createStudent(dto);
     }
     public void createStudent(StudentDTO dto) {
-        studentRepository.save(dto.getOrigin());
+        studentRepository.save(dto.getClassOrigin());
     }
 
     @Override
