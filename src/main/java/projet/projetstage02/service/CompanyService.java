@@ -23,6 +23,11 @@ public class CompanyService extends AbstractService<CompanyDTO>{
     }
 
     @Override
+    public boolean isUniqueEmail(String email) {
+        return false;
+    }
+
+    @Override
     public CompanyDTO getUserById(Long id) {
         var companyOpt = companyRepository.findById(id);
         if(companyOpt.isEmpty())

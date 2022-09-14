@@ -37,6 +37,11 @@ public class GestionnaireService extends AbstractService<GestionnaireDTO>{
     }
 
     @Override
+    public boolean isUniqueEmail(String email) {
+        return false;
+    }
+
+    @Override
     public GestionnaireDTO getUserById(Long id) {
         var gestionnaireOpt = gestionnaireRepository.findById(id);
         if(gestionnaireOpt.isEmpty())
