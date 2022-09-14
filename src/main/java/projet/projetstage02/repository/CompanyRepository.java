@@ -8,7 +8,5 @@ import projet.projetstage02.modele.Company;
 import java.util.Optional;
 
 public interface CompanyRepository extends JpaRepository<Company, Long> {
-    @Query(value = "SELECT p FROM Company p " +
-            "WHERE p.email = :email AND p.password = :password")
-    Optional<Company> findByEmailAndPassword(@Param("email") String email, @Param("password") String password);
+    Optional<Company> findByEmailAndPassword(String email, String password);
 }
