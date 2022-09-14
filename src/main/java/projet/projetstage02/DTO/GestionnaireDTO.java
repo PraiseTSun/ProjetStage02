@@ -8,8 +8,8 @@ import projet.projetstage02.modele.Gestionnaire;
 @NoArgsConstructor
 public class GestionnaireDTO extends AbstractUserDTO<Gestionnaire> {
 
-    public GestionnaireDTO(String firstName, String lastName, String email, String password, Boolean isConfirmed) {
-        super("0", firstName, lastName, email, password, isConfirmed);
+    public GestionnaireDTO(String firstName, String lastName, String email, String password, boolean isConfirmed,long inscriptionTimestamp) {
+        super("0", firstName, lastName, email, password, isConfirmed,inscriptionTimestamp,false);
     }
 
     public GestionnaireDTO(Gestionnaire gestionnaire){
@@ -18,6 +18,8 @@ public class GestionnaireDTO extends AbstractUserDTO<Gestionnaire> {
         lastName = gestionnaire.getLastName();
         email = gestionnaire.getEmail();
         password = gestionnaire.getPassword();
+        inscriptionTimestamp = gestionnaire.getInscriptionTimestamp();
+        emailConfirmed = gestionnaire.isEmailConfirmed();
     }
 
     @Override
@@ -26,7 +28,9 @@ public class GestionnaireDTO extends AbstractUserDTO<Gestionnaire> {
                 firstName,
                 lastName,
                 email,
-                password
+                password,
+                inscriptionTimestamp,
+                emailConfirmed
         );
         gestionnaire.setId(Long.parseLong(id));
         return gestionnaire;

@@ -7,8 +7,9 @@ import projet.projetstage02.modele.AbstractUser;
 import projet.projetstage02.modele.Student;
 import projet.projetstage02.repository.StudentRepository;
 
+import java.sql.Timestamp;
+import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Objects;
 
 @Component
 public class StudentService extends AbstractService<StudentDTO> {
@@ -26,15 +27,18 @@ public class StudentService extends AbstractService<StudentDTO> {
         return studentsWithMatchingMail.size() == 0;
     }
     public void createStudent(String firstName, String lastName, String email, String password, AbstractUser.Department department) {
-        StudentDTO dto = new StudentDTO(firstName, lastName, email, password, false,department.toString());
+        StudentDTO dto = new StudentDTO(
+                firstName,
+                lastName,
+                email,
+                password,
+                false,
+                Timestamp.valueOf(LocalDateTime.now()).getTime(),
+                department.toString());
         createStudent(dto);
     }
     public void createStudent(StudentDTO dto) {
         studentRepository.save(dto.getOrigin());
-    }
-
-    public void updateStudent(StudentDTO student){
-        studentRepository.save(student.getOrigin());
     }
 
     @Override

@@ -12,10 +12,11 @@ import projet.projetstage02.modele.Student;
 public class StudentDTO extends AbstractUserDTO<Student> {
     private String department;
 
-    public StudentDTO(String firstName, String lastName, String email, String password, Boolean isConfirmed, String department) {
-        super("0", firstName, lastName, email, password, isConfirmed);
+    public StudentDTO(String firstName, String lastName, String email, String password, boolean isConfirmed,long inscriptionTimeStamp, String department) {
+        super("0", firstName, lastName, email, password, isConfirmed,inscriptionTimeStamp,false);
         this.department = department;
     }
+
 
     public StudentDTO(Student student){
         id = String.valueOf(student.getId());
@@ -34,7 +35,10 @@ public class StudentDTO extends AbstractUserDTO<Student> {
                 lastName,
                 email,
                 password,
-                AbstractUser.Department.valueOf(department)
+                AbstractUser.Department.valueOf(department),
+                inscriptionTimestamp,
+                emailConfirmed
+
         );
         student.setId(Long.parseLong(id));
         return student;

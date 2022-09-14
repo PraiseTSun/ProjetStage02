@@ -17,4 +17,15 @@ public class Student extends AbstractUser{
         super(firstName, lastName, email, password);
         this.department = department;
     }
+    public Student(
+            String firstName,
+            String lastName,
+            String email,
+            String password,
+            Department department,
+            long inscriptionTimestamp,
+            boolean emailConfirmed) {
+        super(firstName, lastName, email, password, inscriptionTimestamp,emailConfirmed);
+        this.department = department;
+    }
 }

@@ -6,6 +6,8 @@ import projet.projetstage02.modele.AbstractUser;
 import projet.projetstage02.modele.Gestionnaire;
 import projet.projetstage02.repository.GestionnaireRepository;
 
+import java.sql.Timestamp;
+import java.time.LocalDateTime;
 @Component
 public class GestionnaireService extends AbstractService<GestionnaireDTO>{
     private GestionnaireRepository gestionnaireRepository;
@@ -15,7 +17,13 @@ public class GestionnaireService extends AbstractService<GestionnaireDTO>{
     }
 
     public void createGestionnaire(String firstname, String lastname, String email, String password) {
-        GestionnaireDTO dto = new GestionnaireDTO(firstname, lastname, email, password, false);
+        GestionnaireDTO dto = new GestionnaireDTO(
+                firstname,
+                lastname,
+                email,
+                password,
+                false,
+                Timestamp.valueOf(LocalDateTime.now()).getTime());
         createGestionnaire(dto);
     }
     public void createGestionnaire(GestionnaireDTO dto) {

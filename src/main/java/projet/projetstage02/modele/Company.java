@@ -19,4 +19,17 @@ public class Company extends AbstractUser{
         this.department = department;
         this.name = name;
     }
+    public Company(
+            String firstName,
+            String lastName,
+            String email,
+            String password,
+            Department department,
+            String name,
+            long inscriptionTimestamp,
+            boolean emailConfirmed) {
+        super(firstName, lastName, email, password,inscriptionTimestamp,emailConfirmed);
+        this.department = department;
+        this.name = name;
+    }
 }
