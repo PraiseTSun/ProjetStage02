@@ -60,4 +60,11 @@ public class RootController {
             return createStudent((StudentDTO) userDTO);
         }
     }
+
+    @PutMapping("/student")
+    public ResponseEntity<StudentDTO> getStudent(@RequestBody StudentDTO studentDTO){
+        StudentDTO dto = studentService.getUserByEmailPassword(studentDTO.getEmail() , studentDTO.getPassword());
+
+        return dto != null ? ResponseEntity.ok(dto) : ResponseEntity.notFound().build();
+    }
 }
