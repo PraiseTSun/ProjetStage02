@@ -10,24 +10,24 @@ const LoginForm = (props: { setUser: Function }): JSX.Element => {
 
     const onSubmit = (event: React.SyntheticEvent): void => {
         event.preventDefault();
-        setEmail("");
-        setPassword("");
-        setUserType("student");
 
         const headers = {
             method: "PUT",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ "email": email, "password": password })
         };
-        console.log(userType);
         fetch("http://localhost:8080/" + userType, headers)
             .then(response => {
                 if (response.ok) return response.json()
                 else setIsInvalidLoggin(true)
             })
             .then(data => {
-                props.setUser(data.firstName)
+                if (data) props.setUser(data.firstName)
             });
+
+        setEmail("");
+        setPassword("");
+        setUserType("student");
     }
 
     return (

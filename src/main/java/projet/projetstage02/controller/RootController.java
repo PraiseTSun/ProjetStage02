@@ -68,4 +68,18 @@ public class RootController {
 
         return dto != null ? ResponseEntity.ok(dto) : ResponseEntity.notFound().build();
     }
+
+    @PutMapping("/company")
+    public ResponseEntity<CompanyDTO> getCompany(@RequestBody CompanyDTO companyDTO){
+        CompanyDTO dto = companyService.getUserByEmailPassword(companyDTO.getEmail() , companyDTO.getPassword());
+
+        return dto != null ? ResponseEntity.ok(dto) : ResponseEntity.notFound().build();
+    }
+
+    @PutMapping("/gestionnaire")
+    public ResponseEntity<GestionnaireDTO> getGestionnaire(@RequestBody GestionnaireDTO gestionnaireDTO){
+        GestionnaireDTO dto = gestionnaireService.getUserByEmailPassword(gestionnaireDTO.getEmail() , gestionnaireDTO.getPassword());
+
+        return dto != null ? ResponseEntity.ok(dto) : ResponseEntity.notFound().build();
+    }
 }

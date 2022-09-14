@@ -15,7 +15,7 @@ function App() {
     <Container className="vh-100">
       <BrowserRouter>
         <Routes>
-          <Route path="/dashboard" element={<h1>Dashboard</h1>} />
+          <Route path="/" element={<h1>Dashboard</h1>} />
         </Routes>
       </BrowserRouter>
     </Container>
