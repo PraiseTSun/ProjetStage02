@@ -8,7 +8,5 @@ import projet.projetstage02.modele.Gestionnaire;
 import java.util.Optional;
 
 public interface GestionnaireRepository extends JpaRepository<Gestionnaire, Long> {
-    @Query(value = "SELECT p FROM Gestionnaire p " +
-            "WHERE p.email = :email AND p.password = :password")
-    Optional<Gestionnaire> findByEmailAndPassword(@Param("email") String email,@Param("password") String password);
+    Optional<Gestionnaire> findByEmailAndPassword(String email, String password);
 }

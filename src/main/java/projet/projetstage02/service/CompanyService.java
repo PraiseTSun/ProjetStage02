@@ -2,10 +2,7 @@ package projet.projetstage02.service;
 
 import org.springframework.stereotype.Component;
 import projet.projetstage02.DTO.CompanyDTO;
-import projet.projetstage02.DTO.GestionnaireDTO;
 import projet.projetstage02.modele.AbstractUser;
-import projet.projetstage02.modele.Company;
-import projet.projetstage02.modele.Gestionnaire;
 import projet.projetstage02.repository.CompanyRepository;
 
 @Component
@@ -22,7 +19,7 @@ public class CompanyService extends AbstractService<CompanyDTO>{
     }
 
     public void createCompany(CompanyDTO dto) {
-        companyRepository.save(dto.getOrigin());
+        companyRepository.save(dto.getClassOrigin());
     }
 
     @Override

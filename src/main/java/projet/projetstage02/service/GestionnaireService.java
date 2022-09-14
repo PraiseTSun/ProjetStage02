@@ -3,7 +3,6 @@ package projet.projetstage02.service;
 import org.springframework.stereotype.Component;
 import projet.projetstage02.DTO.AbstractUserDTO;
 import projet.projetstage02.DTO.GestionnaireDTO;
-import projet.projetstage02.modele.AbstractUser;
 import projet.projetstage02.modele.Gestionnaire;
 import projet.projetstage02.repository.GestionnaireRepository;
 
@@ -20,12 +19,12 @@ public class GestionnaireService extends AbstractService<GestionnaireDTO>{
         createGestionnaire(dto);
     }
     public void createGestionnaire(GestionnaireDTO dto) {
-        gestionnaireRepository.save(dto.getOrigin());
+        gestionnaireRepository.save(dto.getClassOrigin());
     }
 
     public void confirmUser(AbstractUserDTO user) {
         if(user.getClass() == GestionnaireDTO.class)
-            confirmGestionaire((Gestionnaire) user.getOrigin());
+            confirmGestionaire((Gestionnaire) user.getClassOrigin());
     }
 
     private void confirmGestionaire(Gestionnaire user) {

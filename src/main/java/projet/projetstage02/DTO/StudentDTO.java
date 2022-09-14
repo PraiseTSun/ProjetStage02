@@ -28,7 +28,7 @@ public class StudentDTO extends AbstractUserDTO<Student> {
     }
 
     @Override
-    public Student getOrigin() {
+    public Student getClassOrigin() {
         Student student = new Student(
                 firstName,
                 lastName,

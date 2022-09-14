@@ -37,7 +37,7 @@ public class CompanyDTO extends AbstractUserDTO<Company>{
     }
 
     @Override
-    public Company getOrigin() {
+    public Company getClassOrigin() {
         Company company = new Company(firstName, lastName, email, password, AbstractUser.Department.valueOf(department), name);
         company.setId(Long.parseLong(id));
         return company;
