@@ -57,7 +57,7 @@ const FormulaireEtudiant = ({ onInscrire }:
 
                     <FormGroup className="mb-3">
                         <Form.Label>Prenom</Form.Label>
-                        <Form.Control type='text' required={true} placeholder='Nom'
+                        <Form.Control type='text' required placeholder='Nom'
                                       value={prenom} minLength={2}
                                       onChange={(e) => setPrenom(e.target.value)}/>
 
@@ -73,7 +73,7 @@ const FormulaireEtudiant = ({ onInscrire }:
 
                     <FormGroup className="mb-3">
                         <Form.Label>Mot de passe</Form.Label>
-                        <Form.Control type='password' required={true} placeholder='Mot de passe'
+                        <Form.Control type='password' required placeholder='Mot de passe'
                                       value={motDePasse} minLength={8}
                                       onChange={(e) => setMotDePasse(e.target.value)}/>
 

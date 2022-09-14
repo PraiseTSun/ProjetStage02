@@ -13,14 +13,6 @@ const FormulaireEntreprise = ({ onInscrire }:
     const [motDePasse, setMotDePasse] = useState('')
     const [validationMotDePasse, setValidationMotDePasse] = useState('')
 
-    const [erreurPourNom, setErreurPourNom] = useState(false)
-    const [erreurPourPrenom, setErreurPourPrenom] = useState(false)
-    const [erreurPourEtreprise, setErreurPourErreurPourEtreprise] = useState(false)
-    const [erreurPourDepartement, setErreurPourDepartement] = useState(false)
-    const [erreurPourCourriel, setErreurPourCourriel] = useState(false)
-    const [erreurPourMotDePasse, setErreurPourMotDePasse] = useState(false);
-    const [erreurPourMotDePasseVerifier, setErreurPourMotDePasseVerifier] = useState(false);
-
     const validEmail = new RegExp(
         '^[a-zA-Z0-9._:$!%-]+@[a-zA-Z0-9.-]+.[a-zA-Z]$'
     );
@@ -37,12 +29,11 @@ const FormulaireEntreprise = ({ onInscrire }:
 
 
         if (motDePasse !== validationMotDePasse) {
-            setErreurPourMotDePasseVerifier(true)
+            alert("Vérifier le mot de passe et le mot de passe ne correspondent pas")
             return
         }
 
         if (!validEmail.test(courriel)) {
-            setErreurPourCourriel(true)
             return;
         }
 
@@ -57,10 +48,6 @@ const FormulaireEntreprise = ({ onInscrire }:
         setCourriel('')
         setMotDePasse('')
         setValidationMotDePasse('')
-        setErreurPourDepartement(false)
-        setErreurPourCourriel(false)
-        setErreurPourMotDePasse(false)
-        setErreurPourMotDePasseVerifier(false)
 
     }
     return (
@@ -69,7 +56,7 @@ const FormulaireEntreprise = ({ onInscrire }:
             <Form onSubmit={onSubmit}>
                 <FormGroup className="mb-3">
                     <Form.Label>Nom</Form.Label>
-                    <Form.Control type='text' required={true} placeholder='Nom'
+                    <Form.Control type='text' required placeholder='Nom'
                                   value={nom} minLength={2}
                                   onChange={(e) => setNom(e.target.value)}/>
 
@@ -77,7 +64,7 @@ const FormulaireEntreprise = ({ onInscrire }:
 
                 <FormGroup className="mb-3">
                     <Form.Label>Prenom</Form.Label>
-                    <Form.Control type='text' required={true} placeholder='Nom'
+                    <Form.Control type='text' required placeholder='Nom'
                                   value={prenom} minLength={2}
                                   onChange={(e) => setPrenom(e.target.value)}/>
 
@@ -85,7 +72,7 @@ const FormulaireEntreprise = ({ onInscrire }:
 
                 <FormGroup className="mb-3">
                     <Form.Label>Entreprise</Form.Label>
-                    <Form.Control type='text' required={true} placeholder='Nom'
+                    <Form.Control type='text' required placeholder='Nom'
                                   value={entreprise} minLength={2}
                                   onChange={(e) => setDepartement(e.target.value)}/>
 
