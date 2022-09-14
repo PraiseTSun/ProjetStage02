@@ -26,6 +26,8 @@ public class StudentDTO extends AbstractUserDTO<Student> {
         password = student.getPassword();
         isConfirmed = student.isConfirm();
         department = student.getDepartment().toString();
+        inscriptionTimestamp = student.getInscriptionTimestamp();
+        emailConfirmed = student.isEmailConfirmed();
     }
 
     @Override

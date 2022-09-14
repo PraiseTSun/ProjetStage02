@@ -40,6 +40,8 @@ public class CompanyDTO extends AbstractUserDTO<Company> {
         isConfirmed = company.isConfirm();
         department = company.getDepartment().toString();
         name = company.getName();
+        inscriptionTimestamp = company.getInscriptionTimestamp();
+        emailConfirmed = company.isEmailConfirmed();
     }
 
     @Override

@@ -32,6 +32,7 @@ public abstract class AbstractService<T> {
                 Cliquez sur le lien suivant pour confirmer votre adresse:
                 
                 """ + URL + """
+                                
                 Vous avez 24 pour confirmer votre adresse
                 """);
         try{

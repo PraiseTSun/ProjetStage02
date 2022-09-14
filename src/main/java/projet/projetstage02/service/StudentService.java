@@ -1,7 +1,6 @@
 package projet.projetstage02.service;
 
 import org.springframework.stereotype.Component;
-import projet.projetstage02.DTO.CompanyDTO;
 import projet.projetstage02.DTO.StudentDTO;
 import projet.projetstage02.modele.AbstractUser;
 import projet.projetstage02.modele.Student;
@@ -26,7 +25,7 @@ public class StudentService extends AbstractService<StudentDTO> {
                 ).toList();
         return studentsWithMatchingMail.size() == 0;
     }
-    public void createStudent(String firstName, String lastName, String email, String password, AbstractUser.Department department) {
+    public void saveStudent(String firstName, String lastName, String email, String password, AbstractUser.Department department) {
         StudentDTO dto = new StudentDTO(
                 firstName,
                 lastName,
@@ -35,10 +34,10 @@ public class StudentService extends AbstractService<StudentDTO> {
                 false,
                 Timestamp.valueOf(LocalDateTime.now()).getTime(),
                 department.toString());
-        createStudent(dto);
+        saveStudent(dto);
     }
-    public void createStudent(StudentDTO dto) {
-        studentRepository.save(dto.getOrigin());
+    public long saveStudent(StudentDTO dto) {
+        return studentRepository.save(dto.getOrigin()).getId();
     }
 
     @Override

@@ -24,23 +24,28 @@ public class RootController {
     @Autowired
     GestionnaireService gestionnaireService;
 
-    private final long DAY = 864000000;
+    private final long MILLI_SECOND_DAY = 864000000;
 
     @PostMapping("/createStudent")
     public ResponseEntity<String> createStudent(@RequestBody StudentDTO studentDTO){
         if(!studentService.isUniqueEmail(studentDTO.getEmail())){
-            ResponseEntity.status(HttpStatus.CONFLICT).body("Cette adresse email est déjà utilisée.");
+            return ResponseEntity.status(HttpStatus.CONFLICT).body("Cette adresse email est déjà utilisée.");
         }
-        studentService.createStudent(studentDTO);
+        studentDTO.setInscriptionTimestamp(currentTimestamp());
+        long id = studentService.saveStudent(studentDTO);
+        studentDTO.setId(String.valueOf(id));
         studentService.sendConfirmationMail(studentDTO.getOrigin());
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
+
     @PostMapping("/createCompany")
     public ResponseEntity<String> createCompany(@RequestBody CompanyDTO companyDTO){
         if(!companyService.isUniqueEmail(companyDTO.getEmail())){
-            ResponseEntity.status(HttpStatus.CONFLICT).body("Cette adresse email est déjà utilisée.");
+            return ResponseEntity.status(HttpStatus.CONFLICT).body("Cette adresse email est déjà utilisée.");
         }
-        companyService.createCompany(companyDTO);
+        companyDTO.setInscriptionTimestamp(currentTimestamp());
+        long id = companyService.saveCompany(companyDTO);
+        companyDTO.setId(String.valueOf(id));
         companyService.sendConfirmationMail(companyDTO.getOrigin());
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
@@ -49,14 +54,17 @@ public class RootController {
         if(!gestionnaireService.isUniqueEmail(gestionnaireDTO.getEmail())){
             return ResponseEntity.status(HttpStatus.CONFLICT).body("Cette adresse email est déjà utilisée.");
         }
-        gestionnaireService.createGestionnaire(gestionnaireDTO);
+        gestionnaireDTO.setInscriptionTimestamp(currentTimestamp());
+        long id = gestionnaireService.saveGestionnaire(gestionnaireDTO);
+        gestionnaireDTO.setId(String.valueOf(id));
         gestionnaireService.sendConfirmationMail(gestionnaireDTO.getOrigin());
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
-    private long now(){
+    private long currentTimestamp(){
         return Timestamp.valueOf(LocalDateTime.now()).getTime();
     }
+
     @PutMapping("/confirmEmail/student/{id}")
     public ResponseEntity<String> confirmStudentMail(@PathVariable String id){
         StudentDTO studentDTO = studentService.getUserById(Long.parseLong(id));
@@ -64,12 +72,12 @@ public class RootController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
 
-        if(now() - studentDTO.getInscriptionTimestamp() > DAY){
+        if(currentTimestamp() - studentDTO.getInscriptionTimestamp() > MILLI_SECOND_DAY){
             return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY)
                     .body("La période de confirmation est expirée");
         }
         studentDTO.setEmailConfirmed(true);
-        studentService.createStudent(studentDTO);
+        studentService.saveStudent(studentDTO);
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
@@ -79,12 +87,12 @@ public class RootController {
         if(companyDTO == null){
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
-        if(now() - companyDTO.getInscriptionTimestamp() > DAY){
+        if(currentTimestamp() - companyDTO.getInscriptionTimestamp() > MILLI_SECOND_DAY){
             return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY)
                     .body("La période de confirmation est expirée");
         }
         companyDTO.setEmailConfirmed(true);
-        companyService.createCompany(companyDTO);
+        companyService.saveCompany(companyDTO);
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
@@ -94,12 +102,12 @@ public class RootController {
         if(gestionnaireDTO == null){
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
-        if(now() - gestionnaireDTO.getInscriptionTimestamp() > DAY){
+        if(currentTimestamp() - gestionnaireDTO.getInscriptionTimestamp() > MILLI_SECOND_DAY){
             return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY)
                     .body("La période de confirmation est expirée");
         }
         gestionnaireDTO.setEmailConfirmed(true);
-        gestionnaireService.createGestionnaire(gestionnaireDTO);
+        gestionnaireService.saveGestionnaire(gestionnaireDTO);
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 }
