@@ -13,6 +13,7 @@ import projet.projetstage02.service.GestionnaireService;
 import projet.projetstage02.service.StudentService;
 
 @RestController
+@CrossOrigin(originPatterns = "http://localhost:3000")
 @RequestMapping("/")
 public class RootController {
     @Autowired

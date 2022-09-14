@@ -19,7 +19,7 @@ const LoginForm = (props: { setUser: Function }): JSX.Element => {
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ "email": email, "password": password })
         };
-
+        console.log(userType);
         fetch("http://localhost:8080/" + userType, headers)
             .then(response => {
                 if (response.ok) return response.json()
