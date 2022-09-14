@@ -5,8 +5,9 @@ import PageInscription from "./components/PageInscription";
 function App() {
   const [utilisateurs, setUtilisateurs] = useState([])
 
-  const onInscrire = async  (compte : object) => {
-    const res = await fetch('http://localhost:8080/createUser',
+  const onInscrire = async  (compte : object, type : string) => {
+
+    const res = await fetch('http://localhost:8080/create' + type,
         {
           method: 'POST',
           headers: {
@@ -15,10 +16,15 @@ function App() {
           body: JSON.stringify(compte)
         })
       const data = await res.json();
-      utilisateurs.join(data)
+      if(res.status == 406){
+         alert(res.statusText)
+      }
+      if(res.status == 201){
+          utilisateurs.join(data)
+      }
   }
   return (
-    <PageInscription onInscrire={onInscrire}/>
+    <PageInscription onInscrire={onInscrire} />
   );
 }
 
