@@ -1,5 +1,5 @@
 import React from "react";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Form, Row, Col, ToggleButton, ToggleButtonGroup } from "react-bootstrap";
 
 const LoginForm = (props: { setUser: Function }): JSX.Element => {
