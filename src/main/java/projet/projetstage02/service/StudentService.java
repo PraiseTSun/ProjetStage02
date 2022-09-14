@@ -5,6 +5,9 @@ import projet.projetstage02.DTO.StudentDTO;
 import projet.projetstage02.modele.AbstractUser;
 import projet.projetstage02.repository.StudentRepository;
 
+import java.util.List;
+import java.util.Objects;
+
 @Component
 public class StudentService extends AbstractService<StudentDTO> {
     private StudentRepository studentRepository;
@@ -12,13 +15,24 @@ public class StudentService extends AbstractService<StudentDTO> {
     public StudentService(StudentRepository studentRepository) {
         this.studentRepository = studentRepository;
     }
-
+    @Override
+    public boolean isUniqueEmail(String email){
+        List<Student> studentsWithMatchingMail =
+                studentRepository.findAll().stream().filter(
+                        (student) -> student.getEmail().equals(email)
+                ).toList();
+        return studentsWithMatchingMail.size() == 0;
+    }
     public void createStudent(String firstName, String lastName, String email, String password, AbstractUser.Department department) {
         StudentDTO dto = new StudentDTO(firstName, lastName, email, password, false,department.toString());
         createStudent(dto);
     }
     public void createStudent(StudentDTO dto) {
         studentRepository.save(dto.getClassOrigin());
+    }
+
+    public void updateStudent(StudentDTO student){
+        studentRepository.save(student.getOrigin());
     }
 
     @Override
