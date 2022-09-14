@@ -1,0 +1,111 @@
+swagger: "2.0"
+info:
+  title: OSE Killer
+  description: API pour une plateforme de gestion de stage
+  version: 1.0.0
+host: localhost:8080
+schemes:
+  - http
+paths:
+  /student:
+    put:
+      summary: Retour d'un DTO étudiant avec si le courriel et mot de passe est valide.
+      parameters:
+        - in: body
+          name: Paramètres
+          description: Adresse courriel et mot de passe
+          schema:
+            type: object
+            properties:
+              email:
+                type: string
+              password:
+                type: string
+      produces:
+        - application/json
+      responses:
+        200:
+          description: DTO de l'étudiant
+          schema:
+            type: object
+            properties:
+              firstName:
+                type: string
+              lastName:
+                type: string
+              email:
+                type: string
+              isConfirmed:
+                type: boolean
+              department:
+                type: boolean
+        404:
+          description: Courriel et/ou mot de passe invalide
+  /gestionnaire:
+    put:
+      summary: Retour d'un DTO gestionnaire avec si le courriel et mot de passe est valide.
+      parameters:
+        - in: body
+          name: Paramètres
+          description: Adresse courriel et mot de passe
+          schema:
+            type: object
+            properties:
+              email:
+                type: string
+              password:
+                type: string
+      produces:
+        - application/json
+      responses:
+        200:
+          description: DTO du gestionnaire
+          schema:
+            type: object
+            properties:
+              firstName:
+                type: string
+              lastName:
+                type: string
+              email:
+                type: string
+              isConfirmed:
+                type: boolean
+              department:
+                type: boolean
+        404:
+          description: Courriel et/ou mot de passe invalide
+  /company:
+    put:
+      summary: Retour d'un DTO entreprise avec si le courriel et mot de passe est valide.
+      parameters:
+        - in: body
+          name: Paramètres
+          description: Adresse courriel et mot de passe
+          schema:
+            type: object
+            properties:
+              email:
+                type: string
+              password:
+                type: string
+      produces:
+        - application/json
+      responses:
+        200:
+          description: DTO de l'entreprise
+          schema:
+            type: object
+            properties:
+              firstName:
+                type: string
+              lastName:
+                type: string
+              email:
+                type: string
+              isConfirmed:
+                type: boolean
+              department:
+                type: boolean
+        404:
+          description: Courriel et/ou mot de passe invalide
