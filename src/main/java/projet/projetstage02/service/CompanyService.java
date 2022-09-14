@@ -19,6 +19,7 @@ public class CompanyService extends AbstractService<CompanyDTO>{
     }
 
     public void createCompany(CompanyDTO dto) {
+        dto.setEmail(dto.getEmail().toLowerCase());
         companyRepository.save(dto.getClassOrigin());
     }
 
@@ -37,7 +38,7 @@ public class CompanyService extends AbstractService<CompanyDTO>{
 
     @Override
     public CompanyDTO getUserByEmailPassword(String email, String password) {
-        var companyOpt = companyRepository.findByEmailAndPassword(email, password);
+        var companyOpt = companyRepository.findByEmailAndPassword(email.toLowerCase(), password);
         if(companyOpt.isEmpty())
             return null;
         return new CompanyDTO(companyOpt.get());

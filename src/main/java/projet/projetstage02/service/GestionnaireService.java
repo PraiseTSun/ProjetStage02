@@ -19,6 +19,7 @@ public class GestionnaireService extends AbstractService<GestionnaireDTO>{
         createGestionnaire(dto);
     }
     public void createGestionnaire(GestionnaireDTO dto) {
+        dto.setEmail(dto.getEmail().toLowerCase());
         gestionnaireRepository.save(dto.getClassOrigin());
     }
 
@@ -51,7 +52,7 @@ public class GestionnaireService extends AbstractService<GestionnaireDTO>{
 
     @Override
     public GestionnaireDTO getUserByEmailPassword(String email, String password) {
-        var gestionnaireOpt = gestionnaireRepository.findByEmailAndPassword(email, password);
+        var gestionnaireOpt = gestionnaireRepository.findByEmailAndPassword(email.toLowerCase(), password);
         if(gestionnaireOpt.isEmpty())
             return null;
         return new GestionnaireDTO(gestionnaireOpt.get());

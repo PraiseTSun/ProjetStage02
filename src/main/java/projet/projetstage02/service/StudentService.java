@@ -34,6 +34,7 @@ public class StudentService extends AbstractService<StudentDTO> {
     }
 
     public void createStudent(StudentDTO dto) {
+        dto.setEmail(dto.getEmail().toLowerCase());
         studentRepository.save(dto.getClassOrigin());
     }
 
@@ -51,7 +52,7 @@ public class StudentService extends AbstractService<StudentDTO> {
 
     @Override
     public StudentDTO getUserByEmailPassword(String email, String password) {
-        var studentOpt = studentRepository.findByEmailAndPassword(email, password);
+        var studentOpt = studentRepository.findByEmailAndPassword(email.toLowerCase(), password);
         if (studentOpt.isEmpty())
             return null;
         return new StudentDTO(studentOpt.get());
