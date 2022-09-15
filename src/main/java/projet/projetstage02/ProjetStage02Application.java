@@ -48,9 +48,9 @@ public class ProjetStage02Application implements CommandLineRunner {
     }
     @Override
     public void run(String... args) throws Exception {
-        studentService.createStudent("Samir", "Badi", "email", "password", AbstractUser.Department.Informatique);
-        companyService.createCompany("Bob", "Marley", "Bell", "email", "password", AbstractUser.Department.Informatique);
-        gestionnaireService.createGestionnaire("Dave", "Douch", "email", "password");
+        studentService.saveStudent("Samir", "Badi", "email", "password", AbstractUser.Department.Informatique);
+        companyService.saveCompany("Bob", "Marley", "Bell", "email", "password", AbstractUser.Department.Informatique);
+        gestionnaireService.saveGestionnaire("Dave", "Douch", "email", "password");
 
         System.out.println(studentService.getUserById(1L));
         System.out.println(companyService.getUserById(2L));

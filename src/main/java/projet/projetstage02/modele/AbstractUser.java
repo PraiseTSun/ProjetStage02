@@ -6,7 +6,9 @@ import lombok.ToString;
 
 import javax.persistence.*;
 import java.sql.Timestamp;
-import java.util.Date;
+import java.time.LocalDateTime;
+import java.util.Arrays;
+import java.util.Objects;
 
 @Entity
 @Data
@@ -14,9 +16,24 @@ import java.util.Date;
 @Inheritance(strategy =  InheritanceType.JOINED)
 public abstract class AbstractUser {
     public enum Department {
-        Informatique,
-        Civil,
-        Infirmier
+
+        Informatique("Techniques de l'informatique"),
+        Transport("Techniques de la logistique du transport");
+
+        public String departement;
+        Department(String departement){
+            this.departement = departement;
+        }
+
+        public static Department getDepartment(String departement) {
+            return Arrays.stream(
+                        Department.values()
+                    ).filter(
+                            department ->
+                            department.departement.equals(departement)
+                    )
+                    .toList().get(0);
+        }
     }
 
     @Id
@@ -29,15 +46,25 @@ public abstract class AbstractUser {
     @ToString.Exclude
     protected String password;
     protected boolean isConfirm;
-    protected Timestamp inscriptionTimestamp;
-    protected Timestamp confirmationTimestamp;
+    protected long inscriptionTimestamp;
+    protected boolean emailConfirmed;
 
     public AbstractUser(String firstName, String lastName, String email, String password) {
         this.firstName = firstName;
         this.lastName = lastName;
         this.email = email;
         this.password = password;
-        inscriptionTimestamp = new Timestamp(new Date().getTime());
+        inscriptionTimestamp = Timestamp.valueOf(LocalDateTime.now()).getTime();
         isConfirm = false;
+        emailConfirmed = false;
+    }
+    public AbstractUser(String firstName, String lastName, String email, String password, long inscriptionTimestamp,boolean emailConfirmed) {
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.email = email;
+        this.password = password;
+        this.inscriptionTimestamp = inscriptionTimestamp;
+        isConfirm = false;
+        this.emailConfirmed = emailConfirmed;
     }
 }

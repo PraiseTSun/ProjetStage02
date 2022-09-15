@@ -4,7 +4,12 @@ import org.springframework.stereotype.Component;
 import projet.projetstage02.DTO.GestionnaireDTO;
 import projet.projetstage02.modele.AbstractUser;
 import projet.projetstage02.modele.Gestionnaire;
+import projet.projetstage02.modele.Student;
 import projet.projetstage02.repository.GestionnaireRepository;
+
+import java.sql.Timestamp;
+import java.time.LocalDateTime;
+import java.util.List;
 
 @Component
 public class GestionnaireService extends AbstractService<GestionnaireDTO>{
@@ -14,12 +19,18 @@ public class GestionnaireService extends AbstractService<GestionnaireDTO>{
         this.gestionnaireRepository = gestionnaireRepository;
     }
 
-    public void createGestionnaire(String firstname, String lastname, String email, String password) {
-        GestionnaireDTO dto = new GestionnaireDTO(firstname, lastname, email, password, false);
-        createGestionnaire(dto);
+    public void saveGestionnaire(String firstname, String lastname, String email, String password) {
+        GestionnaireDTO dto = new GestionnaireDTO(
+                firstname,
+                lastname,
+                email,
+                password,
+                false,
+                Timestamp.valueOf(LocalDateTime.now()).getTime());
+        saveGestionnaire(dto);
     }
-    public void createGestionnaire(GestionnaireDTO dto) {
-        gestionnaireRepository.save(dto.getOrigin());
+    public long saveGestionnaire(GestionnaireDTO dto) {
+        return gestionnaireRepository.save(dto.getOrigin()).getId();
     }
 
     public void confirmUser(AbstractUser user) {
@@ -41,6 +52,15 @@ public class GestionnaireService extends AbstractService<GestionnaireDTO>{
         if(gestionnaireOpt.isEmpty())
             return null;
         return gestionnaireOpt.get();
+    }
+
+    @Override
+    public boolean isUniqueEmail(String email) {
+        List<Gestionnaire> gestionaireWithMatchingMail =
+                gestionnaireRepository.findAll().stream().filter(
+                        (gestionnaire) -> gestionnaire.getEmail().equals(email)
+                ).toList();
+        return gestionaireWithMatchingMail.size() == 0;
     }
 
     @Override

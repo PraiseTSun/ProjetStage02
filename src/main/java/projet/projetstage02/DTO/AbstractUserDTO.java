@@ -8,12 +8,14 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public abstract class AbstractUserDTO<T> {
-    protected String id;
+    protected String id = "0";
     protected String firstName;
     protected String lastName;
     protected String email;
     protected String password;
     protected boolean isConfirmed;
+    protected long inscriptionTimestamp;
+    protected boolean emailConfirmed;
 
     public abstract T getOrigin();
 }
