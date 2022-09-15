@@ -28,7 +28,7 @@ public class CompanyService extends AbstractService<CompanyDTO>{
                 false,
                 Timestamp.valueOf(LocalDateTime.now()).getTime(),
                 false,
-                department.toString(),
+                department.departement,
                 name);
         saveCompany(dto);
     }

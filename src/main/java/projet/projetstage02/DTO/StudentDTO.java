@@ -37,7 +37,7 @@ public class StudentDTO extends AbstractUserDTO<Student> {
                 lastName,
                 email,
                 password,
-                AbstractUser.Department.valueOf(department),
+                AbstractUser.Department.getDepartment(department),
                 inscriptionTimestamp,
                 emailConfirmed
 

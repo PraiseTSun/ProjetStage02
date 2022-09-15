@@ -51,7 +51,7 @@ public class CompanyDTO extends AbstractUserDTO<Company> {
                 lastName,
                 email,
                 password,
-                AbstractUser.Department.valueOf(department),
+                AbstractUser.Department.getDepartment(department),
                 name,
                 inscriptionTimestamp,
                 emailConfirmed);

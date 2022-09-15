@@ -7,6 +7,8 @@ import lombok.ToString;
 import javax.persistence.*;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
+import java.util.Arrays;
+import java.util.Objects;
 
 @Entity
 @Data
@@ -14,9 +16,24 @@ import java.time.LocalDateTime;
 @Inheritance(strategy =  InheritanceType.JOINED)
 public abstract class AbstractUser {
     public enum Department {
-        Informatique,
-        Civil,
-        Infirmier
+
+        Informatique("Techniques de l'informatique"),
+        Transport("Techniques de la logistique du transport");
+
+        public String departement;
+        Department(String departement){
+            this.departement = departement;
+        }
+
+        public static Department getDepartment(String departement) {
+            return Arrays.stream(
+                        Department.values()
+                    ).filter(
+                            department ->
+                            department.departement.equals(departement)
+                    )
+                    .toList().get(0);
+        }
     }
 
     @Id

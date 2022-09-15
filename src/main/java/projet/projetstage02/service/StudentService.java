@@ -33,7 +33,7 @@ public class StudentService extends AbstractService<StudentDTO> {
                 password,
                 false,
                 Timestamp.valueOf(LocalDateTime.now()).getTime(),
-                department.toString());
+                department.departement);
         saveStudent(dto);
     }
     public long saveStudent(StudentDTO dto) {
