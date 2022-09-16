@@ -8,10 +8,7 @@ import projet.projetstage02.repository.StudentRepository;
 
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
-import java.util.List;
-
-import java.util.List;
-import java.util.Objects;
+import java.util.Optional;
 
 @Component
 public class StudentService extends AbstractService<StudentDTO> {
@@ -23,9 +20,8 @@ public class StudentService extends AbstractService<StudentDTO> {
 
     @Override
     public boolean isUniqueEmail(String email) {
-        List<Student> studentsWithMatchingMail = studentRepository.findAll().stream().filter(
-                (student) -> student.getEmail().equals(email)).toList();
-        return studentsWithMatchingMail.size() == 0;
+       Optional<Student> student = studentRepository.findByEmail(email);
+        return student.isEmpty();
     }
 
     public void saveStudent(String firstName, String lastName, String email, String password,
@@ -33,7 +29,7 @@ public class StudentService extends AbstractService<StudentDTO> {
         StudentDTO dto = new StudentDTO(
                 firstName,
                 lastName,
-                email,
+                email.toLowerCase(),
                 password,
                 false,
                 Timestamp.valueOf(LocalDateTime.now()).getTime(),

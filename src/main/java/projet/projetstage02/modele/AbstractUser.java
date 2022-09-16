@@ -8,12 +8,11 @@ import javax.persistence.*;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.Arrays;
-import java.util.Objects;
 
 @Entity
 @Data
 @NoArgsConstructor
-@Inheritance(strategy =  InheritanceType.JOINED)
+@Inheritance(strategy = InheritanceType.JOINED)
 public abstract class AbstractUser {
     public enum Department {
 
@@ -21,17 +20,15 @@ public abstract class AbstractUser {
         Transport("Techniques de la logistique du transport");
 
         public String departement;
-        Department(String departement){
+
+        Department(String departement) {
             this.departement = departement;
         }
 
         public static Department getDepartment(String departement) {
             return Arrays.stream(
-                        Department.values()
-                    ).filter(
-                            department ->
-                            department.departement.equals(departement)
-                    )
+                    Department.values()).filter(
+                            department -> department.departement.equals(departement))
                     .toList().get(0);
         }
     }
@@ -58,7 +55,9 @@ public abstract class AbstractUser {
         isConfirm = false;
         emailConfirmed = false;
     }
-    public AbstractUser(String firstName, String lastName, String email, String password, long inscriptionTimestamp,boolean emailConfirmed) {
+
+    public AbstractUser(String firstName, String lastName, String email, String password, long inscriptionTimestamp,
+            boolean emailConfirmed) {
         this.firstName = firstName;
         this.lastName = lastName;
         this.email = email;

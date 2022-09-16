@@ -33,9 +33,9 @@ const LoginForm = (props: { setUser: Function }): JSX.Element => {
     return (
         <Form onSubmit={onSubmit}>
             <ToggleButtonGroup className="d-flex" name="userType" type="radio" value={userType} onChange={field => setUserType(field)}>
-                <ToggleButton className="w-100" id="1" variant="info" value="student">Étudiant</ToggleButton>
-                <ToggleButton className="w-100" id="2" variant="info" value="company">Entreprise</ToggleButton>
-                <ToggleButton className="w-100" id="3" variant="info" value="gestionnaire">Gestionnaire</ToggleButton>
+                <ToggleButton className="w-100" id="1" variant="primary" value="student">Étudiant</ToggleButton>
+                <ToggleButton className="w-100" id="2" variant="primary" value="company">Entreprise</ToggleButton>
+                <ToggleButton className="w-100" id="3" variant="primary" value="gestionnaire">Gestionnaire</ToggleButton>
             </ToggleButtonGroup>
             <Row>
                 <Col className="px-4 pb-2 pt-1">
