@@ -6,8 +6,7 @@ function App() {
   const [utilisateurs, setUtilisateurs] = useState([])
 
   const onInscrire = async  (compte : object, type : string) => {
-
-    const res = await fetch('http://localhost:8080/create' + type,
+    const res = await fetch(`http://localhost:8080/create${type}`,
         {
           method: 'POST',
           headers: {
@@ -15,9 +14,11 @@ function App() {
           },
           body: JSON.stringify(compte)
         })
+
       const data = await res.json();
-      if(res.status == 406){
-         alert(res.statusText)
+
+      if(res.status == 409){
+        alert(data.error)
       }
       if(res.status == 201){
           utilisateurs.join(data)

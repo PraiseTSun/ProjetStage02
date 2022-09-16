@@ -35,7 +35,7 @@ const FormulaireEntreprise = ({ onInscrire }:
             return;
         }
 
-        onInscrire({lastName : nom, firstName : prenom, name: entreprise, departement : departement,
+        onInscrire({lastName : nom, firstName : prenom, name: entreprise, department : departement,
                 email : courriel, password : motDePasse}, 'Company')
 
         setNom('')
@@ -106,7 +106,7 @@ const FormulaireEntreprise = ({ onInscrire }:
                         <Form.Select required
                                      value={departement} onChange={(e) => setDepartement(e.target.value)}>
                             <option hidden value="" disabled>Choix d'un département</option>
-                            <option value="Techniques de l’informatique">Techniques de l’informatique</option>
+                            <option value="Techniques de linformatique">Techniques de l'informatique</option>
                             <option value="Techniques de la logistique du transport">Techniques de la logistique du
                                 transport
                             </option>
