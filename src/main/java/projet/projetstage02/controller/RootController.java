@@ -16,6 +16,7 @@ import java.sql.Timestamp;
 
 @RestController
 @RequestMapping("/")
+@CrossOrigin(origins = "http://localhost:3000")
 public class RootController {
     @Autowired
     StudentService studentService;

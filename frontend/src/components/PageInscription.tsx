@@ -1,6 +1,5 @@
 import {useState} from "react";
-import Form from 'react-bootstrap/Form';
-import { Container, FormText, ListGroup, Row, Tab} from "react-bootstrap";
+import { Container, ListGroup, Tab} from "react-bootstrap";
 import FormulaireEtudiant from "./FormulaireEtudiant";
 import FormulaireEntreprise from "./FormulaireEntreprise";
 const PageInscription = ({ onInscrire } : { onInscrire : Function}) => {

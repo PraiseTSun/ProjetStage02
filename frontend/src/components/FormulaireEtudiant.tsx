@@ -1,9 +1,7 @@
-import PropTypes from 'prop-types'
-import {Button, Container, Form, FormGroup, Row} from "react-bootstrap";
+import {Button, Container, Form, FormGroup} from "react-bootstrap";
 import {useState} from "react";
 
-const FormulaireEtudiant = ({ onInscrire }:
-                                   { onInscrire: Function }) => {
+const FormulaireEtudiant = ({ onInscrire }: { onInscrire: Function }) => {
 
     const [nom, setNom] = useState("")
     const [prenom, setPrenom] = useState("")
@@ -12,11 +10,9 @@ const FormulaireEtudiant = ({ onInscrire }:
     const [motDePasse, setMotDePasse] = useState('')
     const [validationMotDePasse, setValidationMotDePasse] = useState('')
 
-
     const validEmail = new RegExp(
         '^[a-zA-Z0-9._:$!%-]+@[a-zA-Z0-9.-]+.[a-zA-Z]$'
     );
-
 
     const onSubmit = (e: React.FormEvent<HTMLFormElement>) => {
 
@@ -33,7 +29,6 @@ const FormulaireEtudiant = ({ onInscrire }:
 
         onInscrire({lastName : nom, firstName : prenom, departement : departement,
                 email : courriel, password : motDePasse}, 'Student')
-
 
         setNom('')
         setPrenom('')
@@ -52,15 +47,13 @@ const FormulaireEtudiant = ({ onInscrire }:
                         <Form.Control type='text' required placeholder='Nom'
                                       value={nom} minLength={2}
                                       onChange={(e) => setNom(e.target.value)}/>
-
                     </FormGroup>
 
                     <FormGroup className="mb-3">
-                        <Form.Label>Prenom</Form.Label>
-                        <Form.Control type='text' required placeholder='Nom'
+                        <Form.Label>Prénom</Form.Label>
+                        <Form.Control type='text' required placeholder='Prénom'
                                       value={prenom} minLength={2}
                                       onChange={(e) => setPrenom(e.target.value)}/>
-
                     </FormGroup>
                     <FormGroup className="mb-3">
                         <Form.Label>Courriel</Form.Label>
@@ -68,7 +61,6 @@ const FormulaireEtudiant = ({ onInscrire }:
                                       value={courriel}
                                       onChange={(e) => setCourriel(e.target.value)}
                                       required/>
-
                     </FormGroup>
 
                     <FormGroup className="mb-3">
@@ -76,7 +68,6 @@ const FormulaireEtudiant = ({ onInscrire }:
                         <Form.Control type='password' required placeholder='Mot de passe'
                                       value={motDePasse} minLength={8}
                                       onChange={(e) => setMotDePasse(e.target.value)}/>
-
                     </FormGroup>
 
                     <FormGroup className="mb-3">
@@ -84,7 +75,6 @@ const FormulaireEtudiant = ({ onInscrire }:
                         <Form.Control type='password' placeholder='Confirmation mot de passe'
                                       value={validationMotDePasse}
                                       onChange={(e) => setValidationMotDePasse(e.target.value)}/>
-
                     </FormGroup>
 
                     <FormGroup className="">
@@ -92,7 +82,7 @@ const FormulaireEtudiant = ({ onInscrire }:
                             Département
                             <Form.Select required
                                          value={departement} onChange={(e) => setDepartement(e.target.value)}>
-                                <option hidden value="" disabled>Choix un département</option>
+                                <option hidden value="" disabled>Choix d'un département</option>
                                 <option value="Techniques de l’informatique">Techniques de l’informatique</option>
                                 <option value="Techniques de la logistique du transport">Techniques de la logistique du
                                     transport
@@ -102,14 +92,7 @@ const FormulaireEtudiant = ({ onInscrire }:
 
                     </FormGroup>
 
-                    <Button type='submit' className="mt-3" style={{
-                        marginLeft: "70px",
-                        width: "250px",
-                        backgroundColor: "green",
-                        color: "white",
-                        borderRadius: "15px",
-                        fontSize: "30px"
-                    }}>Inscrire</Button>
+                    <Button type='submit' className="mt-3 btn btn-success col-12" >S'inscrire</Button>
                 </Form>
 
         </Container>

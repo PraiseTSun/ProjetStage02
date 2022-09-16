@@ -1,5 +1,4 @@
-import PropTypes from 'prop-types'
-import {Button, Container, Form, FormGroup, Row} from "react-bootstrap";
+import {Button, Container, Form, FormGroup} from "react-bootstrap";
 import {useState} from "react";
 
 const FormulaireEntreprise = ({ onInscrire }:
@@ -16,7 +15,6 @@ const FormulaireEntreprise = ({ onInscrire }:
     const validEmail = new RegExp(
         '^[a-zA-Z0-9._:$!%-]+@[a-zA-Z0-9.-]+.[a-zA-Z]$'
     );
-
 
     const onSubmit = (e: React.FormEvent<HTMLFormElement>) => {
 
@@ -36,7 +34,6 @@ const FormulaireEntreprise = ({ onInscrire }:
         if (!validEmail.test(courriel)) {
             return;
         }
-
 
         onInscrire({lastName : nom, firstName : prenom, name: entreprise, departement : departement,
                 email : courriel, password : motDePasse}, 'Company')
@@ -63,8 +60,8 @@ const FormulaireEntreprise = ({ onInscrire }:
                 </FormGroup>
 
                 <FormGroup className="mb-3">
-                    <Form.Label>Prenom</Form.Label>
-                    <Form.Control type='text' required placeholder='Nom'
+                    <Form.Label>Prénom</Form.Label>
+                    <Form.Control type='text' required placeholder='Prénom'
                                   value={prenom} minLength={2}
                                   onChange={(e) => setPrenom(e.target.value)}/>
 
@@ -72,9 +69,9 @@ const FormulaireEntreprise = ({ onInscrire }:
 
                 <FormGroup className="mb-3">
                     <Form.Label>Entreprise</Form.Label>
-                    <Form.Control type='text' required placeholder='Nom'
+                    <Form.Control type='text' required placeholder="Entreprise"
                                   value={entreprise} minLength={2}
-                                  onChange={(e) => setDepartement(e.target.value)}/>
+                                  onChange={(e) => setEntreprise(e.target.value)}/>
 
                 </FormGroup>
 
@@ -108,7 +105,7 @@ const FormulaireEntreprise = ({ onInscrire }:
                         Département
                         <Form.Select required
                                      value={departement} onChange={(e) => setDepartement(e.target.value)}>
-                            <option hidden value="" disabled>Choix un département</option>
+                            <option hidden value="" disabled>Choix d'un département</option>
                             <option value="Techniques de l’informatique">Techniques de l’informatique</option>
                             <option value="Techniques de la logistique du transport">Techniques de la logistique du
                                 transport
@@ -118,14 +115,7 @@ const FormulaireEntreprise = ({ onInscrire }:
 
                 </FormGroup>
 
-                <Button type='submit' className="mt-3" style={{
-                    marginLeft: "70px",
-                    width: "250px",
-                    backgroundColor: "green",
-                    color: "white",
-                    borderRadius: "15px",
-                    fontSize: "30px"
-                }}>Inscrire</Button>
+                <Button type='submit' className="mt-3 btn btn-success col-12">S'inscrire</Button>
             </Form>
 
         </Container>
