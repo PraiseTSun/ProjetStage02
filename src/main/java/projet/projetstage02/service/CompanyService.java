@@ -8,7 +8,6 @@ import projet.projetstage02.repository.CompanyRepository;
 
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
-import java.util.List;
 import java.util.Optional;
 
 @Component
