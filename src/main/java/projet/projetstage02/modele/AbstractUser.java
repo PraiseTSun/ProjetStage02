@@ -17,7 +17,7 @@ import java.util.Objects;
 public abstract class AbstractUser {
     public enum Department {
 
-        Informatique("Techniques de l'informatique"),
+        Informatique("Techniques de linformatique"),
         Transport("Techniques de la logistique du transport");
 
         public String departement;
