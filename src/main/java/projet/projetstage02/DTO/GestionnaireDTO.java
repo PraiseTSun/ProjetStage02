@@ -2,10 +2,12 @@ package projet.projetstage02.DTO;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 import projet.projetstage02.modele.Gestionnaire;
 
 @Data
 @NoArgsConstructor
+@ToString(callSuper = true)
 public class GestionnaireDTO extends AbstractUserDTO<Gestionnaire> {
 
     public GestionnaireDTO(String firstName, String lastName, String email, String password, boolean isConfirmed,long inscriptionTimestamp) {
@@ -20,10 +22,11 @@ public class GestionnaireDTO extends AbstractUserDTO<Gestionnaire> {
         password = gestionnaire.getPassword();
         inscriptionTimestamp = gestionnaire.getInscriptionTimestamp();
         emailConfirmed = gestionnaire.isEmailConfirmed();
+        isConfirmed = gestionnaire.isConfirm();
     }
 
     @Override
-    public Gestionnaire getOrigin() {
+    public Gestionnaire getClassOrigin() {
         Gestionnaire gestionnaire = new Gestionnaire(
                 firstName,
                 lastName,

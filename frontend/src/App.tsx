@@ -1,31 +1,24 @@
-import React, {useState} from 'react';
-import './App.css';
-import PageInscription from "./components/PageInscription";
+import React from 'react';
+import { useState } from 'react';
+import { Container } from 'react-bootstrap';
+import { BrowserRouter, Route, Routes } from 'react-router-dom';
+import LoginPage from './pages/LoginPage';
 
 function App() {
-  const [utilisateurs, setUtilisateurs] = useState([])
+  const [user, setUser] = useState("")
 
-  const onInscrire = async  (compte : object, type : string) => {
-    const res = await fetch(`http://localhost:8080/create${type}`,
-        {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify(compte)
-        })
-
-      const data = await res.json();
-
-      if(res.status == 409){
-        alert(data.error)
-      }
-      if(res.status == 201){
-          utilisateurs.join(data)
-      }
+  if (!user) {
+    return <LoginPage setUser={setUser} />;
   }
+
   return (
-    <PageInscription onInscrire={onInscrire} />
+    <Container className="vh-100">
+      <BrowserRouter>
+        <Routes>
+          <Route path="/" element={<h1>Dashboard</h1>} />
+        </Routes>
+      </BrowserRouter>
+    </Container>
   );
 }
 

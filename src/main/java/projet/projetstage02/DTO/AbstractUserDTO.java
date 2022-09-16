@@ -17,5 +17,5 @@ public abstract class AbstractUserDTO<T> {
     protected long inscriptionTimestamp;
     protected boolean emailConfirmed;
 
-    public abstract T getOrigin();
+    public abstract T getClassOrigin();
 }

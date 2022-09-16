@@ -54,8 +54,11 @@ public class ProjetStage02Application implements CommandLineRunner {
 
         System.out.println(studentService.getUserById(1L));
         System.out.println(companyService.getUserById(2L));
-        System.out.println(gestionnaireService.getGestionnaire(3L));
-        gestionnaireService.confirmUser(gestionnaireService.getGestionnaire(3L));
-        System.out.println(gestionnaireService.getGestionnaire(3L));
+        System.out.println(gestionnaireService.getUserById(3L));
+        gestionnaireService.confirmUser(gestionnaireService.getUserById(3L));
+        System.out.println(gestionnaireService.getUserById(3L));
+        System.out.println(gestionnaireService.getUserByEmailPassword("Dave@gmail.com", "Dave69"));
+        System.out.println(companyService.getUserByEmailPassword("Bob@bell.com", "bestcompany"));
+        System.out.println(studentService.getUserByEmailPassword("Samir@gmail.ca", "cooldude"));
     }
 }

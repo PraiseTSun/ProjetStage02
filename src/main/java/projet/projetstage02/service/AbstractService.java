@@ -12,6 +12,7 @@ import projet.projetstage02.modele.Student;
 public abstract class AbstractService<T> {
     public abstract boolean isUniqueEmail(String email);
     public abstract T getUserById(Long id);
+    public abstract T getUserByEmailPassword(String email, String password);
     @Lazy
     @Autowired
     private JavaMailSender mailSender;

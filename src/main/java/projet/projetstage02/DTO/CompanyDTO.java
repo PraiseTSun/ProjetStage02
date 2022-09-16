@@ -37,6 +37,7 @@ public class CompanyDTO extends AbstractUserDTO<Company> {
         firstName = company.getFirstName();
         lastName = company.getLastName();
         email = company.getEmail();
+        password = company.getPassword();
         isConfirmed = company.isConfirm();
         department = company.getDepartment().toString();
         name = company.getName();
@@ -45,7 +46,7 @@ public class CompanyDTO extends AbstractUserDTO<Company> {
     }
 
     @Override
-    public Company getOrigin() {
+    public Company getClassOrigin() {
         Company company = new Company(
                 firstName,
                 lastName,

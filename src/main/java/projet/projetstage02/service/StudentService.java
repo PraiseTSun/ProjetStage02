@@ -10,6 +10,9 @@ import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import java.util.List;
+import java.util.Objects;
+
 @Component
 public class StudentService extends AbstractService<StudentDTO> {
     private StudentRepository studentRepository;
@@ -17,15 +20,16 @@ public class StudentService extends AbstractService<StudentDTO> {
     public StudentService(StudentRepository studentRepository) {
         this.studentRepository = studentRepository;
     }
+
     @Override
-    public boolean isUniqueEmail(String email){
-        List<Student> studentsWithMatchingMail =
-                studentRepository.findAll().stream().filter(
-                        (student) -> student.getEmail().equals(email)
-                ).toList();
+    public boolean isUniqueEmail(String email) {
+        List<Student> studentsWithMatchingMail = studentRepository.findAll().stream().filter(
+                (student) -> student.getEmail().equals(email)).toList();
         return studentsWithMatchingMail.size() == 0;
     }
-    public void saveStudent(String firstName, String lastName, String email, String password, AbstractUser.Department department) {
+
+    public void saveStudent(String firstName, String lastName, String email, String password,
+            AbstractUser.Department department) {
         StudentDTO dto = new StudentDTO(
                 firstName,
                 lastName,
@@ -36,14 +40,23 @@ public class StudentService extends AbstractService<StudentDTO> {
                 department.departement);
         saveStudent(dto);
     }
+
     public long saveStudent(StudentDTO dto) {
-        return studentRepository.save(dto.getOrigin()).getId();
+        return studentRepository.save(dto.getClassOrigin()).getId();
     }
 
     @Override
     public StudentDTO getUserById(Long id) {
         var studentOpt = studentRepository.findById(id);
-        if(studentOpt.isEmpty())
+        if (studentOpt.isEmpty())
+            return null;
+        return new StudentDTO(studentOpt.get());
+    }
+
+    @Override
+    public StudentDTO getUserByEmailPassword(String email, String password) {
+        var studentOpt = studentRepository.findByEmailAndPassword(email.toLowerCase(), password);
+        if (studentOpt.isEmpty())
             return null;
         return new StudentDTO(studentOpt.get());
     }
