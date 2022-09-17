@@ -5,6 +5,7 @@ import projet.projetstage02.DTO.AbstractUserDTO;
 import projet.projetstage02.DTO.CompanyDTO;
 import projet.projetstage02.DTO.GestionnaireDTO;
 import projet.projetstage02.DTO.StudentDTO;
+import projet.projetstage02.exception.NonExistentUserException;
 import projet.projetstage02.modele.AbstractUser;
 import projet.projetstage02.modele.Company;
 import projet.projetstage02.modele.Gestionnaire;
@@ -89,5 +90,15 @@ public class GestionnaireService extends AbstractService<GestionnaireDTO> {
                 unvalidatedUserDTOs.add(new GestionnaireDTO((Gestionnaire) user));
         });
         return unvalidatedUserDTOs;
+    }
+
+    public void validateUser(long id) throws NonExistentUserException {
+        Optional<AbstractUser> userOptional = userRepository.findById(id);
+        if (userOptional.isEmpty()) throw new NonExistentUserException();
+        else {
+            AbstractUser user = userOptional.get();
+            user.setConfirm(true);
+            userRepository.save(user);
+        }
     }
 }

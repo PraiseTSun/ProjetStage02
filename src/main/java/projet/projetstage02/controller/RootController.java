@@ -150,4 +150,15 @@ public class RootController {
     public ResponseEntity<List<AbstractUserDTO>> getUnvalidatedUsers() {
         return ResponseEntity.ok(gestionnaireService.getUnvalidatedUsers());
     }
+
+    @PutMapping("/validateUser/{id}")
+    public ResponseEntity<Map<String, String>> validateUser(@PathVariable String id) {
+        try {
+            gestionnaireService.validateUser(Long.parseLong(id));
+            return ResponseEntity.ok().build();
+        }
+        catch (Exception exception) {
+            return ResponseEntity.notFound().build();
+        }
+    }
 }
