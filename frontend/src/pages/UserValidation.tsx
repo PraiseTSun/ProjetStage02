@@ -1,10 +1,10 @@
 import React from "react";
-import {Container, Col, Row, ToggleButton, ToggleButtonGroup } from "react-bootstrap";
+import {Col, Row, ToggleButton, ToggleButtonGroup } from "react-bootstrap";
 
 const UserValidation = () => {
     return (
-        <Container fluid>
-            <Col xs={1}>
+        <Col className="vh-100 p-lg-5">
+            <Row>
                 <ToggleButtonGroup type="radio" name="options" defaultValue={1}>
                     <ToggleButton id="StudentValid" value={1}>
                         Student
@@ -16,11 +16,8 @@ const UserValidation = () => {
                         Gestionnaire
                     </ToggleButton>
                 </ToggleButtonGroup>
-            </Col>
-            <Col xs={11}>
-
-            </Col>
-        </Container>
+            </Row>
+        </Col>
     );
 }
 
