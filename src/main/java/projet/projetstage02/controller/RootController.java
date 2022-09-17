@@ -4,6 +4,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import projet.projetstage02.DTO.AbstractUserDTO;
 import projet.projetstage02.DTO.CompanyDTO;
 import projet.projetstage02.DTO.GestionnaireDTO;
 import projet.projetstage02.DTO.StudentDTO;
@@ -14,6 +16,7 @@ import projet.projetstage02.service.StudentService;
 import java.time.LocalDateTime;
 import java.sql.Timestamp;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -141,5 +144,10 @@ public class RootController {
                 gestionnaireDTO.getPassword());
 
         return dto == null || !dto.isEmailConfirmed() ? ResponseEntity.notFound().build() : ResponseEntity.ok(dto);
+    }
+
+    @GetMapping("/unvalidatedUsers")
+    public ResponseEntity<List<AbstractUserDTO>> getUnvalidatedUsers() {
+        return ResponseEntity.ok(gestionnaireService.getUnvalidatedUsers());
     }
 }

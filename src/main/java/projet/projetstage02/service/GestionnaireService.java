@@ -2,20 +2,27 @@ package projet.projetstage02.service;
 
 import org.springframework.stereotype.Component;
 import projet.projetstage02.DTO.AbstractUserDTO;
+import projet.projetstage02.DTO.CompanyDTO;
 import projet.projetstage02.DTO.GestionnaireDTO;
+import projet.projetstage02.DTO.StudentDTO;
+import projet.projetstage02.modele.AbstractUser;
+import projet.projetstage02.modele.Company;
 import projet.projetstage02.modele.Gestionnaire;
-import projet.projetstage02.repository.GestionnaireRepository;
+import projet.projetstage02.modele.Student;
+import projet.projetstage02.repository.UserRepository;
 
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 @Component
 public class GestionnaireService extends AbstractService<GestionnaireDTO> {
-    private GestionnaireRepository gestionnaireRepository;
+    private final UserRepository userRepository;
 
-    public GestionnaireService(GestionnaireRepository gestionnaireRepository) {
-        this.gestionnaireRepository = gestionnaireRepository;
+    public GestionnaireService(UserRepository userRepository) {
+        this.userRepository = userRepository;
     }
 
     public void saveGestionnaire(String firstname, String lastname, String email, String password) {
@@ -30,7 +37,7 @@ public class GestionnaireService extends AbstractService<GestionnaireDTO> {
     }
 
     public long saveGestionnaire(GestionnaireDTO dto) {
-        return gestionnaireRepository.save(dto.getClassOrigin()).getId();
+        return userRepository.save(dto.getClassOrigin()).getId();
     }
 
     public void confirmUser(AbstractUserDTO<Gestionnaire> user) {
@@ -39,23 +46,23 @@ public class GestionnaireService extends AbstractService<GestionnaireDTO> {
     }
 
     private void confirmGestionaire(Gestionnaire user) {
-        var gestionnaireOpt = gestionnaireRepository.findById(user.getId());
+        var gestionnaireOpt = userRepository.findGestionnaireById(user.getId());
         if (gestionnaireOpt.isEmpty())
             return;
         Gestionnaire gestionnaire = gestionnaireOpt.get();
         gestionnaire.setConfirm(true);
-        gestionnaireRepository.save(gestionnaire);
+        userRepository.save(gestionnaire);
     }
 
     @Override
     public boolean isUniqueEmail(String email) {
-        Optional<Gestionnaire> gestionnaire = gestionnaireRepository.findByEmail(email);
+        Optional<Gestionnaire> gestionnaire = userRepository.findGestionnaireByEmail(email);
         return gestionnaire.isEmpty();
     }
 
     @Override
     public GestionnaireDTO getUserById(Long id) {
-        var gestionnaireOpt = gestionnaireRepository.findById(id);
+        var gestionnaireOpt = userRepository.findGestionnaireById(id);
         if (gestionnaireOpt.isEmpty())
             return null;
         return new GestionnaireDTO(gestionnaireOpt.get());
@@ -63,9 +70,24 @@ public class GestionnaireService extends AbstractService<GestionnaireDTO> {
 
     @Override
     public GestionnaireDTO getUserByEmailPassword(String email, String password) {
-        var gestionnaireOpt = gestionnaireRepository.findByEmailAndPassword(email.toLowerCase(), password);
+        var gestionnaireOpt = userRepository.findGestionnaireByEmailAndPassword(email.toLowerCase(), password);
         if (gestionnaireOpt.isEmpty())
             return null;
         return new GestionnaireDTO(gestionnaireOpt.get());
+    }
+
+    public List<AbstractUserDTO> getUnvalidatedUsers() {
+        List<AbstractUser> unvalidatedUsers = userRepository.findAllUnvalidated();
+        List<AbstractUserDTO> unvalidatedUserDTOs = new ArrayList<>();
+
+        unvalidatedUsers.forEach(user -> {
+            if (user instanceof Company)
+                unvalidatedUserDTOs.add(new CompanyDTO((Company) user));
+            else if (user instanceof Student)
+                unvalidatedUserDTOs.add(new StudentDTO((Student) user));
+            else
+                unvalidatedUserDTOs.add(new GestionnaireDTO((Gestionnaire) user));
+        });
+        return unvalidatedUserDTOs;
     }
 }
