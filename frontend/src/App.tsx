@@ -3,10 +3,12 @@ import { useState } from 'react';
 import { Container } from 'react-bootstrap';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import LoginPage from './pages/LoginPage';
+import UserValidation from './pages/UserValidation';
 
 function App() {
   const [user, setUser] = useState("")
 
+  return <UserValidation/>
   if (!user) {
     return <LoginPage setUser={setUser} />;
   }
