@@ -85,30 +85,24 @@ public class ProjetStage02Application implements CommandLineRunner {
         System.out.println(companyService.getUserByEmailPassword("Bob@bell.com", "bestcompany"));
         System.out.println(gestionnaireService.getUserByEmailPassword("dave@gmail.ca", "cooldude"));
 
-        // test save pdf et find pdfs
-        try {
-            FileWriter filePDF = new FileWriter("test.pdf");
-            BufferedWriter out = new BufferedWriter(filePDF);
-            out.write("wowowowo");
-            out.close();
-            BufferedReader in = new BufferedReader(new FileReader("test.pdf"));
-            OffreDTO offreDTO = new OffreDTO( "nom", "department", "position" ,
-                    40, "adresse", new File("test.pdf"));
-            long offreid = offreService.createOffre(offreDTO);
-            // deuxieme pdf
-            FileWriter filePDF1 = new FileWriter("test1.pdf");
-            BufferedWriter out1 = new BufferedWriter(filePDF1);
-            out1.write("wowowowodddd");
-            out1.close();
-            BufferedReader in1 = new BufferedReader(new FileReader("test1.pdf"));
-            OffreDTO offreDTO1 = new OffreDTO( "nom", "department", "position" ,
-                    40, "adresse", new File("test1.pdf"));
-            long offreid1 = offreService.createOffre(offreDTO1);
-            System.out.println(offreid);
-            System.out.println(offreid1);
-            System.out.println(offreService.findOffre());
+//créer deux offre avec pdf
+        // un
+        OffreDTO offreDTO = new OffreDTO( "nom", "department", "position" ,
+                40, "adresse", new File("test.pdf"));
+        long offreid = offreService.createOffre(offreDTO);
+        // deux
+        OffreDTO offreDTO1 = new OffreDTO( "nom", "department", "position" ,
+                40, "adresse", new File("test1.pdf"));
+        long offreid1 = offreService.createOffre(offreDTO1);
+        // afficher
+        System.out.println(offreService.findOffre());
+// tester fonction isVide et valide du pdf
+        File file = new File("test2.pdf");
+        try{
+            System.out.println(offreService.isVide(file));
+        }catch (Exception e){
 
-        } catch (IOException e) {
         }
+        System.out.println(offreService.valide(file));
     }
 }

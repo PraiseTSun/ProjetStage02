@@ -13,6 +13,7 @@ import projet.projetstage02.service.GestionnaireService;
 import projet.projetstage02.service.OffreService;
 import projet.projetstage02.service.StudentService;
 
+import java.io.IOException;
 import java.time.LocalDateTime;
 import java.sql.Timestamp;
 import java.util.HashMap;
@@ -70,9 +71,20 @@ public class RootController {
     }
 
     @PostMapping("/createOffre")
-    public ResponseEntity<OffreDTO> createOffre(@RequestBody OffreDTO offreDTO){
-        if(offreDTO.getPdf() == null){
+    public ResponseEntity<Map<String, String>> createOffre(@RequestBody OffreDTO offreDTO) throws IOException {
+        if(offreDTO.getPdf() == null || offreDTO.getNomDeCompagie() == null || offreDTO.getAdresse() == null
+            || offreDTO.getPosition() == null || offreDTO.getDepartment() == null
+                || offreDTO.getHeureParSemaine() == 0 ){
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
+        if(!offreService.valide(offreDTO.getPdf())){
+            return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY)
+                    .body(getError("Doit être un fichier pdf"));
+        }
+
+        if(offreService.isVide(offreDTO.getPdf())){
+            return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY)
+                    .body(getError("PDF ne peut pas être vide"));
         }
         offreService.createOffre(offreDTO);
         return ResponseEntity.status(HttpStatus.CREATED).build();
