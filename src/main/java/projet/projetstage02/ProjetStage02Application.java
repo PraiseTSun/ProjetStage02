@@ -10,12 +10,15 @@ import org.springframework.mail.javamail.JavaMailSenderImpl;
 
 import projet.projetstage02.DTO.CompanyDTO;
 import projet.projetstage02.DTO.GestionnaireDTO;
+import projet.projetstage02.DTO.OffreDTO;
 import projet.projetstage02.DTO.StudentDTO;
 import projet.projetstage02.modele.AbstractUser;
 import projet.projetstage02.service.CompanyService;
 import projet.projetstage02.service.GestionnaireService;
+import projet.projetstage02.service.OffreService;
 import projet.projetstage02.service.StudentService;
 
+import java.io.*;
 import java.util.Properties;
 
 @SpringBootApplication
@@ -30,6 +33,8 @@ public class ProjetStage02Application implements CommandLineRunner {
     @Autowired
     private GestionnaireService gestionnaireService;
 
+    @Autowired
+    private OffreService offreService;
     public static void main(String[] args) {
         SpringApplication.run(ProjetStage02Application.class, args);
     }
@@ -79,5 +84,31 @@ public class ProjetStage02Application implements CommandLineRunner {
         System.out.println(studentService.getUserByEmailPassword("Samir@gmail.com", "cooldude"));
         System.out.println(companyService.getUserByEmailPassword("Bob@bell.com", "bestcompany"));
         System.out.println(gestionnaireService.getUserByEmailPassword("dave@gmail.ca", "cooldude"));
+
+        // test save pdf et find pdfs
+        try {
+            FileWriter filePDF = new FileWriter("test.pdf");
+            BufferedWriter out = new BufferedWriter(filePDF);
+            out.write("wowowowo");
+            out.close();
+            BufferedReader in = new BufferedReader(new FileReader("test.pdf"));
+            OffreDTO offreDTO = new OffreDTO( "nom", "department", "position" ,
+                    40, "adresse", new File("test.pdf"));
+            long offreid = offreService.createOffre(offreDTO);
+            // deuxieme pdf
+            FileWriter filePDF1 = new FileWriter("test1.pdf");
+            BufferedWriter out1 = new BufferedWriter(filePDF1);
+            out1.write("wowowowodddd");
+            out1.close();
+            BufferedReader in1 = new BufferedReader(new FileReader("test1.pdf"));
+            OffreDTO offreDTO1 = new OffreDTO( "nom", "department", "position" ,
+                    40, "adresse", new File("test1.pdf"));
+            long offreid1 = offreService.createOffre(offreDTO1);
+            System.out.println(offreid);
+            System.out.println(offreid1);
+            System.out.println(offreService.findOffre());
+
+        } catch (IOException e) {
+        }
     }
 }

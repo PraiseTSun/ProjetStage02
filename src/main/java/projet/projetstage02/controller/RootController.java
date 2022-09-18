@@ -6,9 +6,11 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import projet.projetstage02.DTO.CompanyDTO;
 import projet.projetstage02.DTO.GestionnaireDTO;
+import projet.projetstage02.DTO.OffreDTO;
 import projet.projetstage02.DTO.StudentDTO;
 import projet.projetstage02.service.CompanyService;
 import projet.projetstage02.service.GestionnaireService;
+import projet.projetstage02.service.OffreService;
 import projet.projetstage02.service.StudentService;
 
 import java.time.LocalDateTime;
@@ -27,6 +29,8 @@ public class RootController {
     @Autowired
     GestionnaireService gestionnaireService;
 
+    @Autowired
+    OffreService offreService;
     private final long MILLI_SECOND_DAY = 864000000;
 
     @PostMapping("/createStudent")
@@ -62,6 +66,15 @@ public class RootController {
         long id = gestionnaireService.saveGestionnaire(gestionnaireDTO);
         gestionnaireDTO.setId(String.valueOf(id));
         gestionnaireService.sendConfirmationMail(gestionnaireDTO.getClassOrigin());
+        return ResponseEntity.status(HttpStatus.CREATED).build();
+    }
+
+    @PostMapping("/createOffre")
+    public ResponseEntity<OffreDTO> createOffre(@RequestBody OffreDTO offreDTO){
+        if(offreDTO.getPdf() == null){
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
+        offreService.createOffre(offreDTO);
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
