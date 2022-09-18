@@ -1,21 +1,32 @@
-import React from "react";
+import React, {useState} from "react";
 import {Col, Row, ToggleButton, ToggleButtonGroup } from "react-bootstrap";
+import ValidationStudent from "../components/ValidationStudent";
+import ValidationCompany from "../components/ValidationCompany";
+import ValidationGetionnaire from "../components/ValidationGetionnaire";
 
 const UserValidation = () => {
+    const [user, setUser] = useState("Student");
+
     return (
         <Col className="vh-100 p-lg-5">
             <Row>
-                <ToggleButtonGroup type="radio" name="options" defaultValue={1}>
-                    <ToggleButton id="StudentValid" value={1}>
+                <ToggleButtonGroup type="radio" name="options" defaultValue="Student">
+                    <ToggleButton id="StudentValid" value="Student" onClick={() => setUser("Student")}>
                         Student
                     </ToggleButton>
-                    <ToggleButton id="CompanyValid" value={2}>
+                    <ToggleButton id="CompanyValid" value="Company"  onClick={() => setUser("Company")}>
                         Company
                     </ToggleButton>
-                    <ToggleButton id="GestionnairValid" value={3}>
+                    <ToggleButton id="GestionnairValid" value="Gestionnaire"  onClick={() => setUser("Gestionnaire")}>
                         Gestionnaire
                     </ToggleButton>
                 </ToggleButtonGroup>
+            </Row>
+            <Row>
+                {user == "Student" ? <ValidationStudent/> :
+                 user == "Company" ? <ValidationCompany/> :
+                     <ValidationGetionnaire/>
+                }
             </Row>
         </Col>
     );
