@@ -4,23 +4,25 @@ import org.springframework.stereotype.Component;
 import projet.projetstage02.DTO.StudentDTO;
 import projet.projetstage02.modele.AbstractUser;
 import projet.projetstage02.modele.Student;
-import projet.projetstage02.repository.UserRepository;
+import projet.projetstage02.repository.StudentRepository;
 
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 @Component
 public class StudentService extends AbstractService<StudentDTO> {
-    private final UserRepository userRepository;
+    private StudentRepository studentRepository;
 
-    public StudentService(UserRepository userRepository) {
-        this.userRepository = userRepository;
+    public StudentService(StudentRepository studentRepository) {
+        this.studentRepository = studentRepository;
     }
 
     @Override
     public boolean isUniqueEmail(String email) {
-       Optional<Student> student = userRepository.findStudentByEmail(email);
+       Optional<Student> student = studentRepository.findByEmail(email);
         return student.isEmpty();
     }
 
@@ -38,12 +40,12 @@ public class StudentService extends AbstractService<StudentDTO> {
     }
 
     public long saveStudent(StudentDTO dto) {
-        return userRepository.save(dto.getClassOrigin()).getId();
+        return studentRepository.save(dto.getClassOrigin()).getId();
     }
 
     @Override
     public StudentDTO getUserById(Long id) {
-        var studentOpt = userRepository.findStudentById(id);
+        var studentOpt = studentRepository.findById(id);
         if (studentOpt.isEmpty())
             return null;
         return new StudentDTO(studentOpt.get());
@@ -51,9 +53,17 @@ public class StudentService extends AbstractService<StudentDTO> {
 
     @Override
     public StudentDTO getUserByEmailPassword(String email, String password) {
-        var studentOpt = userRepository.findStudentByEmailAndPassword(email.toLowerCase(), password);
+        var studentOpt = studentRepository.findByEmailAndPassword(email.toLowerCase(), password);
         if (studentOpt.isEmpty())
             return null;
         return new StudentDTO(studentOpt.get());
+    }
+
+    @Override
+    public List<StudentDTO> getUnvalidatedUsers() {
+        List<StudentDTO> unvalidatedStudentDTOs = new ArrayList<>();
+        studentRepository.findAllUnvalidatedStudents()
+                .forEach(student -> unvalidatedStudentDTOs.add(new StudentDTO(student)));
+        return unvalidatedStudentDTOs;
     }
 }

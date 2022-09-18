@@ -4,18 +4,20 @@ import org.springframework.stereotype.Component;
 import projet.projetstage02.DTO.CompanyDTO;
 import projet.projetstage02.modele.AbstractUser;
 import projet.projetstage02.modele.Company;
-import projet.projetstage02.repository.UserRepository;
+import projet.projetstage02.repository.CompanyRepository;
 
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 @Component
 public class CompanyService extends AbstractService<CompanyDTO> {
-    private final UserRepository userRepository;
+    private CompanyRepository companyRepository;
 
-    public CompanyService(UserRepository userRepository) {
-        this.userRepository = userRepository;
+    public CompanyService(CompanyRepository companyRepository) {
+        this.companyRepository = companyRepository;
     }
 
     public void saveCompany(String firstName, String lastName, String name, String email, String password,
@@ -34,18 +36,18 @@ public class CompanyService extends AbstractService<CompanyDTO> {
     }
 
     public long saveCompany(CompanyDTO dto) {
-        return userRepository.save(dto.getClassOrigin()).getId();
+        return companyRepository.save(dto.getClassOrigin()).getId();
     }
 
     @Override
     public boolean isUniqueEmail(String email) {
-       Optional<Company> company = userRepository.findCompanyByEmail(email);
+       Optional<Company> company = companyRepository.findByEmail(email);
         return company.isEmpty();
     }
 
     @Override
     public CompanyDTO getUserById(Long id) {
-        var companyOpt = userRepository.findCompanyById(id);
+        var companyOpt = companyRepository.findById(id);
         if (companyOpt.isEmpty())
             return null;
         return new CompanyDTO(companyOpt.get());
@@ -53,9 +55,17 @@ public class CompanyService extends AbstractService<CompanyDTO> {
 
     @Override
     public CompanyDTO getUserByEmailPassword(String email, String password) {
-        var companyOpt = userRepository.findCompanyByEmailAndPassword(email.toLowerCase(), password);
+        var companyOpt = companyRepository.findByEmailAndPassword(email.toLowerCase(), password);
         if (companyOpt.isEmpty())
             return null;
         return new CompanyDTO(companyOpt.get());
+    }
+
+    @Override
+    public List<CompanyDTO> getUnvalidatedUsers() {
+        List<CompanyDTO> unvalidatedCompaniesDTOs = new ArrayList<>();
+        companyRepository.findAllUnvalidatedCompanies()
+                .forEach(company -> unvalidatedCompaniesDTOs.add(new CompanyDTO(company)));
+        return unvalidatedCompaniesDTOs;
     }
 }

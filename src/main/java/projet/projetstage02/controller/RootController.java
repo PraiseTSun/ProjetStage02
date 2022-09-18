@@ -1,11 +1,10 @@
 package projet.projetstage02.controller;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import projet.projetstage02.DTO.AbstractUserDTO;
 import projet.projetstage02.DTO.CompanyDTO;
 import projet.projetstage02.DTO.GestionnaireDTO;
 import projet.projetstage02.DTO.StudentDTO;
@@ -20,14 +19,12 @@ import java.util.List;
 import java.util.Map;
 
 @RestController
+@AllArgsConstructor
 @CrossOrigin(origins = "http://localhost:3000")
 @RequestMapping("/")
 public class RootController {
-    @Autowired
     StudentService studentService;
-    @Autowired
     CompanyService companyService;
-    @Autowired
     GestionnaireService gestionnaireService;
 
     private final long MILLI_SECOND_DAY = 864000000;
@@ -146,15 +143,48 @@ public class RootController {
         return dto == null || !dto.isEmailConfirmed() ? ResponseEntity.notFound().build() : ResponseEntity.ok(dto);
     }
 
-    @GetMapping("/unvalidatedUsers")
-    public ResponseEntity<List<AbstractUserDTO>> getUnvalidatedUsers() {
+    @GetMapping("/unvalidatedStudents")
+    public ResponseEntity<List<StudentDTO>> getUnvalidatedStudents() {
+        return ResponseEntity.ok(studentService.getUnvalidatedUsers());
+    }
+
+    @GetMapping("/unvalidatedCompanies")
+    public ResponseEntity<List<CompanyDTO>> getUnvalidatedCompanies() {
+        return ResponseEntity.ok(companyService.getUnvalidatedUsers());
+    }
+
+    @GetMapping("/unvalidatedGestionnaires")
+    public ResponseEntity<List<GestionnaireDTO>> getUnvalidatedGestionnaires() {
         return ResponseEntity.ok(gestionnaireService.getUnvalidatedUsers());
     }
 
-    @PutMapping("/validateUser/{id}")
-    public ResponseEntity<Map<String, String>> validateUser(@PathVariable String id) {
+    @PutMapping("/validateStudent/{id}")
+    public ResponseEntity<Map<String, String>> validateStudent(@PathVariable String id) {
         try {
-            gestionnaireService.validateUser(Long.parseLong(id));
+            gestionnaireService.validateStudent(Long.parseLong(id));
+            return ResponseEntity.ok().build();
+        }
+        catch (Exception exception) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(getError(exception.getMessage()));
+        }
+    }
+
+    @PutMapping("/validateCompany/{id}")
+    public ResponseEntity<Map<String, String>> validateCompany(@PathVariable String id) {
+        try {
+            gestionnaireService.validateCompany(Long.parseLong(id));
+            return ResponseEntity.ok().build();
+        }
+        catch (Exception exception) {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
+    @PutMapping("/validateGestionnaire/{id}")
+    public ResponseEntity<Map<String, String>> validateGestionnaire(@PathVariable String id) {
+        try {
+            gestionnaireService.validateGestionnaire(Long.parseLong(id));
             return ResponseEntity.ok().build();
         }
         catch (Exception exception) {
