@@ -9,7 +9,7 @@ const UserValidation = () => {
 
     return (
         <Col className="vh-100 p-lg-5">
-            <Row>
+            <Row className="p-0">
                 <ToggleButtonGroup type="radio" name="options" defaultValue="Student">
                     <ToggleButton id="StudentValid" value="Student" onClick={() => setUser("Student")}>
                         Student
