@@ -109,3 +109,183 @@ paths:
                 type: boolean
         404:
           description: Courriel et/ou mot de passe invalide
+  /createStudent:
+    post:
+      summary: Crée un étudiant et envoie le courriel de confirmation
+      parameters:
+        - in: body
+          name: Paramètres
+          description: Objet contenant les informations de l'étudiant
+          schema:
+            type: object
+            properties:
+              firstName:
+                type: string
+              lastName:
+                type: string
+              email:
+                type: string
+              password:
+                type: string
+              department:
+                type: string
+      produces:
+        - application/json
+      responses:
+        201:
+          description: Ne retourne pas d'objet
+        409:
+          description: Message d'erreur
+          schema:
+            type: object
+            properties:
+              error:
+                type: string
+  /createCompany:
+    post:
+      summary: Crée une compagnie et envoie le courriel de confirmation
+      parameters:
+        - in: body
+          name: Paramètres
+          description: Objet contenant les informations de la compagnie
+          schema:
+            type: object
+            properties:
+              name:
+                type: string
+              firstName:
+                type: string
+              lastName:
+                type: string
+              email:
+                type: string
+              password:
+                type: string
+              department:
+                type: string
+      produces:
+        - application/json
+      responses:
+        201:
+          description: Ne retourne pas d'objet
+        409:
+          description: Message d'erreur
+          schema:
+            type: object
+            properties:
+              error:
+                type: string
+  /createGestionaire:
+    post:
+      summary: Crée un gestionnaire et envoie le courriel de confirmation
+      parameters:
+        - in: body
+          name: Paramètres
+          description: Objet contenant les informations du gestionnaire
+          schema:
+            type: object
+            properties:
+              firstName:
+                type: string
+              lastName:
+                type: string
+              email:
+                type: string
+              password:
+                type: string
+      produces:
+        - application/json
+      responses:
+        201:
+          description: Ne retourne pas d'objet
+        409:
+          description: Message d'erreur
+          schema:
+            type: object
+            properties:
+              error:
+                type: string
+  /confirmEmail/student/{id}:
+    put:
+      summary: Confirme le courriel d'un étudiant
+      parameters:
+        - in: path
+          name: id
+          description: id de l'étudiant
+          type: string
+          required: true
+      produces:
+        - application/json
+      responses:
+        201:
+          description: Ne retourne pas d'objet
+        404:
+          description: Message d'erreur si etudiant non trouvé
+          schema:
+            type: object
+            properties:
+              error:
+                type: string
+        422:
+          description: Message d'erreur si email exawpiré
+          schema:
+            type: object
+            properties:
+              error:
+                type: string
+  /confirmEmail/company/{id}:
+    put:
+      summary: Confirme le courriel d'une compagnie
+      parameters:
+        - in: path
+          name: id
+          description: id de la compagnie
+          type: string
+          required: true
+      produces:
+        - application/json
+      responses:
+        201:
+          description: Ne retourne pas d'objet
+        404:
+          description: Message d'erreur si compagnie non trouvé
+          schema:
+            type: object
+            properties:
+              error:
+                type: string
+        422:
+          description: Message d'erreur si email expiré
+          schema:
+            type: object
+            properties:
+              error:
+                type: string
+  /confirmEmail/gestionnaire/{id}:
+    put:
+      summary: Confirme le courriel d'un gestionnaire
+      parameters:
+        - in: path
+          name: id
+          description: id du gestionnaire
+          type: string
+          required: true
+      produces:
+        - application/json
+      responses:
+        201:
+          description: Ne retourne pas d'objet
+        404:
+          description: Message d'erreur si gestionnaire non trouvé
+          schema:
+            type: object
+            properties:
+              error:
+                type: string
+        422:
+          description: Message d'erreur si email expiré
+          schema:
+            type: object
+            properties:
+              error:
+                type: string
