@@ -41,15 +41,14 @@ public class GestionnaireService extends AbstractService<GestionnaireDTO> {
         return gestionnaireRepository.save(dto.getClassOrigin()).getId();
     }
 
-    public void confirmUser(AbstractUserDTO<Gestionnaire> user) {
+    public void confirmUser(AbstractUserDTO<Gestionnaire> user) throws NonExistentUserException {
         if (user.getClass() == GestionnaireDTO.class)
             confirmGestionaire(user.getClassOrigin());
     }
 
-    private void confirmGestionaire(Gestionnaire user) {
+    private void confirmGestionaire(Gestionnaire user) throws NonExistentUserException {
         var gestionnaireOpt = gestionnaireRepository.findById(user.getId());
-        if (gestionnaireOpt.isEmpty())
-            return;
+        if (gestionnaireOpt.isEmpty()) throw new NonExistentUserException();
         Gestionnaire gestionnaire = gestionnaireOpt.get();
         gestionnaire.setConfirm(true);
         gestionnaireRepository.save(gestionnaire);
@@ -62,18 +61,16 @@ public class GestionnaireService extends AbstractService<GestionnaireDTO> {
     }
 
     @Override
-    public GestionnaireDTO getUserById(Long id) {
+    public GestionnaireDTO getUserById(Long id) throws NonExistentUserException {
         var gestionnaireOpt = gestionnaireRepository.findById(id);
-        if (gestionnaireOpt.isEmpty())
-            return null;
+        if (gestionnaireOpt.isEmpty()) throw new NonExistentUserException();
         return new GestionnaireDTO(gestionnaireOpt.get());
     }
 
     @Override
-    public GestionnaireDTO getUserByEmailPassword(String email, String password) {
+    public GestionnaireDTO getUserByEmailPassword(String email, String password) throws NonExistentUserException {
         var gestionnaireOpt = gestionnaireRepository.findByEmailAndPassword(email.toLowerCase(), password);
-        if (gestionnaireOpt.isEmpty())
-            return null;
+        if (gestionnaireOpt.isEmpty()) throw new NonExistentUserException();
         return new GestionnaireDTO(gestionnaireOpt.get());
     }
 

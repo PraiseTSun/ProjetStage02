@@ -84,70 +84,82 @@ public class RootController {
 
     @PutMapping("/confirmEmail/student/{id}")
     public ResponseEntity<Map<String, String>> confirmStudentMail(@PathVariable String id) {
-        StudentDTO studentDTO = studentService.getUserById(Long.parseLong(id));
-        if (studentDTO == null) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        try {
+            StudentDTO studentDTO = studentService.getUserById(Long.parseLong(id));
+            if (currentTimestamp() - studentDTO.getInscriptionTimestamp() > MILLI_SECOND_DAY) {
+                return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY)
+                        .body(getError("La période de confirmation est expirée"));
+            }
+            studentDTO.setEmailConfirmed(true);
+            studentService.saveStudent(studentDTO);
+            return ResponseEntity.status(HttpStatus.CREATED).build();
+        } catch (NonExistentUserException e) {
+            return ResponseEntity.notFound().build();
         }
-
-        if (currentTimestamp() - studentDTO.getInscriptionTimestamp() > MILLI_SECOND_DAY) {
-            return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY)
-                    .body(getError("La période de confirmation est expirée"));
-        }
-        studentDTO.setEmailConfirmed(true);
-        studentService.saveStudent(studentDTO);
-        return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
     @PutMapping("/confirmEmail/company/{id}")
     public ResponseEntity<Map<String, String>> confirmCompanyMail(@PathVariable String id) {
-        CompanyDTO companyDTO = companyService.getUserById(Long.parseLong(id));
-        if (companyDTO == null) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        try {
+            CompanyDTO companyDTO = companyService.getUserById(Long.parseLong(id));
+            if (currentTimestamp() - companyDTO.getInscriptionTimestamp() > MILLI_SECOND_DAY) {
+                return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY)
+                        .body(getError("La période de confirmation est expirée"));
+            }
+            companyDTO.setEmailConfirmed(true);
+            companyService.saveCompany(companyDTO);
+            return ResponseEntity.status(HttpStatus.CREATED).build();
+        } catch (NonExistentUserException e) {
+            return ResponseEntity.notFound().build();
         }
-        if (currentTimestamp() - companyDTO.getInscriptionTimestamp() > MILLI_SECOND_DAY) {
-            return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY)
-                    .body(getError("La période de confirmation est expirée"));
-        }
-        companyDTO.setEmailConfirmed(true);
-        companyService.saveCompany(companyDTO);
-        return ResponseEntity.status(HttpStatus.CREATED).build();
+
     }
 
     @PutMapping("/confirmEmail/gestionnaire/{id}")
     public ResponseEntity<Map<String, String>> confirmGestionnaireMail(@PathVariable String id) {
-        GestionnaireDTO gestionnaireDTO = gestionnaireService.getUserById(Long.parseLong(id));
-        if (gestionnaireDTO == null) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        try {
+            GestionnaireDTO gestionnaireDTO = gestionnaireService.getUserById(Long.parseLong(id));
+            if (currentTimestamp() - gestionnaireDTO.getInscriptionTimestamp() > MILLI_SECOND_DAY) {
+                return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY)
+                        .body(getError("La période de confirmation est expirée"));
+            }
+            gestionnaireDTO.setEmailConfirmed(true);
+            gestionnaireService.saveGestionnaire(gestionnaireDTO);
+            return ResponseEntity.status(HttpStatus.CREATED).build();
+        } catch (NonExistentUserException e) {
+            return ResponseEntity.notFound().build();
         }
-        if (currentTimestamp() - gestionnaireDTO.getInscriptionTimestamp() > MILLI_SECOND_DAY) {
-            return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY)
-                    .body(getError("La période de confirmation est expirée"));
-        }
-        gestionnaireDTO.setEmailConfirmed(true);
-        gestionnaireService.saveGestionnaire(gestionnaireDTO);
-        return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
     @PutMapping("/student")
     public ResponseEntity<StudentDTO> getStudent(@RequestBody StudentDTO studentDTO) {
-        StudentDTO dto = studentService.getUserByEmailPassword(studentDTO.getEmail(), studentDTO.getPassword());
-
-        return dto == null || !dto.isEmailConfirmed() ? ResponseEntity.notFound().build() : ResponseEntity.ok(dto);
+        try {
+            StudentDTO dto = studentService.getUserByEmailPassword(studentDTO.getEmail(), studentDTO.getPassword());
+            return !dto.isEmailConfirmed() ? ResponseEntity.notFound().build() : ResponseEntity.ok(dto);
+        } catch (NonExistentUserException e) {
+            return ResponseEntity.notFound().build();
+        }
     }
 
     @PutMapping("/company")
     public ResponseEntity<CompanyDTO> getCompany(@RequestBody CompanyDTO companyDTO) {
-        CompanyDTO dto = companyService.getUserByEmailPassword(companyDTO.getEmail(), companyDTO.getPassword());
-
-        return dto == null || !dto.isEmailConfirmed() ? ResponseEntity.notFound().build() : ResponseEntity.ok(dto);
+        try {
+            CompanyDTO dto = companyService.getUserByEmailPassword(companyDTO.getEmail(), companyDTO.getPassword());
+            return dto == null || !dto.isEmailConfirmed() ? ResponseEntity.notFound().build() : ResponseEntity.ok(dto);
+        } catch (NonExistentUserException e) {
+            return ResponseEntity.notFound().build();
+        }
     }
 
     @PutMapping("/gestionnaire")
     public ResponseEntity<GestionnaireDTO> getGestionnaire(@RequestBody GestionnaireDTO gestionnaireDTO) {
-        GestionnaireDTO dto = gestionnaireService.getUserByEmailPassword(gestionnaireDTO.getEmail(),
-                gestionnaireDTO.getPassword());
-
-        return dto == null || !dto.isEmailConfirmed() ? ResponseEntity.notFound().build() : ResponseEntity.ok(dto);
+        try {
+            GestionnaireDTO dto = gestionnaireService.getUserByEmailPassword(gestionnaireDTO.getEmail(),
+                    gestionnaireDTO.getPassword());
+            return dto == null || !dto.isEmailConfirmed() ? ResponseEntity.notFound().build() : ResponseEntity.ok(dto);
+        } catch (NonExistentUserException e) {
+            return ResponseEntity.notFound().build();
+        }
     }
 
     @GetMapping("/unvalidatedStudents")
@@ -187,7 +199,7 @@ public class RootController {
             gestionnaireService.removeStudent(Long.parseLong(id));
             return ResponseEntity.ok().build();
         } catch (NonExistentUserException exception) {
-            return  ResponseEntity.notFound().build();
+            return ResponseEntity.notFound().build();
         }
     }
 
@@ -197,7 +209,7 @@ public class RootController {
             gestionnaireService.removeCompany(Long.parseLong(id));
             return ResponseEntity.ok().build();
         } catch (NonExistentUserException exception) {
-            return  ResponseEntity.notFound().build();
+            return ResponseEntity.notFound().build();
         }
     }
 }

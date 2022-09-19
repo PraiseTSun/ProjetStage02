@@ -5,6 +5,7 @@ import org.springframework.context.annotation.Lazy;
 import org.springframework.mail.MailException;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
+import projet.projetstage02.exception.NonExistentUserException;
 import projet.projetstage02.modele.AbstractUser;
 import projet.projetstage02.modele.Company;
 import projet.projetstage02.modele.Student;
@@ -14,9 +15,9 @@ import java.util.List;
 public abstract class AbstractService<T> {
     public abstract boolean isUniqueEmail(String email);
 
-    public abstract T getUserById(Long id);
+    public abstract T getUserById(Long id) throws NonExistentUserException;
 
-    public abstract T getUserByEmailPassword(String email, String password);
+    public abstract T getUserByEmailPassword(String email, String password) throws NonExistentUserException;
 
     public abstract List<T> getUnvalidatedUsers();
 
