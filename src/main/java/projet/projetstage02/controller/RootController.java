@@ -172,7 +172,7 @@ public class RootController {
         return ResponseEntity.ok(companyService.getUnvalidatedUsers());
     }
 
-    @PostMapping("/validateStudent/{id}")
+    @PutMapping("/validateStudent/{id}")
     public ResponseEntity<Map<String, String>> validateStudent(@PathVariable String id) {
         try {
             gestionnaireService.validateStudent(Long.parseLong(id));
