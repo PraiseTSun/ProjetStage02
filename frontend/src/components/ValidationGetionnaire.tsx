@@ -8,9 +8,22 @@ const ValidationGetionnaire = () => {
     const [password, setPassword] = useState("");
     const [confirmPassword, setConfirmPassword] = useState("");
 
+    const validEmail = new RegExp(
+        '^[a-zA-Z0-9._:$!%-]+@[a-zA-Z0-9.-]+.[a-zA-Z]$'
+    );
 
     const onSubmit = (event: React.SyntheticEvent): void => {
         event.preventDefault();
+
+        if (password !== confirmPassword) {
+            alert("La confirmation du mot de passe n'est pas parèlle.")
+            return;
+        }
+
+        if (!validEmail.test(email)) {
+            alert("La syntax du courriel est mauvaise.");
+            return;
+        }
 
         setFirstName("");
         setLastName("");
@@ -59,7 +72,7 @@ const ValidationGetionnaire = () => {
                 {/*{isInvalidLoggin ? <h5 className="text-danger fw-bold text-center mt-2">Courriel ou mot de passe invalide!</h5> : <></>}*/}
                 <Row className="mt-3">
                     <Col className="text-center">
-                        <Form.Control type="submit" value="Connecter" className="btn btn-success mx-auto"></Form.Control>
+                        <Form.Control type="submit" value="Enregistrer" className="btn btn-success mx-auto"></Form.Control>
                     </Col>
                 </Row>
             </Col>
