@@ -45,6 +45,11 @@ const UserValidation = () => {
         }
     }
 
+    const getInfo = async(type: string) =>{
+        return fetch(`http://localhost:8080/unvalidated${type}`)
+            .then(response => response.json());
+    }
+
     return (
         <Col className="vh-100 p-lg-5">
             <Row className="p-0">
@@ -61,8 +66,8 @@ const UserValidation = () => {
                 </ToggleButtonGroup>
             </Row>
             <Row>
-                {user == "Student" ? <ValidationStudent onValidation={onValidation}/> :
-                 user == "Company" ? <ValidationCompany onValidation={onValidation}/> :
+                {user == "Student" ? <ValidationStudent getInfo={getInfo} onRemove={onRemove} onValidation={onValidation}/> :
+                 user == "Company" ? <ValidationCompany getInfo={getInfo} onRemove={onRemove} onValidation={onValidation}/> :
                      <ValidationGetionnaire/>
                 }
             </Row>

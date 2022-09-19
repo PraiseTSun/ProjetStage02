@@ -2,7 +2,7 @@ import React from "react";
 import {Button, Col, Row} from "react-bootstrap";
 import myDebugger from '../Debuger/StudentDebugger.json';
 
-const ValidationStudent = ({ onValidation }: { onValidation: Function } , {onRemove}: {onRemove: Function}) => {
+const ValidationStudent = ({ onValidation, onRemove, getInfo }: { onValidation: Function, onRemove : Function, getInfo: Function }) => {
     const students = myDebugger;
     const user = "Student";
 
