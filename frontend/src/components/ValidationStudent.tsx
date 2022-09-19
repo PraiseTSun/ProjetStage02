@@ -2,11 +2,11 @@ import React from "react";
 import {Button, Col, Row} from "react-bootstrap";
 import myDebugger from '../Debuger/StudentDebugger.json';
 
-const ValidationStudent = () => {
+const ValidationStudent = ({ onValidation }: { onValidation: Function }) => {
     const students = myDebugger;
     
-    function approve(){
-
+    function approve(id: string){
+        onValidation(id, "Student")
     }
 
     function remove(){
@@ -22,7 +22,7 @@ const ValidationStudent = () => {
                             <div className="my-auto">{postData.firstName} {postData.lastName}</div>
                             <div className="my-auto">{postData.department}</div>
                             <div>
-                                <Button className="me-2" variant="success" onClick={() => approve()}>O</Button>
+                                <Button className="me-2" variant="success" onClick={() => approve(postData.id)}>O</Button>
                                 <Button variant="danger"  onClick={() => remove()}>X</Button>
                             </div>
                         </div>

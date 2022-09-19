@@ -7,6 +7,25 @@ import ValidationGetionnaire from "../components/ValidationGetionnaire";
 const UserValidation = () => {
     const [user, setUser] = useState("Student");
 
+    const onValidation = async (id: string, type: string) =>{
+        const res = await fetch(`http://localhost:8080/validate${type}/${id}`,
+            {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                }
+            });
+
+        if (res.status == 409) {
+            const data = await res.json();
+            alert(data.error);
+        }
+
+        if (res.status == 201) {
+            alert(type + " a été validé.");
+        }
+    }
+
     return (
         <Col className="vh-100 p-lg-5">
             <Row className="p-0">
@@ -23,8 +42,8 @@ const UserValidation = () => {
                 </ToggleButtonGroup>
             </Row>
             <Row>
-                {user == "Student" ? <ValidationStudent/> :
-                 user == "Company" ? <ValidationCompany/> :
+                {user == "Student" ? <ValidationStudent onValidation={onValidation}/> :
+                 user == "Company" ? <ValidationCompany onValidation={onValidation}/> :
                      <ValidationGetionnaire/>
                 }
             </Row>

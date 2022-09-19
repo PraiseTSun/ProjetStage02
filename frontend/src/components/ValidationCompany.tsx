@@ -2,11 +2,11 @@ import React from "react";
 import {Button, Col, Row} from "react-bootstrap";
 import myDebugger from "../Debuger/CompanyDebugger.json";
 
-const ValidationCompany = () => {
+const ValidationCompany = ({ onValidation }: { onValidation: Function }) => {
     const companys = myDebugger;
 
-    function approve(){
-
+    function approve(id: string){
+        onValidation(id, "Company");
     }
 
     function remove(){
@@ -22,7 +22,7 @@ const ValidationCompany = () => {
                             <div className="my-auto">{postData.name}</div>
                             <div className="my-auto">{postData.department}</div>
                             <div>
-                                <Button className="me-2" variant="success" onClick={() => approve()}>O</Button>
+                                <Button className="me-2" variant="success" onClick={() => approve(postData.id)}>O</Button>
                                 <Button variant="danger"  onClick={() => remove()}>X</Button>
                             </div>
                         </div>
