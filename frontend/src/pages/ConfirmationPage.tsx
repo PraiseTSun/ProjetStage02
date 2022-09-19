@@ -1,5 +1,5 @@
 import React from 'react';
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import { Row, Col } from 'react-bootstrap';
 import { useLocation, useParams } from 'react-router-dom';
 import BeatLoader from 'react-spinners/BeatLoader';
