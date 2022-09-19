@@ -12,7 +12,7 @@ const ValidationGetionnaire = () => {
         '^[a-zA-Z0-9._:$!%-]+@[a-zA-Z0-9.-]+.[a-zA-Z]$'
     );
 
-    const onSubmit = (event: React.SyntheticEvent): void => {
+    const onSubmit = async (event: React.SyntheticEvent) => {
         event.preventDefault();
 
         if (password !== confirmPassword) {
@@ -25,11 +25,35 @@ const ValidationGetionnaire = () => {
             return;
         }
 
-        setFirstName("");
-        setLastName("");
-        setEmail("");
-        setPassword("");
-        setConfirmPassword("")
+
+
+        const res = await fetch(`http://localhost:8080/createGestionnaire`,
+            {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    "firstName" : firstName,
+                    "lastName" : lastName,
+                    "email" : email,
+                    "password" : password
+                })
+            });
+
+        if (res.status == 409) {
+            const data = await res.json();
+            alert(data.error);
+        }
+
+        if (res.status == 201) {
+            alert("Utilisateur a été créé.");
+            setFirstName("");
+            setLastName("");
+            setEmail("");
+            setPassword("");
+            setConfirmPassword("")
+        }
     }
 
     return (

@@ -26,6 +26,25 @@ const UserValidation = () => {
         }
     }
 
+    const onRemove = async (id: string, type: string) =>{
+        const res = await fetch(`http://localhost:8080/remove${type}/${id}`,
+            {
+                method: 'DELETE',
+                headers: {
+                    'Content-Type': 'application/json',
+                }
+            });
+
+        if (res.status == 409) {
+            const data = await res.json();
+            alert(data.error);
+        }
+
+        if (res.status == 201) {
+            alert(type + " a été supprimé.");
+        }
+    }
+
     return (
         <Col className="vh-100 p-lg-5">
             <Row className="p-0">
