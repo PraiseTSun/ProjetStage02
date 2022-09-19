@@ -85,7 +85,7 @@ public class GestionnaireService extends AbstractService<GestionnaireDTO> {
         return unvalidatedGestionnaireDTOs;
     }
 
-    public void validateGestionnaire(Long id) throws NonExistentUserException{
+    public void validateGestionnaire(Long id) throws NonExistentUserException {
         Optional<Gestionnaire> gestionnaireOptional = gestionnaireRepository.findById(id);
         if (gestionnaireOptional.isEmpty()) throw new NonExistentUserException();
         else {
@@ -95,23 +95,41 @@ public class GestionnaireService extends AbstractService<GestionnaireDTO> {
         }
     }
 
-    public void validateCompany(Long id) throws NonExistentUserException{
-        Optional<Company> companyOptional = companyRepository.findById(id);
-        if (companyOptional.isEmpty()) throw new NonExistentUserException();
-        else {
-            Company company = companyOptional.get();
-            company.setConfirm(true);
-            companyRepository.save(company);
-        }
+    public void validateCompany(Long id) throws NonExistentUserException {
+        //Throws NonExistentUserException
+        Company company = getCompany(id);
+        company.setConfirm(true);
+        companyRepository.save(company);
     }
 
-    public void validateStudent(Long id) throws NonExistentUserException{
+    public void validateStudent(Long id) throws NonExistentUserException {
+        //Throws NonExistentUserException
+        Student student = getStudent(id);
+        student.setConfirm(true);
+        studentRepository.save(student);
+    }
+
+    public void removeCompany(long id) throws NonExistentUserException {
+        // Throws NonExistentUserException
+        Company company = getCompany(id);
+        companyRepository.delete(company);
+    }
+
+    public void removeStudent(long id) throws NonExistentUserException {
+        // Throws NonExistentUserException
+        Student student = getStudent(id);
+        studentRepository.delete(student);
+    }
+
+    private Company getCompany(long id) throws NonExistentUserException {
+        Optional<Company> companyOptional = companyRepository.findById(id);
+        if (companyOptional.isEmpty()) throw new NonExistentUserException();
+        return companyOptional.get();
+    }
+
+    private Student getStudent(long id) throws NonExistentUserException {
         Optional<Student> studentOptional = studentRepository.findById(id);
         if (studentOptional.isEmpty()) throw new NonExistentUserException();
-        else {
-            Student student = studentOptional.get();
-            student.setConfirm(true);
-            studentRepository.save(student);
-        }
+        return studentOptional.get();
     }
 }

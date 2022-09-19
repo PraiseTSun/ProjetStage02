@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.*;
 import projet.projetstage02.DTO.CompanyDTO;
 import projet.projetstage02.DTO.GestionnaireDTO;
 import projet.projetstage02.DTO.StudentDTO;
+import projet.projetstage02.exception.NonExistentUserException;
 import projet.projetstage02.service.CompanyService;
 import projet.projetstage02.service.GestionnaireService;
 import projet.projetstage02.service.StudentService;
@@ -60,6 +61,12 @@ public class RootController {
         }
         gestionnaireDTO.setInscriptionTimestamp(currentTimestamp());
         long id = gestionnaireService.saveGestionnaire(gestionnaireDTO);
+        try {
+            gestionnaireService.validateGestionnaire(id);
+        } catch (NonExistentUserException e) {
+            // Won't happen
+            ResponseEntity.notFound().build();
+        }
         gestionnaireDTO.setId(String.valueOf(id));
         gestionnaireService.sendConfirmationMail(gestionnaireDTO.getClassOrigin());
         return ResponseEntity.status(HttpStatus.CREATED).build();
@@ -153,18 +160,12 @@ public class RootController {
         return ResponseEntity.ok(companyService.getUnvalidatedUsers());
     }
 
-    @GetMapping("/unvalidatedGestionnaires")
-    public ResponseEntity<List<GestionnaireDTO>> getUnvalidatedGestionnaires() {
-        return ResponseEntity.ok(gestionnaireService.getUnvalidatedUsers());
-    }
-
-    @PutMapping("/validateStudent/{id}")
+    @PostMapping("/validateStudent/{id}")
     public ResponseEntity<Map<String, String>> validateStudent(@PathVariable String id) {
         try {
             gestionnaireService.validateStudent(Long.parseLong(id));
             return ResponseEntity.ok().build();
-        }
-        catch (Exception exception) {
+        } catch (NonExistentUserException exception) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
                     .body(getError(exception.getMessage()));
         }
@@ -175,20 +176,28 @@ public class RootController {
         try {
             gestionnaireService.validateCompany(Long.parseLong(id));
             return ResponseEntity.ok().build();
-        }
-        catch (Exception exception) {
+        } catch (NonExistentUserException exception) {
             return ResponseEntity.notFound().build();
         }
     }
 
-    @PutMapping("/validateGestionnaire/{id}")
-    public ResponseEntity<Map<String, String>> validateGestionnaire(@PathVariable String id) {
+    @DeleteMapping("/removeStudent/{id}")
+    public ResponseEntity<Map<String, String>> removeStudent(@PathVariable String id) {
         try {
-            gestionnaireService.validateGestionnaire(Long.parseLong(id));
+            gestionnaireService.removeStudent(Long.parseLong(id));
             return ResponseEntity.ok().build();
+        } catch (NonExistentUserException exception) {
+            return  ResponseEntity.notFound().build();
         }
-        catch (Exception exception) {
-            return ResponseEntity.notFound().build();
+    }
+
+    @DeleteMapping("/removeCompany/{id}")
+    public ResponseEntity<Map<String, String>> removeCompany(@PathVariable String id) {
+        try {
+            gestionnaireService.removeCompany(Long.parseLong(id));
+            return ResponseEntity.ok().build();
+        } catch (NonExistentUserException exception) {
+            return  ResponseEntity.notFound().build();
         }
     }
 }
