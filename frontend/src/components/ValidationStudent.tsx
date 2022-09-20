@@ -1,6 +1,5 @@
 import React, {useEffect, useState} from "react";
 import {Button, Col, Row} from "react-bootstrap";
-import myDebugger from '../Debuger/StudentDebugger.json';
 
 const ValidationStudent = ({ onValidation, onRemove }: { onValidation: Function, onRemove : Function}) => {
     const user = "Student";
@@ -8,10 +7,12 @@ const ValidationStudent = ({ onValidation, onRemove }: { onValidation: Function,
 
     function approve(id: string, index: number){
         onValidation(id, user);
+        setStudents(students.splice(index + 1, 1));
     }
 
-    function remove(id: string){
+    function remove(id: string, index : number){
         onRemove(id, user);
+        setStudents(students.splice(index + 1, 1));
     }
 
     useEffect(() => {
@@ -27,6 +28,7 @@ const ValidationStudent = ({ onValidation, onRemove }: { onValidation: Function,
             .then(data => {
                 setStudents(data)
             });
+        console.log("load");
     }, []);
 
     return(
@@ -40,7 +42,7 @@ const ValidationStudent = ({ onValidation, onRemove }: { onValidation: Function,
                                 <div className="my-auto">{data.department}</div>
                                 <div>
                                     <Button className="me-2" variant="success" onClick={() => approve(data.id, idx)}>O</Button>
-                                    <Button variant="danger"  onClick={() => remove(data.id)}>X</Button>
+                                    <Button variant="danger"  onClick={() => remove(data.id, idx)}>X</Button>
                                 </div>
                             </div>
                         </Row>
