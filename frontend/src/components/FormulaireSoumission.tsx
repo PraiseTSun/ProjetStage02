@@ -14,7 +14,22 @@ const FormulaireSoumission = (): JSX.Element => {
 
 
     const onSubmit = (event: React.SyntheticEvent): void => {
+        event.preventDefault();
+        const obj = {
+            nomDeCompagie:company,
+            department:department,
+            position:poste,
+            heureParSemaine:hoursPerWeek,
+            adresse:address,
+            pdf:pdf
+        }
 
+        const headers = {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(obj)
+        };
+        fetch("localhost:8080/createOffre",headers)
 
     }
     const hoursRegEx = new RegExp(
@@ -30,7 +45,7 @@ const FormulaireSoumission = (): JSX.Element => {
     return (<>
         <Container className="d-flex justify-content-center">
 
-            <Row className="col-6 mt-5 card">
+            <Row className="col-12 my-3 card">
                 <h3 className="card-header text-center">Formulaire de soumission de stage</h3>
                 <Form className="card-body p-3" onSubmit={onSubmit}>
                     <Form.Group>
@@ -58,7 +73,7 @@ const FormulaireSoumission = (): JSX.Element => {
                     </Form.Group>
                     <Form.Group>
                         <Form.Label className="fw-bold h5">Heures par semaine</Form.Label>
-                        <Form.Control type="number" maxLength={3} required value={hoursPerWeek}
+                        <Form.Control type="number" max="168" required value={hoursPerWeek}
                             onChange={field => setHoursPerWeekFromField(field)}></Form.Control>
                     </Form.Group>
                     <Form.Group>
