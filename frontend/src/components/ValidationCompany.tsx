@@ -2,7 +2,7 @@ import React from "react";
 import {Button, Col, Row} from "react-bootstrap";
 import myDebugger from "../Debuger/CompanyDebugger.json";
 
-const ValidationCompany = ({ onValidation, onRemove, getInfo }: { onValidation: Function, onRemove: Function, getInfo: Function }) => {
+const ValidationCompany = ({ onValidation, onRemove}: { onValidation: Function, onRemove: Function }) => {
     const companys = myDebugger;
     const user = "Company";
 
