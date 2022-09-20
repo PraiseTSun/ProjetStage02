@@ -22,9 +22,10 @@ public class Offre {
     private String position;
     private int heureParSemaine;
     private String adresse;
-    private File pdf;
+    @Lob
+    private byte[] pdf;
 
-    public Offre(String nomDeCompagie, String department, String position, int heureParSemaine, String adresse, File pdf) {
+    public Offre(String nomDeCompagie, String department, String position, int heureParSemaine, String adresse, byte[] pdf) {
         this.nomDeCompagie = nomDeCompagie;
         this.department = department;
         this.position = position;

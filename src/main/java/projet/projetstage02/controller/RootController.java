@@ -89,7 +89,7 @@ public class RootController {
                     .body(getError("PDF ne peut pas être vide"));
         }
          **/
-       // offreService.createOffre(offreDTO);
+        offreService.createOffre(offreDTO);
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 

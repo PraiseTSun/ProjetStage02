@@ -30,8 +30,10 @@ const FormulaireSoumission = (): JSX.Element => {
             body: JSON.stringify(obj)
         };
         const res = await fetch("http://localhost:8080/createOffre",headers)
-        const data = await res.json()
-        console.log(data)
+        if(!res.ok){
+            const data = await res.json()
+            console.log(data)
+        }
 
     }
     const hoursRegEx = new RegExp(
@@ -112,7 +114,7 @@ const FormulaireSoumission = (): JSX.Element => {
                     <Form.Group>
                         <Form.Label className="fw-bold h5">Document PDF</Form.Label>
                         <input className="form-control" accept=".pdf" 
-                        required type="file" onChange={(e) =>{  uploadFile(e.target.files![0]); console.log(pdf)}} />
+                        required type="file" onChange={(e) =>{  uploadFile(e.target.files![0]);}} />
                     </Form.Group>
                     <Row className="mt-3">
                         <Col className="text-center">

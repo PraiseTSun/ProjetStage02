@@ -19,30 +19,30 @@ public class OffreService {
     public OffreService(OffreRepository offreRepository) {
         this.offreRepository = offreRepository;
     }
-    /*
+
      public long createOffre(OffreDTO offreDTO){
 
-         File file = new File("nom.pdf");
-         System.out.println("ici");
-         PrintWriter writer = null;
-         try {
-             writer = new PrintWriter(new FileOutputStream("nom.pdf"));
-
-             StringBuffer content = new StringBuffer(offreDTO.getPdf()); // 存放读取出的文档内容
-
-             writer.write(content.toString());// 写入文件内容
-             writer.flush();
-             writer.close();
-         } catch (IOException e) {
-             e.printStackTrace();
-         }
+//         File file = new File("nom.pdf");
+//         System.out.println("ici");
+//         PrintWriter writer = null;
+//         try {
+//             writer = new PrintWriter(new FileOutputStream("nom.pdf"));
+//
+//             StringBuffer content = new StringBuffer(offreDTO.getPdf()); // 存放读取出的文档内容
+//
+//             writer.write(content.toString());// 写入文件内容
+//             writer.flush();
+//             writer.close();
+//         } catch (IOException e) {
+//             e.printStackTrace();
+//         }
 
         // File file = toFile(offreDTO.getPdf(),"nom.pdf");
          Offre offre = new Offre(offreDTO.getNomDeCompagnie(), offreDTO.getDepartment(), offreDTO.getPosition(),
-                 offreDTO.getHeureParSemaine(), offreDTO.getAdresse(), file);
+                 offreDTO.getHeureParSemaine(), offreDTO.getAdresse(), offreDTO.getPdf());
          return offreRepository.save(offre).getId();
 
-     } */
+     } /* */
     private File toFile(String content,String filePath) {
         try {
             File f = new File(filePath);
