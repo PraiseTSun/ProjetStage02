@@ -20,10 +20,6 @@ const UserValidation = () => {
             const data = await res.json();
             alert(data.error);
         }
-
-        if (res.status == 201) {
-            alert(type + " a été validé.");
-        }
     }
 
     const onRemove = async (id: string, type: string) =>{
@@ -38,10 +34,6 @@ const UserValidation = () => {
         if (res.status == 409) {
             const data = await res.json();
             alert(data.error);
-        }
-
-        if (res.status == 201) {
-            alert(type + " a été supprimé.");
         }
     }
 
