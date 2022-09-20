@@ -22,7 +22,11 @@ const LoginForm = (props: { setUser: Function }): JSX.Element => {
                 else setIsInvalidLoggin(true)
             })
             .then(data => {
-                if (data) props.setUser(data.firstName)
+                if (data) props.setUser({
+                    firstName:data.firstName,
+                    lastName:data.lastName,
+                    userType:userType,
+                })
             });
 
         setEmail("");
