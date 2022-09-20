@@ -46,7 +46,8 @@ const FormulaireSoumission = (): JSX.Element => {
             setHoursPerWeek(hoursPerWeek)
         }
     }
-     const longToByteArray = (array:Int32Array) => {
+    //source: https://stackoverflow.com/questions/8482309/converting-javascript-integer-to-byte-array-and-back
+     const intToByteArray = (array:Int32Array) => {
         
         let bytes:number[] = []
         for(let i = 0 ; i < array.length; i++){
@@ -68,7 +69,7 @@ const FormulaireSoumission = (): JSX.Element => {
     const uploadFile = async (file:File) => {
         const fileText = await file.arrayBuffer()
         const view = new Int32Array(fileText)
-        const array = longToByteArray(view)
+        const array = intToByteArray(view)
         setPdf(array)
     }
     return (<>
