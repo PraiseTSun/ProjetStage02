@@ -6,6 +6,7 @@ import ValidationGetionnaire from "../components/ValidationGetionnaire";
 
 const UserValidation = () => {
     const [user, setUser] = useState("Student");
+    const [info, setinfo] = useState([]);
 
     const onValidation = async (id: string, type: string) =>{
         const res = await fetch(`http://localhost:8080/validate${type}/${id}`,
