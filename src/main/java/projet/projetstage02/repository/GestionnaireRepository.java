@@ -12,6 +12,6 @@ public interface GestionnaireRepository extends JpaRepository<Gestionnaire, Long
 
     Optional<Gestionnaire> findByEmail(String email);
 
-    @Query("SELECT gestionnaire FROM Gestionnaire gestionnaire WHERE gestionnaire.isConfirm = false")
+    @Query("SELECT gestionnaire FROM Gestionnaire gestionnaire WHERE gestionnaire.isConfirm = false AND gestionnaire.emailConfirmed = true")
     List<Gestionnaire> findAllUnvalidatedGestionnaires();
 }

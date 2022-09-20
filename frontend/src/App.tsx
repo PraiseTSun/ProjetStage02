@@ -4,6 +4,7 @@ import { Container } from 'react-bootstrap';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import ConfirmationPage from './pages/ConfirmationPage';
 import LoginPage from './pages/LoginPage';
+import UserValidation from './pages/UserValidation';
 
 function App() {
   const [user, setUser] = useState("")

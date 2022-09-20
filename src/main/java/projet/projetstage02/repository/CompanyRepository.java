@@ -12,6 +12,6 @@ public interface CompanyRepository extends JpaRepository<Company, Long> {
 
     Optional<Company> findByEmail(String email);
 
-    @Query("SELECT company FROM Company company WHERE company.isConfirm = false")
+    @Query("SELECT company FROM Company company WHERE company.isConfirm = false AND company.emailConfirmed = true")
     List<Company> findAllUnvalidatedCompanies();
 }
