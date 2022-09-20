@@ -376,4 +376,4 @@ paths:
               pdf:
                 type: string
         404:
-          description: Les champs ne sont pas être vide ou PDF ne valide pas
+          description: Trouve pas cet offre
