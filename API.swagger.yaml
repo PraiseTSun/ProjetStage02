@@ -310,7 +310,7 @@ paths:
               adresse:
                 type: string
               pdf:
-                type: file
+                type: string
       produces:
         - application/json
       responses:
@@ -330,7 +330,7 @@ paths:
               adresse:
                 type: string
               pdf:
-                type: file
+                type: string
         404:
           description: Les champs ne sont pas être vide ou PDF ne valide pas
   /offre:
@@ -354,7 +354,7 @@ paths:
               adresse:
                 type: string
               pdf:
-                type: file
+                type: string
       produces:
         - application/json
       responses:
@@ -374,6 +374,6 @@ paths:
               adresse:
                 type: string
               pdf:
-                type: file
+                type: string
         404:
           description: Les champs ne sont pas être vide ou PDF ne valide pas
