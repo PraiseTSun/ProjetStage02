@@ -289,3 +289,47 @@ paths:
             properties:
               error:
                 type: string
+  /createOffre:
+    post:
+      summary: Retour d'un DTO offre avec si le pdf est valide.
+      parameters:
+        - in: body
+          name: Paramètres
+          description: Nom de compagie department position heur par semaine adresse et pdf
+          schema:
+            type: object
+            properties:
+              nomDeCompagie:
+                type: string
+              department:
+                type: string
+              position:
+                type: string
+              heurParSemaine:
+                type: integer
+              adresse:
+                type: string
+              pdf:
+                type: file
+      produces:
+        - application/json
+      responses:
+        200:
+          description: DTO de l'offre
+          schema:
+            type: object
+            properties:
+              nomDeCompagie:
+                type: string
+              department:
+                type: string
+              position:
+                type: string
+              heureParSemaine:
+                type: integer
+              adresse:
+                type: string
+              pdf:
+                type: file
+        404:
+          description: Les champs ne sont pas être vide ou PDF ne valide pas
