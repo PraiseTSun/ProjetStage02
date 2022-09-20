@@ -10,7 +10,7 @@ const FormulaireSoumission = (): JSX.Element => {
     const [poste, setPoste] = useState("")
     const [hoursPerWeek, setHoursPerWeek] = useState(40)
     const [address, setAddress] = useState("")
-    const [pdf, setPdf] = useState("")
+    const [pdf, setPdf] = useState([0])
 
 
     const onSubmit = async (event: React.SyntheticEvent): Promise<void> => {
@@ -44,11 +44,31 @@ const FormulaireSoumission = (): JSX.Element => {
             setHoursPerWeek(hoursPerWeek)
         }
     }
+     const longToByteArray = (array:Int32Array) => {
+        // we want to represent the input as a 8-bytes array
+        
+        let bytes:number[] = []
+        for(let i = 0 ; i < array.length; i++){
 
+            let long = array[i]
+            var byteArray = [0, 0, 0, 0];
+            
+            for ( var index = 0; index < byteArray.length; index ++ ) {
+                var byte = long & 0xff;
+                byteArray [ index ] = byte;
+                long = (long - byte) / 256 ;
+            }
+            bytes.push(...byteArray)
+        }
+        
+    
+        return bytes;
+    };
     const uploadFile = async (file:File) => {
-        const fileText = await file.text()
-        console.log(fileText);
-        setPdf(fileText)
+        const fileText = await file.arrayBuffer()
+        const view = new Int32Array(fileText)
+        const array = longToByteArray(view)
+        setPdf(array)
     }
     return (<>
         <Container className="d-flex justify-content-center">
