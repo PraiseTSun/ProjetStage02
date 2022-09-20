@@ -47,16 +47,15 @@ const FormulaireSoumission = (): JSX.Element => {
         }
     }
      const longToByteArray = (array:Int32Array) => {
-        // we want to represent the input as a 8-bytes array
         
         let bytes:number[] = []
         for(let i = 0 ; i < array.length; i++){
 
             let long = array[i]
-            var byteArray = [0, 0, 0, 0];
-            
-            for ( var index = 0; index < byteArray.length; index ++ ) {
-                var byte = long & 0xff;
+            let byteArray = [0, 0, 0, 0];
+            // we want to represent the input as a 4-bytes array
+            for ( let index = 0; index < byteArray.length; index ++ ) {
+                let byte = long & 0xff;
                 byteArray [ index ] = byte;
                 long = (long - byte) / 256 ;
             }
