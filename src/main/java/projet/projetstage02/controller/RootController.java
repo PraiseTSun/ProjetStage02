@@ -72,11 +72,13 @@ public class RootController {
 
     @PostMapping("/createOffre")
     public ResponseEntity<Map<String, String>> createOffre(@RequestBody OffreDTO offreDTO) throws IOException {
+
         if(offreDTO.getPdf() == null || offreDTO.getNomDeCompagnie() == null || offreDTO.getAdresse() == null
             || offreDTO.getPosition() == null || offreDTO.getDepartment() == null
                 || offreDTO.getHeureParSemaine() == 0 ){
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
+        /**
         if(!offreService.valide(offreDTO.getPdf())){
             return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY)
                     .body(getError("Doit être un fichier pdf"));
@@ -86,7 +88,8 @@ public class RootController {
             return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY)
                     .body(getError("PDF ne peut pas être vide"));
         }
-        offreService.createOffre(offreDTO);
+         **/
+       // offreService.createOffre(offreDTO);
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 

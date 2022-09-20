@@ -87,17 +87,20 @@ public class ProjetStage02Application implements CommandLineRunner {
 
 //créer deux offre avec pdf
         // un
-        OffreDTO offreDTO = new OffreDTO( "nom", "department", "position" ,
-                40, "adresse", new File("test.pdf"));
-        long offreid = offreService.createOffre(offreDTO);
+      //  OffreDTO offreDTO = new OffreDTO( "nom", "department", "position" ,
+      //          40, "adresse", new File("test.pdf"));
+      //  long offreid = offreService.createOffre(offreDTO);
         // deux
-        OffreDTO offreDTO1 = new OffreDTO( "nom", "department", "position" ,
-                40, "adresse", new File("test1.pdf"));
-        long offreid1 = offreService.createOffre(offreDTO1);
+      //  OffreDTO offreDTO1 = new OffreDTO( "nom", "department", "position" ,
+       //         40, "adresse", new File("test1.pdf"));
+       // long offreid1 = offreService.createOffre(offreDTO1);
         // afficher
+     //   OffreDTO offreDTO1 = new OffreDTO( "nom", "department", "position" ,
+     //                    40, "adresse", "wowoowowowo");
+       // long offreid = offreService.createOffre(offreDTO1);
         System.out.println(offreService.findOffre());
 // tester fonction isVide et valide du pdf
-        File file = new File("test2.pdf");
+        File file = new File("nom.pdf");
         try{
             System.out.println(offreService.isVide(file));
         }catch (Exception e){

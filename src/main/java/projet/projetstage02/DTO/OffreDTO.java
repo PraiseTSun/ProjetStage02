@@ -16,5 +16,5 @@ public class OffreDTO {
     private String position;
     private int heureParSemaine;
     private String adresse;
-    private File pdf;
+    private byte[] pdf;
 }

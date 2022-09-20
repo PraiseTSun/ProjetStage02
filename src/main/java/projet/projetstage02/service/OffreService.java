@@ -1,5 +1,6 @@
 package projet.projetstage02.service;
 
+import com.itextpdf.text.pdf.PdfReader;
 import org.apache.pdfbox.pdfparser.PDFParser;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.util.PDFTextStripper;
@@ -8,10 +9,7 @@ import projet.projetstage02.DTO.OffreDTO;
 import projet.projetstage02.modele.Offre;
 import projet.projetstage02.repository.OffreRepository;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 import java.util.List;
 
 @Component
@@ -21,14 +19,50 @@ public class OffreService {
     public OffreService(OffreRepository offreRepository) {
         this.offreRepository = offreRepository;
     }
+    /*
+     public long createOffre(OffreDTO offreDTO){
 
-    public long createOffre(OffreDTO offreDTO){
+         File file = new File("nom.pdf");
+         System.out.println("ici");
+         PrintWriter writer = null;
+         try {
+             writer = new PrintWriter(new FileOutputStream("nom.pdf"));
 
-        Offre offre = new Offre(offreDTO.getNomDeCompagnie(), offreDTO.getDepartment(), offreDTO.getPosition(),
-                offreDTO.getHeureParSemaine(), offreDTO.getAdresse(), offreDTO.getPdf());
-        return offreRepository.save(offre).getId();
+             StringBuffer content = new StringBuffer(offreDTO.getPdf()); // 存放读取出的文档内容
 
+             writer.write(content.toString());// 写入文件内容
+             writer.flush();
+             writer.close();
+         } catch (IOException e) {
+             e.printStackTrace();
+         }
+
+        // File file = toFile(offreDTO.getPdf(),"nom.pdf");
+         Offre offre = new Offre(offreDTO.getNomDeCompagnie(), offreDTO.getDepartment(), offreDTO.getPosition(),
+                 offreDTO.getHeureParSemaine(), offreDTO.getAdresse(), file);
+         return offreRepository.save(offre).getId();
+
+     } */
+    private File toFile(String content,String filePath) {
+        try {
+            File f = new File(filePath);
+            if (!f.exists()) {
+                f.createNewFile();
+            }
+            System.out.println("Write PDF Content to txt file ...");
+            BufferedWriter output = new BufferedWriter(new FileWriter(f));
+            output.write(content);
+            output.flush();
+            output.close();
+            BufferedReader in = new BufferedReader(new InputStreamReader(new FileInputStream("nom.pdf")));
+            System.out.println("lire : "+in.readLine());
+            return f;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
     }
+
     public List<Offre> findOffre(){
         return offreRepository.findAll();
     }
@@ -46,10 +80,13 @@ public class OffreService {
         PDDocument document = null;
 
         try {
+            System.out.println("1");
             input = new FileInputStream(pdf);
             // charger un document pdf
             PDFParser parser = new PDFParser(input);
+
             parser.parse();
+            System.out.println("2");
             document = parser.getPDDocument();
             // Obtenir des informations sur le contenu
             PDFTextStripper pts = new PDFTextStripper();
@@ -74,12 +111,14 @@ public class OffreService {
                 document.close();
         }
 
+
         return content == null;
     }
 
     public boolean valide(File pdf) {
         if(pdf.isFile()) {
             String pdfNom = pdf.getName().toLowerCase();
+            System.out.println("pdfNOm : " + pdfNom);
             return pdfNom.endsWith(".pdf");
         }
         return false;
