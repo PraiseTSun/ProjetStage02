@@ -6,11 +6,14 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import projet.projetstage02.DTO.CompanyDTO;
 import projet.projetstage02.DTO.GestionnaireDTO;
+import projet.projetstage02.DTO.OffreDTO;
 import projet.projetstage02.DTO.StudentDTO;
 import projet.projetstage02.service.CompanyService;
 import projet.projetstage02.service.GestionnaireService;
+import projet.projetstage02.service.OffreService;
 import projet.projetstage02.service.StudentService;
 
+import java.io.IOException;
 import java.time.LocalDateTime;
 import java.sql.Timestamp;
 import java.util.HashMap;
@@ -27,6 +30,8 @@ public class RootController {
     @Autowired
     GestionnaireService gestionnaireService;
 
+    @Autowired
+    OffreService offreService;
     private final long MILLI_SECOND_DAY = 864000000;
 
     @PostMapping("/createStudent")
@@ -62,6 +67,26 @@ public class RootController {
         long id = gestionnaireService.saveGestionnaire(gestionnaireDTO);
         gestionnaireDTO.setId(String.valueOf(id));
         gestionnaireService.sendConfirmationMail(gestionnaireDTO.getClassOrigin());
+        return ResponseEntity.status(HttpStatus.CREATED).build();
+    }
+
+    @PostMapping("/createOffre")
+    public ResponseEntity<Map<String, String>> createOffre(@RequestBody OffreDTO offreDTO) throws IOException {
+        if(offreDTO.getPdf() == null || offreDTO.getNomDeCompagie() == null || offreDTO.getAdresse() == null
+            || offreDTO.getPosition() == null || offreDTO.getDepartment() == null
+                || offreDTO.getHeureParSemaine() == 0 ){
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
+        if(!offreService.valide(offreDTO.getPdf())){
+            return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY)
+                    .body(getError("Doit être un fichier pdf"));
+        }
+
+        if(offreService.isVide(offreDTO.getPdf())){
+            return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY)
+                    .body(getError("PDF ne peut pas être vide"));
+        }
+        offreService.createOffre(offreDTO);
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 

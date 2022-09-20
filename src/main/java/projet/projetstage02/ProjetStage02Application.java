@@ -10,12 +10,15 @@ import org.springframework.mail.javamail.JavaMailSenderImpl;
 
 import projet.projetstage02.DTO.CompanyDTO;
 import projet.projetstage02.DTO.GestionnaireDTO;
+import projet.projetstage02.DTO.OffreDTO;
 import projet.projetstage02.DTO.StudentDTO;
 import projet.projetstage02.modele.AbstractUser;
 import projet.projetstage02.service.CompanyService;
 import projet.projetstage02.service.GestionnaireService;
+import projet.projetstage02.service.OffreService;
 import projet.projetstage02.service.StudentService;
 
+import java.io.*;
 import java.util.Properties;
 
 @SpringBootApplication
@@ -30,6 +33,8 @@ public class ProjetStage02Application implements CommandLineRunner {
     @Autowired
     private GestionnaireService gestionnaireService;
 
+    @Autowired
+    private OffreService offreService;
     public static void main(String[] args) {
         SpringApplication.run(ProjetStage02Application.class, args);
     }
@@ -79,5 +84,25 @@ public class ProjetStage02Application implements CommandLineRunner {
         System.out.println(studentService.getUserByEmailPassword("Samir@gmail.com", "cooldude"));
         System.out.println(companyService.getUserByEmailPassword("Bob@bell.com", "bestcompany"));
         System.out.println(gestionnaireService.getUserByEmailPassword("dave@gmail.ca", "cooldude"));
+
+//créer deux offre avec pdf
+        // un
+        OffreDTO offreDTO = new OffreDTO( "nom", "department", "position" ,
+                40, "adresse", new File("test.pdf"));
+        long offreid = offreService.createOffre(offreDTO);
+        // deux
+        OffreDTO offreDTO1 = new OffreDTO( "nom", "department", "position" ,
+                40, "adresse", new File("test1.pdf"));
+        long offreid1 = offreService.createOffre(offreDTO1);
+        // afficher
+        System.out.println(offreService.findOffre());
+// tester fonction isVide et valide du pdf
+        File file = new File("test2.pdf");
+        try{
+            System.out.println(offreService.isVide(file));
+        }catch (Exception e){
+
+        }
+        System.out.println(offreService.valide(file));
     }
 }
