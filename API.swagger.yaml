@@ -310,70 +310,16 @@ paths:
               adresse:
                 type: string
               pdf:
-                type: string
+                type: array
       produces:
         - application/json
       responses:
         200:
-          description: DTO de l'offre
-          schema:
-            type: object
-            properties:
-              nomDeCompagie:
-                type: string
-              department:
-                type: string
-              position:
-                type: string
-              heureParSemaine:
-                type: integer
-              adresse:
-                type: string
-              pdf:
-                type: string
+          description: Ne retourne rien
         404:
-          description: Les champs ne sont pas être vide ou PDF ne valide pas
-  /offre:
-    put:
-      summary: Retour d'un DTO Offre avec si offre est valide.
-      parameters:
-        - in: body
-          name: Paramètres
-          description: Nom de compagie department position heur par semaine adresse et pdf
+          description: Les champs ne peuvent pas être vide
           schema:
             type: object
             properties:
-              nomDeCompagie:
+              error:
                 type: string
-              department:
-                type: string
-              position:
-                type: string
-              heurParSemaine:
-                type: integer
-              adresse:
-                type: string
-              pdf:
-                type: string
-      produces:
-        - application/json
-      responses:
-        200:
-          description: DTO de l'offre
-          schema:
-            type: object
-            properties:
-              nomDeCompagie:
-                type: string
-              department:
-                type: string
-              position:
-                type: string
-              heureParSemaine:
-                type: integer
-              adresse:
-                type: string
-              pdf:
-                type: string
-        404:
-          description: Trouve pas cet offre
