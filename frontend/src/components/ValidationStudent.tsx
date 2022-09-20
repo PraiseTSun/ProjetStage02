@@ -28,7 +28,6 @@ const ValidationStudent = ({ onValidation, onRemove }: { onValidation: Function,
             .then(data => {
                 setStudents(data)
             });
-        console.log("load");
     }, []);
 
     return(
