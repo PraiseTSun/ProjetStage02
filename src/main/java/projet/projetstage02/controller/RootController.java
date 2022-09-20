@@ -72,7 +72,7 @@ public class RootController {
 
     @PostMapping("/createOffre")
     public ResponseEntity<Map<String, String>> createOffre(@RequestBody OffreDTO offreDTO) throws IOException {
-        if(offreDTO.getPdf() == null || offreDTO.getNomDeCompagie() == null || offreDTO.getAdresse() == null
+        if(offreDTO.getPdf() == null || offreDTO.getNomDeCompagnie() == null || offreDTO.getAdresse() == null
             || offreDTO.getPosition() == null || offreDTO.getDepartment() == null
                 || offreDTO.getHeureParSemaine() == 0 ){
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();

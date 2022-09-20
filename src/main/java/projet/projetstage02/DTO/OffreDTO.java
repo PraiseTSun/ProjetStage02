@@ -11,7 +11,7 @@ import java.io.File;
 @AllArgsConstructor
 public class OffreDTO {
 
-    private String nomDeCompagie;
+    private String nomDeCompagnie;
     private String department;
     private String position;
     private int heureParSemaine;

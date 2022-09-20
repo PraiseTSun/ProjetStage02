@@ -24,7 +24,7 @@ public class OffreService {
 
     public long createOffre(OffreDTO offreDTO){
 
-        Offre offre = new Offre(offreDTO.getNomDeCompagie(), offreDTO.getDepartment(), offreDTO.getPosition(),
+        Offre offre = new Offre(offreDTO.getNomDeCompagnie(), offreDTO.getDepartment(), offreDTO.getPosition(),
                 offreDTO.getHeureParSemaine(), offreDTO.getAdresse(), offreDTO.getPdf());
         return offreRepository.save(offre).getId();
 

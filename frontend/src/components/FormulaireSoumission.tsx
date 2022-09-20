@@ -10,13 +10,13 @@ const FormulaireSoumission = (): JSX.Element => {
     const [poste, setPoste] = useState("")
     const [hoursPerWeek, setHoursPerWeek] = useState(40)
     const [address, setAddress] = useState("")
-    const [pdf, setPdf] = useState({})
+    const [pdf, setPdf] = useState("")
 
 
-    const onSubmit = (event: React.SyntheticEvent): void => {
+    const onSubmit = async (event: React.SyntheticEvent): Promise<void> => {
         event.preventDefault();
         const obj = {
-            nomDeCompagie:company,
+            nomDeCompagnie:company,
             department:department,
             position:poste,
             heureParSemaine:hoursPerWeek,
@@ -29,7 +29,9 @@ const FormulaireSoumission = (): JSX.Element => {
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify(obj)
         };
-        fetch("localhost:8080/createOffre",headers)
+        const res = await fetch("http://localhost:8080/createOffre",headers)
+        const data = await res.json()
+        console.log(data)
 
     }
     const hoursRegEx = new RegExp(
@@ -41,6 +43,12 @@ const FormulaireSoumission = (): JSX.Element => {
         }else{
             setHoursPerWeek(hoursPerWeek)
         }
+    }
+
+    const uploadFile = async (file:File) => {
+        const fileText = await file.text()
+        console.log(fileText);
+        setPdf(fileText)
     }
     return (<>
         <Container className="d-flex justify-content-center">
@@ -84,7 +92,7 @@ const FormulaireSoumission = (): JSX.Element => {
                     <Form.Group>
                         <Form.Label className="fw-bold h5">Document PDF</Form.Label>
                         <input className="form-control" accept=".pdf" 
-                        required type="file" onChange={(e) =>{ setPdf(e.target.files![0]); console.log(pdf)}} />
+                        required type="file" onChange={(e) =>{  uploadFile(e.target.files![0]); console.log(pdf)}} />
                     </Form.Group>
                     <Row className="mt-3">
                         <Col className="text-center">
