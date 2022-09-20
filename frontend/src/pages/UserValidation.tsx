@@ -39,8 +39,19 @@ const UserValidation = () => {
     }
 
     const getInfo = async(type: string) =>{
-        return fetch(`http://localhost:8080/unvalidated${type}`)
-            .then(response => response.json());
+        return fetch(`http://localhost:8080/unvalidated${type}`,
+            {
+                method: "GET",
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json',
+                },
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log(data);
+                return data;
+            });
     }
 
     return (
@@ -59,7 +70,7 @@ const UserValidation = () => {
                 </ToggleButtonGroup>
             </Row>
             <Row>
-                {user == "Student" ? <ValidationStudent getInfo={getInfo} onRemove={onRemove} onValidation={onValidation}/> :
+                {user == "Student" ? <ValidationStudent onRemove={onRemove} onValidation={onValidation}/> :
                  user == "Company" ? <ValidationCompany getInfo={getInfo} onRemove={onRemove} onValidation={onValidation}/> :
                      <ValidationGetionnaire/>
                 }
