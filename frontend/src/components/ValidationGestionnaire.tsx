@@ -1,7 +1,7 @@
 import React, {useState} from "react";
 import {Col, Form, Row} from "react-bootstrap";
 
-const ValidationGetionnaire = () => {
+const ValidationGestionnaire = () => {
     const [firstName, setFirstName] = useState("");
     const [lastName, setLastName] = useState("");
     const [email, setEmail] = useState("");
@@ -16,7 +16,7 @@ const ValidationGetionnaire = () => {
         event.preventDefault();
 
         if (password !== confirmPassword) {
-            alert("La confirmation du mot de passe n'est pas parèlle.")
+            alert("La confirmation du mot de passe n'est pas pareille.")
             return;
         }
 
@@ -26,10 +26,9 @@ const ValidationGetionnaire = () => {
         }
 
 
-
         const res = await fetch(`http://localhost:8080/createGestionnaire`,
             {
-                method: 'PUT',
+                method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                 },
@@ -93,7 +92,6 @@ const ValidationGetionnaire = () => {
                         </Form.Group>
                     </Col>
                 </Row>
-                {/*{isInvalidLoggin ? <h5 className="text-danger fw-bold text-center mt-2">Courriel ou mot de passe invalide!</h5> : <></>}*/}
                 <Row className="mt-3">
                     <Col className="text-center">
                         <Form.Control type="submit" value="Enregistrer" className="btn btn-success mx-auto"></Form.Control>
@@ -104,4 +102,4 @@ const ValidationGetionnaire = () => {
     );
 }
 
-export default ValidationGetionnaire;
+export default ValidationGestionnaire;

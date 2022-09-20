@@ -8,7 +8,6 @@ import UserValidation from './pages/UserValidation';
 function App() {
   const [user, setUser] = useState("")
 
-  return <UserValidation/>
   if (!user) {
     return <LoginPage setUser={setUser} />;
   }

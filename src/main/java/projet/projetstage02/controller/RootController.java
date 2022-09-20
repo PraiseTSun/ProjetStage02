@@ -54,7 +54,7 @@ public class RootController {
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
-    @PostMapping("/createGestionaire")
+    @PostMapping("/createGestionnaire")
     public ResponseEntity<Map<String, String>> createGestionnaire(@RequestBody GestionnaireDTO gestionnaireDTO) {
         if (!gestionnaireService.isUniqueEmail(gestionnaireDTO.getEmail())) {
             return ResponseEntity.status(HttpStatus.CONFLICT).body(getError("Cette adresse email est déjà utilisée."));

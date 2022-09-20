@@ -1,19 +1,18 @@
 import React, {useEffect, useState} from "react";
 import {Button, Col, Row} from "react-bootstrap";
-import myDebugger from "../Debuger/CompanyDebugger.json";
 
 const ValidationCompany = ({ onValidation, onRemove}: { onValidation: Function, onRemove: Function }) => {
     const user = "Company";
-    const [comapnies, setCompanies] = useState<any[]>([]);
+    const [companies, setCompanies] = useState<any[]>([]);
 
     function approve(id: string, index: number){
         onValidation(id, user);
-        setCompanies(comapnies.splice(index + 1, 1));
+        setCompanies(companies.splice(index + 1, 1));
     }
 
     function remove(id: string, index : number){
         onRemove(id, user);
-        setCompanies(comapnies.splice(index + 1, 1));
+        setCompanies(companies.splice(index + 1, 1));
     }
 
     useEffect(() => {
@@ -33,7 +32,7 @@ const ValidationCompany = ({ onValidation, onRemove}: { onValidation: Function, 
 
     return(
         <Col>
-            {comapnies.map((data, idx) => {
+            {companies.map((data, idx) => {
                 return (
                     <div key={data.id}>
                         <Row className="square border-bottom bg-light py-3">

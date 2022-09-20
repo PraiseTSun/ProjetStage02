@@ -1,13 +1,11 @@
-import React, {useEffect, useState} from "react";
+import React, {useState} from "react";
 import {Col, Row, ToggleButton, ToggleButtonGroup } from "react-bootstrap";
 import ValidationStudent from "../components/ValidationStudent";
 import ValidationCompany from "../components/ValidationCompany";
-import ValidationGetionnaire from "../components/ValidationGetionnaire";
+import ValidationGestionnaire from "../components/ValidationGestionnaire";
 
 const UserValidation = () => {
     const [user, setUser] = useState("Student");
-    // const [info, setinfo] = useState([]);
-    // const [users, setUsers] = useState([]);
 
     const onValidation = async (id: string, type: string) =>{
         const res = await fetch(`http://localhost:8080/validate${type}/${id}`,
@@ -39,36 +37,6 @@ const UserValidation = () => {
         }
     }
 
-    // const getInfo = async(type: string) =>{
-    //     return fetch(`http://localhost:8080/unvalidated${type}`,
-    //         {
-    //             method: "GET",
-    //             headers: {
-    //                 'Accept': 'application/json',
-    //                 'Content-Type': 'application/json',
-    //             },
-    //         })
-    //         .then(response => response.json())
-    //         .then(data => {
-    //             setUsers(data)
-    //         });
-    // }
-
-    // useEffect(() => {
-    //     fetch(`http://localhost:8080/unvalidatedStudents`,
-    //         {
-    //             method: "GET",
-    //             headers: {
-    //                 'Accept': 'application/json',
-    //                 'Content-Type': 'application/json',
-    //             },
-    //         })
-    //         .then(response => response.json())
-    //         .then(data => {
-    //             setUsers(data)
-    //         });
-    // }, []);
-
     return (
         <Col className="vh-100 p-lg-5">
             <Row className="p-0">
@@ -87,7 +55,7 @@ const UserValidation = () => {
             <Row>
                 {user == "Student" ? <ValidationStudent onRemove={onRemove} onValidation={onValidation}/> :
                  user == "Company" ? <ValidationCompany onRemove={onRemove} onValidation={onValidation}/> :
-                     <ValidationGetionnaire/>
+                     <ValidationGestionnaire/>
                 }
             </Row>
         </Col>
