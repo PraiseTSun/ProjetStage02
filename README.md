@@ -27,3 +27,9 @@ Notre définition de Done est:
 > Lorsque le code a été Code Review par quelqu'un d'autre.
 
 > Lorsque le plan de démo à été testé à fond.
+
+## Point d'action
+
+- Faire toutes les stories en peer 
+- Avoir une pratique de démo à fin du sprint
+
