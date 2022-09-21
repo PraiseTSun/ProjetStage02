@@ -11,6 +11,7 @@ const FormulaireSoumission = (): JSX.Element => {
     const [hoursPerWeek, setHoursPerWeek] = useState(40)
     const [address, setAddress] = useState("")
     const [pdf, setPdf] = useState([0])
+    const [pdfString, setPdfString] = useState("")
 
 
     const onSubmit = async (event: React.SyntheticEvent): Promise<void> => {
@@ -33,6 +34,15 @@ const FormulaireSoumission = (): JSX.Element => {
         if(!res.ok){
             const data = await res.json()
             console.log(data)
+        }else{
+            setCompany("")
+            setAddress("")
+            setPoste("")
+            setDepartment("")
+            setHoursPerWeek(40)
+            setPdfString("")
+            setPdf([])
+            alert("Formulaire envoyé")
         }
 
     }
@@ -114,7 +124,9 @@ const FormulaireSoumission = (): JSX.Element => {
                     <Form.Group>
                         <Form.Label className="fw-bold h5">Document PDF</Form.Label>
                         <input className="form-control" accept=".pdf" 
-                        required type="file" onChange={(e) =>{  uploadFile(e.target.files![0]);}} />
+                        required value={pdfString} type="file" onChange={(e) =>{  
+                            uploadFile(e.target.files![0]);
+                            setPdfString(e.target.value)}} />
                     </Form.Group>
                     <Row className="mt-3">
                         <Col className="text-center">
