@@ -25,3 +25,5 @@ Notre définition de Done est:
 > On a une demo fonctionnel.
 
 > Lorsque le code a été Code Review par quelqu'un d'autre.
+
+> Lorsque le plan de démo à été testé à fond.
