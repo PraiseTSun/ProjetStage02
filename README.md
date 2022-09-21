@@ -30,6 +30,6 @@ Notre définition de Done est:
 
 ## Point d'action
 
-- Faire toutes les stories en peer 
+- Garder la meme peer pour toute la story
 - Avoir une pratique de démo à fin du sprint
 
