@@ -31,7 +31,7 @@ const ValidationStudent = ({ onValidation, onRemove }: { onValidation: Function,
     }, []);
 
     return(
-        <Col>
+        <Col className="mx-3">
             {students.map((data, idx) => {
                 return (
                     <div key={data.id}>

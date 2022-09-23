@@ -1,16 +1,16 @@
-import React, {useEffect, useState} from "react";
-import {Button, Col, Row} from "react-bootstrap";
+import React, { useEffect, useState } from "react";
+import { Button, Col, Row } from "react-bootstrap";
 
-const ValidationCompany = ({ onValidation, onRemove}: { onValidation: Function, onRemove: Function }) => {
+const ValidationCompany = ({ onValidation, onRemove }: { onValidation: Function, onRemove: Function }) => {
     const user = "Company";
     const [companies, setCompanies] = useState<any[]>([]);
 
-    function approve(id: string, index: number){
+    function approve(id: string, index: number) {
         onValidation(id, user);
         setCompanies(companies.splice(index + 1, 1));
     }
 
-    function remove(id: string, index : number){
+    function remove(id: string, index: number) {
         onRemove(id, user);
         setCompanies(companies.splice(index + 1, 1));
     }
@@ -30,18 +30,18 @@ const ValidationCompany = ({ onValidation, onRemove}: { onValidation: Function, 
             });
     }, []);
 
-    return(
-        <Col>
+    return (
+        <Col className="mx-3">
             {companies.map((data, idx) => {
                 return (
                     <div key={data.id}>
                         <Row className="square border-bottom bg-light py-3">
                             <div className="d-flex justify-content-between">
-                                <div className="my-auto">{data.name}</div>
+                                <div className="my-auto">{data.companyName}</div>
                                 <div className="my-auto">{data.department}</div>
                                 <div>
                                     <Button className="me-2" variant="success" onClick={() => approve(data.id, idx)}>O</Button>
-                                    <Button variant="danger"  onClick={() => remove(data.id, idx)}>X</Button>
+                                    <Button variant="danger" onClick={() => remove(data.id, idx)}>X</Button>
                                 </div>
                             </div>
                         </Row>

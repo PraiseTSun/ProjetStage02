@@ -2,8 +2,7 @@ import React from "react";
 import { Button, Container, Form, FormGroup, Row } from "react-bootstrap";
 import { useState } from "react";
 
-const FormulaireEntreprise = ({ onInscrire }:
-    { onInscrire: Function }) => {
+const FormulaireEntreprise = ({ onInscrire }: { onInscrire: Function }) => {
 
     const [nom, setNom] = useState("")
     const [prenom, setPrenom] = useState("")
@@ -37,7 +36,7 @@ const FormulaireEntreprise = ({ onInscrire }:
         }
 
         onInscrire({
-            lastName: nom, firstName: prenom, name: entreprise, department: departement,
+            lastName: nom, firstName: prenom, companyName: entreprise, department: departement,
             email: courriel, password: motDePasse
         }, 'Company')
 
