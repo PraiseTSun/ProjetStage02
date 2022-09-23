@@ -1,31 +1,36 @@
-package projet.projetstage02.service;
+package projet.projetstage02.utils;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Lazy;
 import org.springframework.mail.MailException;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
-import projet.projetstage02.exception.NonExistentUserException;
+import org.springframework.mail.javamail.JavaMailSenderImpl;
 import projet.projetstage02.modele.AbstractUser;
 import projet.projetstage02.modele.Company;
 import projet.projetstage02.modele.Student;
 
-import java.util.List;
+import java.util.Properties;
 
-public abstract class AbstractService<T> {
-    public abstract boolean isUniqueEmail(String email);
+public class EmailUtil {
 
-    public abstract T getUserById(Long id) throws NonExistentUserException;
+    public static JavaMailSender getJavaMailSender() {
+        JavaMailSenderImpl mailSender = new JavaMailSenderImpl();
+        mailSender.setHost("smtp-mail.outlook.com");
+        mailSender.setPort(587);
+        mailSender.setUsername("osekillerservice@outlook.com");
+        mailSender.setPassword("osekiller123");
+        Properties props = mailSender.getJavaMailProperties();
+        props.put("mail.smtp.host", "smtp-mail.outlook.com");
+        props.put("mail.smtp.port", "587");
+        props.put("mail.smtp.starttls.enable", "true");
+        props.put("mail.smtp.auth", "true");
+        props.put("mail.transport.protocol", "smtp");
+        props.put("mail.smtp.ssl.protocols", "TLSv1.2");
+        props.put("mail.debug", "true");
+        return mailSender;
+    }
 
-    public abstract T getUserByEmailPassword(String email, String password) throws NonExistentUserException;
 
-    public abstract List<T> getUnvalidatedUsers();
-
-    @Lazy
-    @Autowired
-    private JavaMailSender mailSender;
-
-    public boolean sendConfirmationMail(AbstractUser user) {
+    public static boolean sendConfirmationMail(AbstractUser user) {
         String userMail = user.getEmail();
         String userId = String.valueOf(user.getId());
         String userType = user instanceof Student ? "student" : user instanceof Company ? "company" : "gestionaire";
@@ -45,7 +50,7 @@ public abstract class AbstractService<T> {
                 Vous avez 24 pour confirmer votre adresse
                 """);
         try {
-            mailSender.send(mail);
+            getJavaMailSender().send(mail);
         } catch (MailException e) {
             return false;
         }
