@@ -74,7 +74,7 @@ const ValidationGestionnaire = () => {
                 </Row>
                 <Row>
                     <Form.Group>
-                        <Form.Label className="fw-bold mt-2 h5">Email</Form.Label>
+                        <Form.Label className="fw-bold mt-2 h5">Courriel</Form.Label>
                         <Form.Control type="email" required value={email} onChange={field => setEmail(field.target.value)}></Form.Control>
                     </Form.Group>
                 </Row>
@@ -87,7 +87,7 @@ const ValidationGestionnaire = () => {
                     </Col>
                     <Col>
                         <Form.Group>
-                            <Form.Label className="fw-bold mt-2 h5">Confirme mot de passe</Form.Label>
+                            <Form.Label className="fw-bold mt-2 h5">Confirmer le mot de passe</Form.Label>
                             <Form.Control type="password" required value={confirmPassword} onChange={field => setConfirmPassword(field.target.value)}></Form.Control>
                         </Form.Group>
                     </Col>

@@ -1,6 +1,8 @@
 import React from "react";
 import { useState } from "react";
 import { Form, Row, Col, ToggleButton, ToggleButtonGroup, Button } from "react-bootstrap";
+import { LOCAL_STORAGE_KEY } from '../App';
+import IUser from '../models/IUser';
 
 const LoginForm = (props: { setUser: Function }): JSX.Element => {
     const [validated, setValidated] = useState(false);
@@ -9,7 +11,7 @@ const LoginForm = (props: { setUser: Function }): JSX.Element => {
     const [userType, setUserType] = useState("student")
     const [isInvalidLoggin, setIsInvalidLoggin] = useState(false);
 
-    const onSubmit = (event: React.SyntheticEvent): void => {
+    const onSubmit = async (event: React.SyntheticEvent) => {
         const form: any = event.currentTarget;
         event.preventDefault();
 
@@ -22,18 +24,18 @@ const LoginForm = (props: { setUser: Function }): JSX.Element => {
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ "email": email, "password": password })
             };
-            fetch("http://localhost:8080/" + userType, headers)
-                .then(response => {
-                    if (response.ok) return response.json()
-                    else setIsInvalidLoggin(true)
-                })
-                .then(data => {
-                    if (data) props.setUser({
+            const res = await fetch("http://localhost:8080/" + userType, headers)
+                if (res.ok) {
+                    const data = await res.json()
+                    const user:IUser = {
                         firstName: data.firstName,
                         lastName: data.lastName,
-                        userType: userType,
-                    })
-                });
+                        userType: userType
+                    }
+                    props.setUser(user)
+                    localStorage.setItem(LOCAL_STORAGE_KEY,JSON.stringify(user))
+                }else setIsInvalidLoggin(true)
+            
         }
 
         setValidated(true);
