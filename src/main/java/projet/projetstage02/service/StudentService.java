@@ -22,14 +22,16 @@ public class StudentService {
                             String email,
                             String password,
                             AbstractUser.Department department) {
-        StudentDTO dto = new StudentDTO(
-                firstName,
-                lastName,
-                email.toLowerCase(),
-                password,
-                false,
-                Timestamp.valueOf(LocalDateTime.now()).getTime(),
-                department.departement);
+        StudentDTO dto = StudentDTO.builder()
+                .firstName(firstName)
+                .lastName(lastName)
+                .email(email.toLowerCase())
+                .password(password)
+                .department(department.departement)
+                .isConfirmed(false)
+                .emailConfirmed(false)
+                .inscriptionTimestamp(Timestamp.valueOf(LocalDateTime.now()).getTime())
+                .build();
         saveStudent(dto);
     }
 

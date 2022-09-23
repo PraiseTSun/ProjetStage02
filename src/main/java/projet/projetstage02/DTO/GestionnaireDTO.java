@@ -1,21 +1,16 @@
 package projet.projetstage02.DTO;
 
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
-import lombok.ToString;
+import lombok.*;
+import lombok.experimental.SuperBuilder;
 import projet.projetstage02.model.Gestionnaire;
 
 @Data
 @EqualsAndHashCode(callSuper = false)
 @NoArgsConstructor
+@SuperBuilder
 @ToString(callSuper = true)
 public class GestionnaireDTO extends AbstractUserDTO<Gestionnaire> {
 
-    public GestionnaireDTO(String firstName, String lastName, String email, String password, boolean isConfirmed,
-            long inscriptionTimestamp) {
-        super(0L, firstName, lastName, email, password, isConfirmed, inscriptionTimestamp, false);
-    }
 
     public GestionnaireDTO(Gestionnaire gestionnaire) {
         id = gestionnaire.getId();

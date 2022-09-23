@@ -32,16 +32,17 @@ public class CompanyService {
 
     public void saveCompany(String firstName, String lastName, String name, String email, String password,
                             AbstractUser.Department department) {
-        CompanyDTO dto = new CompanyDTO(
-                firstName,
-                lastName,
-                email.toLowerCase(),
-                password,
-                false,
-                Timestamp.valueOf(LocalDateTime.now()).getTime(),
-                false,
-                department.departement,
-                name);
+        CompanyDTO dto = CompanyDTO.builder()
+                .firstName(firstName)
+                .lastName(lastName)
+                .email(email.toLowerCase())
+                .password(password)
+                .isConfirmed(false)
+                .inscriptionTimestamp(Timestamp.valueOf(LocalDateTime.now()).getTime())
+                .emailConfirmed(true)
+                .department(department.departement)
+                .companyName(name)
+                .build();
         saveCompany(dto);
     }
 

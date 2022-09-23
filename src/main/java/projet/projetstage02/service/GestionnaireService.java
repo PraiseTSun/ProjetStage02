@@ -23,13 +23,14 @@ public class GestionnaireService{
     private final StudentRepository studentRepository;
 
     public void saveGestionnaire(String firstname, String lastname, String email, String password) {
-        GestionnaireDTO dto = new GestionnaireDTO(
-                firstname,
-                lastname,
-                email.toLowerCase(),
-                password,
-                false,
-                Timestamp.valueOf(LocalDateTime.now()).getTime());
+        GestionnaireDTO dto = GestionnaireDTO.builder()
+                .firstName(firstname)
+                .lastName(lastname)
+                .email(email.toLowerCase())
+                .password(password)
+                .isConfirmed(true)
+                .inscriptionTimestamp(Timestamp.valueOf(LocalDateTime.now()).getTime())
+                .build();
         saveGestionnaire(dto);
     }
 

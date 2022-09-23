@@ -1,38 +1,20 @@
 package projet.projetstage02.DTO;
 
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
-import lombok.ToString;
+import lombok.*;
+import lombok.experimental.SuperBuilder;
 import projet.projetstage02.model.AbstractUser;
 import projet.projetstage02.model.Company;
 
 @Data
 @EqualsAndHashCode(callSuper = false)
 @NoArgsConstructor
+@AllArgsConstructor
+@SuperBuilder()
 @ToString(callSuper = true)
 public class CompanyDTO extends AbstractUserDTO<Company> {
     private String department;
-    private String name;
+    private String companyName;
 
-    public CompanyDTO(String firstName,
-            String lastName,
-            String email,
-            String password,
-            boolean isConfirmed,
-            long inscriptionTimestamp,
-            boolean emailConfirmed,
-            String department,
-            String name) {
-        super(0L, firstName, lastName, email, password, isConfirmed, inscriptionTimestamp, emailConfirmed);
-        this.department = department;
-        this.name = name;
-    }
-
-    public CompanyDTO(String department, String name) {
-        this.department = department;
-        this.name = name;
-    }
 
     public CompanyDTO(Company company) {
         id = company.getId();
@@ -42,7 +24,7 @@ public class CompanyDTO extends AbstractUserDTO<Company> {
         password = company.getPassword();
         isConfirmed = company.isConfirm();
         department = company.getDepartment().departement;
-        name = company.getName();
+        companyName = company.getName();
         inscriptionTimestamp = company.getInscriptionTimestamp();
         emailConfirmed = company.isEmailConfirmed();
     }
@@ -55,7 +37,7 @@ public class CompanyDTO extends AbstractUserDTO<Company> {
                 email,
                 password,
                 AbstractUser.Department.getDepartment(department),
-                name,
+                companyName,
                 inscriptionTimestamp,
                 emailConfirmed);
         company.setId(id);
