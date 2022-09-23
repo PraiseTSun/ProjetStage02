@@ -1,4 +1,4 @@
-package projet.projetstage02.modele;
+package projet.projetstage02.model;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -12,23 +12,28 @@ import javax.persistence.Entity;
 @EqualsAndHashCode(callSuper = false)
 @NoArgsConstructor
 @ToString(callSuper = true)
-public class Student extends AbstractUser {
+public class Company extends AbstractUser {
     private Department department;
+    private String name;
 
-    public Student(String firstName, String lastName, String email, String password, Department department) {
+    public Company(String firstName, String lastName, String email, String password, Department department,
+            String name) {
         super(firstName, lastName, email, password);
         this.department = department;
+        this.name = name;
     }
 
-    public Student(
+    public Company(
             String firstName,
             String lastName,
             String email,
             String password,
             Department department,
+            String name,
             long inscriptionTimestamp,
             boolean emailConfirmed) {
         super(firstName, lastName, email, password, inscriptionTimestamp, emailConfirmed);
         this.department = department;
+        this.name = name;
     }
 }

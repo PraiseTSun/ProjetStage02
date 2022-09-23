@@ -4,8 +4,8 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
-import projet.projetstage02.modele.AbstractUser;
-import projet.projetstage02.modele.Company;
+import projet.projetstage02.model.AbstractUser;
+import projet.projetstage02.model.Company;
 
 @Data
 @EqualsAndHashCode(callSuper = false)
@@ -24,7 +24,7 @@ public class CompanyDTO extends AbstractUserDTO<Company> {
             boolean emailConfirmed,
             String department,
             String name) {
-        super("0", firstName, lastName, email, password, isConfirmed, inscriptionTimestamp, emailConfirmed);
+        super(0L, firstName, lastName, email, password, isConfirmed, inscriptionTimestamp, emailConfirmed);
         this.department = department;
         this.name = name;
     }
@@ -35,7 +35,7 @@ public class CompanyDTO extends AbstractUserDTO<Company> {
     }
 
     public CompanyDTO(Company company) {
-        id = String.valueOf(company.getId());
+        id = company.getId();
         firstName = company.getFirstName();
         lastName = company.getLastName();
         email = company.getEmail();
@@ -58,7 +58,7 @@ public class CompanyDTO extends AbstractUserDTO<Company> {
                 name,
                 inscriptionTimestamp,
                 emailConfirmed);
-        company.setId(Long.parseLong(id));
+        company.setId(id);
         return company;
     }
 }

@@ -1,7 +1,7 @@
 package projet.projetstage02.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
-import projet.projetstage02.modele.Student;
+import projet.projetstage02.model.Student;
 
 import java.util.Optional;
 

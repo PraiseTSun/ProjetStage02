@@ -1,11 +1,10 @@
-package projet.projetstage02.modele;
+package projet.projetstage02.model;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
-import java.io.File;
 
 @Entity
 @Data

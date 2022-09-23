@@ -39,7 +39,7 @@ public class RootController {
         }
         studentDTO.setInscriptionTimestamp(currentTimestamp());
         long id = studentService.saveStudent(studentDTO);
-        studentDTO.setId(String.valueOf(id));
+        studentDTO.setId(id);
         EmailUtil.sendConfirmationMail(studentDTO.getClassOrigin());
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
@@ -51,7 +51,7 @@ public class RootController {
         }
         companyDTO.setInscriptionTimestamp(currentTimestamp());
         long id = companyService.saveCompany(companyDTO);
-        companyDTO.setId(String.valueOf(id));
+        companyDTO.setId(id);
         EmailUtil.sendConfirmationMail(companyDTO.getClassOrigin());
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
@@ -64,7 +64,7 @@ public class RootController {
         gestionnaireDTO.setInscriptionTimestamp(currentTimestamp());
         gestionnaireDTO.setConfirmed(true);
         long id = gestionnaireService.saveGestionnaire(gestionnaireDTO);
-        gestionnaireDTO.setId(String.valueOf(id));
+        gestionnaireDTO.setId(id);
         EmailUtil.sendConfirmationMail(gestionnaireDTO.getClassOrigin());
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
@@ -144,6 +144,7 @@ public class RootController {
     public ResponseEntity<StudentDTO> getStudent(@RequestBody StudentDTO studentDTO) {
         try {
             StudentDTO dto = studentService.getStudentByEmailPassword(studentDTO.getEmail(), studentDTO.getPassword());
+            dto.setPassword("");
             return !dto.isEmailConfirmed() ? ResponseEntity.notFound().build() : ResponseEntity.ok(dto);
         } catch (NonExistentUserException e) {
             return ResponseEntity.notFound().build();
@@ -154,7 +155,8 @@ public class RootController {
     public ResponseEntity<CompanyDTO> getCompany(@RequestBody CompanyDTO companyDTO) {
         try {
             CompanyDTO dto = companyService.getCompanyByEmailPassword(companyDTO.getEmail(), companyDTO.getPassword());
-            return dto == null || !dto.isEmailConfirmed() ? ResponseEntity.notFound().build() : ResponseEntity.ok(dto);
+            dto.setPassword("");
+            return !dto.isEmailConfirmed() ? ResponseEntity.notFound().build() : ResponseEntity.ok(dto);
         } catch (NonExistentUserException e) {
             return ResponseEntity.notFound().build();
         }
@@ -165,7 +167,8 @@ public class RootController {
         try {
             GestionnaireDTO dto = gestionnaireService.getGestionnaireByEmailPassword(gestionnaireDTO.getEmail(),
                     gestionnaireDTO.getPassword());
-            return dto == null || !dto.isEmailConfirmed() ? ResponseEntity.notFound().build() : ResponseEntity.ok(dto);
+            dto.setPassword("");
+            return !dto.isEmailConfirmed() ? ResponseEntity.notFound().build() : ResponseEntity.ok(dto);
         } catch (NonExistentUserException e) {
             return ResponseEntity.notFound().build();
         }

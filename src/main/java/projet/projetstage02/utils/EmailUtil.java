@@ -4,9 +4,9 @@ import org.springframework.mail.MailException;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
-import projet.projetstage02.modele.AbstractUser;
-import projet.projetstage02.modele.Company;
-import projet.projetstage02.modele.Student;
+import projet.projetstage02.model.AbstractUser;
+import projet.projetstage02.model.Company;
+import projet.projetstage02.model.Student;
 
 import java.util.Properties;
 

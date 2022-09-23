@@ -8,7 +8,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import projet.projetstage02.DTO.CompanyDTO;
 import projet.projetstage02.DTO.GestionnaireDTO;
 import projet.projetstage02.DTO.StudentDTO;
-import projet.projetstage02.modele.AbstractUser;
+import projet.projetstage02.model.AbstractUser;
 import projet.projetstage02.service.CompanyService;
 import projet.projetstage02.service.GestionnaireService;
 import projet.projetstage02.service.StudentService;

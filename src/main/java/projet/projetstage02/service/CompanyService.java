@@ -5,8 +5,8 @@ import org.springframework.stereotype.Service;
 import projet.projetstage02.DTO.CompanyDTO;
 import projet.projetstage02.DTO.OffreDTO;
 import projet.projetstage02.exception.NonExistentUserException;
-import projet.projetstage02.modele.AbstractUser;
-import projet.projetstage02.modele.Offre;
+import projet.projetstage02.model.AbstractUser;
+import projet.projetstage02.model.Offre;
 import projet.projetstage02.repository.CompanyRepository;
 import projet.projetstage02.repository.OffreRepository;
 
@@ -14,7 +14,6 @@ import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 @AllArgsConstructor

@@ -8,7 +8,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public abstract class AbstractUserDTO<T> {
-    protected String id = "0";
+    protected long id = 0;
     protected String firstName;
     protected String lastName;
     protected String email;

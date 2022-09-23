@@ -4,8 +4,8 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
-import projet.projetstage02.modele.AbstractUser;
-import projet.projetstage02.modele.Student;
+import projet.projetstage02.model.AbstractUser;
+import projet.projetstage02.model.Student;
 
 @Data
 @EqualsAndHashCode(callSuper = false)
@@ -16,12 +16,12 @@ public class StudentDTO extends AbstractUserDTO<Student> {
 
     public StudentDTO(String firstName, String lastName, String email, String password, boolean isConfirmed,
             long inscriptionTimeStamp, String department) {
-        super("0", firstName, lastName, email, password, isConfirmed, inscriptionTimeStamp, false);
+        super(0L, firstName, lastName, email, password, isConfirmed, inscriptionTimeStamp, false);
         this.department = department;
     }
 
     public StudentDTO(Student student) {
-        id = String.valueOf(student.getId());
+        id = student.getId();
         firstName = student.getFirstName();
         lastName = student.getLastName();
         email = student.getEmail();
@@ -42,9 +42,8 @@ public class StudentDTO extends AbstractUserDTO<Student> {
                 AbstractUser.Department.getDepartment(department),
                 inscriptionTimestamp,
                 emailConfirmed
-
         );
-        student.setId(Long.parseLong(id));
+        student.setId(id);
         return student;
     }
 }

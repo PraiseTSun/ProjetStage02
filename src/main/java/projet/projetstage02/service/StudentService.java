@@ -4,7 +4,7 @@ import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import projet.projetstage02.DTO.StudentDTO;
 import projet.projetstage02.exception.NonExistentUserException;
-import projet.projetstage02.modele.AbstractUser;
+import projet.projetstage02.model.AbstractUser;
 import projet.projetstage02.repository.StudentRepository;
 
 import java.sql.Timestamp;
