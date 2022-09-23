@@ -55,8 +55,12 @@ public class StudentService {
 
     public List<StudentDTO> getUnvalidatedStudent() {
         List<StudentDTO> unvalidatedStudentDTOs = new ArrayList<>();
-        studentRepository.findAllUnvalidatedStudents()
-                .forEach(student -> unvalidatedStudentDTOs.add(new StudentDTO(student)));
+        studentRepository.findAll().stream()
+                .filter(student ->
+                        student.isEmailConfirmed() && !student.isConfirm()
+                )
+                .forEach(student ->
+                        unvalidatedStudentDTOs.add(new StudentDTO(student)));
         return unvalidatedStudentDTOs;
     }
 }

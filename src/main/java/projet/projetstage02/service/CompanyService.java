@@ -68,8 +68,12 @@ public class CompanyService {
 
     public List<CompanyDTO> getUnvalidatedUsers() {
         List<CompanyDTO> unvalidatedCompaniesDTOs = new ArrayList<>();
-        companyRepository.findAllUnvalidatedCompanies()
-                .forEach(company -> unvalidatedCompaniesDTOs.add(new CompanyDTO(company)));
+        companyRepository.findAll().stream()
+                .filter(company->
+                        !company.isConfirm() && company.isEmailConfirmed()
+                )
+                .forEach(company ->
+                        unvalidatedCompaniesDTOs.add(new CompanyDTO(company)));
         return unvalidatedCompaniesDTOs;
     }
 }
