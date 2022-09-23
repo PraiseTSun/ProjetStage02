@@ -46,7 +46,7 @@ public class CompanyService {
     }
 
     public long saveCompany(CompanyDTO dto) {
-        return companyRepository.save(dto.getClassOrigin()).getId();
+        return companyRepository.save(dto.toModel()).getId();
     }
 
     public boolean isEmailUnique(String email) {

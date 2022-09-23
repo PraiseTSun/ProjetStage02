@@ -40,7 +40,7 @@ public class RootController {
         studentDTO.setInscriptionTimestamp(currentTimestamp());
         long id = studentService.saveStudent(studentDTO);
         studentDTO.setId(id);
-        EmailUtil.sendConfirmationMail(studentDTO.getClassOrigin());
+        EmailUtil.sendConfirmationMail(studentDTO.toModel());
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
@@ -52,7 +52,7 @@ public class RootController {
         companyDTO.setInscriptionTimestamp(currentTimestamp());
         long id = companyService.saveCompany(companyDTO);
         companyDTO.setId(id);
-        EmailUtil.sendConfirmationMail(companyDTO.getClassOrigin());
+        EmailUtil.sendConfirmationMail(companyDTO.toModel());
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
@@ -65,7 +65,7 @@ public class RootController {
         gestionnaireDTO.setConfirmed(true);
         long id = gestionnaireService.saveGestionnaire(gestionnaireDTO);
         gestionnaireDTO.setId(id);
-        EmailUtil.sendConfirmationMail(gestionnaireDTO.getClassOrigin());
+        EmailUtil.sendConfirmationMail(gestionnaireDTO.toModel());
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
@@ -176,12 +176,16 @@ public class RootController {
 
     @GetMapping("/unvalidatedStudents")
     public ResponseEntity<List<StudentDTO>> getUnvalidatedStudents() {
-        return ResponseEntity.ok(studentService.getUnvalidatedStudent());
+        List<StudentDTO> unvalidatedStudents = studentService.getUnvalidatedStudent();
+        unvalidatedStudents.forEach(student -> student.setPassword(""));
+        return ResponseEntity.ok(unvalidatedStudents);
     }
 
     @GetMapping("/unvalidatedCompanies")
     public ResponseEntity<List<CompanyDTO>> getUnvalidatedCompanies() {
-        return ResponseEntity.ok(companyService.getUnvalidatedUsers());
+        List<CompanyDTO> unvalidatedCompanies = companyService.getUnvalidatedUsers();
+        unvalidatedCompanies.forEach(company -> company.setPassword(""));
+        return ResponseEntity.ok(unvalidatedCompanies);
     }
 
     @PutMapping("/validateStudent/{id}")

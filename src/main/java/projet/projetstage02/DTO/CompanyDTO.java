@@ -48,7 +48,7 @@ public class CompanyDTO extends AbstractUserDTO<Company> {
     }
 
     @Override
-    public Company getClassOrigin() {
+    public Company toModel() {
         Company company = new Company(
                 firstName,
                 lastName,

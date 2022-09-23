@@ -33,7 +33,7 @@ public class StudentDTO extends AbstractUserDTO<Student> {
     }
 
     @Override
-    public Student getClassOrigin() {
+    public Student toModel() {
         Student student = new Student(
                 firstName,
                 lastName,

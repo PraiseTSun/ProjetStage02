@@ -34,7 +34,7 @@ public class GestionnaireService{
     }
 
     public long saveGestionnaire(GestionnaireDTO dto) {
-        return gestionnaireRepository.save(dto.getClassOrigin()).getId();
+        return gestionnaireRepository.save(dto.toModel()).getId();
     }
 
 

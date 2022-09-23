@@ -34,7 +34,7 @@ public class StudentService {
     }
 
     public long saveStudent(StudentDTO dto) {
-        return studentRepository.save(dto.getClassOrigin()).getId();
+        return studentRepository.save(dto.toModel()).getId();
     }
 
     public boolean isEmailUnique(String email) {
