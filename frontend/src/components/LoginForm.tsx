@@ -31,7 +31,6 @@ const LoginForm = (props: { setUser: Function }): JSX.Element => {
 
         setEmail("");
         setPassword("");
-        setUserType("student");
     }
 
     return (
