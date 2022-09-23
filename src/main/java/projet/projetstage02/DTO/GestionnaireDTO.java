@@ -1,24 +1,19 @@
 package projet.projetstage02.DTO;
 
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
-import lombok.ToString;
-import projet.projetstage02.modele.Gestionnaire;
+import lombok.*;
+import lombok.experimental.SuperBuilder;
+import projet.projetstage02.model.Gestionnaire;
 
 @Data
 @EqualsAndHashCode(callSuper = false)
 @NoArgsConstructor
+@SuperBuilder
 @ToString(callSuper = true)
 public class GestionnaireDTO extends AbstractUserDTO<Gestionnaire> {
 
-    public GestionnaireDTO(String firstName, String lastName, String email, String password, boolean isConfirmed,
-            long inscriptionTimestamp) {
-        super("0", firstName, lastName, email, password, isConfirmed, inscriptionTimestamp, false);
-    }
 
     public GestionnaireDTO(Gestionnaire gestionnaire) {
-        id = String.valueOf(gestionnaire.getId());
+        id = gestionnaire.getId();
         firstName = gestionnaire.getFirstName();
         lastName = gestionnaire.getLastName();
         email = gestionnaire.getEmail();
@@ -29,7 +24,7 @@ public class GestionnaireDTO extends AbstractUserDTO<Gestionnaire> {
     }
 
     @Override
-    public Gestionnaire getClassOrigin() {
+    public Gestionnaire toModel() {
         Gestionnaire gestionnaire = new Gestionnaire(
                 firstName,
                 lastName,
@@ -37,7 +32,7 @@ public class GestionnaireDTO extends AbstractUserDTO<Gestionnaire> {
                 password,
                 inscriptionTimestamp,
                 emailConfirmed);
-        gestionnaire.setId(Long.parseLong(id));
+        gestionnaire.setId(id);
         return gestionnaire;
     }
 }

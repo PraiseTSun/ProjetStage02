@@ -1,7 +1,6 @@
 package projet.projetstage02.controller;
 
 import lombok.AllArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -13,10 +12,9 @@ import projet.projetstage02.DTO.StudentDTO;
 import projet.projetstage02.exception.NonExistentUserException;
 import projet.projetstage02.service.CompanyService;
 import projet.projetstage02.service.GestionnaireService;
-import projet.projetstage02.service.OffreService;
 import projet.projetstage02.service.StudentService;
+import projet.projetstage02.utils.EmailUtil;
 
-import java.io.IOException;
 import java.time.LocalDateTime;
 import java.sql.Timestamp;
 import java.util.HashMap;
@@ -31,73 +29,55 @@ public class RootController {
     StudentService studentService;
     CompanyService companyService;
     GestionnaireService gestionnaireService;
-
-    @Autowired
-    OffreService offreService;
+    //TODO: Add new thread to remove the user after 24h hours if not email confirmed
     private final long MILLI_SECOND_DAY = 864000000;
 
     @PostMapping("/createStudent")
     public ResponseEntity<Map<String, String>> createStudent(@RequestBody StudentDTO studentDTO) {
-        if (!studentService.isUniqueEmail(studentDTO.getEmail())) {
+        if (!studentService.isEmailUnique(studentDTO.getEmail())) {
             return ResponseEntity.status(HttpStatus.CONFLICT).body(getError("Cette adresse email est déjà utilisée."));
         }
         studentDTO.setInscriptionTimestamp(currentTimestamp());
         long id = studentService.saveStudent(studentDTO);
-        studentDTO.setId(String.valueOf(id));
-        studentService.sendConfirmationMail(studentDTO.getClassOrigin());
+        studentDTO.setId(id);
+        EmailUtil.sendConfirmationMail(studentDTO.toModel());
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
     @PostMapping("/createCompany")
     public ResponseEntity<Map<String, String>> createCompany(@RequestBody CompanyDTO companyDTO) {
-        if (!companyService.isUniqueEmail(companyDTO.getEmail())) {
+        if (!companyService.isEmailUnique(companyDTO.getEmail())) {
             return ResponseEntity.status(HttpStatus.CONFLICT).body(getError("Cette adresse email est déjà utilisée."));
         }
         companyDTO.setInscriptionTimestamp(currentTimestamp());
         long id = companyService.saveCompany(companyDTO);
-        companyDTO.setId(String.valueOf(id));
-        companyService.sendConfirmationMail(companyDTO.getClassOrigin());
+        companyDTO.setId(id);
+        EmailUtil.sendConfirmationMail(companyDTO.toModel());
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
     @PostMapping("/createGestionnaire")
     public ResponseEntity<Map<String, String>> createGestionnaire(@RequestBody GestionnaireDTO gestionnaireDTO) {
-        if (!gestionnaireService.isUniqueEmail(gestionnaireDTO.getEmail())) {
+        if (!gestionnaireService.isEmailUnique(gestionnaireDTO.getEmail())) {
             return ResponseEntity.status(HttpStatus.CONFLICT).body(getError("Cette adresse email est déjà utilisée."));
         }
         gestionnaireDTO.setInscriptionTimestamp(currentTimestamp());
+        gestionnaireDTO.setConfirmed(true);
         long id = gestionnaireService.saveGestionnaire(gestionnaireDTO);
-        try {
-            gestionnaireService.validateGestionnaire(id);
-        } catch (NonExistentUserException e) {
-            // Won't happen
-            ResponseEntity.notFound().build();
-        }
-        gestionnaireDTO.setId(String.valueOf(id));
-        gestionnaireService.sendConfirmationMail(gestionnaireDTO.getClassOrigin());
+        gestionnaireDTO.setId(id);
+        EmailUtil.sendConfirmationMail(gestionnaireDTO.toModel());
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
     @PostMapping("/createOffre")
-    public ResponseEntity<Map<String, String>> createOffre(@RequestBody OffreDTO offreDTO) throws IOException {
+    public ResponseEntity<Map<String, String>> createOffre(@RequestBody OffreDTO offreDTO){
 
         if(offreDTO.getPdf() == null || offreDTO.getNomDeCompagnie() == null || offreDTO.getAdresse() == null
             || offreDTO.getPosition() == null || offreDTO.getDepartment() == null
                 || offreDTO.getHeureParSemaine() == 0 ){
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
-        /**
-        if(!offreService.valide(offreDTO.getPdf())){
-            return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY)
-                    .body(getError("Doit être un fichier pdf"));
-        }
-
-        if(offreService.isVide(offreDTO.getPdf())){
-            return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY)
-                    .body(getError("PDF ne peut pas être vide"));
-        }
-         **/
-        offreService.createOffre(offreDTO);
+        companyService.createOffre(offreDTO);
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
@@ -114,7 +94,7 @@ public class RootController {
     @PutMapping("/confirmEmail/student/{id}")
     public ResponseEntity<Map<String, String>> confirmStudentMail(@PathVariable String id) {
         try {
-            StudentDTO studentDTO = studentService.getUserById(Long.parseLong(id));
+            StudentDTO studentDTO = studentService.getStudentById(Long.parseLong(id));
             if (currentTimestamp() - studentDTO.getInscriptionTimestamp() > MILLI_SECOND_DAY) {
                 return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY)
                         .body(getError("La période de confirmation est expirée"));
@@ -130,7 +110,7 @@ public class RootController {
     @PutMapping("/confirmEmail/company/{id}")
     public ResponseEntity<Map<String, String>> confirmCompanyMail(@PathVariable String id) {
         try {
-            CompanyDTO companyDTO = companyService.getUserById(Long.parseLong(id));
+            CompanyDTO companyDTO = companyService.getCompanyById(Long.parseLong(id));
             if (currentTimestamp() - companyDTO.getInscriptionTimestamp() > MILLI_SECOND_DAY) {
                 return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY)
                         .body(getError("La période de confirmation est expirée"));
@@ -147,7 +127,7 @@ public class RootController {
     @PutMapping("/confirmEmail/gestionnaire/{id}")
     public ResponseEntity<Map<String, String>> confirmGestionnaireMail(@PathVariable String id) {
         try {
-            GestionnaireDTO gestionnaireDTO = gestionnaireService.getUserById(Long.parseLong(id));
+            GestionnaireDTO gestionnaireDTO = gestionnaireService.getGestionnaireById(Long.parseLong(id));
             if (currentTimestamp() - gestionnaireDTO.getInscriptionTimestamp() > MILLI_SECOND_DAY) {
                 return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY)
                         .body(getError("La période de confirmation est expirée"));
@@ -163,7 +143,8 @@ public class RootController {
     @PutMapping("/student")
     public ResponseEntity<StudentDTO> getStudent(@RequestBody StudentDTO studentDTO) {
         try {
-            StudentDTO dto = studentService.getUserByEmailPassword(studentDTO.getEmail(), studentDTO.getPassword());
+            StudentDTO dto = studentService.getStudentByEmailPassword(studentDTO.getEmail(), studentDTO.getPassword());
+            dto.setPassword("");
             return !dto.isEmailConfirmed() ? ResponseEntity.notFound().build() : ResponseEntity.ok(dto);
         } catch (NonExistentUserException e) {
             return ResponseEntity.notFound().build();
@@ -173,8 +154,9 @@ public class RootController {
     @PutMapping("/company")
     public ResponseEntity<CompanyDTO> getCompany(@RequestBody CompanyDTO companyDTO) {
         try {
-            CompanyDTO dto = companyService.getUserByEmailPassword(companyDTO.getEmail(), companyDTO.getPassword());
-            return dto == null || !dto.isEmailConfirmed() ? ResponseEntity.notFound().build() : ResponseEntity.ok(dto);
+            CompanyDTO dto = companyService.getCompanyByEmailPassword(companyDTO.getEmail(), companyDTO.getPassword());
+            dto.setPassword("");
+            return !dto.isEmailConfirmed() ? ResponseEntity.notFound().build() : ResponseEntity.ok(dto);
         } catch (NonExistentUserException e) {
             return ResponseEntity.notFound().build();
         }
@@ -183,9 +165,10 @@ public class RootController {
     @PutMapping("/gestionnaire")
     public ResponseEntity<GestionnaireDTO> getGestionnaire(@RequestBody GestionnaireDTO gestionnaireDTO) {
         try {
-            GestionnaireDTO dto = gestionnaireService.getUserByEmailPassword(gestionnaireDTO.getEmail(),
+            GestionnaireDTO dto = gestionnaireService.getGestionnaireByEmailPassword(gestionnaireDTO.getEmail(),
                     gestionnaireDTO.getPassword());
-            return dto == null || !dto.isEmailConfirmed() ? ResponseEntity.notFound().build() : ResponseEntity.ok(dto);
+            dto.setPassword("");
+            return !dto.isEmailConfirmed() ? ResponseEntity.notFound().build() : ResponseEntity.ok(dto);
         } catch (NonExistentUserException e) {
             return ResponseEntity.notFound().build();
         }
@@ -193,12 +176,16 @@ public class RootController {
 
     @GetMapping("/unvalidatedStudents")
     public ResponseEntity<List<StudentDTO>> getUnvalidatedStudents() {
-        return ResponseEntity.ok(studentService.getUnvalidatedUsers());
+        List<StudentDTO> unvalidatedStudents = studentService.getUnvalidatedStudent();
+        unvalidatedStudents.forEach(student -> student.setPassword(""));
+        return ResponseEntity.ok(unvalidatedStudents);
     }
 
     @GetMapping("/unvalidatedCompanies")
     public ResponseEntity<List<CompanyDTO>> getUnvalidatedCompanies() {
-        return ResponseEntity.ok(companyService.getUnvalidatedUsers());
+        List<CompanyDTO> unvalidatedCompanies = companyService.getUnvalidatedUsers();
+        unvalidatedCompanies.forEach(company -> company.setPassword(""));
+        return ResponseEntity.ok(unvalidatedCompanies);
     }
 
     @PutMapping("/validateStudent/{id}")

@@ -1,70 +1,79 @@
 package projet.projetstage02.service;
 
-import org.springframework.stereotype.Component;
+import lombok.AllArgsConstructor;
+import org.springframework.stereotype.Service;
 import projet.projetstage02.DTO.CompanyDTO;
+import projet.projetstage02.DTO.OffreDTO;
 import projet.projetstage02.exception.NonExistentUserException;
-import projet.projetstage02.modele.AbstractUser;
-import projet.projetstage02.modele.Company;
+import projet.projetstage02.model.AbstractUser;
+import projet.projetstage02.model.Offre;
 import projet.projetstage02.repository.CompanyRepository;
+import projet.projetstage02.repository.OffreRepository;
 
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
-@Component
-public class CompanyService extends AbstractService<CompanyDTO> {
-    private CompanyRepository companyRepository;
+@Service
+@AllArgsConstructor
+public class CompanyService {
+    private final CompanyRepository companyRepository;
+    private final OffreRepository offreRepository;
 
-    public CompanyService(CompanyRepository companyRepository) {
-        this.companyRepository = companyRepository;
+    public long createOffre(OffreDTO offreDTO){
+        Offre offre = new Offre(offreDTO.getNomDeCompagnie(), offreDTO.getDepartment(), offreDTO.getPosition(),
+                offreDTO.getHeureParSemaine(), offreDTO.getAdresse(), offreDTO.getPdf());
+        return offreRepository.save(offre).getId();
+    }
+    public List<Offre> findOffre(){
+        return offreRepository.findAll();
     }
 
     public void saveCompany(String firstName, String lastName, String name, String email, String password,
                             AbstractUser.Department department) {
-        CompanyDTO dto = new CompanyDTO(
-                firstName,
-                lastName,
-                email.toLowerCase(),
-                password,
-                false,
-                Timestamp.valueOf(LocalDateTime.now()).getTime(),
-                false,
-                department.departement,
-                name);
+        CompanyDTO dto = CompanyDTO.builder()
+                .firstName(firstName)
+                .lastName(lastName)
+                .email(email.toLowerCase())
+                .password(password)
+                .isConfirmed(false)
+                .inscriptionTimestamp(Timestamp.valueOf(LocalDateTime.now()).getTime())
+                .emailConfirmed(true)
+                .department(department.departement)
+                .companyName(name)
+                .build();
         saveCompany(dto);
     }
 
     public long saveCompany(CompanyDTO dto) {
-        return companyRepository.save(dto.getClassOrigin()).getId();
+        return companyRepository.save(dto.toModel()).getId();
     }
 
-    @Override
-    public boolean isUniqueEmail(String email) {
-        Optional<Company> company = companyRepository.findByEmail(email);
-        return company.isEmpty();
+    public boolean isEmailUnique(String email) {
+        return companyRepository.findByEmail(email).isEmpty();
     }
 
-    @Override
-    public CompanyDTO getUserById(Long id) throws NonExistentUserException {
+    public CompanyDTO getCompanyById(Long id) throws NonExistentUserException {
         var companyOpt = companyRepository.findById(id);
         if (companyOpt.isEmpty()) throw new NonExistentUserException();
         return new CompanyDTO(companyOpt.get());
     }
 
-    @Override
-    public CompanyDTO getUserByEmailPassword(String email, String password) throws NonExistentUserException {
+    public CompanyDTO getCompanyByEmailPassword(String email, String password) throws NonExistentUserException {
         var companyOpt = companyRepository.findByEmailAndPassword(email.toLowerCase(), password);
         if (companyOpt.isEmpty()) throw new NonExistentUserException();
         return new CompanyDTO(companyOpt.get());
     }
 
-    @Override
     public List<CompanyDTO> getUnvalidatedUsers() {
         List<CompanyDTO> unvalidatedCompaniesDTOs = new ArrayList<>();
-        companyRepository.findAllUnvalidatedCompanies()
-                .forEach(company -> unvalidatedCompaniesDTOs.add(new CompanyDTO(company)));
+        companyRepository.findAll().stream()
+                .filter(company->
+                        !company.isConfirm() && company.isEmailConfirmed()
+                )
+                .forEach(company ->
+                        unvalidatedCompaniesDTOs.add(new CompanyDTO(company)));
         return unvalidatedCompaniesDTOs;
     }
 }

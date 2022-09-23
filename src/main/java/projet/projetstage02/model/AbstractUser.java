@@ -1,4 +1,4 @@
-package projet.projetstage02.modele;
+package projet.projetstage02.model;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;
