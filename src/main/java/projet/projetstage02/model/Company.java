@@ -14,13 +14,13 @@ import javax.persistence.Entity;
 @ToString(callSuper = true)
 public class Company extends AbstractUser {
     private Department department;
-    private String name;
+    private String companyName;
 
     public Company(String firstName, String lastName, String email, String password, Department department,
-            String name) {
+            String companyName) {
         super(firstName, lastName, email, password);
         this.department = department;
-        this.name = name;
+        this.companyName = companyName;
     }
 
     public Company(
@@ -29,11 +29,11 @@ public class Company extends AbstractUser {
             String email,
             String password,
             Department department,
-            String name,
+            String companyName,
             long inscriptionTimestamp,
             boolean emailConfirmed) {
         super(firstName, lastName, email, password, inscriptionTimestamp, emailConfirmed);
         this.department = department;
-        this.name = name;
+        this.companyName = companyName;
     }
 }

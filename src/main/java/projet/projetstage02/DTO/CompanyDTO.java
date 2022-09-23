@@ -15,7 +15,6 @@ public class CompanyDTO extends AbstractUserDTO<Company> {
     private String department;
     private String companyName;
 
-
     public CompanyDTO(Company company) {
         id = company.getId();
         firstName = company.getFirstName();
@@ -24,7 +23,7 @@ public class CompanyDTO extends AbstractUserDTO<Company> {
         password = company.getPassword();
         isConfirmed = company.isConfirm();
         department = company.getDepartment().departement;
-        companyName = company.getName();
+        companyName = company.getCompanyName();
         inscriptionTimestamp = company.getInscriptionTimestamp();
         emailConfirmed = company.isEmailConfirmed();
     }
