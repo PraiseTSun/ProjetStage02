@@ -2,10 +2,12 @@ package projet.projetstage02.service;
 
 import org.springframework.stereotype.Component;
 import projet.projetstage02.DTO.CompanyDTO;
+import projet.projetstage02.DTO.OffreDTO;
 import projet.projetstage02.exception.NonExistentUserException;
 import projet.projetstage02.modele.AbstractUser;
-import projet.projetstage02.modele.Company;
+import projet.projetstage02.modele.Offre;
 import projet.projetstage02.repository.CompanyRepository;
+import projet.projetstage02.repository.OffreRepository;
 
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
