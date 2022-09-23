@@ -15,40 +15,35 @@ const LoginForm = (props: { setUser: Function }): JSX.Element => {
         const form: any = event.currentTarget;
         event.preventDefault();
 
-        if (form.checkValidity() === false) {
-            event.stopPropagation();
-        }
-        else {
+        if (form.checkValidity() ) {
             const headers = {
                 method: "PUT",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ "email": email, "password": password })
             };
             const res = await fetch("http://localhost:8080/" + userType, headers)
-                if (res.ok) {
-                    const data = await res.json()
-                    const user:IUser = {
-                        firstName: data.firstName,
-                        lastName: data.lastName,
-                        userType: userType
-                    }
-                    props.setUser(user)
-                    localStorage.setItem(LOCAL_STORAGE_KEY,JSON.stringify(user))
-                }else setIsInvalidLoggin(true)
-            
+            if (res.ok) {
+                const data = await res.json()
+                const user: IUser = {
+                    firstName: data.firstName,
+                    lastName: data.lastName,
+                    userType: userType
+                }
+                props.setUser(user)
+                localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(user))
+            } else setIsInvalidLoggin(true)
+
         }
 
         setValidated(true);
-
-
 
     }
 
     return (
         <Form onSubmit={onSubmit} validated={validated} noValidate>
             <ToggleButtonGroup className="d-flex" name="userType" type="radio" value={userType} onChange={field => {
-                setUserType(field)      
-                setValidated(false)      
+                setUserType(field)
+                setValidated(false)
             }}>
                 <ToggleButton className="w-100" id="1" variant="primary" value="student">Étudiant</ToggleButton>
                 <ToggleButton className="w-100" id="2" variant="primary" value="company">Entreprise</ToggleButton>
@@ -63,8 +58,8 @@ const LoginForm = (props: { setUser: Function }): JSX.Element => {
                     </Form.Group>
                     <Form.Group >
                         <Form.Label className="fw-bold mt-2 h5">Mot de passe</Form.Label>
-                        <Form.Control type="password" required value={password} onChange={field => setPassword(field.target.value)}></Form.Control>
-                        <Form.Control.Feedback type="invalid">Mot de passe invalide</Form.Control.Feedback>
+                        <Form.Control type="password" required value={password} minLength={8} onChange={field => setPassword(field.target.value)}></Form.Control>
+                        <Form.Control.Feedback type="invalid">Mot de passe plus petit que 8 caractères</Form.Control.Feedback>
                     </Form.Group>
                     {isInvalidLoggin ? <h5 className="text-danger fw-bold text-center mt-2">Aucun compte n'existe avec ce courriel et mot de passe</h5> : <></>}
                     <Row className="mt-3">
