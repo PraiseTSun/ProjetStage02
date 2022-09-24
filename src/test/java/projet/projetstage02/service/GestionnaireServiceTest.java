@@ -37,4 +37,9 @@ public class GestionnaireServiceTest {
         // Assert
         assertThat(noneValidateOffers.size()).isEqualTo(3);
     }
+
+    @Test
+    public void validateOfferById(){
+
+    }
 }
