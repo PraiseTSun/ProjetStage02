@@ -3,6 +3,7 @@ package projet.projetstage02.service;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import projet.projetstage02.DTO.GestionnaireDTO;
+import projet.projetstage02.DTO.OffreValidateDTO;
 import projet.projetstage02.exception.NonExistentUserException;
 import projet.projetstage02.model.Company;
 import projet.projetstage02.model.Student;
@@ -12,6 +13,7 @@ import projet.projetstage02.repository.StudentRepository;
 
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -91,5 +93,9 @@ public class GestionnaireService{
         Optional<Student> studentOptional = studentRepository.findById(id);
         if (studentOptional.isEmpty()) throw new NonExistentUserException();
         return studentOptional.get();
+    }
+
+    public List<OffreValidateDTO> getNoneValidateOffers() {
+        return null;
     }
 }
