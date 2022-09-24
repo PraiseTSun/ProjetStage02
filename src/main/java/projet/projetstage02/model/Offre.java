@@ -21,10 +21,10 @@ public class Offre {
     private String position;
     private int heureParSemaine;
     private String adresse;
+    private boolean valide;
     @Lob
     private byte[] pdf;
 
-    private boolean valide;
 
     public Offre(String nomDeCompagie, String department, String position, int heureParSemaine, String adresse, byte[] pdf) {
         this.nomDeCompagie = nomDeCompagie;
@@ -33,5 +33,6 @@ public class Offre {
         this.heureParSemaine = heureParSemaine;
         this.adresse = adresse;
         this.pdf = pdf;
+        valide = false;
     }
 }

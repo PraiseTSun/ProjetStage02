@@ -100,6 +100,12 @@ public class GestionnaireService{
     }
 
     public List<OffreValidateDTO> getNoneValidateOffers() {
-        return new ArrayList<>();
+        List<OffreValidateDTO> offres = new ArrayList<>();
+        offreRepository.findAll()
+                .forEach(offre -> {
+                    if (offre.isValide())
+                        offres.add(new OffreValidateDTO(offre));
+                });
+        return offres;
     }
 }

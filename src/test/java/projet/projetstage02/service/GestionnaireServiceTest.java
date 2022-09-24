@@ -24,12 +24,12 @@ public class GestionnaireServiceTest {
     private GestionnaireService service;
 
     @Test
-    public void offerNotValidated(){
+    public void offreNotValidated(){
         // Arrange
-        List<OffreValidateDTO> offres = new ArrayList<>();
-        offres.add(new OffreValidateDTO());
+        List<Offre> offres = new ArrayList<>();
+        offres.add(new Offre());
 
-//        when(offreRepository.findAllByValide(false)).thenReturn(offres);
+        when(offreRepository.findAll()).thenReturn(offres);
 
         // Act
         final List<OffreValidateDTO> noneValidateOffers = service.getNoneValidateOffers();
