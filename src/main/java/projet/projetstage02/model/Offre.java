@@ -24,6 +24,8 @@ public class Offre {
     @Lob
     private byte[] pdf;
 
+    private boolean valide;
+
     public Offre(String nomDeCompagie, String department, String position, int heureParSemaine, String adresse, byte[] pdf) {
         this.nomDeCompagie = nomDeCompagie;
         this.department = department;

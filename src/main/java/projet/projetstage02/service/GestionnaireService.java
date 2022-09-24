@@ -9,10 +9,12 @@ import projet.projetstage02.model.Company;
 import projet.projetstage02.model.Student;
 import projet.projetstage02.repository.CompanyRepository;
 import projet.projetstage02.repository.GestionnaireRepository;
+import projet.projetstage02.repository.OffreRepository;
 import projet.projetstage02.repository.StudentRepository;
 
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -23,6 +25,8 @@ public class GestionnaireService{
     private final GestionnaireRepository gestionnaireRepository;
     private final CompanyRepository companyRepository;
     private final StudentRepository studentRepository;
+
+    private final OffreRepository offreRepository;
 
     public void saveGestionnaire(String firstname, String lastname, String email, String password) {
         GestionnaireDTO dto = GestionnaireDTO.builder()
@@ -96,6 +100,6 @@ public class GestionnaireService{
     }
 
     public List<OffreValidateDTO> getNoneValidateOffers() {
-        return null;
+        return new ArrayList<>();
     }
 }
