@@ -56,8 +56,7 @@ const FormulaireSoumissionPage = (): JSX.Element => {
     }
 
     //source: https://stackoverflow.com/questions/8482309/converting-javascript-integer-to-byte-array-and-back
-    const intToByteArray = (array: Int32Array) => {
-
+    const intToByteArray = (array: Uint8Array) => {
         let bytes: number[] = []
         for (let i = 0; i < array.length; i++) {
 
@@ -75,9 +74,8 @@ const FormulaireSoumissionPage = (): JSX.Element => {
     };
 
     const uploadFile = async (file: File) => {
-        //todo fix this dumbassery
         const fileText = await file.arrayBuffer()
-        const view = new Int32Array(fileText)
+        const view = new Uint8Array(fileText)
         const array = intToByteArray(view)
         setPdf(array)
     }
