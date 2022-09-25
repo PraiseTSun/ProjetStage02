@@ -103,7 +103,7 @@ public class GestionnaireService{
         List<OffreValidateDTO> offres = new ArrayList<>();
         offreRepository.findAll()
                 .forEach(offre -> {
-                    if (offre.isValide())
+                    if (!offre.isValide())
                         offres.add(new OffreValidateDTO(offre));
                 });
         return offres;

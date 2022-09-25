@@ -1,5 +1,6 @@
 package projet.projetstage02.service;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -7,7 +8,10 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import projet.projetstage02.DTO.OffreValidateDTO;
 import projet.projetstage02.model.Offre;
+import projet.projetstage02.repository.CompanyRepository;
+import projet.projetstage02.repository.GestionnaireRepository;
 import projet.projetstage02.repository.OffreRepository;
+import projet.projetstage02.repository.StudentRepository;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -19,15 +23,38 @@ import static org.mockito.Mockito.when;
 public class GestionnaireServiceTest {
 
     @Mock
+    private GestionnaireRepository gestionnaireRepository;
+    @Mock
+    private StudentRepository studentRepository;
+    @Mock
+    private CompanyRepository companyRepository;
+    @Mock
     private OffreRepository offreRepository;
-    @InjectMocks
+
+//    @InjectMocks
     private GestionnaireService service;
+
+    @BeforeEach
+    void beforeEach(){
+        service = new GestionnaireService(
+                gestionnaireRepository,
+                companyRepository,
+                studentRepository,
+                offreRepository
+        );
+    }
 
     @Test
     public void offreNotValidated(){
         // Arrange
         List<Offre> offres = new ArrayList<>();
         offres.add(new Offre());
+        offres.add(new Offre());
+        offres.add(new Offre());
+
+        Offre offre = new Offre();
+        offre.setValide(true);
+        offres.add(offre);
 
         when(offreRepository.findAll()).thenReturn(offres);
 
