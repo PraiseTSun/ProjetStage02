@@ -1,7 +1,9 @@
 import React, { useState } from "react";
 import { Button, Col, Form, Row } from "react-bootstrap";
+import { BeatLoader } from "react-spinners";
 
 const ValidationGestionnaire = () => {
+    const [waiting, setWaiting] = useState(false);
     const [validated, setValidated] = useState(false);
     const [firstName, setFirstName] = useState("");
     const [lastName, setLastName] = useState("");
@@ -17,13 +19,16 @@ const ValidationGestionnaire = () => {
         const form: any = event.currentTarget;
         event.preventDefault();
         if (form.checkValidity()) {
+            setWaiting(true)
             if (password !== confirmPassword) {
                 alert("La confirmation du mot de passe n'est pas pareille.")
+                setWaiting(false)
                 return;
             }
 
             if (!validEmail.test(email)) {
                 alert("La syntax du courriel est mauvaise.");
+                setWaiting(false)
                 return;
             }
 
@@ -50,9 +55,25 @@ const ValidationGestionnaire = () => {
             if (res.status == 201) {
                 alert("Utilisateur a été créé.");
             }
+            setWaiting(false)
+            setValidated(false)
+            setFirstName("")
+            setLastName("")
+            setEmail("")
+            setPassword("")
+            setConfirmPassword("")
         }
         setValidated(true)
     }
+
+    if (waiting) {
+        return (
+            <div className="d-flex justify-content-center py-5 bg-light">
+                <BeatLoader className="text-center" color="#292b2c" size={100} />
+            </div>
+                );
+    }
+
     return (
         <Form onSubmit={onSubmit} validated={validated} noValidate>
             <Col className="bg-light px-4 pb-2 pt-1">

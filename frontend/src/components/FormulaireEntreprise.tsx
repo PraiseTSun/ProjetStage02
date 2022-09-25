@@ -1,9 +1,10 @@
 import React from "react";
 import { Button, Container, Form, FormGroup, Row } from "react-bootstrap";
 import { useState } from "react";
+import { BeatLoader } from "react-spinners";
 
 const FormulaireEntreprise = ({ onInscrire }: { onInscrire: Function }) => {
-
+    const [waiting, setWaiting] = useState(false);
     const [validated, setValidated] = useState(false);
     const [nom, setNom] = useState("")
     const [prenom, setPrenom] = useState("")
@@ -21,6 +22,7 @@ const FormulaireEntreprise = ({ onInscrire }: { onInscrire: Function }) => {
         const form: any = e.currentTarget;
         e.preventDefault();
         if (form.checkValidity()) {
+            setWaiting(true)
             if (departement === '' || departement === 'Choix un département') {
                 alert("Dois choisir departement")
                 return
@@ -44,6 +46,11 @@ const FormulaireEntreprise = ({ onInscrire }: { onInscrire: Function }) => {
         setValidated(true)
 
     }
+
+    if (waiting) {
+        return <BeatLoader className="text-center" color="#292b2c" size={100} />
+    }
+
     return (
         <Container>
 
@@ -71,7 +78,7 @@ const FormulaireEntreprise = ({ onInscrire }: { onInscrire: Function }) => {
                     <Form.Control type='text' required placeholder="Entreprise"
                         value={entreprise} minLength={2}
                         onChange={(e) => setEntreprise(e.target.value)} />
-                <Form.Control.Feedback type="invalid">Minimum de deux charactères</Form.Control.Feedback>
+                    <Form.Control.Feedback type="invalid">Minimum de deux charactères</Form.Control.Feedback>
                 </FormGroup>
 
                 <FormGroup className="mb-3">

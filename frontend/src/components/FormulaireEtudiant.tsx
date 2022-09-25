@@ -1,8 +1,10 @@
 import React from "react";
 import { Button, Container, Form, FormGroup, Row } from "react-bootstrap";
 import { useState } from "react";
+import { BeatLoader } from "react-spinners";
 
 const FormulaireEtudiant = ({ onInscrire }: { onInscrire: Function }) => {
+    const [waiting, setWaiting] = useState(false);
     const [validated, setValidated] = useState(false);
     const [nom, setNom] = useState("")
     const [prenom, setPrenom] = useState("")
@@ -19,6 +21,7 @@ const FormulaireEtudiant = ({ onInscrire }: { onInscrire: Function }) => {
         const form: any = e.currentTarget;
         e.preventDefault();
         if (form.checkValidity()) {
+            setWaiting(true)
             if (motDePasse !== validationMotDePasse) {
                 alert("Vérifier le mot de passe et le mot de passe ne correspondent pas")
                 return
@@ -35,6 +38,11 @@ const FormulaireEtudiant = ({ onInscrire }: { onInscrire: Function }) => {
         }
         setValidated(true)
     }
+
+    if (waiting) {
+        return <BeatLoader className="text-center" color="#292b2c" size={100} />
+    }
+
     return (
         <Container >
 
@@ -79,7 +87,7 @@ const FormulaireEtudiant = ({ onInscrire }: { onInscrire: Function }) => {
                     <FormGroup className="mb-3">
                         <Form.Label>Vérifier votre mot de passe</Form.Label>
                         <Form.Control type='password' minLength={8} placeholder='Confirmation mot de passe'
-                            value={validationMotDePasse} 
+                            value={validationMotDePasse}
                             onChange={(e) => setValidationMotDePasse(e.target.value)} />
                     </FormGroup>
                 </Row>

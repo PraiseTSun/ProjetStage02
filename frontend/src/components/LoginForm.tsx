@@ -1,10 +1,12 @@
 import React from "react";
 import { useState } from "react";
 import { Form, Row, Col, ToggleButton, ToggleButtonGroup, Button } from "react-bootstrap";
+import { BeatLoader } from "react-spinners";
 import { LOCAL_STORAGE_KEY } from '../App';
 import IUser from '../models/IUser';
 
 const LoginForm = (props: { setUser: Function }): JSX.Element => {
+    const [waiting, setWaiting] = useState(false);
     const [validated, setValidated] = useState(false);
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
@@ -15,7 +17,8 @@ const LoginForm = (props: { setUser: Function }): JSX.Element => {
         const form: any = event.currentTarget;
         event.preventDefault();
 
-        if (form.checkValidity() ) {
+        if (form.checkValidity()) {
+            setWaiting(true)
             const headers = {
                 method: "PUT",
                 headers: { "Content-Type": "application/json" },
@@ -37,6 +40,10 @@ const LoginForm = (props: { setUser: Function }): JSX.Element => {
 
         setValidated(true);
 
+    }
+
+    if (waiting) {
+        return <BeatLoader className="text-center" color="#0275d8" size={100} />
     }
 
     return (
