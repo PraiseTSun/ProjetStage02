@@ -37,6 +37,7 @@ const LoginForm = (props: { setUser: Function }): JSX.Element => {
             } else setIsInvalidLoggin(true)
 
         }
+        setWaiting(false)
 
         setValidated(true);
 
