@@ -2,7 +2,9 @@ package projet.projetstage02.service;
 
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
+import projet.projetstage02.DTO.CompanyDTO;
 import projet.projetstage02.DTO.GestionnaireDTO;
+import projet.projetstage02.DTO.StudentDTO;
 import projet.projetstage02.exception.NonExistentUserException;
 import projet.projetstage02.model.Company;
 import projet.projetstage02.model.Student;
@@ -12,6 +14,8 @@ import projet.projetstage02.repository.StudentRepository;
 
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -91,5 +95,27 @@ public class GestionnaireService{
         Optional<Student> studentOptional = studentRepository.findById(id);
         if (studentOptional.isEmpty()) throw new NonExistentUserException();
         return studentOptional.get();
+    }
+
+    public List<StudentDTO> getUnvalidatedStudents() {
+        List<StudentDTO> unvalidatedStudentDTOs = new ArrayList<>();
+        studentRepository.findAll().stream()
+                .filter(student ->
+                        student.isEmailConfirmed() && !student.isConfirm()
+                )
+                .forEach(student ->
+                        unvalidatedStudentDTOs.add(new StudentDTO(student)));
+        return unvalidatedStudentDTOs;
+    }
+
+    public List<CompanyDTO> getUnvalidatedCompanies() {
+        List<CompanyDTO> unvalidatedCompaniesDTOs = new ArrayList<>();
+        companyRepository.findAll().stream()
+                .filter(company->
+                        !company.isConfirm() && company.isEmailConfirmed()
+                )
+                .forEach(company ->
+                        unvalidatedCompaniesDTOs.add(new CompanyDTO(company)));
+        return unvalidatedCompaniesDTOs;
     }
 }

@@ -9,8 +9,6 @@ import projet.projetstage02.repository.StudentRepository;
 
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
 
 @Service
 @AllArgsConstructor
@@ -53,16 +51,5 @@ public class StudentService {
         var studentOpt = studentRepository.findByEmailAndPassword(email.toLowerCase(), password);
         if (studentOpt.isEmpty()) throw new NonExistentUserException();
         return new StudentDTO(studentOpt.get());
-    }
-
-    public List<StudentDTO> getUnvalidatedStudent() {
-        List<StudentDTO> unvalidatedStudentDTOs = new ArrayList<>();
-        studentRepository.findAll().stream()
-                .filter(student ->
-                        student.isEmailConfirmed() && !student.isConfirm()
-                )
-                .forEach(student ->
-                        unvalidatedStudentDTOs.add(new StudentDTO(student)));
-        return unvalidatedStudentDTOs;
     }
 }

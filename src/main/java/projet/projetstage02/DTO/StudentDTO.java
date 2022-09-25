@@ -3,6 +3,7 @@ package projet.projetstage02.DTO;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 import projet.projetstage02.model.AbstractUser;
+import projet.projetstage02.model.AbstractUser.Department;
 import projet.projetstage02.model.Student;
 
 @Data
@@ -35,7 +36,7 @@ public class StudentDTO extends AbstractUserDTO<Student> {
                 lastName,
                 email,
                 password,
-                AbstractUser.Department.getDepartment(department),
+                Department.getDepartment(department),
                 inscriptionTimestamp,
                 emailConfirmed
         );

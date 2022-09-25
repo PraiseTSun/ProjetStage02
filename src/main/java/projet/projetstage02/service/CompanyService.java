@@ -6,13 +6,13 @@ import projet.projetstage02.DTO.CompanyDTO;
 import projet.projetstage02.DTO.OffreDTO;
 import projet.projetstage02.exception.NonExistentUserException;
 import projet.projetstage02.model.AbstractUser;
+import projet.projetstage02.model.AbstractUser.Department;
 import projet.projetstage02.model.Offre;
 import projet.projetstage02.repository.CompanyRepository;
 import projet.projetstage02.repository.OffreRepository;
 
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -22,7 +22,7 @@ public class CompanyService {
     private final OffreRepository offreRepository;
 
     public long createOffre(OffreDTO offreDTO){
-        Offre offre = new Offre(offreDTO.getNomDeCompagnie(), offreDTO.getDepartment(), offreDTO.getPosition(),
+        Offre offre = new Offre(offreDTO.getNomDeCompagnie(), Department.getDepartment(offreDTO.getDepartment()), offreDTO.getPosition(),
                 offreDTO.getHeureParSemaine(), offreDTO.getAdresse(), offreDTO.getPdf());
         return offreRepository.save(offre).getId();
     }
@@ -31,7 +31,7 @@ public class CompanyService {
     }
 
     public void saveCompany(String firstName, String lastName, String name, String email, String password,
-                            AbstractUser.Department department) {
+                            Department department) {
         CompanyDTO dto = CompanyDTO.builder()
                 .firstName(firstName)
                 .lastName(lastName)
@@ -64,16 +64,5 @@ public class CompanyService {
         var companyOpt = companyRepository.findByEmailAndPassword(email.toLowerCase(), password);
         if (companyOpt.isEmpty()) throw new NonExistentUserException();
         return new CompanyDTO(companyOpt.get());
-    }
-
-    public List<CompanyDTO> getUnvalidatedUsers() {
-        List<CompanyDTO> unvalidatedCompaniesDTOs = new ArrayList<>();
-        companyRepository.findAll().stream()
-                .filter(company->
-                        !company.isConfirm() && company.isEmailConfirmed()
-                )
-                .forEach(company ->
-                        unvalidatedCompaniesDTOs.add(new CompanyDTO(company)));
-        return unvalidatedCompaniesDTOs;
     }
 }

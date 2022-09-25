@@ -176,14 +176,14 @@ public class RootController {
 
     @GetMapping("/unvalidatedStudents")
     public ResponseEntity<List<StudentDTO>> getUnvalidatedStudents() {
-        List<StudentDTO> unvalidatedStudents = studentService.getUnvalidatedStudent();
+        List<StudentDTO> unvalidatedStudents = gestionnaireService.getUnvalidatedStudents();
         unvalidatedStudents.forEach(student -> student.setPassword(""));
         return ResponseEntity.ok(unvalidatedStudents);
     }
 
     @GetMapping("/unvalidatedCompanies")
     public ResponseEntity<List<CompanyDTO>> getUnvalidatedCompanies() {
-        List<CompanyDTO> unvalidatedCompanies = companyService.getUnvalidatedUsers();
+        List<CompanyDTO> unvalidatedCompanies = gestionnaireService.getUnvalidatedCompanies();
         unvalidatedCompanies.forEach(company -> company.setPassword(""));
         return ResponseEntity.ok(unvalidatedCompanies);
     }
