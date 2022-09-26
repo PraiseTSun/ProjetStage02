@@ -122,4 +122,8 @@ public class GestionnaireService{
 
         return new OffreDTO(offre);
     }
+
+    public void removeOfferById(long id) {
+
+    }
 }

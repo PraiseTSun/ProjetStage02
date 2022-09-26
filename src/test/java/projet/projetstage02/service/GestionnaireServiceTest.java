@@ -19,7 +19,9 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -34,18 +36,8 @@ public class GestionnaireServiceTest {
     @Mock
     private OffreRepository offreRepository;
 
-//    @InjectMocks
+    @InjectMocks
     private GestionnaireService service;
-
-    @BeforeEach
-    void beforeEach(){
-        service = new GestionnaireService(
-                gestionnaireRepository,
-                companyRepository,
-                studentRepository,
-                offreRepository
-        );
-    }
 
     @Test
     public void offreNotValidated(){
@@ -82,5 +74,15 @@ public class GestionnaireServiceTest {
     }
 
 //    @Test
-//    public void valida
+//    public void removeOfferById(){
+//        // Arrange
+//        Offre offre = new Offre();
+//        when(offreRepository.findById(anyLong())).thenReturn(Optional.of(offre));
+//
+//        // Act
+//        service.removeOfferById(1L);
+//
+//        // Assert
+//        verify(offreRepository.delete(offre));
+//    }
 }
