@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import projet.projetstage02.model.Offre;
 
 @Data
 @NoArgsConstructor
@@ -17,4 +18,15 @@ public class OffreDTO {
     private int heureParSemaine;
     private String adresse;
     private byte[] pdf;
+    private boolean valide;
+
+    public OffreDTO(Offre offre){
+        nomDeCompagnie = offre.getNomDeCompagie();
+        department = offre.getDepartment();
+        position = offre.getPosition();
+        heureParSemaine = offre.getHeureParSemaine();
+        adresse = offre.getAdresse();
+        pdf = offre.getPdf();
+        valide = offre.isValide();
+    }
 }

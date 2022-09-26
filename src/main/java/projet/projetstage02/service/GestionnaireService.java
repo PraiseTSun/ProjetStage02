@@ -3,9 +3,11 @@ package projet.projetstage02.service;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import projet.projetstage02.DTO.GestionnaireDTO;
+import projet.projetstage02.DTO.OffreDTO;
 import projet.projetstage02.DTO.OffreValidateDTO;
 import projet.projetstage02.exception.NonExistentUserException;
 import projet.projetstage02.model.Company;
+import projet.projetstage02.model.Offre;
 import projet.projetstage02.model.Student;
 import projet.projetstage02.repository.CompanyRepository;
 import projet.projetstage02.repository.GestionnaireRepository;
@@ -107,5 +109,14 @@ public class GestionnaireService{
                         offres.add(new OffreValidateDTO(offre));
                 });
         return offres;
+    }
+
+    public OffreDTO valideOfferById(Long id) {
+        Optional<Offre> offreOpt = offreRepository.findById(id);
+        if(offreOpt.isEmpty())
+            return null;
+
+        Offre offre = offreOpt.get();
+        return new OffreDTO(offre);
     }
 }
