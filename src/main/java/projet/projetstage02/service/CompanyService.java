@@ -5,7 +5,6 @@ import org.springframework.stereotype.Service;
 import projet.projetstage02.DTO.CompanyDTO;
 import projet.projetstage02.DTO.OffreDTO;
 import projet.projetstage02.exception.NonExistentUserException;
-import projet.projetstage02.model.AbstractUser;
 import projet.projetstage02.model.AbstractUser.Department;
 import projet.projetstage02.model.Offre;
 import projet.projetstage02.repository.CompanyRepository;
@@ -13,7 +12,6 @@ import projet.projetstage02.repository.OffreRepository;
 
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
-import java.util.List;
 
 @Service
 @AllArgsConstructor
@@ -25,9 +23,6 @@ public class CompanyService {
         Offre offre = new Offre(offreDTO.getNomDeCompagnie(), Department.getDepartment(offreDTO.getDepartment()), offreDTO.getPosition(),
                 offreDTO.getHeureParSemaine(), offreDTO.getAdresse(), offreDTO.getPdf());
         return offreRepository.save(offre).getId();
-    }
-    public List<Offre> findOffre(){
-        return offreRepository.findAll();
     }
 
     public void saveCompany(String firstName, String lastName, String name, String email, String password,
