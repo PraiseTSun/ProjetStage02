@@ -7,6 +7,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 import projet.projetstage02.DTO.CompanyDTO;
 import projet.projetstage02.DTO.GestionnaireDTO;
+import projet.projetstage02.DTO.OffreDTO;
 import projet.projetstage02.DTO.StudentDTO;
 import projet.projetstage02.model.AbstractUser;
 import projet.projetstage02.service.CompanyService;
@@ -49,6 +50,8 @@ public class ProjetStage02Application implements CommandLineRunner {
         gestionnaire.setEmailConfirmed(true);
         gestionnaireService.saveGestionnaire(gestionnaire);
 
+        companyService.createOffre(new OffreDTO("Bell", "Informatique", "Support TI", 35, "My Home", null));
+
         System.out.println(studentService.getStudentById(1L));
         System.out.println(companyService.getCompanyById(2L));
         System.out.println(gestionnaireService.getGestionnaireById(3L));
@@ -56,7 +59,6 @@ public class ProjetStage02Application implements CommandLineRunner {
         System.out.println(studentService.getStudentByEmailPassword("Samir@gmail.com", "cooldude"));
         System.out.println(companyService.getCompanyByEmailPassword("Bob@bell.com", "bestcompany"));
         System.out.println(gestionnaireService.getGestionnaireByEmailPassword("dave@gmail.ca", "cooldude"));
-
-
+        System.out.println(gestionnaireService.getNoneValidateOffers());
     }
 }
