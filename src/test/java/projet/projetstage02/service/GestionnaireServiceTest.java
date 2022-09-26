@@ -72,7 +72,6 @@ public class GestionnaireServiceTest {
     public void validateOfferById(){
         // Arrange
         Offre offre = new Offre();
-        offre.setValide(true);
         when(offreRepository.findById(anyLong())).thenReturn(Optional.of(offre));
 
         // Act

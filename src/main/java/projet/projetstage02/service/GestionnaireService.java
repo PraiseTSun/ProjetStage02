@@ -117,6 +117,9 @@ public class GestionnaireService{
             return null;
 
         Offre offre = offreOpt.get();
+        offre.setValide(true);
+        offreRepository.save(offre);
+
         return new OffreDTO(offre);
     }
 }

@@ -60,5 +60,6 @@ public class ProjetStage02Application implements CommandLineRunner {
         System.out.println(companyService.getCompanyByEmailPassword("Bob@bell.com", "bestcompany"));
         System.out.println(gestionnaireService.getGestionnaireByEmailPassword("dave@gmail.ca", "cooldude"));
         System.out.println(gestionnaireService.getNoneValidateOffers());
+        System.out.println(gestionnaireService.valideOfferById(4L));
     }
 }
