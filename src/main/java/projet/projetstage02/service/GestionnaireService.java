@@ -66,7 +66,6 @@ public class GestionnaireService{
     }
 
     public void validateCompany(Long id) throws NonExistentUserException {
-        //Throws NonExistentUserException
         Company company = getCompany(id);
         company.setConfirm(true);
         companyRepository.save(company);

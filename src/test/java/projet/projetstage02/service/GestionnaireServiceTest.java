@@ -6,8 +6,12 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import projet.projetstage02.DTO.GestionnaireDTO;
 import projet.projetstage02.DTO.OffreDTO;
 import projet.projetstage02.DTO.OffreValidateDTO;
+import projet.projetstage02.exception.NonExistentUserException;
+import projet.projetstage02.model.Company;
+import projet.projetstage02.model.Gestionnaire;
 import projet.projetstage02.model.Offre;
 import projet.projetstage02.repository.CompanyRepository;
 import projet.projetstage02.repository.GestionnaireRepository;
@@ -38,7 +42,25 @@ public class GestionnaireServiceTest {
     @InjectMocks
     private GestionnaireService service;
 
-    
+    @Test
+    public void getGestionnaireByEmailPassword() throws NonExistentUserException {
+        // Arrange
+        String email = "test@email";
+        String password = "testPassword";
+        Gestionnaire gestionnaire = new Gestionnaire();
+        gestionnaire.setEmail(email);
+        gestionnaire.setPassword(password);
+        when(gestionnaireRepository.findByEmailAndPassword(anyString(), anyString()))
+                .thenReturn(Optional.of(gestionnaire));
+
+        // Act
+        GestionnaireDTO dto = service.getGestionnaireByEmailPassword(anyString(), anyString());
+
+        //Assert
+        assertThat(dto.getEmail()).isEqualTo(email);
+        assertThat(dto.getPassword()).isEqualTo(password);
+    }
+
     @Test
     public void offreNotValidated(){
         // Arrange
