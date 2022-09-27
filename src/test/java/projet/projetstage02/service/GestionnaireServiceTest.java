@@ -13,6 +13,7 @@ import projet.projetstage02.exception.NonExistentUserException;
 import projet.projetstage02.model.Company;
 import projet.projetstage02.model.Gestionnaire;
 import projet.projetstage02.model.Offre;
+import projet.projetstage02.model.Student;
 import projet.projetstage02.repository.CompanyRepository;
 import projet.projetstage02.repository.GestionnaireRepository;
 import projet.projetstage02.repository.OffreRepository;
@@ -72,6 +73,19 @@ public class GestionnaireServiceTest {
 
         // Assert
         assertThat(company.isConfirm()).isTrue();
+    }
+
+    @Test
+    public void validateStudent() throws NonExistentUserException{
+        // Arrange
+        Student student = new Student();
+        when(studentRepository.findById(anyLong())).thenReturn(Optional.of(student));
+
+        // Act
+        service.validateStudent(1L);
+
+        // Assert
+        assertThat(student.isConfirm()).isTrue();
     }
 
     @Test
