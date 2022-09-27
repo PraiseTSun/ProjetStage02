@@ -10,6 +10,7 @@ import CompanyDashboard from './pages/CompanyDashboardPage';
 import GestionnaireDashboard from './pages/GestionnaireDashboardPage';
 import UserValidation from './pages/UserValidationPage';
 import FormulaireSoumissionPage from './pages/FormulaireSoumissionPage';
+import ValiderNouvelleOffreStagePage from "./pages/ValiderNouvelleOffreStagePage";
 
 export const LOCAL_STORAGE_KEY = "MASSI_BEST_PROGRAMMER_PROJET_STAGE_02_CURRENT_CONNECTED_USER"
 const emptyUser: IUser = {
@@ -20,9 +21,41 @@ const emptyUser: IUser = {
 
 function App() {
   const [user, setUser] = useState(emptyUser)
+  const [offresAttendreValide, setOffresAttendreValide] = useState([])
+
   const deconnexion = () => {
     setUser(emptyUser)
     localStorage.removeItem(LOCAL_STORAGE_KEY)
+  }
+  const fetchOffresAttendreValide = async () => {
+    const res = await fetch(`http://localhost:8080/offresValide`)
+    const data = await res.json()
+
+    if(res.status === 200){
+      setOffresAttendreValide(data)
+    }
+  }
+
+  const valideOffre = async (id : number) => {
+     const res = await fetch(`http://localhost:8080/offres/${id}`,
+         {
+           method:'PUT',
+           headers:{
+                'Content-Type':'application/json',
+           },
+           body:JSON.stringify(id)
+         })
+  }
+
+  const deleteOffre = async (id : number) => {
+    const res = await fetch(`http://localhost:8080/offres/${id}`,
+        {
+          method:'DELETE',
+          headers:{
+            'Content-Type':'application/json',
+          },
+          body:JSON.stringify(id)
+        })
   }
 
   if (localStorage.getItem(LOCAL_STORAGE_KEY) != null && user == emptyUser) {
@@ -78,6 +111,7 @@ function App() {
             <Route path="/" element={<GestionnaireDashboard deconnexion={deconnexion} user={user} />} />
             <Route path="/userValidation" element={<UserValidation />} />
             <Route path="*" element={<h1 className="text-center text-white display-1">404 - Page pas trouvé</h1>} />
+            <Route path="/validerOffres" element={<ValiderNouvelleOffreStagePage  fetchOffresAttendreValide={fetchOffresAttendreValide}  offresAttendreValide={offresAttendreValide} valideOffre={valideOffre} deleteOffre={deleteOffre}/>}></Route>
           </Routes>
         </BrowserRouter>
       </Container>
