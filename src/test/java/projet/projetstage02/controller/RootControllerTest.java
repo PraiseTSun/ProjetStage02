@@ -1,0 +1,125 @@
+package projet.projetstage02.controller;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.boot.test.json.JacksonTester;
+import org.springframework.http.MediaType;
+import org.springframework.test.web.servlet.MockMvc;
+
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import projet.projetstage02.DTO.CompanyDTO;
+import projet.projetstage02.DTO.GestionnaireDTO;
+import projet.projetstage02.DTO.OffreDTO;
+import projet.projetstage02.DTO.StudentDTO;
+import projet.projetstage02.model.AbstractUser.Department;
+import projet.projetstage02.service.StudentService;
+
+import java.sql.Timestamp;
+import java.time.LocalDateTime;
+
+
+import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.Mockito.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
+@ExtendWith(MockitoExtension.class)
+public class RootControllerTest {
+
+    MockMvc mockMvc;
+
+    @InjectMocks
+    RootController rootController;
+
+    @Mock
+    StudentService studentService;
+
+    JacksonTester<StudentDTO> jsonStudentDTO;
+
+    StudentDTO bart;
+    CompanyDTO duffBeer;
+    GestionnaireDTO burns;
+    OffreDTO duffOffre;
+
+    // https://thepracticaldeveloper.com/guide-spring-boot-controller-tests/
+    @BeforeEach
+    void setup() {
+        bart = StudentDTO.builder()
+                .firstName("Bart")
+                .lastName("Simpson")
+                .email("bart.simpson@springfield.com")
+                .department(Department.Transport.departement)
+                .password("eatMyShorts")
+                .isConfirmed(false)
+                .inscriptionTimestamp(Timestamp.valueOf(LocalDateTime.now()).getTime())
+                .build();
+
+        duffBeer = CompanyDTO.builder()
+                .firstName("Duff")
+                .lastName("Man")
+                .isConfirmed(false)
+                .email("duff.beer@springfield.com")
+                .password("bestBeer")
+                .department(Department.Transport.departement)
+                .companyName("Duff Beer")
+                .inscriptionTimestamp(Timestamp.valueOf(LocalDateTime.now()).getTime())
+                .build();
+
+        burns = GestionnaireDTO.builder()
+                .firstName("Charles")
+                .lastName("Burns")
+                .isConfirmed(true)
+                .email("charles.burns@springfield.com")
+                .password("excellent")
+                .build();
+
+        duffOffre = OffreDTO.builder()
+                .nomDeCompagnie("Duff Beer")
+                .department(Department.Transport.departement)
+                .position("Delivery Guy")
+                .heureParSemaine(40)
+                .adresse("654 Duff Street")
+                .pdf(new byte[0])
+                .build();
+
+        JacksonTester.initFields(this, new ObjectMapper());
+        mockMvc = MockMvcBuilders.standaloneSetup(rootController).build();
+    }
+
+    @Test
+    void createStudentHappyDayTest() throws Exception {
+        when(studentService.isEmailUnique(anyString())).thenReturn(true);
+        when(studentService.saveStudent(any())).thenReturn(1L);
+
+        mockMvc.perform(post("/createStudent")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(jsonStudentDTO.write(bart).getJson()))
+
+                .andExpect(status().isCreated());
+    }
+
+    @Test
+    void createStudentConflictTest() throws Exception {
+        when(studentService.isEmailUnique(anyString())).thenReturn(false);
+
+        mockMvc.perform(post("/createStudent")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(jsonStudentDTO.write(bart).getJson()))
+
+                .andExpect(status().isConflict());
+    }
+
+    @Test
+    void createStudentBadRequestTest() throws Exception {
+        mockMvc.perform(post("/createStudent")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(jsonStudentDTO.write(new StudentDTO()).getJson()))
+
+                .andExpect(status().isBadRequest());
+    }
+}
