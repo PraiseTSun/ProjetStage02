@@ -16,6 +16,7 @@ import projet.projetstage02.DTO.CompanyDTO;
 import projet.projetstage02.DTO.GestionnaireDTO;
 import projet.projetstage02.DTO.OffreDTO;
 import projet.projetstage02.DTO.StudentDTO;
+import projet.projetstage02.exception.NonExistentUserException;
 import projet.projetstage02.model.AbstractUser.Department;
 import projet.projetstage02.service.CompanyService;
 import projet.projetstage02.service.GestionnaireService;
@@ -216,5 +217,37 @@ public class RootControllerTest {
                         .content(jsonOffreDTO.write(new OffreDTO()).getJson()))
 
                 .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void confirmStudentEmailHappyDayTest() throws Exception {
+        when(studentService.getStudentById(1L)).thenReturn(bart);
+        when(studentService.saveStudent(bart)).thenReturn(1L);
+
+        mockMvc.perform(
+                        put("/confirmEmail/student/{id}", 1))
+
+                .andExpect(status().isCreated());
+    }
+
+    @Test
+    void confirmStudentEmailNotFoundTest() throws Exception {
+        when(studentService.getStudentById(1L)).thenThrow(new NonExistentUserException());
+
+        mockMvc.perform(
+                        put("/confirmEmail/student/{id}", 1))
+
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    void confirmStudentEmailExpiredTest() throws Exception {
+        bart.setInscriptionTimestamp(Timestamp.valueOf(LocalDateTime.now().minusMonths(1)).getTime());
+        when(studentService.getStudentById(1L)).thenReturn(bart);
+
+        mockMvc.perform(
+                        put("/confirmEmail/student/{id}", 1))
+
+                .andExpect(status().isUnprocessableEntity());
     }
 }
