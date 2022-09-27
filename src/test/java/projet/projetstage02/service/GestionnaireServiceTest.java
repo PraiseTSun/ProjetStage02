@@ -10,10 +10,7 @@ import projet.projetstage02.DTO.GestionnaireDTO;
 import projet.projetstage02.DTO.OffreDTO;
 import projet.projetstage02.DTO.OffreValidateDTO;
 import projet.projetstage02.exception.NonExistentUserException;
-import projet.projetstage02.model.Company;
-import projet.projetstage02.model.Gestionnaire;
-import projet.projetstage02.model.Offre;
-import projet.projetstage02.model.Student;
+import projet.projetstage02.model.*;
 import projet.projetstage02.repository.CompanyRepository;
 import projet.projetstage02.repository.GestionnaireRepository;
 import projet.projetstage02.repository.OffreRepository;
@@ -102,16 +99,37 @@ public class GestionnaireServiceTest {
         verify(companyRepository).delete(company);
     }
 
+    @Test
+    public void removeStudent() throws NonExistentUserException {
+        // Arrange
+        Student student = new Student();
+        when(studentRepository.findById(anyLong())).thenReturn(Optional.of(student));
+        doNothing().when(studentRepository).delete(any());
+
+        // Act
+        service.removeStudent(1L);
+
+        // Assert
+        verify(studentRepository).delete(student);
+    }
+
 
     @Test
     public void offreNotValidated(){
         // Arrange
         List<Offre> offres = new ArrayList<>();
-        offres.add(new Offre());
-        offres.add(new Offre());
-        offres.add(new Offre());
-
         Offre offre = new Offre();
+        offre.setDepartment(AbstractUser.Department.Informatique);
+        offres.add(offre);
+        offre = new Offre();
+        offre.setDepartment(AbstractUser.Department.Informatique);
+        offres.add(offre);
+        offre = new Offre();
+        offre.setDepartment(AbstractUser.Department.Informatique);
+        offres.add(offre);
+
+        offre = new Offre();
+        offre.setDepartment(AbstractUser.Department.Informatique);
         offre.setValide(true);
         offres.add(offre);
 
@@ -128,6 +146,7 @@ public class GestionnaireServiceTest {
     public void validateOfferById(){
         // Arrange
         Offre offre = new Offre();
+        offre.setDepartment(AbstractUser.Department.Informatique);
         when(offreRepository.findById(anyLong())).thenReturn(Optional.of(offre));
 
         // Act
