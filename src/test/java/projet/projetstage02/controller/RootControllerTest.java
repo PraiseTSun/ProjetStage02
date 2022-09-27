@@ -436,4 +436,26 @@ public class RootControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$[0].firstName", is("Duff")));
     }
+
+    @Test
+    void validateStudentHappyDayTest() throws Exception {
+        doAnswer(invocation -> {
+            bart.setConfirmed(true);
+            return null;
+        }).when(gestionnaireService).validateStudent(1L);
+
+        mockMvc.perform(put("/validateStudent/{id}", 1))
+
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    void validateStudentNotFoundTest() throws Exception {
+        doThrow(new NonExistentUserException())
+                .when(gestionnaireService).validateStudent(1L);
+
+        mockMvc.perform(put("/validateStudent/{id}", 1))
+
+                .andExpect(status().isNotFound());
+    }
 }
