@@ -6,6 +6,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import projet.projetstage02.DTO.*;
+import projet.projetstage02.exception.NonExistentOfferExeption;
 import projet.projetstage02.exception.NonExistentUserException;
 import projet.projetstage02.model.*;
 import projet.projetstage02.repository.CompanyRepository;
@@ -154,7 +155,7 @@ public class GestionnaireServiceTest {
     }
 
     @Test
-    public void validateOfferById(){
+    public void validateOfferById() throws NonExistentOfferExeption {
         // Arrange
         Offre offre = new Offre();
         offre.setDepartment(AbstractUser.Department.Informatique);
@@ -168,7 +169,7 @@ public class GestionnaireServiceTest {
     }
 
     @Test
-    public void removeOfferById(){
+    public void removeOfferById() throws NonExistentOfferExeption {
         // Arrange
         Offre offre = new Offre();
         when(offreRepository.findById(anyLong())).thenReturn(Optional.of(offre));

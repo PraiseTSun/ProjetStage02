@@ -7,6 +7,7 @@ import projet.projetstage02.DTO.GestionnaireDTO;
 import projet.projetstage02.DTO.OffreDTO;
 import projet.projetstage02.DTO.OffreValidateDTO;
 import projet.projetstage02.DTO.StudentDTO;
+import projet.projetstage02.exception.NonExistentOfferExeption;
 import projet.projetstage02.exception.NonExistentUserException;
 import projet.projetstage02.model.Company;
 import projet.projetstage02.model.Offre;
@@ -110,7 +111,7 @@ public class GestionnaireService{
         return offres;
     }
 
-    public OffreDTO validateOfferById(Long id) {
+    public OffreDTO validateOfferById(Long id) throws NonExistentOfferExeption {
         Optional<Offre> offreOpt = offreRepository.findById(id);
         if(offreOpt.isEmpty())
             return null;
@@ -122,7 +123,7 @@ public class GestionnaireService{
         return new OffreDTO(offre);
     }
 
-    public void removeOfferById(long id) {
+    public void removeOfferById(long id) throws NonExistentOfferExeption{
         Optional<Offre> offreOpt = offreRepository.findById(id);
         if (offreOpt.isEmpty())
             throw new RuntimeException("Offre do not exist");
