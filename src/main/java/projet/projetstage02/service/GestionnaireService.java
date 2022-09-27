@@ -110,7 +110,7 @@ public class GestionnaireService{
         return offres;
     }
 
-    public OffreDTO valideOfferById(Long id) {
+    public OffreDTO validateOfferById(Long id) {
         Optional<Offre> offreOpt = offreRepository.findById(id);
         if(offreOpt.isEmpty())
             return null;

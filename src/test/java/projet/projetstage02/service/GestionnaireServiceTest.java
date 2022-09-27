@@ -1,6 +1,5 @@
 package projet.projetstage02.service;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -162,7 +161,7 @@ public class GestionnaireServiceTest {
         when(offreRepository.findById(anyLong())).thenReturn(Optional.of(offre));
 
         // Act
-        final OffreDTO offreDTO = service.valideOfferById(1L);
+        final OffreDTO offreDTO = service.validateOfferById(1L);
 
         // Assert
         assertThat(offreDTO.isValide()).isTrue();

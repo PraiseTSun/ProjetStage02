@@ -226,9 +226,20 @@ public class RootController {
         }
     }
 
-    @GetMapping("/unvalidateOffers")
+    @GetMapping("/unvalidatedOffers")
     public ResponseEntity<List<OffreValidateDTO>> getOfferToValidate(){
         List<OffreValidateDTO> unvalidatedOffers = gestionnaireService.getNoneValidateOffers();
         return ResponseEntity.ok(unvalidatedOffers);
+    }
+
+    @PutMapping("/validateStudent/{id}")
+    public ResponseEntity<Map<String, String>> validateOffer(@PathVariable String id) {
+        try {
+            gestionnaireService.validateOfferById(Long.parseLong(id));
+            return ResponseEntity.ok().build();
+        } catch (NonExistentUserException exception) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(getError(exception.getMessage()));
+        }
     }
 }
