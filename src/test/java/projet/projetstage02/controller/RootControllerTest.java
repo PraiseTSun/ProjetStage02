@@ -24,6 +24,7 @@ import projet.projetstage02.service.StudentService;
 
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
+import java.util.List;
 
 import static org.hamcrest.core.Is.is;
 import static org.mockito.ArgumentMatchers.*;
@@ -414,5 +415,15 @@ public class RootControllerTest {
                         .content(jsonGestionnaireDTO.write(burns).getJson()))
 
                 .andExpect(status().isNotFound());
+    }
+
+    @Test
+    void unvalidatedStudentsHappyDayTest() throws Exception {
+        when(gestionnaireService.getUnvalidatedStudents())
+                .thenReturn(List.of(bart));
+
+        mockMvc.perform(get("/unvalidatedStudents"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[0].firstName", is("Bart")));
     }
 }
