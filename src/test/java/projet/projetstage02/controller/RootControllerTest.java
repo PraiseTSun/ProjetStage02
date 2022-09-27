@@ -50,6 +50,7 @@ public class RootControllerTest {
     JacksonTester<StudentDTO> jsonStudentDTO;
     JacksonTester<CompanyDTO> jsonCompanyDTO;
     JacksonTester<GestionnaireDTO> jsonGestionnaireDTO;
+    JacksonTester<OffreDTO> jsonOffreDTO;
 
     StudentDTO bart;
     CompanyDTO duffBeer;
@@ -193,6 +194,26 @@ public class RootControllerTest {
         mockMvc.perform(post("/createGestionnaire")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(jsonGestionnaireDTO.write(new GestionnaireDTO()).getJson()))
+
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void createOffreHappyDayTest() throws Exception {
+        when(companyService.createOffre(any())).thenReturn(1L);
+
+        mockMvc.perform(post("/createOffre")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(jsonOffreDTO.write(duffOffre).getJson()))
+
+                .andExpect(status().isCreated());
+    }
+
+    @Test
+    void createOffreBadRequestTest() throws Exception {
+        mockMvc.perform(post("/createOffre")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(jsonOffreDTO.write(new OffreDTO()).getJson()))
 
                 .andExpect(status().isBadRequest());
     }
