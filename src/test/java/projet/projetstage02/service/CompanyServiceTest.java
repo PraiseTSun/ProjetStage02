@@ -155,7 +155,8 @@ public class CompanyServiceTest {
     void saveCompanyMultipleParametersTest() {
         // Arrange
         duffBeer.setId(1L);
-        when(companyRepository.save(any())).thenReturn(duffBeer);
+        when(companyRepository.save(any()))
+                .thenReturn(duffBeer);
 
         // Act
         companyService.saveCompany(
