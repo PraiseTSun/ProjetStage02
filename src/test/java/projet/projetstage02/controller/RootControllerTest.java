@@ -250,4 +250,36 @@ public class RootControllerTest {
 
                 .andExpect(status().isUnprocessableEntity());
     }
+
+    @Test
+    void confirmCompanyEmailHappyDayTest() throws Exception {
+        when(companyService.getCompanyById(1L)).thenReturn(duffBeer);
+        when(companyService.saveCompany(duffBeer)).thenReturn(1L);
+
+        mockMvc.perform(
+                        put("/confirmEmail/company/{id}", 1))
+
+                .andExpect(status().isCreated());
+    }
+
+    @Test
+    void confirmCompanyEmailNotFoundTest() throws Exception {
+        when(companyService.getCompanyById(1L)).thenThrow(new NonExistentUserException());
+
+        mockMvc.perform(
+                        put("/confirmEmail/company/{id}", 1))
+
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    void confirmCompanyEmailExpiredTest() throws Exception {
+        duffBeer.setInscriptionTimestamp(Timestamp.valueOf(LocalDateTime.now().minusMonths(1)).getTime());
+        when(companyService.getCompanyById(1L)).thenReturn(duffBeer);
+
+        mockMvc.perform(
+                        put("/confirmEmail/company/{id}", 1))
+
+                .andExpect(status().isUnprocessableEntity());
+    }
 }
