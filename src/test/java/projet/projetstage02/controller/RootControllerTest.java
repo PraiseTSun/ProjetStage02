@@ -426,4 +426,14 @@ public class RootControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$[0].firstName", is("Bart")));
     }
+
+    @Test
+    void unvalidatedCompaniesHappyDayTest() throws Exception {
+        when(gestionnaireService.getUnvalidatedCompanies())
+                .thenReturn(List.of(duffBeer));
+
+        mockMvc.perform(get("/unvalidatedCompanies"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[0].firstName", is("Duff")));
+    }
 }
