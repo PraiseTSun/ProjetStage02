@@ -458,4 +458,26 @@ public class RootControllerTest {
 
                 .andExpect(status().isNotFound());
     }
+
+    @Test
+    void validateCompanyHappyDayTest() throws Exception {
+        doAnswer(invocation -> {
+            duffBeer.setConfirmed(true);
+            return null;
+        }).when(gestionnaireService).validateCompany(1L);
+
+        mockMvc.perform(put("/validateCompany/{id}", 1))
+
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    void validateCompanyNotFoundTest() throws Exception {
+        doThrow(new NonExistentUserException())
+                .when(gestionnaireService).validateCompany(1L);
+
+        mockMvc.perform(put("/validateCompany/{id}", 1))
+
+                .andExpect(status().isNotFound());
+    }
 }
