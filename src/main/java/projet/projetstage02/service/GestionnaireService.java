@@ -124,6 +124,10 @@ public class GestionnaireService{
     }
 
     public void removeOfferById(long id) {
-
+        Optional<Offre> offreOpt = offreRepository.findById(id);
+        if(offreOpt.isEmpty())
+            throw new RuntimeException("Offre do not exist");
+        Offre offre = offreOpt.get();
+        offreRepository.delete(offre);
     }
 }

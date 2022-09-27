@@ -21,8 +21,7 @@ import java.util.Optional;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 public class GestionnaireServiceTest {
@@ -73,16 +72,17 @@ public class GestionnaireServiceTest {
         assertThat(offreDTO.isValide()).isTrue();
     }
 
-//    @Test
-//    public void removeOfferById(){
-//        // Arrange
-//        Offre offre = new Offre();
-//        when(offreRepository.findById(anyLong())).thenReturn(Optional.of(offre));
-//
-//        // Act
-//        service.removeOfferById(1L);
-//
-//        // Assert
-//        verify(offreRepository.delete(offre));
-//    }
+    @Test
+    public void removeOfferById(){
+        // Arrange
+        Offre offre = new Offre();
+        when(offreRepository.findById(anyLong())).thenReturn(Optional.of(offre));
+        doNothing().when(offreRepository).delete(any());
+
+        // Act
+        service.removeOfferById(1L);
+
+        // Assert
+        verify(offreRepository).delete(offre);
+    }
 }
