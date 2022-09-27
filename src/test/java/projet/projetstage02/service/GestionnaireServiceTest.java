@@ -38,6 +38,7 @@ public class GestionnaireServiceTest {
     @InjectMocks
     private GestionnaireService service;
 
+    
     @Test
     public void offreNotValidated(){
         // Arrange

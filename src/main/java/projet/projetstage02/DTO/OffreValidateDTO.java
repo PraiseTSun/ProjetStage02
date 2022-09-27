@@ -19,7 +19,7 @@ public class OffreValidateDTO {
     public OffreValidateDTO(Offre offre){
         id = String.valueOf(offre.getId());
         nomDeCompagie = offre.getNomDeCompagie();
-        department = offre.getDepartment();
+        department = offre.getDepartment().toString();
         position = offre.getPosition();
     }
 }

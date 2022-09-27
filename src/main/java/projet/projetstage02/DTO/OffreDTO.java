@@ -22,7 +22,7 @@ public class OffreDTO {
 
     public OffreDTO(Offre offre){
         nomDeCompagnie = offre.getNomDeCompagie();
-        department = offre.getDepartment();
+        department = offre.getDepartment().toString();
         position = offre.getPosition();
         heureParSemaine = offre.getHeureParSemaine();
         adresse = offre.getAdresse();
