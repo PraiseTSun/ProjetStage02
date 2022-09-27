@@ -371,4 +371,48 @@ public class RootControllerTest {
 
                 .andExpect(status().isNotFound());
     }
+
+    @Test
+    void loginGestionnaireHappyDayTest() throws Exception {
+        burns.setEmailConfirmed(true);
+        when(gestionnaireService.getGestionnaireByEmailPassword(
+                "charles.burns@springfield.com",
+                "excellent"))
+                .thenReturn(burns);
+
+        mockMvc.perform(put("/gestionnaire")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(jsonGestionnaireDTO.write(burns).getJson()))
+
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.firstName", is("Charles")));
+    }
+
+    @Test
+    void loginGestionnaireNotEmailConfirmedTest() throws Exception {
+        when(gestionnaireService.getGestionnaireByEmailPassword(
+                "charles.burns@springfield.com",
+                "excellent"))
+                .thenReturn(burns);
+
+        mockMvc.perform(put("/gestionnaire")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(jsonGestionnaireDTO.write(burns).getJson()))
+
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    void loginGestionnaireNotFoundTest() throws Exception {
+        when(gestionnaireService.getGestionnaireByEmailPassword(
+                "charles.burns@springfield.com",
+                "excellent"))
+                .thenThrow(new NonExistentUserException());
+
+        mockMvc.perform(put("/gestionnaire")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(jsonGestionnaireDTO.write(burns).getJson()))
+
+                .andExpect(status().isNotFound());
+    }
 }
