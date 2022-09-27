@@ -18,6 +18,7 @@ import projet.projetstage02.DTO.OffreDTO;
 import projet.projetstage02.DTO.StudentDTO;
 import projet.projetstage02.model.AbstractUser.Department;
 import projet.projetstage02.service.CompanyService;
+import projet.projetstage02.service.GestionnaireService;
 import projet.projetstage02.service.StudentService;
 
 import java.sql.Timestamp;
@@ -43,8 +44,12 @@ public class RootControllerTest {
     @Mock
     CompanyService companyService;
 
+    @Mock
+    GestionnaireService gestionnaireService;
+
     JacksonTester<StudentDTO> jsonStudentDTO;
     JacksonTester<CompanyDTO> jsonCompanyDTO;
+    JacksonTester<GestionnaireDTO> jsonGestionnaireDTO;
 
     StudentDTO bart;
     CompanyDTO duffBeer;
@@ -156,6 +161,38 @@ public class RootControllerTest {
         mockMvc.perform(post("/createCompany")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(jsonCompanyDTO.write(new CompanyDTO()).getJson()))
+
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void createGestionnaireHappyDayTest() throws Exception {
+        when(gestionnaireService.isEmailUnique(anyString())).thenReturn(true);
+        when(gestionnaireService.saveGestionnaire(any())).thenReturn(1L);
+
+        mockMvc.perform(post("/createGestionnaire")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(jsonGestionnaireDTO.write(burns).getJson()))
+
+                .andExpect(status().isCreated());
+    }
+
+    @Test
+    void createGestionnaireConflictTest() throws Exception {
+        when(gestionnaireService.isEmailUnique(anyString())).thenReturn(false);
+
+        mockMvc.perform(post("/createGestionnaire")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(jsonGestionnaireDTO.write(burns).getJson()))
+
+                .andExpect(status().isConflict());
+    }
+
+    @Test
+    void createGestionnaireBadRequestTest() throws Exception {
+        mockMvc.perform(post("/createGestionnaire")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(jsonGestionnaireDTO.write(new GestionnaireDTO()).getJson()))
 
                 .andExpect(status().isBadRequest());
     }
