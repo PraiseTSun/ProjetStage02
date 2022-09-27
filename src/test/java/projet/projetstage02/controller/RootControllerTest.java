@@ -25,10 +25,11 @@ import projet.projetstage02.service.StudentService;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 
-
+import static org.hamcrest.core.Is.is;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @ExtendWith(MockitoExtension.class)
@@ -281,5 +282,49 @@ public class RootControllerTest {
                         put("/confirmEmail/company/{id}", 1))
 
                 .andExpect(status().isUnprocessableEntity());
+    }
+
+    @Test
+    void loginStudentHappyDayTest() throws Exception {
+        bart.setEmailConfirmed(true);
+        when(studentService.getStudentByEmailPassword(
+                "bart.simpson@springfield.com",
+                "eatMyShorts"))
+                .thenReturn(bart);
+
+        mockMvc.perform(put("/student")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(jsonStudentDTO.write(bart).getJson()))
+
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.firstName", is("Bart")));
+    }
+
+    @Test
+    void loginStudentNotEmailConfirmedTest() throws Exception {
+        when(studentService.getStudentByEmailPassword(
+                "bart.simpson@springfield.com",
+                "eatMyShorts"))
+                .thenReturn(bart);
+
+        mockMvc.perform(put("/student")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(jsonStudentDTO.write(bart).getJson()))
+
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    void loginStudentNotFoundTest() throws Exception {
+        when(studentService.getStudentByEmailPassword(
+                "bart.simpson@springfield.com",
+                "eatMyShorts"))
+                .thenThrow(new NonExistentUserException());
+
+        mockMvc.perform(put("/student")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(jsonStudentDTO.write(bart).getJson()))
+
+                .andExpect(status().isNotFound());
     }
 }
