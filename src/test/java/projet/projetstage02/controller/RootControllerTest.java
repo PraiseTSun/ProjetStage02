@@ -327,4 +327,48 @@ public class RootControllerTest {
 
                 .andExpect(status().isNotFound());
     }
+
+    @Test
+    void loginCompanyHappyDayTest() throws Exception {
+        duffBeer.setEmailConfirmed(true);
+        when(companyService.getCompanyByEmailPassword(
+                "duff.beer@springfield.com",
+                "bestBeer"))
+                .thenReturn(duffBeer);
+
+        mockMvc.perform(put("/company")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(jsonCompanyDTO.write(duffBeer).getJson()))
+
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.firstName", is("Duff")));
+    }
+
+    @Test
+    void loginCompanyNotEmailConfirmedTest() throws Exception {
+        when(companyService.getCompanyByEmailPassword(
+                "duff.beer@springfield.com",
+                "bestBeer"))
+                .thenReturn(duffBeer);
+
+        mockMvc.perform(put("/company")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(jsonCompanyDTO.write(duffBeer).getJson()))
+
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    void loginCompanyNotFoundTest() throws Exception {
+        when(companyService.getCompanyByEmailPassword(
+                "duff.beer@springfield.com",
+                "bestBeer"))
+                .thenThrow(new NonExistentUserException());
+
+        mockMvc.perform(put("/company")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(jsonCompanyDTO.write(duffBeer).getJson()))
+
+                .andExpect(status().isNotFound());
+    }
 }
