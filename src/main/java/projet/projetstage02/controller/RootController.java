@@ -243,4 +243,15 @@ public class RootController {
                     .body(getError(exception.getMessage()));
         }
     }
+
+    @DeleteMapping("/removeOffer/{id}")
+    public ResponseEntity<Map<String, String>> removeOffer(@PathVariable String id) {
+        try {
+            gestionnaireService.removeOfferById(Long.parseLong(id));
+            return ResponseEntity.ok().build();
+        } catch (NonExistentOfferExeption exception) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(getError(exception.getMessage()));
+        }
+    }
 }
