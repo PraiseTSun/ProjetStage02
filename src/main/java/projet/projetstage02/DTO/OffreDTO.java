@@ -6,17 +6,30 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import projet.projetstage02.model.Offre;
 
+import javax.validation.constraints.*;
+
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
 public class OffreDTO {
 
+    @NotBlank
+    @Size(min = 2)
     private String nomDeCompagnie;
+    @NotBlank
     private String department;
+    @NotBlank
+    @Size(min = 2)
     private String position;
+    @NotNull
+    @Min(0)
+    @Max(40)
     private int heureParSemaine;
+    @NotBlank
+    @Size(min = 2)
     private String adresse;
+    @NotNull
     private byte[] pdf;
 
     public OffreDTO(Offre offre) {
