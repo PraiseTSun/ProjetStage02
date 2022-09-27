@@ -3,6 +3,7 @@ package projet.projetstage02.model;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import projet.projetstage02.model.AbstractUser.Department;
 
 import javax.persistence.*;
 
@@ -17,7 +18,7 @@ public class Offre {
     @Column(name = "id", nullable = false)
     private long id;
     private String nomDeCompagie;
-    private String department;
+    private Department department;
     private String position;
     private int heureParSemaine;
     private String adresse;
@@ -26,7 +27,7 @@ public class Offre {
     private byte[] pdf;
 
 
-    public Offre(String nomDeCompagie, String department, String position, int heureParSemaine, String adresse, byte[] pdf) {
+    public Offre(String nomDeCompagie, Department department, String position, int heureParSemaine, String adresse, byte[] pdf) {
         this.nomDeCompagie = nomDeCompagie;
         this.department = department;
         this.position = position;

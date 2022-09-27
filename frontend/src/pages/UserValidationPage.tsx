@@ -44,13 +44,13 @@ const UserValidation = () => {
             <Row>
                 <ToggleButtonGroup className="" type="radio" name="options" defaultValue="Student">
                     <ToggleButton id="StudentValid" value="Student" onClick={() => setUser("Student")}>
-                        Student
+                        Étudiants
                     </ToggleButton>
                     <ToggleButton id="CompanyValid" value="Company" onClick={() => setUser("Company")}>
-                        Company
+                        Compagnies
                     </ToggleButton>
                     <ToggleButton id="GestionnairValid" value="Gestionnaire" onClick={() => setUser("Gestionnaire")}>
-                        Gestionnaire
+                        Gestionnaires
                     </ToggleButton>
                 </ToggleButtonGroup>
             </Row>
