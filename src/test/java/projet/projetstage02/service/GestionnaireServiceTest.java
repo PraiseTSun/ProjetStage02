@@ -6,10 +6,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import projet.projetstage02.DTO.GestionnaireDTO;
-import projet.projetstage02.DTO.OffreDTO;
-import projet.projetstage02.DTO.OffreValidateDTO;
-import projet.projetstage02.DTO.StudentDTO;
+import projet.projetstage02.DTO.*;
 import projet.projetstage02.exception.NonExistentUserException;
 import projet.projetstage02.model.*;
 import projet.projetstage02.repository.CompanyRepository;
@@ -217,5 +214,39 @@ public class GestionnaireServiceTest {
 
         // Assert
         assertThat(unvalidatedStudents.size()).isEqualTo(2);
+    }
+
+    @Test
+    public void getUnvalidatedCompanies(){
+        // Arrange
+        List<Company> companies = new ArrayList<>();
+
+        Company company = new Company();
+        company.setDepartment(AbstractUser.Department.Informatique);
+        companies.add(company);
+
+        company = new Company();
+        company.setDepartment(AbstractUser.Department.Informatique);
+        company.setEmailConfirmed(true);
+        companies.add(company);
+
+        company = new Company();
+        company.setDepartment(AbstractUser.Department.Informatique);
+        company.setEmailConfirmed(true);
+        companies.add(company);
+
+        company = new Company();
+        company.setDepartment(AbstractUser.Department.Informatique);
+        company.setEmailConfirmed(true);
+        company.setConfirm(true);
+        companies.add(company);
+
+        when(companyRepository.findAll()).thenReturn(companies);
+
+        // Act
+        List<CompanyDTO> unvalidatedCompanies = service.getUnvalidatedCompanies();
+
+        // Assert
+        assertThat(unvalidatedCompanies.size()).isEqualTo(2);
     }
 }
