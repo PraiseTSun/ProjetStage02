@@ -9,6 +9,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import projet.projetstage02.DTO.GestionnaireDTO;
 import projet.projetstage02.DTO.OffreDTO;
 import projet.projetstage02.DTO.OffreValidateDTO;
+import projet.projetstage02.DTO.StudentDTO;
 import projet.projetstage02.exception.NonExistentUserException;
 import projet.projetstage02.model.*;
 import projet.projetstage02.repository.CompanyRepository;
@@ -41,9 +42,23 @@ public class GestionnaireServiceTest {
     private GestionnaireService service;
 
     @Test
+    public void isEmailUnique(){
+        // Arrange
+        String email = "test@email.ca";
+        Optional<Gestionnaire> gestionnaire = Optional.empty();
+        when(gestionnaireRepository.findByEmail(anyString())).thenReturn(gestionnaire);
+
+        // Act
+        boolean isUnique = service.isEmailUnique(email);
+
+        // Assert
+        assertThat(isUnique).isTrue();
+    }
+
+    @Test
     public void getGestionnaireByEmailPassword() throws NonExistentUserException {
         // Arrange
-        String email = "test@email";
+        String email = "test@email.ca";
         String password = "testPassword";
         Gestionnaire gestionnaire = new Gestionnaire();
         gestionnaire.setEmail(email);
@@ -168,5 +183,39 @@ public class GestionnaireServiceTest {
 
         // Assert
         verify(offreRepository).delete(offre);
+    }
+
+    @Test
+    public void getUnvalidatedStudents(){
+        // Arrange
+        List<Student> students = new ArrayList<>();
+
+        Student student = new Student();
+        student.setDepartment(AbstractUser.Department.Informatique);
+        students.add(student);
+
+        student = new Student();
+        student.setDepartment(AbstractUser.Department.Informatique);
+        student.setEmailConfirmed(true);
+        students.add(student);
+
+        student = new Student();
+        student.setDepartment(AbstractUser.Department.Informatique);
+        student.setEmailConfirmed(true);
+        students.add(student);
+
+        student = new Student();
+        student.setDepartment(AbstractUser.Department.Informatique);
+        student.setEmailConfirmed(true);
+        student.setConfirm(true);
+        students.add(student);
+
+        when(studentRepository.findAll()).thenReturn(students);
+
+        // Act
+        List<StudentDTO> unvalidatedStudents = service.getUnvalidatedStudents();
+
+        // Assert
+        assertThat(unvalidatedStudents.size()).isEqualTo(2);
     }
 }
