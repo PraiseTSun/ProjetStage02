@@ -17,6 +17,7 @@ import projet.projetstage02.DTO.GestionnaireDTO;
 import projet.projetstage02.DTO.OffreDTO;
 import projet.projetstage02.DTO.StudentDTO;
 import projet.projetstage02.model.AbstractUser.Department;
+import projet.projetstage02.service.CompanyService;
 import projet.projetstage02.service.StudentService;
 
 import java.sql.Timestamp;
@@ -39,7 +40,11 @@ public class RootControllerTest {
     @Mock
     StudentService studentService;
 
+    @Mock
+    CompanyService companyService;
+
     JacksonTester<StudentDTO> jsonStudentDTO;
+    JacksonTester<CompanyDTO> jsonCompanyDTO;
 
     StudentDTO bart;
     CompanyDTO duffBeer;
@@ -119,6 +124,38 @@ public class RootControllerTest {
         mockMvc.perform(post("/createStudent")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(jsonStudentDTO.write(new StudentDTO()).getJson()))
+
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void createCompanyHappyDayTest() throws Exception {
+        when(companyService.isEmailUnique(anyString())).thenReturn(true);
+        when(companyService.saveCompany(any())).thenReturn(1L);
+
+        mockMvc.perform(post("/createCompany")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(jsonCompanyDTO.write(duffBeer).getJson()))
+
+                .andExpect(status().isCreated());
+    }
+
+    @Test
+    void createCompanyConflictTest() throws Exception {
+        when(companyService.isEmailUnique(anyString())).thenReturn(false);
+
+        mockMvc.perform(post("/createCompany")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(jsonCompanyDTO.write(duffBeer).getJson()))
+
+                .andExpect(status().isConflict());
+    }
+
+    @Test
+    void createCompanyBadRequestTest() throws Exception {
+        mockMvc.perform(post("/createCompany")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(jsonCompanyDTO.write(new CompanyDTO()).getJson()))
 
                 .andExpect(status().isBadRequest());
     }
