@@ -72,14 +72,12 @@ public class GestionnaireService{
     }
 
     public void validateStudent(Long id) throws NonExistentUserException {
-        //Throws NonExistentUserException
         Student student = getStudent(id);
         student.setConfirm(true);
         studentRepository.save(student);
     }
 
     public void removeCompany(long id) throws NonExistentUserException {
-        // Throws NonExistentUserException
         Company company = getCompany(id);
         companyRepository.delete(company);
     }

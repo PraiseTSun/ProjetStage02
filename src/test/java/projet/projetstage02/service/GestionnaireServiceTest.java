@@ -89,6 +89,21 @@ public class GestionnaireServiceTest {
     }
 
     @Test
+    public void removeCompany() throws NonExistentUserException {
+        // Arrange
+        Company company = new Company();
+        when(companyRepository.findById(anyLong())).thenReturn(Optional.of(company));
+        doNothing().when(companyRepository).delete(any());
+
+        // Act
+        service.removeCompany(1L);
+
+        // Assert
+        verify(companyRepository).delete(company);
+    }
+
+
+    @Test
     public void offreNotValidated(){
         // Arrange
         List<Offre> offres = new ArrayList<>();
