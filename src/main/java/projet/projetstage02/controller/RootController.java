@@ -5,10 +5,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import projet.projetstage02.DTO.CompanyDTO;
-import projet.projetstage02.DTO.GestionnaireDTO;
-import projet.projetstage02.DTO.OffreDTO;
-import projet.projetstage02.DTO.StudentDTO;
+import projet.projetstage02.DTO.*;
 import projet.projetstage02.exception.NonExistentUserException;
 import projet.projetstage02.service.CompanyService;
 import projet.projetstage02.service.GestionnaireService;
@@ -227,5 +224,11 @@ public class RootController {
         } catch (NonExistentUserException exception) {
             return ResponseEntity.notFound().build();
         }
+    }
+
+    @GetMapping("/unvalidateOffers")
+    public ResponseEntity<List<OffreValidateDTO>> getOfferToValidate(){
+        List<OffreValidateDTO> unvalidatedOffers = gestionnaireService.getNoneValidateOffers();
+        return ResponseEntity.ok(unvalidatedOffers);
     }
 }
