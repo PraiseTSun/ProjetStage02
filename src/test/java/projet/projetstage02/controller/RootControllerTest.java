@@ -500,4 +500,24 @@ public class RootControllerTest {
 
                 .andExpect(status().isNotFound());
     }
+
+    @Test
+    void removeCompanyHappyDayTest() throws Exception {
+
+        mockMvc.perform(delete("/removeCompany/{id}", 1))
+
+                .andExpect(status().isOk());
+        verify(gestionnaireService, times(1)).removeCompany(1L);
+    }
+
+    @Test
+    void removeCompanyNotFoundTest() throws Exception {
+        doThrow(new NonExistentUserException())
+                .when(gestionnaireService).removeCompany(1L);
+
+
+        mockMvc.perform(delete("/removeCompany/{id}", 1))
+
+                .andExpect(status().isNotFound());
+    }
 }
