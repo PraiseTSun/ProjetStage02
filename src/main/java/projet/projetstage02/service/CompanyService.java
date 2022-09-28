@@ -4,8 +4,7 @@ import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import projet.projetstage02.DTO.CompanyDTO;
 import projet.projetstage02.DTO.OffreDTO;
-import projet.projetstage02.exception.NonExistentUserException;
-import projet.projetstage02.model.AbstractUser;
+import projet.projetstage02.exception.NonExistentEntityException;
 import projet.projetstage02.model.AbstractUser.Department;
 import projet.projetstage02.model.Offre;
 import projet.projetstage02.repository.CompanyRepository;
@@ -54,15 +53,15 @@ public class CompanyService {
         return companyRepository.findByEmail(email).isEmpty();
     }
 
-    public CompanyDTO getCompanyById(Long id) throws NonExistentUserException {
+    public CompanyDTO getCompanyById(Long id) throws NonExistentEntityException {
         var companyOpt = companyRepository.findById(id);
-        if (companyOpt.isEmpty()) throw new NonExistentUserException();
+        if (companyOpt.isEmpty()) throw new NonExistentEntityException();
         return new CompanyDTO(companyOpt.get());
     }
 
-    public CompanyDTO getCompanyByEmailPassword(String email, String password) throws NonExistentUserException {
+    public CompanyDTO getCompanyByEmailPassword(String email, String password) throws NonExistentEntityException {
         var companyOpt = companyRepository.findByEmailAndPassword(email.toLowerCase(), password);
-        if (companyOpt.isEmpty()) throw new NonExistentUserException();
+        if (companyOpt.isEmpty()) throw new NonExistentEntityException();
         return new CompanyDTO(companyOpt.get());
     }
 }

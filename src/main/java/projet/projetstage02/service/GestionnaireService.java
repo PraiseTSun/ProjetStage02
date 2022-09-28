@@ -5,7 +5,7 @@ import org.springframework.stereotype.Service;
 import projet.projetstage02.DTO.CompanyDTO;
 import projet.projetstage02.DTO.GestionnaireDTO;
 import projet.projetstage02.DTO.StudentDTO;
-import projet.projetstage02.exception.NonExistentUserException;
+import projet.projetstage02.exception.NonExistentEntityException;
 import projet.projetstage02.model.Company;
 import projet.projetstage02.model.Student;
 import projet.projetstage02.repository.CompanyRepository;
@@ -47,53 +47,53 @@ public class GestionnaireService{
         return gestionnaireRepository.findByEmail(email).isEmpty();
     }
 
-    public GestionnaireDTO getGestionnaireById(Long id) throws NonExistentUserException {
+    public GestionnaireDTO getGestionnaireById(Long id) throws NonExistentEntityException {
         var gestionnaireOpt = gestionnaireRepository.findById(id);
-        if (gestionnaireOpt.isEmpty()) throw new NonExistentUserException();
+        if (gestionnaireOpt.isEmpty()) throw new NonExistentEntityException();
         return new GestionnaireDTO(gestionnaireOpt.get());
     }
 
-    public GestionnaireDTO getGestionnaireByEmailPassword(String email, String password) throws NonExistentUserException {
+    public GestionnaireDTO getGestionnaireByEmailPassword(String email, String password) throws NonExistentEntityException {
         var gestionnaireOpt = gestionnaireRepository.findByEmailAndPassword(email.toLowerCase(), password);
-        if (gestionnaireOpt.isEmpty()) throw new NonExistentUserException();
+        if (gestionnaireOpt.isEmpty()) throw new NonExistentEntityException();
         return new GestionnaireDTO(gestionnaireOpt.get());
     }
 
-    public void validateCompany(Long id) throws NonExistentUserException {
+    public void validateCompany(Long id) throws NonExistentEntityException {
         //Throws NonExistentUserException
         Company company = getCompany(id);
         company.setConfirm(true);
         companyRepository.save(company);
     }
 
-    public void validateStudent(Long id) throws NonExistentUserException {
+    public void validateStudent(Long id) throws NonExistentEntityException {
         //Throws NonExistentUserException
         Student student = getStudent(id);
         student.setConfirm(true);
         studentRepository.save(student);
     }
 
-    public void removeCompany(long id) throws NonExistentUserException {
+    public void removeCompany(long id) throws NonExistentEntityException {
         // Throws NonExistentUserException
         Company company = getCompany(id);
         companyRepository.delete(company);
     }
 
-    public void removeStudent(long id) throws NonExistentUserException {
+    public void removeStudent(long id) throws NonExistentEntityException {
         // Throws NonExistentUserException
         Student student = getStudent(id);
         studentRepository.delete(student);
     }
 
-    private Company getCompany(long id) throws NonExistentUserException {
+    private Company getCompany(long id) throws NonExistentEntityException {
         Optional<Company> companyOptional = companyRepository.findById(id);
-        if (companyOptional.isEmpty()) throw new NonExistentUserException();
+        if (companyOptional.isEmpty()) throw new NonExistentEntityException();
         return companyOptional.get();
     }
 
-    private Student getStudent(long id) throws NonExistentUserException {
+    private Student getStudent(long id) throws NonExistentEntityException {
         Optional<Student> studentOptional = studentRepository.findById(id);
-        if (studentOptional.isEmpty()) throw new NonExistentUserException();
+        if (studentOptional.isEmpty()) throw new NonExistentEntityException();
         return studentOptional.get();
     }
 

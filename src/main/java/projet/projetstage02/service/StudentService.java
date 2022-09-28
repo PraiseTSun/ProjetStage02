@@ -3,7 +3,7 @@ package projet.projetstage02.service;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import projet.projetstage02.DTO.StudentDTO;
-import projet.projetstage02.exception.NonExistentUserException;
+import projet.projetstage02.exception.NonExistentEntityException;
 import projet.projetstage02.model.AbstractUser;
 import projet.projetstage02.repository.StudentRepository;
 
@@ -41,15 +41,15 @@ public class StudentService {
         return studentRepository.findByEmail(email).isEmpty();
     }
 
-    public StudentDTO getStudentById(Long id) throws NonExistentUserException {
+    public StudentDTO getStudentById(Long id) throws NonExistentEntityException {
         var studentOpt = studentRepository.findById(id);
-        if (studentOpt.isEmpty()) throw new NonExistentUserException();
+        if (studentOpt.isEmpty()) throw new NonExistentEntityException();
         return new StudentDTO(studentOpt.get());
     }
 
-    public StudentDTO getStudentByEmailPassword(String email, String password) throws NonExistentUserException {
+    public StudentDTO getStudentByEmailPassword(String email, String password) throws NonExistentEntityException {
         var studentOpt = studentRepository.findByEmailAndPassword(email.toLowerCase(), password);
-        if (studentOpt.isEmpty()) throw new NonExistentUserException();
+        if (studentOpt.isEmpty()) throw new NonExistentEntityException();
         return new StudentDTO(studentOpt.get());
     }
 }
