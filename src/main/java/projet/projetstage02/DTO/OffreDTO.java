@@ -17,4 +17,5 @@ public class OffreDTO {
     private int heureParSemaine;
     private String adresse;
     private byte[] pdf;
+    private String token;
 }
