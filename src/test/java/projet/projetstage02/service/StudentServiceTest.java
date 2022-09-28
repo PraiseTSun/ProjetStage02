@@ -40,6 +40,8 @@ public class StudentServiceTest {
                 "bart.simpson@springfield.com",
                 "eatMyShorts",
                 AbstractUser.Department.Informatique);
+
+        bart.setCv(new byte[0]);
     }
 
     @Test
@@ -166,5 +168,33 @@ public class StudentServiceTest {
 
         // Assert
         verify(studentRepository, times(1)).save(any());
+    }
+
+    @Test
+    void testUploadCurriculumVitaeSuccess() throws NonExistentUserException {
+        // Arrange
+        when(studentRepository.findById(anyLong())).thenReturn(Optional.of(bart));
+        when(studentRepository.save(any())).thenReturn(bart);
+
+        //Act
+        studentService.uploadCurriculumVitae(new StudentDTO(bart));
+
+        // Assert
+        verify(studentRepository, times(1)).save(any());
+    }
+
+    @Test
+    void testUploadCurriculumVitaeNotFound(){
+        // Arrange
+        when(studentRepository.findById(anyLong())).thenReturn(Optional.empty());
+
+        // Act
+        try {
+            studentService.uploadCurriculumVitae(new StudentDTO(bart));
+        } catch (NonExistentUserException e) {
+            return;
+        }
+
+        fail("NonExistentUserException not caught");
     }
 }

@@ -24,7 +24,7 @@ import java.util.Optional;
 
 @Service
 @AllArgsConstructor
-public class GestionnaireService{
+public class GestionnaireService {
 
     private final GestionnaireRepository gestionnaireRepository;
     private final CompanyRepository companyRepository;
@@ -100,35 +100,32 @@ public class GestionnaireService{
         return studentOptional.get();
     }
 
+    private Offre getOffer(long id) throws NonExistentOfferExeption {
+        Optional<Offre> offreOpt = offreRepository.findById(id);
+        if (offreOpt.isEmpty()) throw new NonExistentOfferExeption();
+        return offreOpt.get();
+    }
+
     public List<OffreDTO> getNoneValidateOffers() {
         List<OffreDTO> offres = new ArrayList<>();
         offreRepository.findAll().stream().
                 filter(offre ->
                         !offre.isValide())
                 .forEach(offre ->
-                        offres.add(new OffreDTO(offre))
-                );
+                        offres.add(new OffreDTO(offre)));
         return offres;
     }
 
     public OffreDTO validateOfferById(Long id) throws NonExistentOfferExeption {
-        Optional<Offre> offreOpt = offreRepository.findById(id);
-        if(offreOpt.isEmpty())
-            return null;
-
-        Offre offre = offreOpt.get();
+        Offre offre = getOffer(id);
         offre.setValide(true);
         offreRepository.save(offre);
 
         return new OffreDTO(offre);
     }
 
-    public void removeOfferById(long id) throws NonExistentOfferExeption{
-        Optional<Offre> offreOpt = offreRepository.findById(id);
-        if (offreOpt.isEmpty())
-            throw new RuntimeException("Offre do not exist");
-        Offre offre = offreOpt.get();
-        offreRepository.delete(offre);
+    public void removeOfferById(long id) throws NonExistentOfferExeption {
+        offreRepository.delete(getOffer(id));
     }
 
     public List<StudentDTO> getUnvalidatedStudents() {
@@ -145,11 +142,15 @@ public class GestionnaireService{
     public List<CompanyDTO> getUnvalidatedCompanies() {
         List<CompanyDTO> unvalidatedCompaniesDTOs = new ArrayList<>();
         companyRepository.findAll().stream()
-                .filter(company->
+                .filter(company ->
                         !company.isConfirm() && company.isEmailConfirmed()
                 )
                 .forEach(company ->
                         unvalidatedCompaniesDTOs.add(new CompanyDTO(company)));
         return unvalidatedCompaniesDTOs;
+    }
+
+    public byte[] getOffrePdfById(long id) throws NonExistentOfferExeption {
+        return getOffer(id).getPdf();
     }
 }
