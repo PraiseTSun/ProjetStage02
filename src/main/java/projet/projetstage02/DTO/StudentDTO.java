@@ -5,8 +5,6 @@ import lombok.experimental.SuperBuilder;
 import projet.projetstage02.model.AbstractUser.Department;
 import projet.projetstage02.model.Student;
 
-import javax.validation.constraints.NotBlank;
-
 @Data
 @EqualsAndHashCode(callSuper = false)
 @NoArgsConstructor
@@ -14,7 +12,6 @@ import javax.validation.constraints.NotBlank;
 @SuperBuilder
 @ToString(callSuper = true)
 public class StudentDTO extends AbstractUserDTO<Student> {
-    @NotBlank
     private String department;
 
     public StudentDTO(Student student) {

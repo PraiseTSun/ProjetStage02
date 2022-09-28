@@ -288,6 +288,9 @@ public class RootControllerTest {
 
     @Test
     void testLoginStudentHappyDay() throws Exception {
+        bart.setDepartment(null);
+        bart.setFirstName(null);
+        bart.setLastName(null);
         bart.setEmailConfirmed(true);
         when(studentService.getStudentByEmailPassword(
                 "bart.simpson@springfield.com",
