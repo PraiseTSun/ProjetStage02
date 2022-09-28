@@ -18,6 +18,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import static com.jayway.jsonpath.internal.path.PathCompiler.fail;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
@@ -39,7 +40,33 @@ public class GestionnaireServiceTest {
     private GestionnaireService service;
 
     @Test
-    public void isEmailUnique(){
+    public void testSaveGestionnaireByParams(){
+        // Arrange
+        Gestionnaire gestionnaire = new Gestionnaire();
+        when(gestionnaireRepository.save(any())).thenReturn(gestionnaire);
+
+        // Act
+        service.saveGestionnaire("Dave", "Chapel", "email", "password");
+
+        // Assert
+        verify(gestionnaireRepository, times(1)).save(any());
+    }
+
+    @Test
+    public void testSaveGestionnaireByDTO(){
+        // Arrange
+        Gestionnaire gestionnaire = new Gestionnaire();
+        when(gestionnaireRepository.save(any())).thenReturn(gestionnaire);
+
+        // Act
+        service.saveGestionnaire(new GestionnaireDTO(gestionnaire));
+
+        // Assert
+        verify(gestionnaireRepository, times(1)).save(any());
+    }
+
+    @Test
+    public void testIsEmailUnique(){
         // Arrange
         String email = "test@email.ca";
         Optional<Gestionnaire> gestionnaire = Optional.empty();
@@ -53,7 +80,36 @@ public class GestionnaireServiceTest {
     }
 
     @Test
-    public void getGestionnaireByEmailPassword() throws NonExistentUserException {
+    public void testGetGestionnaireByIdSucess() throws NonExistentUserException {
+        // Arrange
+        Gestionnaire gestionnaire = new Gestionnaire();
+        when(gestionnaireRepository.findById(anyLong())).thenReturn(Optional.of(gestionnaire));
+
+        // Act
+        GestionnaireDTO dto = service.getGestionnaireById(1L);
+
+        // Assert
+        assertThat(dto.toModel()).isEqualTo(gestionnaire);
+    }
+
+    @Test
+    public void testGetGestionnaireByIdFail() throws NonExistentUserException {
+        // Arrange
+        Gestionnaire gestionnaire = new Gestionnaire();
+        when(gestionnaireRepository.findById(anyLong())).thenReturn(Optional.empty());
+
+        // Act
+        try {
+            service.getGestionnaireById(1L);
+        } catch (NonExistentUserException e) {
+            // Assert
+            return;
+        }
+        fail("NonExistentUserException not caught");
+    }
+
+    @Test
+    public void testGetGestionnaireByEmailPassword() throws NonExistentUserException {
         // Arrange
         String email = "test@email.ca";
         String password = "testPassword";
@@ -148,7 +204,7 @@ public class GestionnaireServiceTest {
         when(offreRepository.findAll()).thenReturn(offres);
 
         // Act
-        final List<OffreValidateDTO> noneValidateOffers = service.getNoneValidateOffers();
+        final List<OffreDTO> noneValidateOffers = service.getNoneValidateOffers();
 
         // Assert
         assertThat(noneValidateOffers.size()).isEqualTo(3);

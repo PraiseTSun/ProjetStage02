@@ -228,8 +228,8 @@ public class RootController {
     }
 
     @GetMapping("/unvalidatedOffers")
-    public ResponseEntity<List<OffreValidateDTO>> getOfferToValidate(){
-        List<OffreValidateDTO> unvalidatedOffers = gestionnaireService.getNoneValidateOffers();
+    public ResponseEntity<List<OffreDTO>> getOfferToValidate(){
+        List<OffreDTO> unvalidatedOffers = gestionnaireService.getNoneValidateOffers();
         return ResponseEntity.ok(unvalidatedOffers);
     }
 

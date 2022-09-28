@@ -5,7 +5,6 @@ import org.springframework.stereotype.Service;
 import projet.projetstage02.DTO.CompanyDTO;
 import projet.projetstage02.DTO.GestionnaireDTO;
 import projet.projetstage02.DTO.OffreDTO;
-import projet.projetstage02.DTO.OffreValidateDTO;
 import projet.projetstage02.DTO.StudentDTO;
 import projet.projetstage02.exception.NonExistentOfferExeption;
 import projet.projetstage02.exception.NonExistentUserException;
@@ -33,7 +32,7 @@ public class GestionnaireService{
 
     private final OffreRepository offreRepository;
 
-    public void saveGestionnaire(String firstname, String lastname, String email, String password) {
+    public long saveGestionnaire(String firstname, String lastname, String email, String password) {
         GestionnaireDTO dto = GestionnaireDTO.builder()
                 .firstName(firstname)
                 .lastName(lastname)
@@ -42,7 +41,7 @@ public class GestionnaireService{
                 .isConfirmed(true)
                 .inscriptionTimestamp(Timestamp.valueOf(LocalDateTime.now()).getTime())
                 .build();
-        saveGestionnaire(dto);
+        return saveGestionnaire(dto);
     }
 
     public long saveGestionnaire(GestionnaireDTO dto) {
@@ -101,13 +100,14 @@ public class GestionnaireService{
         return studentOptional.get();
     }
 
-    public List<OffreValidateDTO> getNoneValidateOffers() {
-        List<OffreValidateDTO> offres = new ArrayList<>();
-        offreRepository.findAll()
-                .forEach(offre -> {
-                    if (!offre.isValide())
-                        offres.add(new OffreValidateDTO(offre));
-                });
+    public List<OffreDTO> getNoneValidateOffers() {
+        List<OffreDTO> offres = new ArrayList<>();
+        offreRepository.findAll().stream().
+                filter(offre ->
+                        !offre.isValide())
+                .forEach(offre ->
+                        offres.add(new OffreDTO(offre))
+                );
         return offres;
     }
 

@@ -11,7 +11,7 @@ import projet.projetstage02.model.Offre;
 @AllArgsConstructor
 @Builder
 public class OffreDTO {
-
+    private String id;
     private String nomDeCompagnie;
     private String department;
     private String position;

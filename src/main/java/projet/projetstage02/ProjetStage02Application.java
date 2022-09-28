@@ -50,7 +50,7 @@ public class ProjetStage02Application implements CommandLineRunner {
         gestionnaire.setEmailConfirmed(true);
         gestionnaireService.saveGestionnaire(gestionnaire);
 
-        companyService.createOffre(new OffreDTO("Bell", "Techniques de linformatique", "Support TI", 35, "My Home", null, false));
+        companyService.createOffre(new OffreDTO("0","Bell", "Techniques de linformatique", "Support TI", 35, "My Home", null, false));
 
         System.out.println(studentService.getStudentById(1L));
         System.out.println(companyService.getCompanyById(2L));
