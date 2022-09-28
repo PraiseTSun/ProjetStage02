@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useEffect} from 'react';
 import { useState } from 'react';
 import { Container } from 'react-bootstrap';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
@@ -21,15 +21,72 @@ const emptyUser: IUser = {
 
 function App() {
   const [user, setUser] = useState(emptyUser)
+  const [lastVerifiedTimestamp, setLastVerifiedTimeStamp] = useState(Date.now())
+  const [currentlyVerifyingLogin, setCurrentlyVerifyingLogin] = useState(false)
+  const [currentlyVerifyingToken, setCurrentlyVerifyingToken] = useState(false)
+  const [isValidToken,setValidToken] = useState(true)
+
   const deconnexion = () => {
     setUser(emptyUser)
     localStorage.removeItem(LOCAL_STORAGE_KEY)
   }
 
-  if (localStorage.getItem(LOCAL_STORAGE_KEY) != null && user == emptyUser) {
-    setUser(JSON.parse(localStorage.getItem(LOCAL_STORAGE_KEY)!))
+  const verifyToken = async () => {
+    if(user == emptyUser){
+      return
+    }
+    const getTokenHeaders = {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ "token": user.token})
+    };
+    const userRes = await fetch("http://localhost:8080/" + user.userType,getTokenHeaders)
+    console.log("test")
+    if(!userRes.ok){
+      alert("Votre session est expiré.")
+      setValidToken(false)
+      deconnexion()
+    }
   }
 
+  const login = async() => {
+    if (localStorage.getItem(LOCAL_STORAGE_KEY) != null && user == emptyUser) {
+      let user:IUser = JSON.parse(localStorage.getItem(LOCAL_STORAGE_KEY)!);
+      const getTokenHeaders = {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ "token": user.token})
+      };
+      const userRes = await fetch("http://localhost:8080/" + user.userType,getTokenHeaders)
+      if(!userRes.ok){
+        deconnexion()
+      }else{
+        setUser(JSON.parse(localStorage.getItem(LOCAL_STORAGE_KEY)!))
+        setValidToken(true)
+
+      }
+    }
+
+  }
+  const startLogin = async () => {
+    if(!currentlyVerifyingLogin) {
+      setCurrentlyVerifyingLogin(true)
+      await login()
+      setCurrentlyVerifyingLogin(false)
+    }
+  }
+
+  const startVerifyToken = async () => {
+   if (!currentlyVerifyingToken && Date.now() - lastVerifiedTimestamp > 3000 && isValidToken){
+     setLastVerifiedTimeStamp(Date.now())
+     setCurrentlyVerifyingToken(true)
+      await verifyToken()
+     setCurrentlyVerifyingToken(false)
+   }
+  }
+
+  startLogin()
+  startVerifyToken()
   if (user == emptyUser) {
     return (
       <Container className="vh-100">
