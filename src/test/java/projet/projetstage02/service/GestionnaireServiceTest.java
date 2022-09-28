@@ -439,9 +439,26 @@ public class GestionnaireServiceTest {
     @Test
     void testGetOffreInfoByIdSuccess() throws NonExistentOfferExeption {
         // Arrange
-
+        when(offreRepository.findById(any())).thenReturn(Optional.of(offreTest));
 
         // Act
+        byte[] pdf = service.getOffrePdfById(1L);
 
+        // Assert
+        assertThat(pdf).isEqualTo(offreTest.getPdf());
+    }
+
+    @Test
+    void testGetOffreInfoByIdNotFound() {
+        // Arrange
+        when(offreRepository.findById(any())).thenReturn(Optional.empty());
+
+        // Act
+        try {
+            service.getOffrePdfById(1L);
+        } catch (NonExistentOfferExeption e) {
+            return;
+        }
+        fail("NonExistentOfferException not caught");
     }
 }
