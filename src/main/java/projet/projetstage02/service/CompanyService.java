@@ -21,7 +21,7 @@ public class CompanyService {
 
     public long createOffre(OffreDTO offreDTO) {
         Offre offre = Offre.builder()
-                .nomDeCompagie(offreDTO.getNomDeCompagnie())
+                .nomDeCompagnie(offreDTO.getNomDeCompagnie())
                 .department(Department.getDepartment(offreDTO.getDepartment()))
                 .position(offreDTO.getPosition())
                 .heureParSemaine(offreDTO.getHeureParSemaine())
