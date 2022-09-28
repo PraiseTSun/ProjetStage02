@@ -29,7 +29,6 @@ public class CompanyService {
                 .pdf(offreDTO.getPdf())
                 .build();
 
-        offre.setId(Long.parseLong(offreDTO.getId()));
         return offreRepository.save(offre).getId();
     }
 

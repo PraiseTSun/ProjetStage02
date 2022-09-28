@@ -288,9 +288,6 @@ public class RootControllerTest {
 
     @Test
     void testLoginStudentHappyDay() throws Exception {
-        bart.setDepartment(null);
-        bart.setFirstName(null);
-        bart.setLastName(null);
         bart.setEmailConfirmed(true);
         when(studentService.getStudentByEmailPassword(
                 "bart.simpson@springfield.com",
@@ -302,7 +299,7 @@ public class RootControllerTest {
                         .content(jsonStudentDTO.write(bart).getJson()))
 
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.email", is("bart.simpson@springfield.com")));
+                .andExpect(jsonPath("$.firstName", is("Bart")));
     }
 
     @Test
@@ -335,9 +332,6 @@ public class RootControllerTest {
 
     @Test
     void testLoginCompanyHappyDay() throws Exception {
-        duffBeer.setDepartment(null);
-        duffBeer.setFirstName(null);
-        duffBeer.setLastName(null);
         duffBeer.setEmailConfirmed(true);
         when(companyService.getCompanyByEmailPassword(
                 "duff.beer@springfield.com",
@@ -349,7 +343,7 @@ public class RootControllerTest {
                         .content(jsonCompanyDTO.write(duffBeer).getJson()))
 
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.email", is("duff.beer@springfield.com")));
+                .andExpect(jsonPath("$.firstName", is("Duff")));
     }
 
     @Test
@@ -382,8 +376,6 @@ public class RootControllerTest {
 
     @Test
     void testLoginGestionnaireHappyDay() throws Exception {
-        burns.setFirstName(null);
-        burns.setLastName(null);
         burns.setEmailConfirmed(true);
         when(gestionnaireService.getGestionnaireByEmailPassword(
                 "charles.burns@springfield.com",
@@ -395,7 +387,7 @@ public class RootControllerTest {
                         .content(jsonGestionnaireDTO.write(burns).getJson()))
 
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.email", is("charles.burns@springfield.com")));
+                .andExpect(jsonPath("$.firstName", is("Charles")));
     }
 
     @Test

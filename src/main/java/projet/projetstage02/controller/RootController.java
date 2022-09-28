@@ -28,7 +28,8 @@ public class RootController {
     StudentService studentService;
     CompanyService companyService;
     GestionnaireService gestionnaireService;
-    //TODO: Add new thread to remove the user after 24h hours if not email confirmed
+    // TODO: Add new thread to remove the user after 24h hours if not email
+    // confirmed
     private final long MILLI_SECOND_DAY = 864000000;
 
     @PostMapping("/createStudent")
@@ -69,7 +70,7 @@ public class RootController {
     }
 
     @PostMapping("/createOffre")
-    public ResponseEntity<Map<String, String>> createOffre(@Valid @RequestBody OffreDTO offreDTO){
+    public ResponseEntity<Map<String, String>> createOffre(@Valid @RequestBody OffreDTO offreDTO) {
         companyService.createOffre(offreDTO);
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
@@ -206,7 +207,7 @@ public class RootController {
     }
 
     @GetMapping("/unvalidatedOffers")
-    public ResponseEntity<List<OffreDTO>> getOfferToValidate(){
+    public ResponseEntity<List<OffreDTO>> getOfferToValidate() {
         List<OffreDTO> unvalidatedOffers = gestionnaireService.getNoneValidateOffers();
         return ResponseEntity.ok(unvalidatedOffers);
     }
