@@ -47,13 +47,14 @@ public class CompanyServiceTest {
                 AbstractUser.Department.Transport,
                 "Duff Beer");
 
-        duffBeerOffre = new Offre(
-                "DuffBeer",
-                AbstractUser.Department.Transport,
-                "Delivery Guy",
-                40,
-                "654 Duff Stree",
-                new byte[0]);
+        duffBeerOffre = Offre.builder()
+                .adresse("653 Duff Street")
+                .department(AbstractUser.Department.Transport)
+                .heureParSemaine(40)
+                .position("Delivery Guy")
+                .nomDeCompagie("DuffBeer")
+                .pdf(new byte[0])
+                .build();
     }
 
     @Test
