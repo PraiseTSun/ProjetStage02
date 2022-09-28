@@ -569,4 +569,22 @@ public class RootControllerTest {
         mockMvc.perform(delete("/removeOffer/{id}", 1))
                 .andExpect(status().isNotFound());
     }
+
+    @Test
+    void testGetOfferPdfSuccess() throws Exception {
+        byte[] pdf = new byte[0];
+        when(gestionnaireService.getOffrePdfById(anyLong())).thenReturn(pdf);
+
+        mockMvc.perform(get("/offerPdf/{id}", 1))
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    void testGetOfferPdfNotFound() throws Exception {
+        doThrow(new NonExistentOfferExeption())
+                .when(gestionnaireService).getOffrePdfById(1L);
+
+        mockMvc.perform(get("/offerPdf/{id}", 1))
+                .andExpect(status().isNotFound());
+    }
 }
