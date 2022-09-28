@@ -1,5 +1,6 @@
 package projet.projetstage02.service;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -39,11 +40,53 @@ public class GestionnaireServiceTest {
     @InjectMocks
     private GestionnaireService service;
 
+    private Gestionnaire gestionnaireTest;
+    private Company companyTest;
+    private Student studentTest;
+    private Offre offreTest;
+
+    @BeforeEach
+    void beforeEach(){
+        gestionnaireTest = new Gestionnaire(
+                "prenom",
+                "nom",
+                "email",
+                "password"
+        );
+
+        companyTest = new Company(
+                "prenom",
+                "nom",
+                "email",
+                "password",
+                AbstractUser.Department.Transport,
+                "Company Test"
+        );
+
+        studentTest = new Student(
+                "prenom",
+                "nom",
+                "email",
+                "password",
+                AbstractUser.Department.Informatique
+        );
+
+        offreTest = new Offre(
+                1L,
+                "Company Test",
+                AbstractUser.Department.Informatique,
+                "Stagiaire test backend",
+                40,
+                "69 shitty street",
+                false,
+                new byte[0]
+        );
+    }
+
     @Test
     public void testSaveGestionnaireByParams(){
         // Arrange
-        Gestionnaire gestionnaire = new Gestionnaire();
-        when(gestionnaireRepository.save(any())).thenReturn(gestionnaire);
+        when(gestionnaireRepository.save(any())).thenReturn(gestionnaireTest);
 
         // Act
         service.saveGestionnaire("Dave", "Chapel", "email", "password");
@@ -55,11 +98,10 @@ public class GestionnaireServiceTest {
     @Test
     public void testSaveGestionnaireByDTO(){
         // Arrange
-        Gestionnaire gestionnaire = new Gestionnaire();
-        when(gestionnaireRepository.save(any())).thenReturn(gestionnaire);
+        when(gestionnaireRepository.save(any())).thenReturn(gestionnaireTest);
 
         // Act
-        service.saveGestionnaire(new GestionnaireDTO(gestionnaire));
+        service.saveGestionnaire(new GestionnaireDTO(gestionnaireTest));
 
         // Assert
         verify(gestionnaireRepository, times(1)).save(any());
@@ -69,8 +111,7 @@ public class GestionnaireServiceTest {
     public void testIsEmailUnique(){
         // Arrange
         String email = "test@email.ca";
-        Optional<Gestionnaire> gestionnaire = Optional.empty();
-        when(gestionnaireRepository.findByEmail(anyString())).thenReturn(gestionnaire);
+        when(gestionnaireRepository.findByEmail(anyString())).thenReturn(Optional.empty());
 
         // Act
         boolean isUnique = service.isEmailUnique(email);
@@ -82,20 +123,18 @@ public class GestionnaireServiceTest {
     @Test
     public void testGetGestionnaireByIdSuccess() throws NonExistentUserException {
         // Arrange
-        Gestionnaire gestionnaire = new Gestionnaire();
-        when(gestionnaireRepository.findById(anyLong())).thenReturn(Optional.of(gestionnaire));
+        when(gestionnaireRepository.findById(anyLong())).thenReturn(Optional.of(gestionnaireTest));
 
         // Act
         GestionnaireDTO dto = service.getGestionnaireById(1L);
 
         // Assert
-        assertThat(dto.toModel()).isEqualTo(gestionnaire);
+        assertThat(dto.toModel()).isEqualTo(gestionnaireTest);
     }
 
     @Test
     public void testGetGestionnaireByIdNotFound() {
         // Arrange
-        Gestionnaire gestionnaire = new Gestionnaire();
         when(gestionnaireRepository.findById(anyLong())).thenReturn(Optional.empty());
 
         // Act
@@ -111,20 +150,15 @@ public class GestionnaireServiceTest {
     @Test
     public void testGetGestionnaireByEmailPasswordSuccess() throws NonExistentUserException {
         // Arrange
-        String email = "test@email.ca";
-        String password = "testPassword";
-        Gestionnaire gestionnaire = new Gestionnaire();
-        gestionnaire.setEmail(email);
-        gestionnaire.setPassword(password);
         when(gestionnaireRepository.findByEmailAndPassword(anyString(), anyString()))
-                .thenReturn(Optional.of(gestionnaire));
+                .thenReturn(Optional.of(gestionnaireTest));
 
         // Act
         GestionnaireDTO dto = service.getGestionnaireByEmailPassword(anyString(), anyString());
 
         //Assert
-        assertThat(dto.getEmail()).isEqualTo(email);
-        assertThat(dto.getPassword()).isEqualTo(password);
+        assertThat(dto.getEmail()).isEqualTo(gestionnaireTest.getEmail());
+        assertThat(dto.getPassword()).isEqualTo(gestionnaireTest.getPassword());
     }
 
     @Test
@@ -146,14 +180,13 @@ public class GestionnaireServiceTest {
     @Test
     public void testValidateCompanySuccess() throws NonExistentUserException{
         // Arrange
-        Company company = new Company();
-        when(companyRepository.findById(anyLong())).thenReturn(Optional.of(company));
+        when(companyRepository.findById(anyLong())).thenReturn(Optional.of(companyTest));
 
         // Act
         service.validateCompany(1L);
 
         // Assert
-        assertThat(company.isConfirm()).isTrue();
+        assertThat(companyTest.isConfirm()).isTrue();
     }
 
     @Test
@@ -173,14 +206,13 @@ public class GestionnaireServiceTest {
     @Test
     public void testValidateStudentSuccess() throws NonExistentUserException{
         // Arrange
-        Student student = new Student();
-        when(studentRepository.findById(anyLong())).thenReturn(Optional.of(student));
+        when(studentRepository.findById(anyLong())).thenReturn(Optional.of(studentTest));
 
         // Act
         service.validateStudent(1L);
 
         // Assert
-        assertThat(student.isConfirm()).isTrue();
+        assertThat(studentTest.isConfirm()).isTrue();
     }
 
     @Test
@@ -201,15 +233,14 @@ public class GestionnaireServiceTest {
     @Test
     public void testRemoveCompanySuccess() throws NonExistentUserException {
         // Arrange
-        Company company = new Company();
-        when(companyRepository.findById(anyLong())).thenReturn(Optional.of(company));
+        when(companyRepository.findById(anyLong())).thenReturn(Optional.of(companyTest));
         doNothing().when(companyRepository).delete(any());
 
         // Act
         service.removeCompany(1L);
 
         // Assert
-        verify(companyRepository).delete(company);
+        verify(companyRepository).delete(companyTest);
     }
 
     @Test
@@ -230,15 +261,14 @@ public class GestionnaireServiceTest {
     @Test
     public void testRemoveStudentSuccess() throws NonExistentUserException {
         // Arrange
-        Student student = new Student();
-        when(studentRepository.findById(anyLong())).thenReturn(Optional.of(student));
+        when(studentRepository.findById(anyLong())).thenReturn(Optional.of(studentTest));
         doNothing().when(studentRepository).delete(any());
 
         // Act
         service.removeStudent(1L);
 
         // Assert
-        verify(studentRepository).delete(student);
+        verify(studentRepository).delete(studentTest);
     }
 
     @Test
@@ -287,9 +317,7 @@ public class GestionnaireServiceTest {
     @Test
     public void testValidateOfferByIdSuccess() throws NonExistentOfferExeption {
         // Arrange
-        Offre offre = new Offre();
-        offre.setDepartment(AbstractUser.Department.Informatique);
-        when(offreRepository.findById(anyLong())).thenReturn(Optional.of(offre));
+        when(offreRepository.findById(anyLong())).thenReturn(Optional.of(offreTest));
 
         // Act
         final OffreDTO offreDTO = service.validateOfferById(1L);
@@ -316,15 +344,14 @@ public class GestionnaireServiceTest {
     @Test
     public void testRemoveOfferByIdSuccess() throws NonExistentOfferExeption {
         // Arrange
-        Offre offre = new Offre();
-        when(offreRepository.findById(anyLong())).thenReturn(Optional.of(offre));
+        when(offreRepository.findById(anyLong())).thenReturn(Optional.of(offreTest));
         doNothing().when(offreRepository).delete(any());
 
         // Act
         service.removeOfferById(1L);
 
         // Assert
-        verify(offreRepository).delete(offre);
+        verify(offreRepository).delete(offreTest);
     }
 
     @Test
@@ -407,5 +434,14 @@ public class GestionnaireServiceTest {
 
         // Assert
         assertThat(unvalidatedCompanies.size()).isEqualTo(2);
+    }
+
+    @Test
+    void testGetOffreInfoByIdSuccess() throws NonExistentOfferExeption {
+        // Arrange
+
+
+        // Act
+
     }
 }

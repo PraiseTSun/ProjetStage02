@@ -149,4 +149,8 @@ public class GestionnaireService {
                         unvalidatedCompaniesDTOs.add(new CompanyDTO(company)));
         return unvalidatedCompaniesDTOs;
     }
+
+    public byte[] getOffrePdfById(long id) throws NonExistentOfferExeption {
+        return getOffer(id).getPdf();
+    }
 }
