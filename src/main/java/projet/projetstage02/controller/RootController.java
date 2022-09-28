@@ -5,10 +5,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import projet.projetstage02.DTO.CompanyDTO;
-import projet.projetstage02.DTO.GestionnaireDTO;
-import projet.projetstage02.DTO.OffreDTO;
-import projet.projetstage02.DTO.StudentDTO;
+import projet.projetstage02.DTO.*;
 import projet.projetstage02.exception.NonExistentEntityException;
 import projet.projetstage02.model.Token;
 import projet.projetstage02.service.AuthService;
@@ -153,10 +150,10 @@ public class RootController {
 
 
     @PostMapping("/student/login")
-    public ResponseEntity<Map<String,String>> studentLogin(@RequestBody StudentDTO studentDTO){
+    public ResponseEntity<TokenDTO> studentLogin(@RequestBody StudentDTO studentDTO){
         try {
             String token = authService.loginIfValid(studentDTO);
-            return ResponseEntity.status(CREATED).body(formatToken(token));
+            return ResponseEntity.status(CREATED).body(TokenDTO.builder().token(token).build());
         }catch (NonExistentEntityException e){
             return ResponseEntity.notFound().build();
         }
@@ -164,10 +161,10 @@ public class RootController {
     }
 
     @PostMapping("/gestionnaire/login")
-    public ResponseEntity<Map<String,String>> gestionnaireLogin(@RequestBody GestionnaireDTO gestionnaireDTO){
+    public ResponseEntity<TokenDTO> gestionnaireLogin(@RequestBody GestionnaireDTO gestionnaireDTO){
         try {
             String token = authService.loginIfValid(gestionnaireDTO);
-            return ResponseEntity.status(CREATED).body(formatToken(token));
+            return ResponseEntity.status(CREATED).body(TokenDTO.builder().token(token).build());
         }catch (NonExistentEntityException e){
             return ResponseEntity.notFound().build();
         }
@@ -175,26 +172,21 @@ public class RootController {
     }
 
     @PostMapping("/company/login")
-    public ResponseEntity<Map<String,String>> companyLogin(@RequestBody CompanyDTO companyDTO){
+    public ResponseEntity<TokenDTO> companyLogin(@RequestBody CompanyDTO companyDTO){
         try {
             String token = authService.loginIfValid(companyDTO);
-            return ResponseEntity.status(CREATED).body(formatToken(token));
+            return ResponseEntity.status(CREATED).body(TokenDTO.builder().token(token).build());
         }catch (NonExistentEntityException e){
             return ResponseEntity.notFound().build();
         }
 
     }
 
-    private Map<String,String> formatToken(String token) {
-        HashMap<String, String> toReturn = new HashMap<>();
-        toReturn.put("token",token);
-        return toReturn;
-    }
 
     @PutMapping("/student")
-    public ResponseEntity<StudentDTO> getStudent(@RequestBody Map<String,String> tokenId) {
+    public ResponseEntity<StudentDTO> getStudent(@RequestBody TokenDTO tokenId) {
         try {
-            Token token = authService.getToken(tokenId.get("token"), STUDENT);
+            Token token = authService.getToken(tokenId.getToken(), STUDENT);
             StudentDTO dto = studentService.getStudentById(token.getUserId());
             dto.setPassword("");
             return !dto.isEmailConfirmed() ? ResponseEntity.notFound().build() : ResponseEntity.ok(dto);
@@ -204,9 +196,9 @@ public class RootController {
     }
 
     @PutMapping("/company")
-    public ResponseEntity<CompanyDTO> getCompany(@RequestBody Map<String,String> tokenId) {
+    public ResponseEntity<CompanyDTO> getCompany(@RequestBody TokenDTO tokenId) {
         try {
-            Token token = authService.getToken(tokenId.get("token"), COMPANY);
+            Token token = authService.getToken(tokenId.getToken(), COMPANY);
 
             CompanyDTO dto = companyService.getCompanyById(token.getUserId());
             dto.setPassword("");
@@ -217,9 +209,9 @@ public class RootController {
     }
 
     @PutMapping("/gestionnaire")
-    public ResponseEntity<GestionnaireDTO> getGestionnaire(@RequestBody Map<String,String> tokenId) {
+    public ResponseEntity<GestionnaireDTO> getGestionnaire(@RequestBody TokenDTO tokenId) {
         try {
-            Token token = authService.getToken(tokenId.get("token"), GESTIONNAIRE);
+            Token token = authService.getToken(tokenId.getToken(), GESTIONNAIRE);
             GestionnaireDTO dto = gestionnaireService.getGestionnaireById(token.getUserId());
             dto.setPassword("");
             return !dto.isEmailConfirmed() ? ResponseEntity.notFound().build() : ResponseEntity.ok(dto);
@@ -229,9 +221,9 @@ public class RootController {
     }
 
     @PutMapping("/unvalidatedStudents")
-    public ResponseEntity<List<StudentDTO>> getUnvalidatedStudents(@RequestBody Map<String,String> tokenId) {
+    public ResponseEntity<List<StudentDTO>> getUnvalidatedStudents(@RequestBody TokenDTO tokenId) {
         try{
-            Token token = authService.getToken(tokenId.get("token"), GESTIONNAIRE);
+            Token token = authService.getToken(tokenId.getToken(), GESTIONNAIRE);
             gestionnaireService.getGestionnaireById(token.getUserId());
             List<StudentDTO> unvalidatedStudents = gestionnaireService.getUnvalidatedStudents();
             unvalidatedStudents.forEach(student -> student.setPassword(""));
@@ -242,9 +234,9 @@ public class RootController {
     }
 
     @PutMapping("/unvalidatedCompanies")
-    public ResponseEntity<List<CompanyDTO>> getUnvalidatedCompanies(@RequestBody Map<String,String> tokenId)  {
+    public ResponseEntity<List<CompanyDTO>> getUnvalidatedCompanies(@RequestBody TokenDTO tokenId)  {
         try{
-            Token token = authService.getToken(tokenId.get("token"), GESTIONNAIRE);
+            Token token = authService.getToken(tokenId.getToken(), GESTIONNAIRE);
             gestionnaireService.getGestionnaireById(token.getUserId());
             List<CompanyDTO> unvalidatedCompanies = gestionnaireService.getUnvalidatedCompanies();
             unvalidatedCompanies.forEach(company -> company.setPassword(""));
@@ -255,9 +247,9 @@ public class RootController {
     }
 
     @PutMapping("/validateStudent/{id}")
-    public ResponseEntity<Map<String, String>> validateStudent(@PathVariable String id , @RequestBody Map<String,String> tokenId) {
+    public ResponseEntity<Map<String, String>> validateStudent(@PathVariable String id , @RequestBody TokenDTO tokenId) {
         try {
-            Token token = authService.getToken(tokenId.get("token"), GESTIONNAIRE);
+            Token token = authService.getToken(tokenId.getToken(), GESTIONNAIRE);
             gestionnaireService.getGestionnaireById(token.getUserId());
             gestionnaireService.validateStudent(Long.parseLong(id));
             return ResponseEntity.ok().build();
@@ -268,9 +260,9 @@ public class RootController {
     }
 
     @PutMapping("/validateCompany/{id}")
-    public ResponseEntity<Map<String, String>> validateCompany(@PathVariable String id , @RequestBody Map<String,String> tokenId) {
+    public ResponseEntity<Map<String, String>> validateCompany(@PathVariable String id , @RequestBody TokenDTO tokenId) {
         try {
-            Token token = authService.getToken(tokenId.get("token"), GESTIONNAIRE);
+            Token token = authService.getToken(tokenId.getToken(), GESTIONNAIRE);
             gestionnaireService.getGestionnaireById(token.getUserId());
             gestionnaireService.validateCompany(Long.parseLong(id));
             return ResponseEntity.ok().build();
@@ -280,9 +272,9 @@ public class RootController {
     }
 
     @DeleteMapping("/removeStudent/{id}")
-    public ResponseEntity<Map<String, String>> removeStudent(@PathVariable String id , @RequestBody Map<String,String> tokenId) {
+    public ResponseEntity<Map<String, String>> removeStudent(@PathVariable String id , @RequestBody TokenDTO tokenId) {
         try {
-            Token token = authService.getToken(tokenId.get("token"), GESTIONNAIRE);
+            Token token = authService.getToken(tokenId.getToken(), GESTIONNAIRE);
             gestionnaireService.getGestionnaireById(token.getUserId());
             gestionnaireService.removeStudent(Long.parseLong(id));
             return ResponseEntity.ok().build();
@@ -292,9 +284,9 @@ public class RootController {
     }
 
     @DeleteMapping("/removeCompany/{id}")
-    public ResponseEntity<Map<String, String>> removeCompany(@PathVariable String id , @RequestBody Map<String,String> tokenId) {
+    public ResponseEntity<Map<String, String>> removeCompany(@PathVariable String id , @RequestBody TokenDTO tokenId) {
         try {
-            Token token = authService.getToken(tokenId.get("token"), GESTIONNAIRE);
+            Token token = authService.getToken(tokenId.getToken(), GESTIONNAIRE);
             gestionnaireService.getGestionnaireById(token.getUserId());
             gestionnaireService.removeCompany(Long.parseLong(id));
             return ResponseEntity.ok().build();
