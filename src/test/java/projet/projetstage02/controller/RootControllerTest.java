@@ -16,6 +16,7 @@ import projet.projetstage02.DTO.CompanyDTO;
 import projet.projetstage02.DTO.GestionnaireDTO;
 import projet.projetstage02.DTO.OffreDTO;
 import projet.projetstage02.DTO.StudentDTO;
+import projet.projetstage02.exception.NonExistentOfferExeption;
 import projet.projetstage02.exception.NonExistentUserException;
 import projet.projetstage02.model.AbstractUser.Department;
 import projet.projetstage02.service.CompanyService;
@@ -518,6 +519,54 @@ public class RootControllerTest {
 
         mockMvc.perform(delete("/removeCompany/{id}", 1))
 
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    void testUnvalidatedStudents() throws Exception {
+        when(gestionnaireService.getNoneValidateOffers())
+                .thenReturn(List.of(duffOffre));
+
+        mockMvc.perform(get("/unvalidatedOffers"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[0].nomDeCompagnie", is("Duff Beer")));
+    }
+
+
+    @Test
+    void testValidateOfferSuccess() throws Exception {
+        duffOffre.setValide(true);
+        when(gestionnaireService.validateOfferById(anyLong())).thenReturn(duffOffre);
+
+        mockMvc.perform(put("/validateOffer/{id}", 1))
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    void testValidationOfferNotFound() throws Exception {
+        doThrow(new NonExistentOfferExeption())
+                .when(gestionnaireService).validateOfferById(1L);
+
+        mockMvc.perform(put("/validateOffer/{id}", 1))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    void testRemoveOfferSuccess() throws Exception {
+
+        mockMvc.perform(delete("/removeOffer/{id}", 1))
+                .andExpect(status().isOk());
+
+        verify(gestionnaireService, times(1)).removeOfferById(1L);
+    }
+
+    @Test
+    void testRemoveOfferNotFound() throws Exception {
+        doThrow(new NonExistentOfferExeption())
+                .when(gestionnaireService).removeOfferById(1L);
+
+
+        mockMvc.perform(delete("/removeOffer/{id}", 1))
                 .andExpect(status().isNotFound());
     }
 }

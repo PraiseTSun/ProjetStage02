@@ -217,8 +217,7 @@ public class RootController {
             gestionnaireService.validateOfferById(Long.parseLong(id));
             return ResponseEntity.ok().build();
         } catch (NonExistentOfferExeption exception) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                    .body(getError(exception.getMessage()));
+            return ResponseEntity.notFound().build();
         }
     }
 
@@ -228,8 +227,7 @@ public class RootController {
             gestionnaireService.removeOfferById(Long.parseLong(id));
             return ResponseEntity.ok().build();
         } catch (NonExistentOfferExeption exception) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                    .body(getError(exception.getMessage()));
+            return ResponseEntity.notFound().build();
         }
     }
 }
