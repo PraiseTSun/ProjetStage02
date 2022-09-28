@@ -1,6 +1,7 @@
 package projet.projetstage02.model;
 
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import projet.projetstage02.model.AbstractUser.Department;
@@ -11,6 +12,7 @@ import javax.persistence.*;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
+@Builder
 @Table(name="Offre")
 public class Offre {
     @Id

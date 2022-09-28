@@ -38,7 +38,7 @@ public class OffreDTO {
     public OffreDTO(Offre offre){
         id = Long.toString(offre.getId());
         nomDeCompagnie = offre.getNomDeCompagie();
-        department = offre.getDepartment().toString();
+        department = offre.getDepartment().departement;
         position = offre.getPosition();
         heureParSemaine = offre.getHeureParSemaine();
         adresse = offre.getAdresse();
