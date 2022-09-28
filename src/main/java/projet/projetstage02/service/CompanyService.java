@@ -22,6 +22,7 @@ public class CompanyService {
     public long createOffre(OffreDTO offreDTO){
         Offre offre = new Offre(offreDTO.getNomDeCompagnie(), Department.getDepartment(offreDTO.getDepartment()), offreDTO.getPosition(),
                 offreDTO.getHeureParSemaine(), offreDTO.getAdresse(), offreDTO.getPdf());
+        offre.setId(Long.parseLong(offreDTO.getId()));
         return offreRepository.save(offre).getId();
     }
 

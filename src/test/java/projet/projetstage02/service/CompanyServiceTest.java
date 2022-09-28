@@ -187,8 +187,7 @@ public class CompanyServiceTest {
     @Test
     void createOffreTest() {
         // Arrange
-        when(offreRepository.save(any()))
-                .thenReturn(duffBeerOffre);
+        when(offreRepository.save(any())).thenReturn(duffBeerOffre);
 
         // Act
         companyService.createOffre(new OffreDTO(duffBeerOffre));
