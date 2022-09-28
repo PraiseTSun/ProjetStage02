@@ -22,19 +22,19 @@ import static projet.projetstage02.model.Token.UserTypes.*;
 @Service
 @AllArgsConstructor
 public class AuthService {
-    TokenRepository tokenRepository;
+    final TokenRepository tokenRepository;
 
-    GestionnaireRepository gestionnaireRepository;
-    StudentRepository studentRepository;
-    CompanyRepository companyRepository;
-    public <Y extends AbstractUser ,T extends AbstractUserDTO<Y>> String loginIfValid(T dto) throws NonExistentEntityException {
-        if(dto instanceof CompanyDTO companyDTO){
+    final GestionnaireRepository gestionnaireRepository;
+    final StudentRepository studentRepository;
+    final CompanyRepository companyRepository;
+
+    public <Y extends AbstractUser, T extends AbstractUserDTO<Y>> String loginIfValid(T dto)
+            throws NonExistentEntityException {
+        if (dto instanceof CompanyDTO companyDTO) {
             return loginIfValidCompany(companyDTO);
-        }
-        else if(dto instanceof StudentDTO studentDTO){
+        } else if (dto instanceof StudentDTO studentDTO) {
             return loginIfValidStudent(studentDTO);
-        }
-        else if(dto instanceof GestionnaireDTO gestionnaireDTO){
+        } else if (dto instanceof GestionnaireDTO gestionnaireDTO) {
             return loginIfValidGestionnaire(gestionnaireDTO);
         }
         throw new NonExistentEntityException();
@@ -44,7 +44,7 @@ public class AuthService {
         Optional<Gestionnaire> gestionnaire = gestionnaireRepository.findByEmailAndPassword(
                 gestionnaireDTO.getEmail(), gestionnaireDTO.getPassword());
         validateOptional(gestionnaire);
-        return createToken(gestionnaire.get(),GESTIONNAIRE);
+        return createToken(gestionnaire.get(), GESTIONNAIRE);
     }
 
     private String loginIfValidStudent(StudentDTO studentDTO) throws NonExistentEntityException {
@@ -54,14 +54,15 @@ public class AuthService {
         return createToken(student.get(), STUDENT);
     }
 
-
     private String loginIfValidCompany(CompanyDTO companyDTO) throws NonExistentEntityException {
-        Optional<Company> company = companyRepository.findByEmailAndPassword(companyDTO.getEmail(),companyDTO.getPassword());
+        Optional<Company> company = companyRepository.findByEmailAndPassword(companyDTO.getEmail(),
+                companyDTO.getPassword());
         validateOptional(company);
 
-        return createToken(company.get(),COMPANY);
+        return createToken(company.get(), COMPANY);
     }
-    private String createToken(AbstractUser user, UserTypes userType){
+
+    private String createToken(AbstractUser user, UserTypes userType) {
         Token token = Token.builder()
                 .token(UUID.randomUUID().toString())
                 .userId(user.getId())
@@ -70,20 +71,20 @@ public class AuthService {
         tokenRepository.save(token);
         return token.getToken();
     }
+
     private <T extends AbstractUser> void validateOptional(Optional<T> optional) throws NonExistentEntityException {
-        if(optional.isEmpty() || !optional.get().isEmailConfirmed())
+        if (optional.isEmpty() || !optional.get().isEmailConfirmed())
             throw new NonExistentEntityException();
     }
 
     public Token getToken(String tokenId, UserTypes userType) throws NonExistentEntityException {
         try {
-
-        Optional<Token> token = tokenRepository.findById(tokenId);
-        if(token.isEmpty() || token.get().getUserType() != userType) {
-            throw new NonExistentEntityException();
-        }
-        return token.get();
-        }catch (Exception e){
+            Optional<Token> token = tokenRepository.findById(tokenId);
+            if (token.isEmpty() || token.get().getUserType() != userType) {
+                throw new NonExistentEntityException();
+            }
+            return token.get();
+        } catch (Exception e) {
             throw new NonExistentEntityException();
         }
     }
