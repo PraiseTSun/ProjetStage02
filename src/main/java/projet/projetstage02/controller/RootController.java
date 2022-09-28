@@ -21,6 +21,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static org.springframework.http.HttpStatus.*;
+import static projet.projetstage02.model.Token.UserTypes.*;
+
 @RestController
 @AllArgsConstructor
 @CrossOrigin(origins = "http://localhost:3000")
@@ -29,6 +32,7 @@ public class RootController {
     StudentService studentService;
     CompanyService companyService;
     GestionnaireService gestionnaireService;
+    AuthService authService;
     //TODO: Add new thread to remove the user after 24h hours if not email confirmed
     private final long MILLI_SECOND_DAY = 864000000;
 
