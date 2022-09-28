@@ -35,7 +35,7 @@ public class CompanyServiceTest {
     OffreRepository offreRepository;
 
     Company duffBeer;
-    OffreDTO duffBeerOffre;
+    Offre duffBeerOffre;
 
     @BeforeEach
     void setup() {
@@ -47,12 +47,12 @@ public class CompanyServiceTest {
                 AbstractUser.Department.Transport,
                 "Duff Beer");
 
-        duffBeerOffre = OffreDTO.builder()
+        duffBeerOffre = Offre.builder()
                 .adresse("653 Duff Street")
-                .department(AbstractUser.Department.Transport.departement)
+                .department(AbstractUser.Department.Transport)
                 .heureParSemaine(40)
                 .position("Delivery Guy")
-                .nomDeCompagnie("DuffBeer")
+                .nomDeCompagnie("Duff beer")
                 .pdf(new byte[0])
                 .build();
     }
@@ -191,7 +191,7 @@ public class CompanyServiceTest {
         when(offreRepository.save(any())).thenReturn(duffBeerOffre);
 
         // Act
-        companyService.createOffre(duffBeerOffre);
+        companyService.createOffre(new OffreDTO(duffBeerOffre));
 
         // Assert
         verify(offreRepository, times(1)).save(any());
