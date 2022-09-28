@@ -93,7 +93,7 @@ public class GestionnaireServiceTest {
     }
 
     @Test
-    public void testGetGestionnaireByIdFail() throws NonExistentUserException {
+    public void testGetGestionnaireByIdNotFound() {
         // Arrange
         Gestionnaire gestionnaire = new Gestionnaire();
         when(gestionnaireRepository.findById(anyLong())).thenReturn(Optional.empty());
@@ -109,7 +109,7 @@ public class GestionnaireServiceTest {
     }
 
     @Test
-    public void testGetGestionnaireByEmailPassword() throws NonExistentUserException {
+    public void testGetGestionnaireByEmailPasswordSuccess() throws NonExistentUserException {
         // Arrange
         String email = "test@email.ca";
         String password = "testPassword";
@@ -128,7 +128,23 @@ public class GestionnaireServiceTest {
     }
 
     @Test
-    public void testValidateCompany() throws NonExistentUserException{
+    public void testGetGestionnaireByEmailPasswordNotFound() {
+        // Arrange
+        when(gestionnaireRepository.findByEmailAndPassword(anyString(), anyString()))
+                .thenReturn(Optional.empty());
+
+        // Act
+        try {
+            service.getGestionnaireByEmailPassword(anyString(), anyString());
+        } catch (NonExistentUserException e) {
+            // Assert
+            return;
+        }
+        fail("NonExistentUserException not caught");
+    }
+
+    @Test
+    public void testValidateCompanySuccess() throws NonExistentUserException{
         // Arrange
         Company company = new Company();
         when(companyRepository.findById(anyLong())).thenReturn(Optional.of(company));
@@ -141,7 +157,21 @@ public class GestionnaireServiceTest {
     }
 
     @Test
-    public void testValidateStudent() throws NonExistentUserException{
+    public void testValidateCompanyNotFound() {
+        // Arrange
+        when(companyRepository.findById(anyLong())).thenReturn(Optional.empty());
+
+        // Act
+        try {
+            service.validateCompany(1L);
+        } catch (NonExistentUserException e) {
+            return;
+        }
+        fail("NonExistentUserException not caught");
+    }
+
+    @Test
+    public void testValidateStudentSuccess() throws NonExistentUserException{
         // Arrange
         Student student = new Student();
         when(studentRepository.findById(anyLong())).thenReturn(Optional.of(student));
@@ -154,7 +184,22 @@ public class GestionnaireServiceTest {
     }
 
     @Test
-    public void testRemoveCompany() throws NonExistentUserException {
+    public void testValidateStudentNotFound(){
+        // Arrange
+        when(studentRepository.findById(anyLong())).thenReturn(Optional.empty());
+
+        // Act
+        try {
+            service.validateStudent(1L);
+        } catch (NonExistentUserException e) {
+            return;
+        }
+
+        fail("NonExistentUserException not caught");
+    }
+
+    @Test
+    public void testRemoveCompanySuccess() throws NonExistentUserException {
         // Arrange
         Company company = new Company();
         when(companyRepository.findById(anyLong())).thenReturn(Optional.of(company));
@@ -168,7 +213,22 @@ public class GestionnaireServiceTest {
     }
 
     @Test
-    public void testRemoveStudent() throws NonExistentUserException {
+    public void testRemoveCompanyNotFound(){
+        // Arrange
+        when(companyRepository.findById(anyLong())).thenReturn(Optional.empty());
+
+        // Act
+        try {
+            service.removeCompany(1L);
+        } catch (NonExistentUserException e) {
+            return;
+        }
+
+        fail("NonExistentUserException not caught");
+    }
+
+    @Test
+    public void testRemoveStudentSuccess() throws NonExistentUserException {
         // Arrange
         Student student = new Student();
         when(studentRepository.findById(anyLong())).thenReturn(Optional.of(student));
@@ -179,6 +239,20 @@ public class GestionnaireServiceTest {
 
         // Assert
         verify(studentRepository).delete(student);
+    }
+
+    @Test
+    public void testRemoveStudentNotFound() {
+        // Arrange
+        when(studentRepository.findById(anyLong())).thenReturn(Optional.empty());
+
+        // Act
+        try {
+            service.removeStudent(1L);
+        } catch (NonExistentUserException e) {
+            return;
+        }
+        fail("NonExistentUserException not caught");
     }
 
 
@@ -211,7 +285,7 @@ public class GestionnaireServiceTest {
     }
 
     @Test
-    public void testValidateOfferById() throws NonExistentOfferExeption {
+    public void testValidateOfferByIdSuccess() throws NonExistentOfferExeption {
         // Arrange
         Offre offre = new Offre();
         offre.setDepartment(AbstractUser.Department.Informatique);
@@ -225,7 +299,22 @@ public class GestionnaireServiceTest {
     }
 
     @Test
-    public void testRemoveOfferById() throws NonExistentOfferExeption {
+    public void testValidateOfferByIdNotFound(){
+        // Arrange
+        when(offreRepository.findById(anyLong())).thenReturn(Optional.empty());
+
+        // Act
+        try {
+            service.validateOfferById(1L);
+        } catch (NonExistentOfferExeption e) {
+            return;
+        }
+        fail("NonExistentOfferException not caught");
+
+    }
+
+    @Test
+    public void testRemoveOfferByIdSuccess() throws NonExistentOfferExeption {
         // Arrange
         Offre offre = new Offre();
         when(offreRepository.findById(anyLong())).thenReturn(Optional.of(offre));
@@ -236,6 +325,20 @@ public class GestionnaireServiceTest {
 
         // Assert
         verify(offreRepository).delete(offre);
+    }
+
+    @Test
+    public void testRemoveOfferByIdNotFound() {
+        // Arrange
+        when(offreRepository.findById(anyLong())).thenReturn(Optional.empty());
+
+        // Act
+        try {
+            service.removeOfferById(1L);
+        } catch (NonExistentOfferExeption e) {
+            return;
+        }
+        fail("NonExistentOfferException not caught");
     }
 
     @Test
