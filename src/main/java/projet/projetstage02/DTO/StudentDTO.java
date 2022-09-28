@@ -2,9 +2,10 @@ package projet.projetstage02.DTO;
 
 import lombok.*;
 import lombok.experimental.SuperBuilder;
-import projet.projetstage02.model.AbstractUser;
 import projet.projetstage02.model.AbstractUser.Department;
 import projet.projetstage02.model.Student;
+
+import javax.validation.constraints.NotBlank;
 
 @Data
 @EqualsAndHashCode(callSuper = false)
@@ -13,9 +14,8 @@ import projet.projetstage02.model.Student;
 @SuperBuilder
 @ToString(callSuper = true)
 public class StudentDTO extends AbstractUserDTO<Student> {
+    @NotBlank
     private String department;
-
-
 
     public StudentDTO(Student student) {
         id = student.getId();

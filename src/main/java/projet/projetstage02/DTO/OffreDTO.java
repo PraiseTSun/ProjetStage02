@@ -1,10 +1,13 @@
 package projet.projetstage02.DTO;
 
+import com.sun.istack.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import projet.projetstage02.model.Offre;
+
+import javax.validation.constraints.*;
 
 @Data
 @NoArgsConstructor
@@ -12,15 +15,28 @@ import projet.projetstage02.model.Offre;
 @Builder
 public class OffreDTO {
     private String id;
+
+    @NotBlank
+    @Size(min = 2)
     private String nomDeCompagnie;
+    @NotBlank
     private String department;
+    @NotBlank
+    @Size(min = 2)
     private String position;
+    @NotNull
+    @Min(0)
+    @Max(40)
     private int heureParSemaine;
+    @NotBlank
+    @Size(min = 2)
     private String adresse;
+    @NotNull
     private byte[] pdf;
     private boolean valide;
 
     public OffreDTO(Offre offre){
+        id = Long.toString(offre.getId());
         nomDeCompagnie = offre.getNomDeCompagie();
         department = offre.getDepartment().toString();
         position = offre.getPosition();
