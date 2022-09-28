@@ -5,6 +5,7 @@ import lombok.experimental.SuperBuilder;
 import projet.projetstage02.model.AbstractUser.Department;
 import projet.projetstage02.model.Student;
 
+import javax.persistence.Lob;
 import javax.validation.constraints.NotBlank;
 
 @Data
@@ -16,6 +17,8 @@ import javax.validation.constraints.NotBlank;
 public class StudentDTO extends AbstractUserDTO<Student> {
     @NotBlank
     private String department;
+    @Lob
+    private byte[] cv;
 
     public StudentDTO(Student student) {
         id = student.getId();
@@ -27,6 +30,7 @@ public class StudentDTO extends AbstractUserDTO<Student> {
         department = student.getDepartment().departement;
         inscriptionTimestamp = student.getInscriptionTimestamp();
         emailConfirmed = student.isEmailConfirmed();
+        cv = student.getCv();
     }
 
     @Override
@@ -41,6 +45,7 @@ public class StudentDTO extends AbstractUserDTO<Student> {
                 emailConfirmed
         );
         student.setId(id);
+        student.setCv(cv);
         return student;
     }
 }
