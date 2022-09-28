@@ -234,8 +234,7 @@ public class RootController {
     @GetMapping("/offerPdf/{id}")
     public ResponseEntity<byte[]> getOfferPdf(@PathVariable String id){
         try {
-            byte[] offerPdf;
-            offerPdf = gestionnaireService.getOffrePdfById(Long.parseLong(id));
+            byte[] offerPdf = gestionnaireService.getOffrePdfById(Long.parseLong(id));
             return ResponseEntity.ok(offerPdf);
         } catch (NonExistentOfferExeption e) {
             return ResponseEntity.notFound().build();
