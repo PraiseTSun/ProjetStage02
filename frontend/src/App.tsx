@@ -15,7 +15,8 @@ export const LOCAL_STORAGE_KEY = "MASSI_BEST_PROGRAMMER_PROJET_STAGE_02_CURRENT_
 const emptyUser: IUser = {
   firstName: "",
   lastName: "",
-  userType: ""
+  userType: "",
+  token:""
 }
 
 function App() {
@@ -62,7 +63,7 @@ function App() {
         <BrowserRouter>
           <Routes>
             <Route path="/" element={<CompanyDashboard deconnexion={deconnexion} user={user} />} />
-            <Route path="/soumettreOffre" element={<FormulaireSoumissionPage />} />
+            <Route path="/soumettreOffre" element={<FormulaireSoumissionPage user={user}/>} />
             <Route path="*" element={<h1 className="text-center text-white display-1">404 - Page pas trouvé</h1>} />
           </Routes>
         </BrowserRouter>
@@ -76,7 +77,7 @@ function App() {
         <BrowserRouter>
           <Routes>
             <Route path="/" element={<GestionnaireDashboard deconnexion={deconnexion} user={user} />} />
-            <Route path="/userValidation" element={<UserValidation />} />
+            <Route path="/userValidation" element={<UserValidation connectedUser={user}/>} />
             <Route path="*" element={<h1 className="text-center text-white display-1">404 - Page pas trouvé</h1>} />
           </Routes>
         </BrowserRouter>
