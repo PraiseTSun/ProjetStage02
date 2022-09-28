@@ -80,7 +80,7 @@ public class GestionnaireServiceTest {
     }
 
     @Test
-    public void testGetGestionnaireByIdSucess() throws NonExistentUserException {
+    public void testGetGestionnaireByIdSuccess() throws NonExistentUserException {
         // Arrange
         Gestionnaire gestionnaire = new Gestionnaire();
         when(gestionnaireRepository.findById(anyLong())).thenReturn(Optional.of(gestionnaire));
