@@ -523,7 +523,7 @@ public class RootControllerTest {
     }
 
     @Test
-    void testUnvalidatedStudents() throws Exception {
+    void testUnvalidatedOffers() throws Exception {
         when(gestionnaireService.getNoneValidateOffers())
                 .thenReturn(List.of(duffOffre));
 

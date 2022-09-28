@@ -128,7 +128,7 @@ public class GestionnaireServiceTest {
     }
 
     @Test
-    public void validateCompany() throws NonExistentUserException{
+    public void testValidateCompany() throws NonExistentUserException{
         // Arrange
         Company company = new Company();
         when(companyRepository.findById(anyLong())).thenReturn(Optional.of(company));
@@ -141,7 +141,7 @@ public class GestionnaireServiceTest {
     }
 
     @Test
-    public void validateStudent() throws NonExistentUserException{
+    public void testValidateStudent() throws NonExistentUserException{
         // Arrange
         Student student = new Student();
         when(studentRepository.findById(anyLong())).thenReturn(Optional.of(student));
@@ -154,7 +154,7 @@ public class GestionnaireServiceTest {
     }
 
     @Test
-    public void removeCompany() throws NonExistentUserException {
+    public void testRemoveCompany() throws NonExistentUserException {
         // Arrange
         Company company = new Company();
         when(companyRepository.findById(anyLong())).thenReturn(Optional.of(company));
@@ -168,7 +168,7 @@ public class GestionnaireServiceTest {
     }
 
     @Test
-    public void removeStudent() throws NonExistentUserException {
+    public void testRemoveStudent() throws NonExistentUserException {
         // Arrange
         Student student = new Student();
         when(studentRepository.findById(anyLong())).thenReturn(Optional.of(student));
@@ -183,7 +183,7 @@ public class GestionnaireServiceTest {
 
 
     @Test
-    public void offreNotValidated(){
+    public void testOffreNotValidated(){
         // Arrange
         List<Offre> offres = new ArrayList<>();
         Offre offre = new Offre();
@@ -211,7 +211,7 @@ public class GestionnaireServiceTest {
     }
 
     @Test
-    public void validateOfferById() throws NonExistentOfferExeption {
+    public void testValidateOfferById() throws NonExistentOfferExeption {
         // Arrange
         Offre offre = new Offre();
         offre.setDepartment(AbstractUser.Department.Informatique);
@@ -225,7 +225,7 @@ public class GestionnaireServiceTest {
     }
 
     @Test
-    public void removeOfferById() throws NonExistentOfferExeption {
+    public void testRemoveOfferById() throws NonExistentOfferExeption {
         // Arrange
         Offre offre = new Offre();
         when(offreRepository.findById(anyLong())).thenReturn(Optional.of(offre));
@@ -239,7 +239,7 @@ public class GestionnaireServiceTest {
     }
 
     @Test
-    public void getUnvalidatedStudents(){
+    public void testGetUnvalidatedStudents(){
         // Arrange
         List<Student> students = new ArrayList<>();
 
@@ -273,7 +273,7 @@ public class GestionnaireServiceTest {
     }
 
     @Test
-    public void getUnvalidatedCompanies(){
+    public void testGetUnvalidatedCompanies(){
         // Arrange
         List<Company> companies = new ArrayList<>();
 
