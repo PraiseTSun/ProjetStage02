@@ -302,7 +302,7 @@ public class RootControllerTest {
                         .content(jsonStudentDTO.write(bart).getJson()))
 
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.firstName", is("Bart")));
+                .andExpect(jsonPath("$.email", is("bart.simpson@springfield.com")));
     }
 
     @Test
@@ -335,6 +335,9 @@ public class RootControllerTest {
 
     @Test
     void testLoginCompanyHappyDay() throws Exception {
+        duffBeer.setDepartment(null);
+        duffBeer.setFirstName(null);
+        duffBeer.setLastName(null);
         duffBeer.setEmailConfirmed(true);
         when(companyService.getCompanyByEmailPassword(
                 "duff.beer@springfield.com",
@@ -346,7 +349,7 @@ public class RootControllerTest {
                         .content(jsonCompanyDTO.write(duffBeer).getJson()))
 
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.firstName", is("Duff")));
+                .andExpect(jsonPath("$.email", is("duff.beer@springfield.com")));
     }
 
     @Test
@@ -379,6 +382,8 @@ public class RootControllerTest {
 
     @Test
     void testLoginGestionnaireHappyDay() throws Exception {
+        burns.setFirstName(null);
+        burns.setLastName(null);
         burns.setEmailConfirmed(true);
         when(gestionnaireService.getGestionnaireByEmailPassword(
                 "charles.burns@springfield.com",
@@ -390,7 +395,7 @@ public class RootControllerTest {
                         .content(jsonGestionnaireDTO.write(burns).getJson()))
 
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.firstName", is("Charles")));
+                .andExpect(jsonPath("$.email", is("charles.burns@springfield.com")));
     }
 
     @Test
