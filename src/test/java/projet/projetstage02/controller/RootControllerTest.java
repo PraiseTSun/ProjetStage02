@@ -107,7 +107,7 @@ public class RootControllerTest {
     }
 
     @Test
-    void createStudentHappyDayTest() throws Exception {
+    void testCreateStudentHappyDay() throws Exception {
         when(studentService.isEmailUnique(anyString())).thenReturn(true);
         when(studentService.saveStudent(any())).thenReturn(1L);
 
@@ -119,7 +119,7 @@ public class RootControllerTest {
     }
 
     @Test
-    void createStudentConflictTest() throws Exception {
+    void testCreateStudentConflict() throws Exception {
         when(studentService.isEmailUnique(anyString())).thenReturn(false);
 
         mockMvc.perform(post("/createStudent")
@@ -130,7 +130,7 @@ public class RootControllerTest {
     }
 
     @Test
-    void createStudentBadRequestTest() throws Exception {
+    void testCreateStudentBadRequest() throws Exception {
         mockMvc.perform(post("/createStudent")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(jsonStudentDTO.write(new StudentDTO()).getJson()))
@@ -139,7 +139,7 @@ public class RootControllerTest {
     }
 
     @Test
-    void createCompanyHappyDayTest() throws Exception {
+    void testCreateCompanyHappyDay() throws Exception {
         when(companyService.isEmailUnique(anyString())).thenReturn(true);
         when(companyService.saveCompany(any())).thenReturn(1L);
 
@@ -151,7 +151,7 @@ public class RootControllerTest {
     }
 
     @Test
-    void createCompanyConflictTest() throws Exception {
+    void testCreateCompanyConflict() throws Exception {
         when(companyService.isEmailUnique(anyString())).thenReturn(false);
 
         mockMvc.perform(post("/createCompany")
@@ -162,7 +162,7 @@ public class RootControllerTest {
     }
 
     @Test
-    void createCompanyBadRequestTest() throws Exception {
+    void testCreateCompanyBadRequest() throws Exception {
         mockMvc.perform(post("/createCompany")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(jsonCompanyDTO.write(new CompanyDTO()).getJson()))
@@ -171,7 +171,7 @@ public class RootControllerTest {
     }
 
     @Test
-    void createGestionnaireHappyDayTest() throws Exception {
+    void testCreateGestionnaireHappyDay() throws Exception {
         when(gestionnaireService.isEmailUnique(anyString())).thenReturn(true);
         when(gestionnaireService.saveGestionnaire(any())).thenReturn(1L);
 
@@ -183,7 +183,7 @@ public class RootControllerTest {
     }
 
     @Test
-    void createGestionnaireConflictTest() throws Exception {
+    void testCreateGestionnaireConflict() throws Exception {
         when(gestionnaireService.isEmailUnique(anyString())).thenReturn(false);
 
         mockMvc.perform(post("/createGestionnaire")
@@ -194,7 +194,7 @@ public class RootControllerTest {
     }
 
     @Test
-    void createGestionnaireBadRequestTest() throws Exception {
+    void testCreateGestionnaireBadRequest() throws Exception {
         mockMvc.perform(post("/createGestionnaire")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(jsonGestionnaireDTO.write(new GestionnaireDTO()).getJson()))
@@ -203,7 +203,7 @@ public class RootControllerTest {
     }
 
     @Test
-    void createOffreHappyDayTest() throws Exception {
+    void testCreateOffreHappyDay() throws Exception {
         when(companyService.createOffre(any())).thenReturn(1L);
 
         mockMvc.perform(post("/createOffre")
@@ -214,7 +214,7 @@ public class RootControllerTest {
     }
 
     @Test
-    void createOffreBadRequestTest() throws Exception {
+    void testCreateOffreBadRequest() throws Exception {
         mockMvc.perform(post("/createOffre")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(jsonOffreDTO.write(new OffreDTO()).getJson()))
@@ -223,7 +223,7 @@ public class RootControllerTest {
     }
 
     @Test
-    void confirmStudentEmailHappyDayTest() throws Exception {
+    void testConfirmStudentEmailHappyDay() throws Exception {
         when(studentService.getStudentById(1L)).thenReturn(bart);
         when(studentService.saveStudent(bart)).thenReturn(1L);
 
@@ -234,7 +234,7 @@ public class RootControllerTest {
     }
 
     @Test
-    void confirmStudentEmailNotFoundTest() throws Exception {
+    void testConfirmStudentEmailNotFound() throws Exception {
         when(studentService.getStudentById(1L)).thenThrow(new NonExistentUserException());
 
         mockMvc.perform(
@@ -244,7 +244,7 @@ public class RootControllerTest {
     }
 
     @Test
-    void confirmStudentEmailExpiredTest() throws Exception {
+    void testConfirmStudentEmailExpired() throws Exception {
         bart.setInscriptionTimestamp(Timestamp.valueOf(LocalDateTime.now().minusMonths(1)).getTime());
         when(studentService.getStudentById(1L)).thenReturn(bart);
 
@@ -255,7 +255,7 @@ public class RootControllerTest {
     }
 
     @Test
-    void confirmCompanyEmailHappyDayTest() throws Exception {
+    void testConfirmCompanyEmailHappyDay() throws Exception {
         when(companyService.getCompanyById(1L)).thenReturn(duffBeer);
         when(companyService.saveCompany(duffBeer)).thenReturn(1L);
 
@@ -266,7 +266,7 @@ public class RootControllerTest {
     }
 
     @Test
-    void confirmCompanyEmailNotFoundTest() throws Exception {
+    void testConfirmCompanyEmailNotFound() throws Exception {
         when(companyService.getCompanyById(1L)).thenThrow(new NonExistentUserException());
 
         mockMvc.perform(
@@ -276,7 +276,7 @@ public class RootControllerTest {
     }
 
     @Test
-    void confirmCompanyEmailExpiredTest() throws Exception {
+    void testConfirmCompanyEmailExpired() throws Exception {
         duffBeer.setInscriptionTimestamp(Timestamp.valueOf(LocalDateTime.now().minusMonths(1)).getTime());
         when(companyService.getCompanyById(1L)).thenReturn(duffBeer);
 
@@ -287,7 +287,7 @@ public class RootControllerTest {
     }
 
     @Test
-    void loginStudentHappyDayTest() throws Exception {
+    void testLoginStudentHappyDay() throws Exception {
         bart.setEmailConfirmed(true);
         when(studentService.getStudentByEmailPassword(
                 "bart.simpson@springfield.com",
@@ -303,7 +303,7 @@ public class RootControllerTest {
     }
 
     @Test
-    void loginStudentNotEmailConfirmedTest() throws Exception {
+    void testLoginStudentNotEmailConfirmed() throws Exception {
         when(studentService.getStudentByEmailPassword(
                 "bart.simpson@springfield.com",
                 "eatMyShorts"))
@@ -317,7 +317,7 @@ public class RootControllerTest {
     }
 
     @Test
-    void loginStudentNotFoundTest() throws Exception {
+    void testLoginStudentNotFound() throws Exception {
         when(studentService.getStudentByEmailPassword(
                 "bart.simpson@springfield.com",
                 "eatMyShorts"))
@@ -331,7 +331,7 @@ public class RootControllerTest {
     }
 
     @Test
-    void loginCompanyHappyDayTest() throws Exception {
+    void testLoginCompanyHappyDay() throws Exception {
         duffBeer.setEmailConfirmed(true);
         when(companyService.getCompanyByEmailPassword(
                 "duff.beer@springfield.com",
@@ -347,7 +347,7 @@ public class RootControllerTest {
     }
 
     @Test
-    void loginCompanyNotEmailConfirmedTest() throws Exception {
+    void testLoginCompanyNotEmailConfirmed() throws Exception {
         when(companyService.getCompanyByEmailPassword(
                 "duff.beer@springfield.com",
                 "bestBeer"))
@@ -361,7 +361,7 @@ public class RootControllerTest {
     }
 
     @Test
-    void loginCompanyNotFoundTest() throws Exception {
+    void testLoginCompanyNotFound() throws Exception {
         when(companyService.getCompanyByEmailPassword(
                 "duff.beer@springfield.com",
                 "bestBeer"))
@@ -375,7 +375,7 @@ public class RootControllerTest {
     }
 
     @Test
-    void loginGestionnaireHappyDayTest() throws Exception {
+    void testLoginGestionnaireHappyDay() throws Exception {
         burns.setEmailConfirmed(true);
         when(gestionnaireService.getGestionnaireByEmailPassword(
                 "charles.burns@springfield.com",
@@ -391,7 +391,7 @@ public class RootControllerTest {
     }
 
     @Test
-    void loginGestionnaireNotEmailConfirmedTest() throws Exception {
+    void testLoginGestionnaireNotEmailConfirmed() throws Exception {
         when(gestionnaireService.getGestionnaireByEmailPassword(
                 "charles.burns@springfield.com",
                 "excellent"))
@@ -405,7 +405,7 @@ public class RootControllerTest {
     }
 
     @Test
-    void loginGestionnaireNotFoundTest() throws Exception {
+    void testLoginGestionnaireNotFound() throws Exception {
         when(gestionnaireService.getGestionnaireByEmailPassword(
                 "charles.burns@springfield.com",
                 "excellent"))
@@ -419,7 +419,7 @@ public class RootControllerTest {
     }
 
     @Test
-    void unvalidatedStudentsHappyDayTest() throws Exception {
+    void testUnvalidatedStudentsHappyDay() throws Exception {
         when(gestionnaireService.getUnvalidatedStudents())
                 .thenReturn(List.of(bart));
 
@@ -429,7 +429,7 @@ public class RootControllerTest {
     }
 
     @Test
-    void unvalidatedCompaniesHappyDayTest() throws Exception {
+    void testUnvalidatedCompaniesHappyDay() throws Exception {
         when(gestionnaireService.getUnvalidatedCompanies())
                 .thenReturn(List.of(duffBeer));
 
@@ -439,7 +439,7 @@ public class RootControllerTest {
     }
 
     @Test
-    void validateStudentHappyDayTest() throws Exception {
+    void testValidateStudentHappyDay() throws Exception {
         doAnswer(invocation -> {
             bart.setConfirmed(true);
             return null;
@@ -451,7 +451,7 @@ public class RootControllerTest {
     }
 
     @Test
-    void validateStudentNotFoundTest() throws Exception {
+    void testValidateStudentNotFound() throws Exception {
         doThrow(new NonExistentUserException())
                 .when(gestionnaireService).validateStudent(1L);
 
@@ -461,7 +461,7 @@ public class RootControllerTest {
     }
 
     @Test
-    void validateCompanyHappyDayTest() throws Exception {
+    void testValidateCompanyHappyDay() throws Exception {
         doAnswer(invocation -> {
             duffBeer.setConfirmed(true);
             return null;
@@ -473,7 +473,7 @@ public class RootControllerTest {
     }
 
     @Test
-    void validateCompanyNotFoundTest() throws Exception {
+    void testValidateCompanyNotFound() throws Exception {
         doThrow(new NonExistentUserException())
                 .when(gestionnaireService).validateCompany(1L);
 
@@ -483,7 +483,7 @@ public class RootControllerTest {
     }
 
     @Test
-    void removeStudentHappyDayTest() throws Exception {
+    void testRemoveStudentHappyDay() throws Exception {
 
         mockMvc.perform(delete("/removeStudent/{id}", 1))
 
@@ -492,7 +492,7 @@ public class RootControllerTest {
     }
 
     @Test
-    void removeStudentNotFoundTest() throws Exception {
+    void testRemoveStudentNotFound() throws Exception {
         doThrow(new NonExistentUserException())
                 .when(gestionnaireService).removeStudent(1L);
 
@@ -503,7 +503,7 @@ public class RootControllerTest {
     }
 
     @Test
-    void removeCompanyHappyDayTest() throws Exception {
+    void testRemoveCompanyHappyDay() throws Exception {
 
         mockMvc.perform(delete("/removeCompany/{id}", 1))
 
@@ -512,7 +512,7 @@ public class RootControllerTest {
     }
 
     @Test
-    void removeCompanyNotFoundTest() throws Exception {
+    void testRemoveCompanyNotFound() throws Exception {
         doThrow(new NonExistentUserException())
                 .when(gestionnaireService).removeCompany(1L);
 
