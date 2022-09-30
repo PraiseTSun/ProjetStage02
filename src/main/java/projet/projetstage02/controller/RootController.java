@@ -5,16 +5,15 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import projet.projetstage02.DTO.CompanyDTO;
-import projet.projetstage02.DTO.GestionnaireDTO;
-import projet.projetstage02.DTO.OffreDTO;
-import projet.projetstage02.DTO.StudentDTO;
+import projet.projetstage02.DTO.*;
+import projet.projetstage02.exception.NonExistentOfferExeption;
 import projet.projetstage02.exception.NonExistentUserException;
 import projet.projetstage02.service.CompanyService;
 import projet.projetstage02.service.GestionnaireService;
 import projet.projetstage02.service.StudentService;
 import projet.projetstage02.utils.EmailUtil;
 
+import javax.validation.Valid;
 import java.time.LocalDateTime;
 import java.sql.Timestamp;
 import java.util.HashMap;
@@ -29,11 +28,12 @@ public class RootController {
     StudentService studentService;
     CompanyService companyService;
     GestionnaireService gestionnaireService;
-    //TODO: Add new thread to remove the user after 24h hours if not email confirmed
+    // TODO: Add new thread to remove the user after 24h hours if not email
+    // confirmed
     private final long MILLI_SECOND_DAY = 864000000;
 
     @PostMapping("/createStudent")
-    public ResponseEntity<Map<String, String>> createStudent(@RequestBody StudentDTO studentDTO) {
+    public ResponseEntity<Map<String, String>> createStudent(@Valid @RequestBody StudentDTO studentDTO) {
         if (!studentService.isEmailUnique(studentDTO.getEmail())) {
             return ResponseEntity.status(HttpStatus.CONFLICT).body(getError("Cette adresse email est déjà utilisée."));
         }
@@ -45,7 +45,7 @@ public class RootController {
     }
 
     @PostMapping("/createCompany")
-    public ResponseEntity<Map<String, String>> createCompany(@RequestBody CompanyDTO companyDTO) {
+    public ResponseEntity<Map<String, String>> createCompany(@Valid @RequestBody CompanyDTO companyDTO) {
         if (!companyService.isEmailUnique(companyDTO.getEmail())) {
             return ResponseEntity.status(HttpStatus.CONFLICT).body(getError("Cette adresse email est déjà utilisée."));
         }
@@ -57,7 +57,7 @@ public class RootController {
     }
 
     @PostMapping("/createGestionnaire")
-    public ResponseEntity<Map<String, String>> createGestionnaire(@RequestBody GestionnaireDTO gestionnaireDTO) {
+    public ResponseEntity<Map<String, String>> createGestionnaire(@Valid @RequestBody GestionnaireDTO gestionnaireDTO) {
         if (!gestionnaireService.isEmailUnique(gestionnaireDTO.getEmail())) {
             return ResponseEntity.status(HttpStatus.CONFLICT).body(getError("Cette adresse email est déjà utilisée."));
         }
@@ -70,13 +70,7 @@ public class RootController {
     }
 
     @PostMapping("/createOffre")
-    public ResponseEntity<Map<String, String>> createOffre(@RequestBody OffreDTO offreDTO){
-
-        if(offreDTO.getPdf() == null || offreDTO.getNomDeCompagnie() == null || offreDTO.getAdresse() == null
-            || offreDTO.getPosition() == null || offreDTO.getDepartment() == null
-                || offreDTO.getHeureParSemaine() == 0 ){
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-        }
+    public ResponseEntity<Map<String, String>> createOffre(@Valid @RequestBody OffreDTO offreDTO) {
         companyService.createOffre(offreDTO);
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
@@ -121,27 +115,10 @@ public class RootController {
         } catch (NonExistentUserException e) {
             return ResponseEntity.notFound().build();
         }
-
-    }
-
-    @PutMapping("/confirmEmail/gestionnaire/{id}")
-    public ResponseEntity<Map<String, String>> confirmGestionnaireMail(@PathVariable String id) {
-        try {
-            GestionnaireDTO gestionnaireDTO = gestionnaireService.getGestionnaireById(Long.parseLong(id));
-            if (currentTimestamp() - gestionnaireDTO.getInscriptionTimestamp() > MILLI_SECOND_DAY) {
-                return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY)
-                        .body(getError("La période de confirmation est expirée"));
-            }
-            gestionnaireDTO.setEmailConfirmed(true);
-            gestionnaireService.saveGestionnaire(gestionnaireDTO);
-            return ResponseEntity.status(HttpStatus.CREATED).build();
-        } catch (NonExistentUserException e) {
-            return ResponseEntity.notFound().build();
-        }
     }
 
     @PutMapping("/student")
-    public ResponseEntity<StudentDTO> getStudent(@RequestBody StudentDTO studentDTO) {
+    public ResponseEntity<StudentDTO> getStudent(@Valid @RequestBody StudentDTO studentDTO) {
         try {
             StudentDTO dto = studentService.getStudentByEmailPassword(studentDTO.getEmail(), studentDTO.getPassword());
             dto.setPassword("");
@@ -152,7 +129,7 @@ public class RootController {
     }
 
     @PutMapping("/company")
-    public ResponseEntity<CompanyDTO> getCompany(@RequestBody CompanyDTO companyDTO) {
+    public ResponseEntity<CompanyDTO> getCompany(@Valid @RequestBody CompanyDTO companyDTO) {
         try {
             CompanyDTO dto = companyService.getCompanyByEmailPassword(companyDTO.getEmail(), companyDTO.getPassword());
             dto.setPassword("");
@@ -163,7 +140,7 @@ public class RootController {
     }
 
     @PutMapping("/gestionnaire")
-    public ResponseEntity<GestionnaireDTO> getGestionnaire(@RequestBody GestionnaireDTO gestionnaireDTO) {
+    public ResponseEntity<GestionnaireDTO> getGestionnaire(@Valid @RequestBody GestionnaireDTO gestionnaireDTO) {
         try {
             GestionnaireDTO dto = gestionnaireService.getGestionnaireByEmailPassword(gestionnaireDTO.getEmail(),
                     gestionnaireDTO.getPassword());
@@ -225,6 +202,42 @@ public class RootController {
             gestionnaireService.removeCompany(Long.parseLong(id));
             return ResponseEntity.ok().build();
         } catch (NonExistentUserException exception) {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
+    @GetMapping("/unvalidatedOffers")
+    public ResponseEntity<List<OffreDTO>> getOfferToValidate() {
+        List<OffreDTO> unvalidatedOffers = gestionnaireService.getNoneValidateOffers();
+        return ResponseEntity.ok(unvalidatedOffers);
+    }
+
+    @PutMapping("/validateOffer/{id}")
+    public ResponseEntity<Map<String, String>> validateOffer(@PathVariable String id) {
+        try {
+            gestionnaireService.validateOfferById(Long.parseLong(id));
+            return ResponseEntity.ok().build();
+        } catch (NonExistentOfferExeption exception) {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
+    @DeleteMapping("/removeOffer/{id}")
+    public ResponseEntity<Map<String, String>> removeOffer(@PathVariable String id) {
+        try {
+            gestionnaireService.removeOfferById(Long.parseLong(id));
+            return ResponseEntity.ok().build();
+        } catch (NonExistentOfferExeption exception) {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
+    @GetMapping("/offerPdf/{id}")
+    public ResponseEntity<byte[]> getOfferPdf(@PathVariable String id){
+        try {
+            byte[] offerPdf = gestionnaireService.getOffrePdfById(Long.parseLong(id));
+            return ResponseEntity.ok(offerPdf);
+        } catch (NonExistentOfferExeption e) {
             return ResponseEntity.notFound().build();
         }
     }

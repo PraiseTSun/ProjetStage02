@@ -5,7 +5,6 @@ import org.springframework.stereotype.Service;
 import projet.projetstage02.DTO.CompanyDTO;
 import projet.projetstage02.DTO.OffreDTO;
 import projet.projetstage02.exception.NonExistentUserException;
-import projet.projetstage02.model.AbstractUser;
 import projet.projetstage02.model.AbstractUser.Department;
 import projet.projetstage02.model.Offre;
 import projet.projetstage02.repository.CompanyRepository;
@@ -13,7 +12,6 @@ import projet.projetstage02.repository.OffreRepository;
 
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
-import java.util.List;
 
 @Service
 @AllArgsConstructor
@@ -21,17 +19,21 @@ public class CompanyService {
     private final CompanyRepository companyRepository;
     private final OffreRepository offreRepository;
 
-    public long createOffre(OffreDTO offreDTO){
-        Offre offre = new Offre(offreDTO.getNomDeCompagnie(), Department.getDepartment(offreDTO.getDepartment()), offreDTO.getPosition(),
-                offreDTO.getHeureParSemaine(), offreDTO.getAdresse(), offreDTO.getPdf());
+    public long createOffre(OffreDTO offreDTO) {
+        Offre offre = Offre.builder()
+                .nomDeCompagnie(offreDTO.getNomDeCompagnie())
+                .department(Department.getDepartment(offreDTO.getDepartment()))
+                .position(offreDTO.getPosition())
+                .heureParSemaine(offreDTO.getHeureParSemaine())
+                .adresse(offreDTO.getAdresse())
+                .pdf(offreDTO.getPdf())
+                .build();
+
         return offreRepository.save(offre).getId();
-    }
-    public List<Offre> findOffre(){
-        return offreRepository.findAll();
     }
 
     public void saveCompany(String firstName, String lastName, String name, String email, String password,
-                            Department department) {
+            Department department) {
         CompanyDTO dto = CompanyDTO.builder()
                 .firstName(firstName)
                 .lastName(lastName)
@@ -56,13 +58,15 @@ public class CompanyService {
 
     public CompanyDTO getCompanyById(Long id) throws NonExistentUserException {
         var companyOpt = companyRepository.findById(id);
-        if (companyOpt.isEmpty()) throw new NonExistentUserException();
+        if (companyOpt.isEmpty())
+            throw new NonExistentUserException();
         return new CompanyDTO(companyOpt.get());
     }
 
     public CompanyDTO getCompanyByEmailPassword(String email, String password) throws NonExistentUserException {
         var companyOpt = companyRepository.findByEmailAndPassword(email.toLowerCase(), password);
-        if (companyOpt.isEmpty()) throw new NonExistentUserException();
+        if (companyOpt.isEmpty())
+            throw new NonExistentUserException();
         return new CompanyDTO(companyOpt.get());
     }
 }

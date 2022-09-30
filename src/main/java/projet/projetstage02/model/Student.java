@@ -6,6 +6,7 @@ import lombok.NoArgsConstructor;
 import lombok.ToString;
 
 import javax.persistence.Entity;
+import javax.persistence.Lob;
 
 @Entity
 @Data
@@ -14,7 +15,8 @@ import javax.persistence.Entity;
 @ToString(callSuper = true)
 public class Student extends AbstractUser {
     private Department department;
-
+    @Lob
+    private byte[] cv;
     public Student(String firstName, String lastName, String email, String password, Department department) {
         super(firstName, lastName, email, password);
         this.department = department;

@@ -4,12 +4,16 @@ import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import projet.projetstage02.DTO.CompanyDTO;
 import projet.projetstage02.DTO.GestionnaireDTO;
+import projet.projetstage02.DTO.OffreDTO;
 import projet.projetstage02.DTO.StudentDTO;
+import projet.projetstage02.exception.NonExistentOfferExeption;
 import projet.projetstage02.exception.NonExistentUserException;
 import projet.projetstage02.model.Company;
+import projet.projetstage02.model.Offre;
 import projet.projetstage02.model.Student;
 import projet.projetstage02.repository.CompanyRepository;
 import projet.projetstage02.repository.GestionnaireRepository;
+import projet.projetstage02.repository.OffreRepository;
 import projet.projetstage02.repository.StudentRepository;
 
 import java.sql.Timestamp;
@@ -20,13 +24,15 @@ import java.util.Optional;
 
 @Service
 @AllArgsConstructor
-public class GestionnaireService{
+public class GestionnaireService {
 
     private final GestionnaireRepository gestionnaireRepository;
     private final CompanyRepository companyRepository;
     private final StudentRepository studentRepository;
 
-    public void saveGestionnaire(String firstname, String lastname, String email, String password) {
+    private final OffreRepository offreRepository;
+
+    public long saveGestionnaire(String firstname, String lastname, String email, String password) {
         GestionnaireDTO dto = GestionnaireDTO.builder()
                 .firstName(firstname)
                 .lastName(lastname)
@@ -35,7 +41,7 @@ public class GestionnaireService{
                 .isConfirmed(true)
                 .inscriptionTimestamp(Timestamp.valueOf(LocalDateTime.now()).getTime())
                 .build();
-        saveGestionnaire(dto);
+        return saveGestionnaire(dto);
     }
 
     public long saveGestionnaire(GestionnaireDTO dto) {
@@ -60,21 +66,18 @@ public class GestionnaireService{
     }
 
     public void validateCompany(Long id) throws NonExistentUserException {
-        //Throws NonExistentUserException
         Company company = getCompany(id);
         company.setConfirm(true);
         companyRepository.save(company);
     }
 
     public void validateStudent(Long id) throws NonExistentUserException {
-        //Throws NonExistentUserException
         Student student = getStudent(id);
         student.setConfirm(true);
         studentRepository.save(student);
     }
 
     public void removeCompany(long id) throws NonExistentUserException {
-        // Throws NonExistentUserException
         Company company = getCompany(id);
         companyRepository.delete(company);
     }
@@ -97,6 +100,34 @@ public class GestionnaireService{
         return studentOptional.get();
     }
 
+    private Offre getOffer(long id) throws NonExistentOfferExeption {
+        Optional<Offre> offreOpt = offreRepository.findById(id);
+        if (offreOpt.isEmpty()) throw new NonExistentOfferExeption();
+        return offreOpt.get();
+    }
+
+    public List<OffreDTO> getNoneValidateOffers() {
+        List<OffreDTO> offres = new ArrayList<>();
+        offreRepository.findAll().stream().
+                filter(offre ->
+                        !offre.isValide())
+                .forEach(offre ->
+                        offres.add(new OffreDTO(offre)));
+        return offres;
+    }
+
+    public OffreDTO validateOfferById(Long id) throws NonExistentOfferExeption {
+        Offre offre = getOffer(id);
+        offre.setValide(true);
+        offreRepository.save(offre);
+
+        return new OffreDTO(offre);
+    }
+
+    public void removeOfferById(long id) throws NonExistentOfferExeption {
+        offreRepository.delete(getOffer(id));
+    }
+
     public List<StudentDTO> getUnvalidatedStudents() {
         List<StudentDTO> unvalidatedStudentDTOs = new ArrayList<>();
         studentRepository.findAll().stream()
@@ -111,11 +142,15 @@ public class GestionnaireService{
     public List<CompanyDTO> getUnvalidatedCompanies() {
         List<CompanyDTO> unvalidatedCompaniesDTOs = new ArrayList<>();
         companyRepository.findAll().stream()
-                .filter(company->
+                .filter(company ->
                         !company.isConfirm() && company.isEmailConfirmed()
                 )
                 .forEach(company ->
                         unvalidatedCompaniesDTOs.add(new CompanyDTO(company)));
         return unvalidatedCompaniesDTOs;
+    }
+
+    public byte[] getOffrePdfById(long id) throws NonExistentOfferExeption {
+        return getOffer(id).getPdf();
     }
 }
