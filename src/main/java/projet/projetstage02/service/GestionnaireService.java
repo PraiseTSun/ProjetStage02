@@ -113,6 +113,7 @@ public class GestionnaireService {
                         !offre.isValide())
                 .forEach(offre ->
                         offres.add(new OffreDTO(offre)));
+        offres.forEach(offre -> offre.setPdf(new byte[0]));
         return offres;
     }
 
