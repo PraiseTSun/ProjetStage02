@@ -323,3 +323,55 @@ paths:
             properties:
               error:
                 type: string
+  /validateCV/{id}:
+    put:
+      summary: Validé un cv par son id (Gestionnaire seulement)
+      parameters:
+        - in: path
+          name: id
+          description: id du CV
+          type: string
+          required: true
+        - in: body
+          name: token
+          description: Token valide du gestionnaire
+          schema:
+            type: object
+            properties:
+              token:
+                type: string
+      produces:
+        - application/json
+      responses:
+        200:
+          description: CV validé
+        403:
+          description: Token invalide ou expiré
+        404:
+          description: Un cv avec ce id n'existe pas ou le token est invalide
+  /refuseCV/{id}:
+    put:
+      summary: Refuse un cv par son id (Gestionnaire seulement)
+      parameters:
+        - in: path
+          name: id
+          description: id du CV
+          type: string
+          required: true
+        - in: body
+          name: token
+          description: Token valide du gestionnaire
+          schema:
+            type: object
+            properties:
+              token:
+                type: string
+      produces:
+        - application/json
+      responses:
+        200:
+          description: CV refusé
+        403:
+          description: Token invalide ou expiré
+        404:
+          description: Un cv avec ce id n'existe pas
