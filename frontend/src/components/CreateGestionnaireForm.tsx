@@ -1,8 +1,9 @@
 import React, { useState } from "react";
 import { Button, Col, Form, Row } from "react-bootstrap";
 import { BeatLoader } from "react-spinners";
+import IUser from "../models/IUser";
 
-const ValidationGestionnaire = () => {
+const ValidationGestionnaire = ({user}:{user:IUser}) => {
     const [waiting, setWaiting] = useState(false);
     const [validated, setValidated] = useState(false);
     const [firstName, setFirstName] = useState("");
@@ -43,7 +44,8 @@ const ValidationGestionnaire = () => {
                         "firstName": firstName,
                         "lastName": lastName,
                         "email": email,
-                        "password": password
+                        "password": password,
+                        "token":user.token
                     })
                 });
 

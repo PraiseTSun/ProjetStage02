@@ -21,11 +21,16 @@ const emptyUser: IUser = {
 
 function App() {
   const [user, setUser] = useState(emptyUser)
-  const [lastVerifiedTimestamp, setLastVerifiedTimeStamp] = useState(Date.now())
-  const [currentlyVerifyingLogin, setCurrentlyVerifyingLogin] = useState(false)
+  const [verifiedLoginFromLocalStorage, setVerifiedLoginFromLocalStorage] = useState(false)
   const [currentlyVerifyingToken, setCurrentlyVerifyingToken] = useState(false)
   const [isValidToken,setValidToken] = useState(true)
-
+  const [count, setCount] = useState(0)
+  useEffect(() => {
+      const timer = setTimeout(() => setCount(count+1), 10000)
+      validateToken()
+      return () => clearTimeout(timer)
+   }, [count])
+   
   const deconnexion = () => {
     setUser(emptyUser)
     localStorage.removeItem(LOCAL_STORAGE_KEY)
@@ -49,7 +54,7 @@ function App() {
     }
   }
 
-  const login = async() => {
+  const loginFromLocalStorage = async() => {
     if (localStorage.getItem(LOCAL_STORAGE_KEY) != null && user == emptyUser) {
       let user:IUser = JSON.parse(localStorage.getItem(LOCAL_STORAGE_KEY)!);
       const getTokenHeaders = {
@@ -68,26 +73,26 @@ function App() {
     }
 
   }
-  const startLogin = async () => {
-    if(!currentlyVerifyingLogin) {
-      setCurrentlyVerifyingLogin(true)
-      await login()
-      setCurrentlyVerifyingLogin(false)
+  const checkIfUserExistsInLocalStorage = async () => {
+    console.log(verifiedLoginFromLocalStorage)
+    if(!verifiedLoginFromLocalStorage) {
+      setVerifiedLoginFromLocalStorage(true)
+      await loginFromLocalStorage()
     }
   }
 
-  const startVerifyToken = async () => {
-   if (!currentlyVerifyingToken && Date.now() - lastVerifiedTimestamp > 3000 && isValidToken){
-     setLastVerifiedTimeStamp(Date.now())
-     setCurrentlyVerifyingToken(true)
+  const validateToken = async () => {
+    if(!currentlyVerifyingToken) {
+      setCurrentlyVerifyingToken(true)
+    console.log(currentlyVerifyingToken)
       await verifyToken()
      setCurrentlyVerifyingToken(false)
+    }
    }
-  }
 
-  startLogin()
-  startVerifyToken()
+  
   if (user == emptyUser) {
+    checkIfUserExistsInLocalStorage()
     return (
       <Container className="vh-100">
         <BrowserRouter>

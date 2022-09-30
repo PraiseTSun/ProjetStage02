@@ -6,6 +6,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import projet.projetstage02.DTO.*;
+import projet.projetstage02.exception.InvalidTokenException;
 import projet.projetstage02.exception.NonExistentEntityException;
 import projet.projetstage02.model.Token;
 import projet.projetstage02.service.AuthService;
@@ -22,6 +23,7 @@ import java.util.Map;
 
 import static org.springframework.http.HttpStatus.*;
 import static projet.projetstage02.model.Token.UserTypes.*;
+import static projet.projetstage02.utils.TimeUtil.currentTimestamp;
 
 @RestController
 @AllArgsConstructor
@@ -61,15 +63,20 @@ public class RootController {
 
     @PostMapping("/createGestionnaire")
     public ResponseEntity<Map<String, String>> createGestionnaire(@RequestBody GestionnaireDTO gestionnaireDTO) {
-        if (!gestionnaireService.isEmailUnique(gestionnaireDTO.getEmail())) {
-            return ResponseEntity.status(CONFLICT).body(getError("Cette adresse email est déjà utilisée."));
+        try{
+            authService.getToken(gestionnaireDTO.getToken(), GESTIONNAIRE);
+            if (!gestionnaireService.isEmailUnique(gestionnaireDTO.getEmail())) {
+                return ResponseEntity.status(CONFLICT).body(getError("Cette adresse email est déjà utilisée."));
+            }
+            gestionnaireDTO.setInscriptionTimestamp(currentTimestamp());
+            gestionnaireDTO.setConfirmed(true);
+            long id = gestionnaireService.saveGestionnaire(gestionnaireDTO);
+            gestionnaireDTO.setId(id);
+            EmailUtil.sendConfirmationMail(gestionnaireDTO.toModel());
+            return ResponseEntity.status(CREATED).build();
+        }catch (InvalidTokenException ex){
+            return ResponseEntity.status(403).build();
         }
-        gestionnaireDTO.setInscriptionTimestamp(currentTimestamp());
-        gestionnaireDTO.setConfirmed(true);
-        long id = gestionnaireService.saveGestionnaire(gestionnaireDTO);
-        gestionnaireDTO.setId(id);
-        EmailUtil.sendConfirmationMail(gestionnaireDTO.toModel());
-        return ResponseEntity.status(CREATED).build();
     }
 
     @PostMapping("/createOffre")
@@ -86,12 +93,12 @@ public class RootController {
             return ResponseEntity.status(CREATED).build();
         }catch (NonExistentEntityException | IllegalArgumentException e){
             return ResponseEntity.notFound().build();
+        }catch (InvalidTokenException ex){
+            return ResponseEntity.status(403).build();
         }
     }
 
-    private long currentTimestamp() {
-        return Timestamp.valueOf(LocalDateTime.now()).getTime();
-    }
+
 
     private Map<String, String> getError(String error) {
         HashMap<String, String> hashMap = new HashMap<>();
@@ -154,8 +161,8 @@ public class RootController {
         try {
             String token = authService.loginIfValid(studentDTO);
             return ResponseEntity.status(CREATED).body(TokenDTO.builder().token(token).build());
-        }catch (NonExistentEntityException e){
-            return ResponseEntity.notFound().build();
+        }catch (InvalidTokenException e){
+            return ResponseEntity.status(403).build();
         }
 
     }
@@ -165,8 +172,8 @@ public class RootController {
         try {
             String token = authService.loginIfValid(gestionnaireDTO);
             return ResponseEntity.status(CREATED).body(TokenDTO.builder().token(token).build());
-        }catch (NonExistentEntityException e){
-            return ResponseEntity.notFound().build();
+        }catch (InvalidTokenException e){
+            return ResponseEntity.status(403).build();
         }
 
     }
@@ -176,8 +183,8 @@ public class RootController {
         try {
             String token = authService.loginIfValid(companyDTO);
             return ResponseEntity.status(CREATED).body(TokenDTO.builder().token(token).build());
-        }catch (NonExistentEntityException e){
-            return ResponseEntity.notFound().build();
+        }catch (InvalidTokenException e){
+            return ResponseEntity.status(403).build();
         }
 
     }
@@ -192,6 +199,8 @@ public class RootController {
             return !dto.isEmailConfirmed() ? ResponseEntity.notFound().build() : ResponseEntity.ok(dto);
         } catch (NonExistentEntityException e) {
             return ResponseEntity.notFound().build();
+        } catch (InvalidTokenException ex){
+            return ResponseEntity.status(403).build();
         }
     }
 
@@ -205,6 +214,8 @@ public class RootController {
             return !dto.isEmailConfirmed() ? ResponseEntity.notFound().build() : ResponseEntity.ok(dto);
         } catch (NonExistentEntityException e) {
             return ResponseEntity.notFound().build();
+        }catch (InvalidTokenException ex){
+            return ResponseEntity.status(403).build();
         }
     }
 
@@ -217,6 +228,8 @@ public class RootController {
             return !dto.isEmailConfirmed() ? ResponseEntity.notFound().build() : ResponseEntity.ok(dto);
         } catch (NonExistentEntityException e) {
             return ResponseEntity.notFound().build();
+        }catch (InvalidTokenException ex){
+            return ResponseEntity.status(403).build();
         }
     }
 
@@ -230,6 +243,8 @@ public class RootController {
             return ResponseEntity.ok(unvalidatedStudents);
         }catch (NonExistentEntityException e){
             return ResponseEntity.notFound().build();
+        }catch (InvalidTokenException ex){
+            return ResponseEntity.status(403).build();
         }
     }
 
@@ -243,6 +258,8 @@ public class RootController {
             return ResponseEntity.ok(unvalidatedCompanies);
         }catch (NonExistentEntityException e){
             return ResponseEntity.notFound().build();
+        }catch (InvalidTokenException ex){
+            return ResponseEntity.status(403).build();
         }
     }
 
@@ -256,6 +273,8 @@ public class RootController {
         } catch (NonExistentEntityException exception) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
                     .body(getError(exception.getMessage()));
+        }catch (InvalidTokenException ex){
+            return ResponseEntity.status(403).build();
         }
     }
 
@@ -268,6 +287,8 @@ public class RootController {
             return ResponseEntity.ok().build();
         } catch (NonExistentEntityException exception) {
             return ResponseEntity.notFound().build();
+        }catch (InvalidTokenException ex){
+            return ResponseEntity.status(403).build();
         }
     }
 
@@ -280,6 +301,8 @@ public class RootController {
             return ResponseEntity.ok().build();
         } catch (NonExistentEntityException exception) {
             return ResponseEntity.notFound().build();
+        }catch (InvalidTokenException ex){
+            return ResponseEntity.status(403).build();
         }
     }
 
@@ -292,6 +315,8 @@ public class RootController {
             return ResponseEntity.ok().build();
         } catch (NonExistentEntityException exception) {
             return ResponseEntity.notFound().build();
+        }catch (InvalidTokenException ex){
+            return ResponseEntity.status(403).build();
         }
     }
 }

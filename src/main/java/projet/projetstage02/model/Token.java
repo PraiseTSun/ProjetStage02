@@ -15,6 +15,9 @@ public class Token{
     private String token;
     private long userId;
     private UserTypes userType;
+    private long lastCalledTimeStamp;
+
+    public static final long ONE_HOURS_MS = 3600000;
 
     public enum UserTypes{
         STUDENT,

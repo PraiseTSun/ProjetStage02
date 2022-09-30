@@ -60,7 +60,7 @@ const UserValidation = ({connectedUser}:{connectedUser:IUser}) => {
             <Row>
                 {user == "Student" ? <ValidationStudent connectedUser={connectedUser} onRemove={onRemove} onValidation={onValidation} /> :
                     user == "Company" ? <ValidationCompany connectedUser={connectedUser} onRemove={onRemove} onValidation={onValidation} /> :
-                        <ValidationGestionnaire />
+                        <ValidationGestionnaire user={connectedUser}/>
                 }
             </Row>
         </Container>
