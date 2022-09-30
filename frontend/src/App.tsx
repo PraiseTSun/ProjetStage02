@@ -11,6 +11,7 @@ import GestionnaireDashboard from './pages/GestionnaireDashboardPage';
 import UserValidation from './pages/UserValidationPage';
 import FormulaireSoumissionPage from './pages/FormulaireSoumissionPage';
 import ValiderNouvelleOffreStagePage from "./pages/ValiderNouvelleOffreStagePage";
+import PdfPage from "./pages/PdfPage";
 
 export const LOCAL_STORAGE_KEY = "MASSI_BEST_PROGRAMMER_PROJET_STAGE_02_CURRENT_CONNECTED_USER"
 const emptyUser: IUser = {
@@ -21,7 +22,26 @@ const emptyUser: IUser = {
 
 function App() {
   const [user, setUser] = useState(emptyUser)
-  const [offresAttendreValide, setOffresAttendreValide] = useState([])
+  const [isOvrirPDF, setIsOvrirPDF] = useState(false)
+  const [pdfid, setPdfid] = useState(0)
+  const [offresAttendreValide, setOffresAttendreValide] = useState([ {
+      "id" : "2",
+      "nomDeCompagnie" : "conpagnie",
+      "department" : "Technologie de genie Informatique",
+      "position": "position",
+      "heureParSemaine": 40,
+      "adresse" : "3232 rue bell",
+      "pdf" : "monfichier.pdf"
+  },
+      {
+          "id" : "2",
+          "nomDeCompagnie" : "conpagnie",
+          "department" : "Technologie de genie Informatique",
+          "position": "position",
+          "heureParSemaine": 40,
+          "adresse" : "3232 rue bell",
+          "pdf" : "monfichier.pdf"
+      }])
 
   const deconnexion = () => {
     setUser(emptyUser)
@@ -57,7 +77,15 @@ function App() {
           body:JSON.stringify(id)
         })
   }
+ const ouvrirPDF = async (id : number) => {
 
+      const res = await fetch(`http://localhost:8080/telechargerPDF/${id}`)
+
+     if(res.status == 200){
+         setPdfid(id)
+         setIsOvrirPDF(true)
+     }
+ }
   if (localStorage.getItem(LOCAL_STORAGE_KEY) != null && user == emptyUser) {
     setUser(JSON.parse(localStorage.getItem(LOCAL_STORAGE_KEY)!))
   }
@@ -111,7 +139,8 @@ function App() {
             <Route path="/" element={<GestionnaireDashboard deconnexion={deconnexion} user={user} />} />
             <Route path="/userValidation" element={<UserValidation />} />
             <Route path="*" element={<h1 className="text-center text-white display-1">404 - Page pas trouvé</h1>} />
-            <Route path="/validerOffres" element={<ValiderNouvelleOffreStagePage  fetchOffresAttendreValide={fetchOffresAttendreValide}  offresAttendreValide={offresAttendreValide} valideOffre={valideOffre} deleteOffre={deleteOffre}/>}></Route>
+            <Route path="/" element={<ValiderNouvelleOffreStagePage  fetchOffresAttendreValide={fetchOffresAttendreValide}  offresAttendreValide={offresAttendreValide} valideOffre={valideOffre} deleteOffre={deleteOffre}  ouvrirPDF={ouvrirPDF} isOvrirPDF={isOvrirPDF} pdfid={pdfid}/> }></Route>
+            <Route path="/pdf" element={<PdfPage ouvrirPDF={ouvrirPDF}/>} />
           </Routes>
         </BrowserRouter>
       </Container>
