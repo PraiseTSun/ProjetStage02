@@ -1,7 +1,15 @@
 import React, {useEffect, useState} from "react";
-import {useParams} from "react-router-dom";
+import {Link, useParams} from "react-router-dom";
 
-const PdfPage = ({ouvrirPDF} : {ouvrirPDF:Function}) => {
+const PdfPage = ({setPdfId,pdfId} : {setPdfId:Function,pdfId:number}) => {
+    const [pdf,setPdf] = useState({data:new Uint8Array()})
+    const ouvrirPDF = async () => {
+        const res = await fetch(`http://localhost:8080/offerPdf/${pdfId}`)
+        if(res.status == 200){
+            const data = await res.json();
+            setPdf({data:new Uint8Array(data.data)})
+        }
+    }
    // const {id} = useParams()
     useEffect(()=>{
         // ouvrirPDF(id)
@@ -21,9 +29,11 @@ const PdfPage = ({ouvrirPDF} : {ouvrirPDF:Function}) => {
 
     return (
         <>
+            <Link to="/" className="btn btn-primary my-3">Home</Link>
             <Document
-                file="/ex.pdf"
+                file={pdf}
                 onLoadSuccess={onDocumentLoadSuccess}
+                onLoadError = {console.error}
             >
                 <Page pageNumber={pageNumber} width={600} />
             </Document>

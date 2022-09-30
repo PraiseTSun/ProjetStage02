@@ -22,70 +22,13 @@ const emptyUser: IUser = {
 
 function App() {
   const [user, setUser] = useState(emptyUser)
-  const [isOvrirPDF, setIsOvrirPDF] = useState(false)
   const [pdfid, setPdfid] = useState(0)
-  const [offresAttendreValide, setOffresAttendreValide] = useState([ {
-      "id" : "2",
-      "nomDeCompagnie" : "conpagnie",
-      "department" : "Technologie de genie Informatique",
-      "position": "position",
-      "heureParSemaine": 40,
-      "adresse" : "3232 rue bell",
-      "pdf" : "monfichier.pdf"
-  },
-      {
-          "id" : "2",
-          "nomDeCompagnie" : "conpagnie",
-          "department" : "Technologie de genie Informatique",
-          "position": "position",
-          "heureParSemaine": 40,
-          "adresse" : "3232 rue bell",
-          "pdf" : "monfichier.pdf"
-      }])
 
   const deconnexion = () => {
     setUser(emptyUser)
     localStorage.removeItem(LOCAL_STORAGE_KEY)
   }
-  const fetchOffresAttendreValide = async () => {
-    const res = await fetch(`http://localhost:8080/offresValide`)
-    const data = await res.json()
 
-    if(res.status === 200){
-      setOffresAttendreValide(data)
-    }
-  }
-
-  const valideOffre = async (id : number) => {
-     const res = await fetch(`http://localhost:8080/offres/${id}`,
-         {
-           method:'PUT',
-           headers:{
-                'Content-Type':'application/json',
-           },
-           body:JSON.stringify(id)
-         })
-  }
-
-  const deleteOffre = async (id : number) => {
-    const res = await fetch(`http://localhost:8080/offres/${id}`,
-        {
-          method:'DELETE',
-          headers:{
-            'Content-Type':'application/json',
-          },
-          body:JSON.stringify(id)
-        })
-  }
- const ouvrirPDF = async (id : number) => {
-
-      const res = await fetch(`http://localhost:8080/telechargerPDF/${id}`)
-
-     if(res.status == 200){
-         setPdfid(id)
-         setIsOvrirPDF(true)
-     }
- }
   if (localStorage.getItem(LOCAL_STORAGE_KEY) != null && user == emptyUser) {
     setUser(JSON.parse(localStorage.getItem(LOCAL_STORAGE_KEY)!))
   }
@@ -139,8 +82,8 @@ function App() {
             <Route path="/" element={<GestionnaireDashboard deconnexion={deconnexion} user={user} />} />
             <Route path="/userValidation" element={<UserValidation />} />
             <Route path="*" element={<h1 className="text-center text-white display-1">404 - Page pas trouvé</h1>} />
-            <Route path="/" element={<ValiderNouvelleOffreStagePage  fetchOffresAttendreValide={fetchOffresAttendreValide}  offresAttendreValide={offresAttendreValide} valideOffre={valideOffre} deleteOffre={deleteOffre}  ouvrirPDF={ouvrirPDF} isOvrirPDF={isOvrirPDF} pdfid={pdfid}/> }></Route>
-            <Route path="/pdf" element={<PdfPage ouvrirPDF={ouvrirPDF}/>} />
+            <Route path="/validerOffreStage" element={<ValiderNouvelleOffreStagePage setPdfId={setPdfid} /> }></Route>
+            <Route path="/pdf" element={<PdfPage setPdfId={setPdfid} pdfId={pdfid}/>} />
           </Routes>
         </BrowserRouter>
       </Container>
