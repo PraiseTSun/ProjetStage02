@@ -375,3 +375,35 @@ paths:
           description: Token invalide ou expiré
         404:
           description: Un cv avec ce id n'existe pas
+  /unvalidatedCVS:
+    put:
+      summary: Recevoir la listes des CVs à valider
+      parameters:
+        - in: body
+          name: token
+          description: Token valide du gestionnaire
+          schema:
+            type: object
+            properties:
+              token:
+                type: string
+      produces:
+        - application/json
+      responses:
+        200:
+          description: Liste des CVs non validé
+          schema:
+            type: array
+            items:
+              type: object
+              properties:
+                id:
+                  type: string
+                userId:
+                  type: string
+                cv:
+                  type: array
+                  items:
+                    type: number
+        403:
+          description: Token invalide ou expiré
