@@ -230,4 +230,15 @@ public class RootController {
             return ResponseEntity.notFound().build();
         }
     }
+
+    @PutMapping("/uploadStudentCV")
+    public ResponseEntity<StudentDTO> uploadStudentCurriculumVitae(@Valid @RequestBody PdfDTO pdf){
+        try {
+            StudentDTO dto = studentService.uploadCurriculumVitae(pdf);
+            dto.setPassword("");
+            return ResponseEntity.ok().build();
+        } catch (NonExistentUserException e) {
+            return ResponseEntity.notFound().build();
+        }
+    }
 }

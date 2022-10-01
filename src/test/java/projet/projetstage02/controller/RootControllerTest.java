@@ -12,10 +12,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-import projet.projetstage02.DTO.CompanyDTO;
-import projet.projetstage02.DTO.GestionnaireDTO;
-import projet.projetstage02.DTO.OffreDTO;
-import projet.projetstage02.DTO.StudentDTO;
+import projet.projetstage02.DTO.*;
 import projet.projetstage02.exception.NonExistentOfferExeption;
 import projet.projetstage02.exception.NonExistentUserException;
 import projet.projetstage02.model.AbstractUser.Department;
@@ -55,11 +52,13 @@ public class RootControllerTest {
     JacksonTester<CompanyDTO> jsonCompanyDTO;
     JacksonTester<GestionnaireDTO> jsonGestionnaireDTO;
     JacksonTester<OffreDTO> jsonOffreDTO;
+    JacksonTester<PdfDTO> jsonPdfDTO;
 
     StudentDTO bart;
     CompanyDTO duffBeer;
     GestionnaireDTO burns;
     OffreDTO duffOffre;
+    PdfDTO bartCV;
 
     // https://thepracticaldeveloper.com/guide-spring-boot-controller-tests/
     @BeforeEach
@@ -101,6 +100,8 @@ public class RootControllerTest {
                 .adresse("654 Duff Street")
                 .pdf(new byte[0])
                 .build();
+
+        bartCV = new PdfDTO("1", new byte[0]);
 
         JacksonTester.initFields(this, new ObjectMapper());
         mockMvc = MockMvcBuilders.standaloneSetup(rootController).build();
@@ -567,6 +568,29 @@ public class RootControllerTest {
 
 
         mockMvc.perform(delete("/removeOffer/{id}", 1))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    void testUploadCurriculumVitaeSuccess() throws Exception {
+        when(studentService.uploadCurriculumVitae(any())).thenReturn(bart);
+
+        mockMvc.perform(put("/uploadStudentCV")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(jsonPdfDTO.write(bartCV).getJson()))
+
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    void testUploadCurriculumVitaeNotFound() throws Exception {
+        doThrow(new NonExistentUserException())
+                .when(studentService).uploadCurriculumVitae(any());
+
+        mockMvc.perform(put("/uploadStudentCV")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(jsonPdfDTO.write(bartCV).getJson()))
+
                 .andExpect(status().isNotFound());
     }
 }
