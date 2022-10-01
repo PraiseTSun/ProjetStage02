@@ -212,10 +212,10 @@ public class RootController {
     }
 
     @PutMapping("/validateOffer/{id}")
-    public ResponseEntity<Map<String, String>> validateOffer(@PathVariable String id) {
+    public ResponseEntity<OffreDTO> validateOffer(@PathVariable String id) {
         try {
-            gestionnaireService.validateOfferById(Long.parseLong(id));
-            return ResponseEntity.ok().build();
+            OffreDTO offreDTO = gestionnaireService.validateOfferById(Long.parseLong(id));
+            return ResponseEntity.ok(offreDTO);
         } catch (NonExistentOfferExeption exception) {
             return ResponseEntity.notFound().build();
         }
@@ -236,7 +236,7 @@ public class RootController {
         try {
             StudentDTO dto = studentService.uploadCurriculumVitae(pdf);
             dto.setPassword("");
-            return ResponseEntity.ok().build();
+            return ResponseEntity.ok(dto);
         } catch (NonExistentUserException e) {
             return ResponseEntity.notFound().build();
         }

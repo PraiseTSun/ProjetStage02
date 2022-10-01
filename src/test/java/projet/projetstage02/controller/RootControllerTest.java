@@ -11,6 +11,7 @@ import org.springframework.boot.test.json.JacksonTester;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
+import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import projet.projetstage02.DTO.*;
 import projet.projetstage02.exception.NonExistentOfferExeption;
@@ -539,8 +540,12 @@ public class RootControllerTest {
         duffOffre.setValide(true);
         when(gestionnaireService.validateOfferById(anyLong())).thenReturn(duffOffre);
 
-        mockMvc.perform(put("/validateOffer/{id}", 1))
-                .andExpect(status().isOk());
+        mockMvc.perform(put("/validateOffer/{id}", 1)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(jsonOffreDTO.write(duffOffre).getJson()))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.nomDeCompagnie", is("Duff Beer")))
+                .andExpect(jsonPath("$.valide", is(true)));
     }
 
     @Test
@@ -573,13 +578,15 @@ public class RootControllerTest {
 
     @Test
     void testUploadCurriculumVitaeSuccess() throws Exception {
+        bart.setCv(new byte[0]);
         when(studentService.uploadCurriculumVitae(any())).thenReturn(bart);
 
         mockMvc.perform(put("/uploadStudentCV")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(jsonPdfDTO.write(bartCV).getJson()))
+                        .content(jsonStudentDTO.write(bart).getJson()))
 
-                .andExpect(status().isOk());
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.firstName", is("Bart")));
     }
 
     @Test
