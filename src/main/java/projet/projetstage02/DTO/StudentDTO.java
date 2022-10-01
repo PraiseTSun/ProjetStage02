@@ -6,7 +6,6 @@ import projet.projetstage02.model.AbstractUser.Department;
 import projet.projetstage02.model.Student;
 
 import javax.persistence.Lob;
-import javax.validation.constraints.NotBlank;
 
 @Data
 @EqualsAndHashCode(callSuper = false)
@@ -15,7 +14,6 @@ import javax.validation.constraints.NotBlank;
 @SuperBuilder
 @ToString(callSuper = true)
 public class StudentDTO extends AbstractUserDTO<Student> {
-    @NotBlank
     private String department;
     @Lob
     private byte[] cv;

@@ -21,7 +21,7 @@ public class CompanyService {
 
     public long createOffre(OffreDTO offreDTO) {
         Offre offre = Offre.builder()
-                .nomDeCompagie(offreDTO.getNomDeCompagnie())
+                .nomDeCompagnie(offreDTO.getNomDeCompagnie())
                 .department(Department.getDepartment(offreDTO.getDepartment()))
                 .position(offreDTO.getPosition())
                 .heureParSemaine(offreDTO.getHeureParSemaine())
@@ -29,7 +29,6 @@ public class CompanyService {
                 .pdf(offreDTO.getPdf())
                 .build();
 
-        offre.setId(Long.parseLong(offreDTO.getId()));
         return offreRepository.save(offre).getId();
     }
 

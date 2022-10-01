@@ -30,7 +30,6 @@ public class ProjetStage02Application implements CommandLineRunner {
         SpringApplication.run(ProjetStage02Application.class, args);
     }
 
-
     @Override
     public void run(String... args) throws Exception {
         studentService.saveStudent("Samir", "Badi", "Samir@gmail.com", "cooldude",
@@ -50,7 +49,14 @@ public class ProjetStage02Application implements CommandLineRunner {
         gestionnaire.setEmailConfirmed(true);
         gestionnaireService.saveGestionnaire(gestionnaire);
 
-        companyService.createOffre(new OffreDTO("0","Bell", "Techniques de linformatique", "Support TI", 35, "My Home", null, false));
+        companyService.createOffre(new OffreDTO(0L,
+                "Bell",
+                "Techniques de linformatique",
+                "Support TI",
+                35,
+                "My Home",
+                new byte[0],
+                false));
 
         System.out.println(studentService.getStudentById(1L));
         System.out.println(companyService.getCompanyById(2L));

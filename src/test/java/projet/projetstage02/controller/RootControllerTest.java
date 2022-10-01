@@ -577,6 +577,7 @@ public class RootControllerTest {
     }
 
     @Test
+//<<<<<<< HEAD
     void testUploadCurriculumVitaeSuccess() throws Exception {
         bart.setCv(new byte[0]);
         when(studentService.uploadCurriculumVitae(any())).thenReturn(bart);
@@ -595,9 +596,24 @@ public class RootControllerTest {
                 .when(studentService).uploadCurriculumVitae(any());
 
         mockMvc.perform(put("/uploadStudentCV")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(jsonPdfDTO.write(bartCV).getJson()))
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(jsonPdfDTO.write(bartCV).getJson()));
+    }
+    @Test
+    void testGetOfferPdfSuccess() throws Exception {
+        byte[] pdf = new byte[0];
+        when(gestionnaireService.getOffrePdfById(anyLong())).thenReturn(pdf);
 
+        mockMvc.perform(get("/offerPdf/{id}", 1))
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    void testGetOfferPdfNotFound() throws Exception {
+        doThrow(new NonExistentOfferExeption())
+                .when(gestionnaireService).getOffrePdfById(1L);
+
+        mockMvc.perform(get("/offerPdf/{id}", 1))
                 .andExpect(status().isNotFound());
     }
 }

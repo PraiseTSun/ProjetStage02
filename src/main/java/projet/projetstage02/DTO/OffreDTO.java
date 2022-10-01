@@ -14,7 +14,7 @@ import javax.validation.constraints.*;
 @AllArgsConstructor
 @Builder
 public class OffreDTO {
-    private String id;
+    private long id;
 
     @NotBlank
     @Size(min = 2)
@@ -36,8 +36,8 @@ public class OffreDTO {
     private boolean valide;
 
     public OffreDTO(Offre offre){
-        id = Long.toString(offre.getId());
-        nomDeCompagnie = offre.getNomDeCompagie();
+        id = offre.getId();
+        nomDeCompagnie = offre.getNomDeCompagnie();
         department = offre.getDepartment().departement;
         position = offre.getPosition();
         heureParSemaine = offre.getHeureParSemaine();

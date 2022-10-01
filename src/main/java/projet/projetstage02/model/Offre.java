@@ -19,7 +19,7 @@ public class Offre {
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "id", nullable = false)
     private long id;
-    private String nomDeCompagie;
+    private String nomDeCompagnie;
     private Department department;
     private String position;
     private int heureParSemaine;
@@ -30,7 +30,7 @@ public class Offre {
 
 
     public Offre(String nomDeCompagie, Department department, String position, int heureParSemaine, String adresse, byte[] pdf) {
-        this.nomDeCompagie = nomDeCompagie;
+        this.nomDeCompagnie = nomDeCompagie;
         this.department = department;
         this.position = position;
         this.heureParSemaine = heureParSemaine;

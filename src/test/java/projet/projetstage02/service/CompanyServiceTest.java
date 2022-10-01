@@ -52,7 +52,7 @@ public class CompanyServiceTest {
                 .department(AbstractUser.Department.Transport)
                 .heureParSemaine(40)
                 .position("Delivery Guy")
-                .nomDeCompagie("DuffBeer")
+                .nomDeCompagnie("Duff beer")
                 .pdf(new byte[0])
                 .build();
     }
