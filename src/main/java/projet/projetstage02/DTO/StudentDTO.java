@@ -17,7 +17,7 @@ import javax.validation.constraints.Pattern;
 @ToString(callSuper = true)
 public class StudentDTO extends AbstractUserDTO<Student> {
     @NotBlank
-    @Pattern(regexp = ("Technologie de linformatique|Technologie de la logistique du transport"))
+    @Pattern(regexp = ("Techniques de linformatique|Techniques de la logistique du transport"))
     private String department;
     @Lob
     private byte[] cv;

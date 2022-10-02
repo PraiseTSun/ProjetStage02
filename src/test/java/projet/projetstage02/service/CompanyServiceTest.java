@@ -11,7 +11,6 @@ import projet.projetstage02.DTO.OffreDTO;
 import projet.projetstage02.exception.NonExistentUserException;
 import projet.projetstage02.model.AbstractUser;
 import projet.projetstage02.model.Company;
-import projet.projetstage02.model.Offre;
 import projet.projetstage02.repository.CompanyRepository;
 import projet.projetstage02.repository.OffreRepository;
 
@@ -35,7 +34,7 @@ public class CompanyServiceTest {
     OffreRepository offreRepository;
 
     Company duffBeer;
-    Offre duffBeerOffre;
+    OffreDTO duffBeerOffre;
 
     @BeforeEach
     void setup() {
@@ -47,9 +46,9 @@ public class CompanyServiceTest {
                 AbstractUser.Department.Transport,
                 "Duff Beer");
 
-        duffBeerOffre = Offre.builder()
+        duffBeerOffre = OffreDTO.builder()
                 .adresse("653 Duff Street")
-                .department(AbstractUser.Department.Transport)
+                .department(AbstractUser.Department.Transport.departement)
                 .heureParSemaine(40)
                 .position("Delivery Guy")
                 .nomDeCompagnie("Duff beer")
@@ -188,10 +187,10 @@ public class CompanyServiceTest {
     @Test
     void createOffreTest() {
         // Arrange
-        when(offreRepository.save(any())).thenReturn(duffBeerOffre);
+        when(offreRepository.save(any())).thenReturn(duffBeerOffre.toModel());
 
         // Act
-        companyService.createOffre(new OffreDTO(duffBeerOffre));
+        companyService.createOffre(duffBeerOffre);
 
         // Assert
         verify(offreRepository, times(1)).save(any());

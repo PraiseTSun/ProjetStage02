@@ -17,7 +17,7 @@ import javax.validation.constraints.Size;
 @ToString(callSuper = true)
 public class CompanyDTO extends AbstractUserDTO<Company> {
     @NotBlank
-    @Pattern(regexp = ("Technologie de linformatique|Technologie de la logistique du transport"))
+    @Pattern(regexp = ("Techniques de linformatique|Techniques de la logistique du transport"))
     private String department;
     @NotBlank
     @Size(min = 2)
