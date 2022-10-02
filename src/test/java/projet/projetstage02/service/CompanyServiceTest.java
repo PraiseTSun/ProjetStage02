@@ -8,7 +8,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import projet.projetstage02.DTO.CompanyDTO;
 import projet.projetstage02.DTO.OffreDTO;
-import projet.projetstage02.exception.NonExistentUserException;
+import projet.projetstage02.exception.NonExistentEntityException;
 import projet.projetstage02.model.AbstractUser;
 import projet.projetstage02.model.Company;
 import projet.projetstage02.model.Offre;
@@ -58,7 +58,7 @@ public class CompanyServiceTest {
     }
 
     @Test
-    void getCompanyByIdHappyDayTest() throws NonExistentUserException {
+    void getCompanyByIdHappyDayTest() throws NonExistentEntityException {
         // Arrange
         when(companyRepository.findById(anyLong()))
                 .thenReturn(Optional.of(duffBeer));
@@ -79,7 +79,7 @@ public class CompanyServiceTest {
         // Act
         try {
             companyService.getCompanyById(1L);
-        } catch (NonExistentUserException e) {
+        } catch (NonExistentEntityException e) {
 
             // Assert
             return;
@@ -88,7 +88,7 @@ public class CompanyServiceTest {
     }
 
     @Test
-    void getCompanyByEmailAndPasswordHappyDayTest() throws NonExistentUserException {
+    void getCompanyByEmailAndPasswordHappyDayTest() throws NonExistentEntityException{
         // Arrange
         when(companyRepository.findByEmailAndPassword(
                 "duff.beer@springfield.com",
@@ -116,7 +116,7 @@ public class CompanyServiceTest {
             companyService.getCompanyByEmailPassword(
                     "duff.beer@springfield.com",
                     "bestBeer");
-        } catch (NonExistentUserException e) {
+        } catch (NonExistentEntityException e) {
 
             // Assert
             return;

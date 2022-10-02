@@ -54,7 +54,7 @@ public class StudentService {
         return new StudentDTO(studentOpt.get());
     }
 
-    public StudentDTO uploadCurriculumVitae(StudentDTO dto) throws NonExistentUserException {
+    public StudentDTO uploadCurriculumVitae(StudentDTO dto) throws NonExistentEntityException {
         Student student = getStudentById(dto.getId()).toModel();
         student.setCv(dto.getCv());
         saveStudent(new StudentDTO(student));

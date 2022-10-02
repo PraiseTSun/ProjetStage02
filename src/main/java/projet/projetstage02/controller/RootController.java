@@ -4,13 +4,12 @@ import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
 import projet.projetstage02.DTO.*;
 import projet.projetstage02.exception.InvalidTokenException;
 import projet.projetstage02.exception.NonExistentEntityException;
+import projet.projetstage02.exception.NonExistentOfferExeption;
 import projet.projetstage02.model.Token;
 import projet.projetstage02.service.AuthService;
-import projet.projetstage02.DTO.*;
 import projet.projetstage02.service.CompanyService;
 import projet.projetstage02.service.GestionnaireService;
 import projet.projetstage02.service.StudentService;

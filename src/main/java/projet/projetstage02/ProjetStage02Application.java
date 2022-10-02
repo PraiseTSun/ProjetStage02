@@ -56,6 +56,7 @@ public class ProjetStage02Application implements CommandLineRunner {
                 35,
                 "My Home",
                 new byte[0],
+                "notoken",
                 false));
 
         System.out.println(studentService.getStudentById(1L));

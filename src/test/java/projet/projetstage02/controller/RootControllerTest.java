@@ -16,8 +16,8 @@ import projet.projetstage02.DTO.CompanyDTO;
 import projet.projetstage02.DTO.GestionnaireDTO;
 import projet.projetstage02.DTO.OffreDTO;
 import projet.projetstage02.DTO.StudentDTO;
+import projet.projetstage02.exception.NonExistentEntityException;
 import projet.projetstage02.exception.NonExistentOfferExeption;
-import projet.projetstage02.exception.NonExistentUserException;
 import projet.projetstage02.model.AbstractUser.Department;
 import projet.projetstage02.service.CompanyService;
 import projet.projetstage02.service.GestionnaireService;
@@ -235,7 +235,7 @@ public class RootControllerTest {
 
     @Test
     void testConfirmStudentEmailNotFound() throws Exception {
-        when(studentService.getStudentById(1L)).thenThrow(new NonExistentUserException());
+        when(studentService.getStudentById(1L)).thenThrow(new NonExistentEntityException());
 
         mockMvc.perform(
                         put("/confirmEmail/student/{id}", 1))
@@ -267,7 +267,7 @@ public class RootControllerTest {
 
     @Test
     void testConfirmCompanyEmailNotFound() throws Exception {
-        when(companyService.getCompanyById(1L)).thenThrow(new NonExistentUserException());
+        when(companyService.getCompanyById(1L)).thenThrow(new NonExistentEntityException());
 
         mockMvc.perform(
                         put("/confirmEmail/company/{id}", 1))
@@ -321,7 +321,7 @@ public class RootControllerTest {
         when(studentService.getStudentByEmailPassword(
                 "bart.simpson@springfield.com",
                 "eatMyShorts"))
-                .thenThrow(new NonExistentUserException());
+                .thenThrow(new NonExistentEntityException());
 
         mockMvc.perform(put("/student")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -365,7 +365,7 @@ public class RootControllerTest {
         when(companyService.getCompanyByEmailPassword(
                 "duff.beer@springfield.com",
                 "bestBeer"))
-                .thenThrow(new NonExistentUserException());
+                .thenThrow(new NonExistentEntityException());
 
         mockMvc.perform(put("/company")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -409,7 +409,7 @@ public class RootControllerTest {
         when(gestionnaireService.getGestionnaireByEmailPassword(
                 "charles.burns@springfield.com",
                 "excellent"))
-                .thenThrow(new NonExistentUserException());
+                .thenThrow(new NonExistentEntityException());
 
         mockMvc.perform(put("/gestionnaire")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -452,7 +452,7 @@ public class RootControllerTest {
 
     @Test
     void testValidateStudentNotFound() throws Exception {
-        doThrow(new NonExistentUserException())
+        doThrow(new NonExistentEntityException())
                 .when(gestionnaireService).validateStudent(1L);
 
         mockMvc.perform(put("/validateStudent/{id}", 1))
@@ -474,7 +474,7 @@ public class RootControllerTest {
 
     @Test
     void testValidateCompanyNotFound() throws Exception {
-        doThrow(new NonExistentUserException())
+        doThrow(new NonExistentEntityException())
                 .when(gestionnaireService).validateCompany(1L);
 
         mockMvc.perform(put("/validateCompany/{id}", 1))
@@ -493,7 +493,7 @@ public class RootControllerTest {
 
     @Test
     void testRemoveStudentNotFound() throws Exception {
-        doThrow(new NonExistentUserException())
+        doThrow(new NonExistentEntityException())
                 .when(gestionnaireService).removeStudent(1L);
 
 
@@ -513,7 +513,7 @@ public class RootControllerTest {
 
     @Test
     void testRemoveCompanyNotFound() throws Exception {
-        doThrow(new NonExistentUserException())
+        doThrow(new NonExistentEntityException())
                 .when(gestionnaireService).removeCompany(1L);
 
 
