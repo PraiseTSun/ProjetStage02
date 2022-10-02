@@ -577,9 +577,8 @@ public class RootControllerTest {
     }
 
     @Test
-//<<<<<<< HEAD
     void testUploadCurriculumVitaeSuccess() throws Exception {
-        bart.setCv(new byte[0]);
+        bart.setCv(bartCV.getPdf());
         when(studentService.uploadCurriculumVitae(any())).thenReturn(bart);
 
         mockMvc.perform(put("/uploadStudentCV")
@@ -587,7 +586,9 @@ public class RootControllerTest {
                         .content(jsonStudentDTO.write(bart).getJson()))
 
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.firstName", is("Bart")));
+                .andExpect(jsonPath("$.firstName", is("Bart")))
+                .andExpect(jsonPath("$.cv", is("")))
+                .andExpect(jsonPath("$.cvConfirm", is(false)));
     }
 
     @Test
