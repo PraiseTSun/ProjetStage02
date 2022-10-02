@@ -1,6 +1,7 @@
 package projet.projetstage02.controller;
 
 import lombok.AllArgsConstructor;
+import lombok.SneakyThrows;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -31,44 +32,43 @@ public class RootController {
     // TODO: Add new thread to remove the user after 24h hours if not email confirmed
     private final long MILLI_SECOND_DAY = 864000000;
 
+    @SneakyThrows
     @PostMapping("/createStudent")
     public ResponseEntity<Map<String, String>> createStudent(@Valid @RequestBody StudentDTO studentDTO) {
-        try {
-            if (!studentService.isEmailUnique(studentDTO.getEmail()) && !studentService.deleteUnconfirmedStudent(studentDTO)) {
-                return ResponseEntity.status(HttpStatus.CONFLICT).body(getError("Cette adresse email est déjà utilisée."));
-            }
-            studentDTO.setInscriptionTimestamp(currentTimestamp());
-            long id = studentService.saveStudent(studentDTO);
-            studentDTO.setId(id);
-            EmailUtil.sendConfirmationMail(studentDTO.toModel());
-            return ResponseEntity.status(HttpStatus.CREATED).build();
-        } catch (NonExistentUserException e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(getError("Une erreur est survenue"));
+        if (!studentService.isEmailUnique(studentDTO.getEmail())
+                && !studentService.deleteUnconfirmedStudent(studentDTO)) {
+            return ResponseEntity.status(HttpStatus.CONFLICT)
+                    .body(getError("Cette adresse email est déjà utilisée."));
         }
+        studentDTO.setInscriptionTimestamp(currentTimestamp());
+        long id = studentService.saveStudent(studentDTO);
+        studentDTO.setId(id);
+        EmailUtil.sendConfirmationMail(studentDTO.toModel());
+        return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
+    @SneakyThrows
     @PostMapping("/createCompany")
     public ResponseEntity<Map<String, String>> createCompany(@Valid @RequestBody CompanyDTO companyDTO) {
-        try {
-            if (!companyService.isEmailUnique(companyDTO.getEmail()) && !companyService.deleteUnconfirmedCompany(companyDTO)) {
-                return ResponseEntity.status(HttpStatus.CONFLICT).body(getError("Cette adresse email est déjà utilisée."));
+            if (!companyService.isEmailUnique(companyDTO.getEmail())
+                    && !companyService.deleteUnconfirmedCompany(companyDTO)) {
+                return ResponseEntity.status(HttpStatus.CONFLICT)
+                        .body(getError("Cette adresse email est déjà utilisée."));
             }
             companyDTO.setInscriptionTimestamp(currentTimestamp());
             long id = companyService.saveCompany(companyDTO);
             companyDTO.setId(id);
             EmailUtil.sendConfirmationMail(companyDTO.toModel());
             return ResponseEntity.status(HttpStatus.CREATED).build();
-        } catch (NonExistentUserException e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(getError("Une erreur est survenue"));
-        }
     }
 
+    @SneakyThrows
     @PostMapping("/createGestionnaire")
     public ResponseEntity<Map<String, String>> createGestionnaire(@Valid @RequestBody GestionnaireDTO gestionnaireDTO) {
-        try {
             if (!gestionnaireService.isEmailUnique(gestionnaireDTO.getEmail())
                     && !gestionnaireService.deleteUnconfirmedGestionnaire(gestionnaireDTO)) {
-                return ResponseEntity.status(HttpStatus.CONFLICT).body(getError("Cette adresse email est déjà utilisée."));
+                return ResponseEntity.status(HttpStatus.CONFLICT)
+                        .body(getError("Cette adresse email est déjà utilisée."));
             }
             gestionnaireDTO.setInscriptionTimestamp(currentTimestamp());
             gestionnaireDTO.setConfirmed(true);
@@ -76,9 +76,6 @@ public class RootController {
             gestionnaireDTO.setId(id);
             EmailUtil.sendConfirmationMail(gestionnaireDTO.toModel());
             return ResponseEntity.status(HttpStatus.CREATED).build();
-        } catch (NonExistentUserException e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(getError("Une erreur est survenue"));
-        }
     }
 
     @PostMapping("/createOffre")
@@ -245,7 +242,7 @@ public class RootController {
     }
 
     @GetMapping("/offerPdf/{id}")
-    public ResponseEntity<byte[]> getOfferPdf(@PathVariable String id){
+    public ResponseEntity<byte[]> getOfferPdf(@PathVariable String id) {
         try {
             byte[] offerPdf = gestionnaireService.getOffrePdfById(Long.parseLong(id));
             return ResponseEntity.ok(offerPdf);
