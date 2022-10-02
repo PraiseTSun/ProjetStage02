@@ -251,7 +251,7 @@ public class RootControllerTest {
         mockMvc.perform(
                         put("/confirmEmail/student/{id}", 1))
 
-                .andExpect(status().isUnprocessableEntity());
+                .andExpect(status().isBadRequest());
     }
 
     @Test
@@ -283,7 +283,7 @@ public class RootControllerTest {
         mockMvc.perform(
                         put("/confirmEmail/company/{id}", 1))
 
-                .andExpect(status().isUnprocessableEntity());
+                .andExpect(status().isBadRequest());
     }
 
     @Test
