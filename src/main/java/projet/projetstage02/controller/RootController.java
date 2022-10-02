@@ -99,7 +99,7 @@ public class RootController {
         try {
             StudentDTO studentDTO = studentService.getStudentById(Long.parseLong(id));
             if (currentTimestamp() - studentDTO.getInscriptionTimestamp() > MILLI_SECOND_DAY) {
-                return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY)
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                         .body(getError("La période de confirmation est expirée"));
             }
             studentDTO.setEmailConfirmed(true);
@@ -115,7 +115,7 @@ public class RootController {
         try {
             CompanyDTO companyDTO = companyService.getCompanyById(Long.parseLong(id));
             if (currentTimestamp() - companyDTO.getInscriptionTimestamp() > MILLI_SECOND_DAY) {
-                return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY)
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                         .body(getError("La période de confirmation est expirée"));
             }
             companyDTO.setEmailConfirmed(true);
