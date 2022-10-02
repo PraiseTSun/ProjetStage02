@@ -28,8 +28,7 @@ public class RootController {
     StudentService studentService;
     CompanyService companyService;
     GestionnaireService gestionnaireService;
-    // TODO: Add new thread to remove the user after 24h hours if not email
-    // confirmed
+    // TODO: Add new thread to remove the user after 24h hours if not email confirmed
     private final long MILLI_SECOND_DAY = 864000000;
 
     @PostMapping("/createStudent")
@@ -118,9 +117,9 @@ public class RootController {
     }
 
     @PutMapping("/student")
-    public ResponseEntity<StudentDTO> getStudent(@Valid @RequestBody StudentDTO studentDTO) {
+    public ResponseEntity<StudentDTO> getStudent(@Valid @RequestBody LoginDTO loginDTO) {
         try {
-            StudentDTO dto = studentService.getStudentByEmailPassword(studentDTO.getEmail(), studentDTO.getPassword());
+            StudentDTO dto = studentService.getStudentByEmailPassword(loginDTO.getEmail(), loginDTO.getPassword());
             dto.setPassword("");
             return !dto.isEmailConfirmed() ? ResponseEntity.notFound().build() : ResponseEntity.ok(dto);
         } catch (NonExistentUserException e) {
@@ -129,9 +128,9 @@ public class RootController {
     }
 
     @PutMapping("/company")
-    public ResponseEntity<CompanyDTO> getCompany(@Valid @RequestBody CompanyDTO companyDTO) {
+    public ResponseEntity<CompanyDTO> getCompany(@Valid @RequestBody LoginDTO loginDTO) {
         try {
-            CompanyDTO dto = companyService.getCompanyByEmailPassword(companyDTO.getEmail(), companyDTO.getPassword());
+            CompanyDTO dto = companyService.getCompanyByEmailPassword(loginDTO.getEmail(), loginDTO.getPassword());
             dto.setPassword("");
             return !dto.isEmailConfirmed() ? ResponseEntity.notFound().build() : ResponseEntity.ok(dto);
         } catch (NonExistentUserException e) {
@@ -140,10 +139,10 @@ public class RootController {
     }
 
     @PutMapping("/gestionnaire")
-    public ResponseEntity<GestionnaireDTO> getGestionnaire(@Valid @RequestBody GestionnaireDTO gestionnaireDTO) {
+    public ResponseEntity<GestionnaireDTO> getGestionnaire(@Valid @RequestBody LoginDTO loginDTO) {
         try {
-            GestionnaireDTO dto = gestionnaireService.getGestionnaireByEmailPassword(gestionnaireDTO.getEmail(),
-                    gestionnaireDTO.getPassword());
+            GestionnaireDTO dto = gestionnaireService.getGestionnaireByEmailPassword(loginDTO.getEmail(),
+                    loginDTO.getPassword());
             dto.setPassword("");
             return !dto.isEmailConfirmed() ? ResponseEntity.notFound().build() : ResponseEntity.ok(dto);
         } catch (NonExistentUserException e) {
