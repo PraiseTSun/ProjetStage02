@@ -11,11 +11,9 @@ import projet.projetstage02.DTO.GestionnaireDTO;
 import projet.projetstage02.DTO.OffreDTO;
 import projet.projetstage02.DTO.StudentDTO;
 import projet.projetstage02.model.AbstractUser;
-import projet.projetstage02.service.ApplicationService;
 import projet.projetstage02.service.CompanyService;
 import projet.projetstage02.service.GestionnaireService;
 import projet.projetstage02.service.StudentService;
-import projet.projetstage02.threads.UserCleanupThread;
 
 @SpringBootApplication
 @AllArgsConstructor
@@ -27,7 +25,6 @@ public class ProjetStage02Application implements CommandLineRunner {
 
     private GestionnaireService gestionnaireService;
 
-    private ApplicationService applicationService;
     public static void main(String[] args) {
         SpringApplication.run(ProjetStage02Application.class, args);
     }
@@ -69,8 +66,5 @@ public class ProjetStage02Application implements CommandLineRunner {
         System.out.println(gestionnaireService.getGestionnaireByEmailPassword("dave@gmail.ca", "cooldude"));
         System.out.println(gestionnaireService.getNoneValidateOffers());
 
-
-        Thread thread = new UserCleanupThread(applicationService);
-        thread.start();
     }
 }
