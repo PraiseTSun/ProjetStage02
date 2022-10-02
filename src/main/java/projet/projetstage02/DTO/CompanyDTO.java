@@ -5,6 +5,10 @@ import lombok.experimental.SuperBuilder;
 import projet.projetstage02.model.AbstractUser.Department;
 import projet.projetstage02.model.Company;
 
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.Pattern;
+import javax.validation.constraints.Size;
+
 @Data
 @EqualsAndHashCode(callSuper = false)
 @NoArgsConstructor
@@ -12,7 +16,11 @@ import projet.projetstage02.model.Company;
 @SuperBuilder()
 @ToString(callSuper = true)
 public class CompanyDTO extends AbstractUserDTO<Company> {
+    @NotBlank
+    @Pattern(regexp = ("Technologie de linformatique|Technologie de la logistique du transport"))
     private String department;
+    @NotBlank
+    @Size(min = 2)
     private String companyName;
 
     public CompanyDTO(Company company) {
