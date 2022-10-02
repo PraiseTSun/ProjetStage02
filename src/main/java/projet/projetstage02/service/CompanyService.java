@@ -6,17 +6,22 @@ import projet.projetstage02.DTO.CompanyDTO;
 import projet.projetstage02.DTO.OffreDTO;
 import projet.projetstage02.exception.NonExistentEntityException;
 import projet.projetstage02.model.AbstractUser.Department;
+import projet.projetstage02.model.Company;
 import projet.projetstage02.model.Offre;
+import projet.projetstage02.model.Student;
 import projet.projetstage02.repository.CompanyRepository;
 import projet.projetstage02.repository.OffreRepository;
 
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @AllArgsConstructor
 public class CompanyService {
+    //TODO when merging with token branch, user TimeUtil stuff
+    private final long MILLI_SECOND_DAY = 864000000;
     private final CompanyRepository companyRepository;
     private final OffreRepository offreRepository;
 
@@ -37,7 +42,7 @@ public class CompanyService {
     }
 
     public void saveCompany(String firstName, String lastName, String name, String email, String password,
-                            Department department) {
+            Department department) {
         CompanyDTO dto = CompanyDTO.builder()
                 .firstName(firstName)
                 .lastName(lastName)
@@ -70,5 +75,15 @@ public class CompanyService {
         var companyOpt = companyRepository.findByEmailAndPassword(email.toLowerCase(), password);
         if (companyOpt.isEmpty()) throw new NonExistentEntityException();
         return new CompanyDTO(companyOpt.get());
+    }
+    public boolean deleteUnconfirmedCompany(CompanyDTO dto) throws NonExistentEntityException {
+        Optional<Company> studentOpt = companyRepository.findById(dto.getId());
+        if(studentOpt.isEmpty()) throw new NonExistentEntityException();
+        Company student = studentOpt.get();
+        if(!student.isEmailConfirmed() && Timestamp.valueOf(LocalDateTime.now()).getTime() - student.getInscriptionTimestamp() > MILLI_SECOND_DAY){
+            companyRepository.delete(student);
+            return true;
+        }
+        return false;
     }
 }

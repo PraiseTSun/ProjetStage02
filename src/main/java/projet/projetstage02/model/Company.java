@@ -1,11 +1,11 @@
 package projet.projetstage02.model;
 
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
-import lombok.ToString;
+import lombok.*;
 
 import javax.persistence.Entity;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 
 @Entity
 @Data
@@ -13,7 +13,10 @@ import javax.persistence.Entity;
 @NoArgsConstructor
 @ToString(callSuper = true)
 public class Company extends AbstractUser {
+    @NotNull
     private Department department;
+    @NotBlank
+    @Size(min = 2)
     private String companyName;
 
     public Company(String firstName, String lastName, String email, String password, Department department,

@@ -9,6 +9,7 @@ import projet.projetstage02.DTO.StudentDTO;
 import projet.projetstage02.exception.NonExistentEntityException;
 import projet.projetstage02.exception.NonExistentOfferExeption;
 import projet.projetstage02.model.Company;
+import projet.projetstage02.model.Gestionnaire;
 import projet.projetstage02.model.Offre;
 import projet.projetstage02.model.Student;
 import projet.projetstage02.repository.CompanyRepository;
@@ -25,7 +26,8 @@ import java.util.Optional;
 @Service
 @AllArgsConstructor
 public class GestionnaireService {
-
+    //TODO when merging with token branch, user TimeUtil stuff
+    private final long MILLI_SECOND_DAY = 864000000;
     private final GestionnaireRepository gestionnaireRepository;
     private final CompanyRepository companyRepository;
     private final StudentRepository studentRepository;
@@ -155,5 +157,15 @@ public class GestionnaireService {
 
     public byte[] getOffrePdfById(long id) throws NonExistentOfferExeption {
         return getOffer(id).getPdf();
+    }
+    public boolean deleteUnconfirmedGestionnaire(GestionnaireDTO dto) throws NonExistentUserException {
+        Optional<Gestionnaire> studentOpt = gestionnaireRepository.findById(dto.getId());
+        if(studentOpt.isEmpty()) throw new NonExistentUserException();
+        Gestionnaire gestionnaire = studentOpt.get();
+        if(!gestionnaire.isEmailConfirmed() && Timestamp.valueOf(LocalDateTime.now()).getTime() - gestionnaire.getInscriptionTimestamp() > MILLI_SECOND_DAY){
+            gestionnaireRepository.delete(gestionnaire);
+            return true;
+        }
+        return false;
     }
 }

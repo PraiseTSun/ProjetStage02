@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 import projet.projetstage02.model.AbstractUser.Department;
 
 import javax.persistence.*;
+import javax.validation.constraints.*;
 
 @Entity
 @Data
@@ -19,23 +20,22 @@ public class Offre {
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "id", nullable = false)
     private long id;
+    @NotBlank
+    @Size(min = 2)
     private String nomDeCompagnie;
+    @NotNull
     private Department department;
+    @NotBlank
+    @Size(min = 2)
     private String position;
+    @Min(1)
+    @Max(40)
     private int heureParSemaine;
+    @NotBlank
+    @Size(min = 2)
     private String adresse;
     private boolean valide;
+    @NotNull
     @Lob
     private byte[] pdf;
-
-
-    public Offre(String nomDeCompagie, Department department, String position, int heureParSemaine, String adresse, byte[] pdf) {
-        this.nomDeCompagnie = nomDeCompagie;
-        this.department = department;
-        this.position = position;
-        this.heureParSemaine = heureParSemaine;
-        this.adresse = adresse;
-        this.pdf = pdf;
-        valide = false;
-    }
 }
