@@ -20,9 +20,16 @@ public class CompanyService {
     private final CompanyRepository companyRepository;
     private final OffreRepository offreRepository;
 
-    public long createOffre(OffreDTO offreDTO){
-        Offre offre = new Offre(offreDTO.getNomDeCompagnie(), Department.getDepartment(offreDTO.getDepartment()), offreDTO.getPosition(),
-                offreDTO.getHeureParSemaine(), offreDTO.getAdresse(), offreDTO.getPdf());
+    public long createOffre(OffreDTO offreDTO) {
+        Offre offre = Offre.builder()
+                .nomDeCompagnie(offreDTO.getNomDeCompagnie())
+                .department(Department.getDepartment(offreDTO.getDepartment()))
+                .position(offreDTO.getPosition())
+                .heureParSemaine(offreDTO.getHeureParSemaine())
+                .adresse(offreDTO.getAdresse())
+                .pdf(offreDTO.getPdf())
+                .build();
+
         return offreRepository.save(offre).getId();
     }
     public List<Offre> findOffre(){

@@ -5,6 +5,8 @@ import lombok.experimental.SuperBuilder;
 import projet.projetstage02.model.AbstractUser.Department;
 import projet.projetstage02.model.Student;
 
+import javax.persistence.Lob;
+
 @Data
 @EqualsAndHashCode(callSuper = false)
 @NoArgsConstructor
@@ -13,8 +15,8 @@ import projet.projetstage02.model.Student;
 @ToString(callSuper = true)
 public class StudentDTO extends AbstractUserDTO<Student> {
     private String department;
-
-
+    @Lob
+    private byte[] cv;
 
     public StudentDTO(Student student) {
         id = student.getId();
@@ -26,6 +28,7 @@ public class StudentDTO extends AbstractUserDTO<Student> {
         department = student.getDepartment().departement;
         inscriptionTimestamp = student.getInscriptionTimestamp();
         emailConfirmed = student.isEmailConfirmed();
+        cv = student.getCv();
     }
 
     @Override
@@ -40,6 +43,7 @@ public class StudentDTO extends AbstractUserDTO<Student> {
                 emailConfirmed
         );
         student.setId(id);
+        student.setCv(cv);
         return student;
     }
 }

@@ -5,6 +5,7 @@ import org.springframework.stereotype.Service;
 import projet.projetstage02.DTO.StudentDTO;
 import projet.projetstage02.exception.NonExistentEntityException;
 import projet.projetstage02.model.AbstractUser;
+import projet.projetstage02.model.Student;
 import projet.projetstage02.repository.StudentRepository;
 
 import java.sql.Timestamp;
@@ -51,5 +52,12 @@ public class StudentService {
         var studentOpt = studentRepository.findByEmailAndPassword(email.toLowerCase(), password);
         if (studentOpt.isEmpty()) throw new NonExistentEntityException();
         return new StudentDTO(studentOpt.get());
+    }
+
+    public StudentDTO uploadCurriculumVitae(StudentDTO dto) throws NonExistentUserException {
+        Student student = getStudentById(dto.getId()).toModel();
+        student.setCv(dto.getCv());
+        saveStudent(new StudentDTO(student));
+        return new StudentDTO(student);
     }
 }

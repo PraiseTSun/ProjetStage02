@@ -10,13 +10,13 @@ import projet.projetstage02.exception.InvalidTokenException;
 import projet.projetstage02.exception.NonExistentEntityException;
 import projet.projetstage02.model.Token;
 import projet.projetstage02.service.AuthService;
+import projet.projetstage02.DTO.*;
 import projet.projetstage02.service.CompanyService;
 import projet.projetstage02.service.GestionnaireService;
 import projet.projetstage02.service.StudentService;
 import projet.projetstage02.utils.EmailUtil;
 
-import java.time.LocalDateTime;
-import java.sql.Timestamp;
+import javax.validation.Valid;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -38,7 +38,7 @@ public class RootController {
     private final long MILLI_SECOND_DAY = 864000000;
 
     @PostMapping("/createStudent")
-    public ResponseEntity<Map<String, String>> createStudent(@RequestBody StudentDTO studentDTO) {
+    public ResponseEntity<Map<String, String>> createStudent(@Valid @RequestBody StudentDTO studentDTO) {
         if (!studentService.isEmailUnique(studentDTO.getEmail())) {
             return ResponseEntity.status(CONFLICT).body(getError("Cette adresse email est déjà utilisée."));
         }
@@ -50,7 +50,7 @@ public class RootController {
     }
 
     @PostMapping("/createCompany")
-    public ResponseEntity<Map<String, String>> createCompany(@RequestBody CompanyDTO companyDTO) {
+    public ResponseEntity<Map<String, String>> createCompany(@Valid @RequestBody CompanyDTO companyDTO) {
         if (!companyService.isEmailUnique(companyDTO.getEmail())) {
             return ResponseEntity.status(CONFLICT).body(getError("Cette adresse email est déjà utilisée."));
         }
@@ -62,7 +62,7 @@ public class RootController {
     }
 
     @PostMapping("/createGestionnaire")
-    public ResponseEntity<Map<String, String>> createGestionnaire(@RequestBody GestionnaireDTO gestionnaireDTO) {
+    public ResponseEntity<Map<String, String>> createGestionnaire(@Valid @RequestBody GestionnaireDTO gestionnaireDTO) {
         try{
             authService.getToken(gestionnaireDTO.getToken(), GESTIONNAIRE);
             if (!gestionnaireService.isEmailUnique(gestionnaireDTO.getEmail())) {
@@ -80,7 +80,7 @@ public class RootController {
     }
 
     @PostMapping("/createOffre")
-    public ResponseEntity<Map<String, String>> createOffre(@RequestBody OffreDTO offreDTO){
+    public ResponseEntity<Map<String, String>> createOffre(@Valid @RequestBody OffreDTO offreDTO){
         try{
             Token token = authService.getToken(offreDTO.getToken(), COMPANY);
             companyService.getCompanyById(token.getUserId());
@@ -127,12 +127,12 @@ public class RootController {
         try {
             CompanyDTO companyDTO = companyService.getCompanyById(Long.parseLong(id));
             if (currentTimestamp() - companyDTO.getInscriptionTimestamp() > MILLI_SECOND_DAY) {
-                return ResponseEntity.status(UNPROCESSABLE_ENTITY)
+                return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY)
                         .body(getError("La période de confirmation est expirée"));
             }
             companyDTO.setEmailConfirmed(true);
             companyService.saveCompany(companyDTO);
-            return ResponseEntity.status(CREATED).build();
+            return ResponseEntity.status(HttpStatus.CREATED).build();
         } catch (NonExistentEntityException e) {
             return ResponseEntity.notFound().build();
         }
@@ -191,7 +191,7 @@ public class RootController {
 
 
     @PutMapping("/student")
-    public ResponseEntity<StudentDTO> getStudent(@RequestBody TokenDTO tokenId) {
+    public ResponseEntity<StudentDTO> getStudent(@Valid @RequestBody TokenDTO tokenId) {
         try {
             Token token = authService.getToken(tokenId.getToken(), STUDENT);
             StudentDTO dto = studentService.getStudentById(token.getUserId());
@@ -205,7 +205,7 @@ public class RootController {
     }
 
     @PutMapping("/company")
-    public ResponseEntity<CompanyDTO> getCompany(@RequestBody TokenDTO tokenId) {
+    public ResponseEntity<CompanyDTO> getCompany(@Valid @RequestBody TokenDTO tokenId) {
         try {
             Token token = authService.getToken(tokenId.getToken(), COMPANY);
 
@@ -220,7 +220,7 @@ public class RootController {
     }
 
     @PutMapping("/gestionnaire")
-    public ResponseEntity<GestionnaireDTO> getGestionnaire(@RequestBody TokenDTO tokenId) {
+    public ResponseEntity<GestionnaireDTO> getGestionnaire(@Valid @RequestBody TokenDTO tokenId) {
         try {
             Token token = authService.getToken(tokenId.getToken(), GESTIONNAIRE);
             GestionnaireDTO dto = gestionnaireService.getGestionnaireById(token.getUserId());
@@ -234,7 +234,7 @@ public class RootController {
     }
 
     @PutMapping("/unvalidatedStudents")
-    public ResponseEntity<List<StudentDTO>> getUnvalidatedStudents(@RequestBody TokenDTO tokenId) {
+    public ResponseEntity<List<StudentDTO>> getUnvalidatedStudents(@Valid @RequestBody TokenDTO tokenId) {
         try{
             Token token = authService.getToken(tokenId.getToken(), GESTIONNAIRE);
             gestionnaireService.getGestionnaireById(token.getUserId());
@@ -249,7 +249,7 @@ public class RootController {
     }
 
     @PutMapping("/unvalidatedCompanies")
-    public ResponseEntity<List<CompanyDTO>> getUnvalidatedCompanies(@RequestBody TokenDTO tokenId)  {
+    public ResponseEntity<List<CompanyDTO>> getUnvalidatedCompanies(@Valid @RequestBody TokenDTO tokenId)  {
         try{
             Token token = authService.getToken(tokenId.getToken(), GESTIONNAIRE);
             gestionnaireService.getGestionnaireById(token.getUserId());
@@ -264,7 +264,7 @@ public class RootController {
     }
 
     @PutMapping("/validateStudent/{id}")
-    public ResponseEntity<Map<String, String>> validateStudent(@PathVariable String id , @RequestBody TokenDTO tokenId) {
+    public ResponseEntity<Map<String, String>> validateStudent(@PathVariable String id , @Valid @RequestBody TokenDTO tokenId) {
         try {
             Token token = authService.getToken(tokenId.getToken(), GESTIONNAIRE);
             gestionnaireService.getGestionnaireById(token.getUserId());
@@ -279,7 +279,7 @@ public class RootController {
     }
 
     @PutMapping("/validateCompany/{id}")
-    public ResponseEntity<Map<String, String>> validateCompany(@PathVariable String id , @RequestBody TokenDTO tokenId) {
+    public ResponseEntity<Map<String, String>> validateCompany(@PathVariable String id ,@Valid  @RequestBody TokenDTO tokenId) {
         try {
             Token token = authService.getToken(tokenId.getToken(), GESTIONNAIRE);
             gestionnaireService.getGestionnaireById(token.getUserId());
@@ -293,7 +293,7 @@ public class RootController {
     }
 
     @DeleteMapping("/removeStudent/{id}")
-    public ResponseEntity<Map<String, String>> removeStudent(@PathVariable String id , @RequestBody TokenDTO tokenId) {
+    public ResponseEntity<Map<String, String>> removeStudent(@PathVariable String id ,@Valid @RequestBody TokenDTO tokenId) {
         try {
             Token token = authService.getToken(tokenId.getToken(), GESTIONNAIRE);
             gestionnaireService.getGestionnaireById(token.getUserId());
@@ -307,7 +307,7 @@ public class RootController {
     }
 
     @DeleteMapping("/removeCompany/{id}")
-    public ResponseEntity<Map<String, String>> removeCompany(@PathVariable String id , @RequestBody TokenDTO tokenId) {
+    public ResponseEntity<Map<String, String>> removeCompany(@PathVariable String id ,@Valid @RequestBody TokenDTO tokenId) {
         try {
             Token token = authService.getToken(tokenId.getToken(), GESTIONNAIRE);
             gestionnaireService.getGestionnaireById(token.getUserId());
@@ -317,6 +317,42 @@ public class RootController {
             return ResponseEntity.notFound().build();
         }catch (InvalidTokenException ex){
             return ResponseEntity.status(403).build();
+        }
+    }
+
+    @GetMapping("/unvalidatedOffers")
+    public ResponseEntity<List<OffreDTO>> getOfferToValidate() {
+        List<OffreDTO> unvalidatedOffers = gestionnaireService.getNoneValidateOffers();
+        return ResponseEntity.ok(unvalidatedOffers);
+    }
+
+    @PutMapping("/validateOffer/{id}")
+    public ResponseEntity<Map<String, String>> validateOffer(@PathVariable String id) {
+        try {
+            gestionnaireService.validateOfferById(Long.parseLong(id));
+            return ResponseEntity.ok().build();
+        } catch (NonExistentOfferExeption exception) {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
+    @DeleteMapping("/removeOffer/{id}")
+    public ResponseEntity<Map<String, String>> removeOffer(@PathVariable String id) {
+        try {
+            gestionnaireService.removeOfferById(Long.parseLong(id));
+            return ResponseEntity.ok().build();
+        } catch (NonExistentOfferExeption exception) {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
+    @GetMapping("/offerPdf/{id}")
+    public ResponseEntity<byte[]> getOfferPdf(@PathVariable String id){
+        try {
+            byte[] offerPdf = gestionnaireService.getOffrePdfById(Long.parseLong(id));
+            return ResponseEntity.ok(offerPdf);
+        } catch (NonExistentOfferExeption e) {
+            return ResponseEntity.notFound().build();
         }
     }
 }
