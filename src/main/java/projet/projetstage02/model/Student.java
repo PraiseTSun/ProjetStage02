@@ -7,6 +7,7 @@ import lombok.ToString;
 
 import javax.persistence.Entity;
 import javax.persistence.Lob;
+import javax.validation.constraints.NotNull;
 
 @Entity
 @Data
@@ -14,7 +15,9 @@ import javax.persistence.Lob;
 @NoArgsConstructor
 @ToString(callSuper = true)
 public class Student extends AbstractUser {
+    @NotNull
     private Department department;
+    @NotNull
     @Lob
     private byte[] cv;
     public Student(String firstName, String lastName, String email, String password, Department department) {
