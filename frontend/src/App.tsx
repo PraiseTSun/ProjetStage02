@@ -10,9 +10,11 @@ import CompanyDashboard from './pages/CompanyDashboardPage';
 import GestionnaireDashboard from './pages/GestionnaireDashboardPage';
 import UserValidation from './pages/UserValidationPage';
 import FormulaireSoumissionPage from './pages/FormulaireSoumissionPage';
+import UploaderMonCV from "./pages/UploaderMonCV";
 
 export const LOCAL_STORAGE_KEY = "MASSI_BEST_PROGRAMMER_PROJET_STAGE_02_CURRENT_CONNECTED_USER"
 const emptyUser: IUser = {
+  id : "",
   firstName: "",
   lastName: "",
   userType: ""
@@ -20,6 +22,7 @@ const emptyUser: IUser = {
 
 function App() {
   const [user, setUser] = useState(emptyUser)
+
   const deconnexion = () => {
     setUser(emptyUser)
     localStorage.removeItem(LOCAL_STORAGE_KEY)
@@ -50,6 +53,7 @@ function App() {
           <Routes>
             <Route path="/" element={<StudentDashboard deconnexion={deconnexion} user={user} />} />
             <Route path="*" element={<h1 className="text-center text-white display-1">404 - Page pas trouvé</h1>} />
+            <Route path="/uploaderCV" element={<UploaderMonCV user={user}/>}></Route>
           </Routes>
         </BrowserRouter>
       </Container>
