@@ -153,4 +153,22 @@ public class GestionnaireService {
     public byte[] getOffrePdfById(long id) throws NonExistentOfferExeption {
         return getOffer(id).getPdf();
     }
+
+    public List<StudentDTO> getUnvalidatedStudentCV() {
+        List<StudentDTO> studentDTOS = new ArrayList<>();
+
+        studentRepository.findAll().stream()
+                .filter(student ->
+                        !student.isCvConfirm()
+                )
+                .forEach(student -> {
+                    StudentDTO dto = new StudentDTO(student);
+                    dto.setPassword("");
+                    dto.setCv(null);
+
+                    studentDTOS.add(dto);
+                });
+
+        return studentDTOS;
+    }
 }

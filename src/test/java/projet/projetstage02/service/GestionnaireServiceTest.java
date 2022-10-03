@@ -461,4 +461,19 @@ public class GestionnaireServiceTest {
         }
         fail("NonExistentOfferException not caught");
     }
+
+    @Test
+    void testGetUnvalidatedStudentCV() {
+        // Arrange
+        List<Student> students = new ArrayList<>();
+        students.add(studentTest);
+        when(studentRepository.findAll()).thenReturn(students);
+
+        // Act
+        List<StudentDTO> unvalidatedStudentCV = service.getUnvalidatedStudentCV();
+
+        // Assert
+        assertThat(unvalidatedStudentCV.get(0).getEmail()).isEqualTo(studentTest.getEmail());
+        assertThat(unvalidatedStudentCV.get(0).getFirstName()).isEqualTo(studentTest.getFirstName());
+    }
 }
