@@ -154,7 +154,7 @@ public class GestionnaireService {
         return getOffer(id).getPdf();
     }
 
-    public List<StudentDTO> getUnvalidatedStudentCV() {
+    public List<StudentDTO> getUnvalidatedCVStudents() {
         List<StudentDTO> studentDTOS = new ArrayList<>();
 
         studentRepository.findAll().stream()

@@ -615,4 +615,12 @@ public class RootControllerTest {
         mockMvc.perform(get("/offerPdf/{id}", 1))
                 .andExpect(status().isNotFound());
     }
+
+    @Test
+    void testUnvalidatedCvStudents() throws Exception {
+        when(gestionnaireService.getUnvalidatedCVStudents()).thenReturn(List.of(bart));
+
+        mockMvc.perform(get("/unvalidatedCvStudents", 1))
+                .andExpect(status().isOk());
+    }
 }

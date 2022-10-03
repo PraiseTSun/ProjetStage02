@@ -473,7 +473,7 @@ public class GestionnaireServiceTest {
         when(studentRepository.findAll()).thenReturn(students);
 
         // Act
-        List<StudentDTO> unvalidatedStudentCV = service.getUnvalidatedStudentCV();
+        List<StudentDTO> unvalidatedStudentCV = service.getUnvalidatedCVStudents();
 
         // Assert
         assertThat(unvalidatedStudentCV.get(0).getEmail()).isEqualTo(studentTest.getEmail());

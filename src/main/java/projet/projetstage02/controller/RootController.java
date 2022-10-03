@@ -252,4 +252,12 @@ public class RootController {
             return ResponseEntity.notFound().build();
         }
     }
+
+    @GetMapping("/unvalidatedCvStudents")
+    public ResponseEntity<List<StudentDTO>> getUnvalidatedCvStudent(){
+        List<StudentDTO> students = gestionnaireService.getUnvalidatedCVStudents();
+        return ResponseEntity.ok(students);
+    }
+
+//    @GetMapping
 }
