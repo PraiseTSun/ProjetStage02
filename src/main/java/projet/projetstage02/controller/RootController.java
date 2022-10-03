@@ -27,6 +27,7 @@ import java.util.Map;
 
 import static org.springframework.http.HttpStatus.*;
 import static projet.projetstage02.model.Token.UserTypes.*;
+import static projet.projetstage02.utils.TimeUtil.MILLI_SECOND_DAY;
 import static projet.projetstage02.utils.TimeUtil.currentTimestamp;
 
 @RestController
@@ -38,8 +39,6 @@ public class RootController {
     final CompanyService companyService;
     final GestionnaireService gestionnaireService;
     final AuthService authService;
-    //TODO: Add new thread to remove the user after 24h hours if not email confirmed
-    private final long MILLI_SECOND_DAY = 864000000;
 
     private final Logger logger = LogManager.getLogger(RootController.class);
 
@@ -391,18 +390,24 @@ public class RootController {
         }
     }
 
-    @GetMapping("/unvalidatedOffers")
-    public ResponseEntity<List<OffreDTO>> getOfferToValidate() {
-        logger.log(Level.INFO, "get /unvalidatedOffers entered");
-        List<OffreDTO> unvalidatedOffers = gestionnaireService.getNoneValidateOffers();
-        logger.log(Level.INFO, "GetMapping: /unvalidatedOffers sent 200 response");
-        return ResponseEntity.ok(unvalidatedOffers);
+    @PutMapping("/unvalidatedOffers")
+    public ResponseEntity<List<OffreDTO>> getOfferToValidate(@RequestBody TokenDTO tokenDTO) {
+        try {
+            authService.getToken(tokenDTO.getToken(),GESTIONNAIRE);
+            logger.log(Level.INFO, "get /unvalidatedOffers entered");
+            List<OffreDTO> unvalidatedOffers = gestionnaireService.getNoneValidateOffers();
+            logger.log(Level.INFO, "GetMapping: /unvalidatedOffers sent 200 response");
+            return ResponseEntity.ok(unvalidatedOffers);
+        } catch (InvalidTokenException e) {
+            return ResponseEntity.status(403).build();
+        }
     }
 
     @PutMapping("/validateOffer/{id}")
-    public ResponseEntity<OffreDTO> validateOffer(@PathVariable String id) {
+    public ResponseEntity<OffreDTO> validateOffer(@PathVariable String id,@RequestBody TokenDTO tokenDTO) {
         logger.log(Level.INFO, "Put /validateOffer/{id} entered with id : " + id);
         try {
+            authService.getToken(tokenDTO.getToken(),GESTIONNAIRE);
             gestionnaireService.validateOfferById(Long.parseLong(id));
             logger.log(Level.INFO, "PutMapping: /validateOffer sent 200 response");
             OffreDTO offreDTO = gestionnaireService.validateOfferById(Long.parseLong(id));
@@ -410,43 +415,54 @@ public class RootController {
         } catch (NonExistentOfferExeption exception) {
             logger.log(Level.INFO, "PutMapping: /validateOffer sent 404 response");
             return ResponseEntity.notFound().build();
+        } catch (InvalidTokenException e) {
+            return ResponseEntity.status(403).build();
         }
     }
 
     @DeleteMapping("/removeOffer/{id}")
-    public ResponseEntity<Map<String, String>> removeOffer(@PathVariable String id) {
+    public ResponseEntity<Map<String, String>> removeOffer(@PathVariable String id,@RequestBody TokenDTO tokenDTO) {
         logger.log(Level.INFO, "Delete /removeOffer/{id} entered with id : " + id);
         try {
+            authService.getToken(tokenDTO.getToken(),GESTIONNAIRE);
             gestionnaireService.removeOfferById(Long.parseLong(id));
             logger.log(Level.INFO, "DeleteMapping: /removeOffer sent 200 response");
             return ResponseEntity.ok().build();
         } catch (NonExistentOfferExeption exception) {
             logger.log(Level.INFO, "DeleteMapping: /removeOffer sent 404 response");
             return ResponseEntity.notFound().build();
+        } catch (InvalidTokenException e) {
+            return ResponseEntity.status(403).build();
         }
     }
 
     @PutMapping("/uploadStudentCV")
     public ResponseEntity<StudentDTO> uploadStudentCurriculumVitae(@Valid @RequestBody PdfDTO pdf) {
         try {
+            authService.getToken(pdf.getToken(), STUDENT);
             StudentDTO dto = studentService.uploadCurriculumVitae(pdf);
             dto.setPassword("");
             return ResponseEntity.ok(dto);
         } catch (NonExistentEntityException e) {
             return ResponseEntity.notFound().build();
+        }catch (InvalidTokenException e){
+            return ResponseEntity.status(403).build();
         }
     }
 
-    @GetMapping("/offerPdf/{id}")
-    public ResponseEntity<byte[]> getOfferPdf(@PathVariable String id) {
+    @PutMapping("/offerPdf/{id}")
+    public ResponseEntity<byte[]> getOfferPdf(@PathVariable String id, TokenDTO tokenId) {
         logger.log(Level.INFO, "Get /offerPdf/{id} entered with id : " + id);
         try {
+            authService.getToken(tokenId.getToken(), GESTIONNAIRE);
             byte[] offerPdf = gestionnaireService.getOffrePdfById(Long.parseLong(id));
             logger.log(Level.INFO, "Get /offerPdf sent 200 response");
             return ResponseEntity.ok(offerPdf);
         } catch (NonExistentOfferExeption e) {
             logger.log(Level.INFO, "Get /offerPdf sent 404 response");
             return ResponseEntity.notFound().build();
+        } catch (InvalidTokenException e) {
+            return ResponseEntity.status(403).build();
         }
     }
 }

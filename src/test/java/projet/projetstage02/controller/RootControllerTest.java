@@ -117,7 +117,7 @@ public class RootControllerTest {
                 .build();
 
         login = LoginDTO.builder().build();
-        bartCV = new PdfDTO("1", new byte[0]);
+        bartCV = PdfDTO.builder().pdf(new byte[0]).studentId(1).token(token.getToken()).build();
 
         JacksonTester.initFields(this, new ObjectMapper());
         mockMvc = MockMvcBuilders.standaloneSetup(rootController).build();
@@ -600,10 +600,13 @@ public class RootControllerTest {
 
     @Test
     void testUnvalidatedOffers() throws Exception {
+        when(authService.getToken(any(),any())).thenReturn(Token.builder().userId(1).build());
         when(gestionnaireService.getNoneValidateOffers())
                 .thenReturn(List.of(duffOffre));
 
-        mockMvc.perform(get("/unvalidatedOffers"))
+        mockMvc.perform(put("/unvalidatedOffers")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(jsonTokenDTO.write(token).getJson()))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$[0].nomDeCompagnie", is("Duff Beer")));
     }
@@ -624,17 +627,23 @@ public class RootControllerTest {
 
     @Test
     void testValidationOfferNotFound() throws Exception {
+        when(authService.getToken(any(),any())).thenReturn(Token.builder().userId(1).build());
         doThrow(new NonExistentOfferExeption())
                 .when(gestionnaireService).validateOfferById(1L);
 
-        mockMvc.perform(put("/validateOffer/{id}", 1))
+        mockMvc.perform(put("/validateOffer/{id}", 1)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(jsonTokenDTO.write(token).getJson()))
                 .andExpect(status().isNotFound());
     }
 
     @Test
     void testRemoveOfferSuccess() throws Exception {
+        when(authService.getToken(any(),any())).thenReturn(Token.builder().userId(1).build());
 
-        mockMvc.perform(delete("/removeOffer/{id}", 1))
+        mockMvc.perform(delete("/removeOffer/{id}", 1)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(jsonTokenDTO.write(token).getJson()))
                 .andExpect(status().isOk());
 
         verify(gestionnaireService, times(1)).removeOfferById(1L);
@@ -642,22 +651,26 @@ public class RootControllerTest {
 
     @Test
     void testRemoveOfferNotFound() throws Exception {
+        when(authService.getToken(any(),any())).thenReturn(Token.builder().userId(1).build());
         doThrow(new NonExistentOfferExeption())
                 .when(gestionnaireService).removeOfferById(1L);
 
 
-        mockMvc.perform(delete("/removeOffer/{id}", 1))
+        mockMvc.perform(delete("/removeOffer/{id}", 1)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(jsonTokenDTO.write(token).getJson()))
                 .andExpect(status().isNotFound());
     }
 
     @Test
     void testUploadCurriculumVitaeSuccess() throws Exception {
+        when(authService.getToken(any(),any())).thenReturn(Token.builder().userId(1).build());
         bart.setCv(bartCV.getPdf());
         when(studentService.uploadCurriculumVitae(any())).thenReturn(bart);
 
         mockMvc.perform(put("/uploadStudentCV")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(jsonStudentDTO.write(bart).getJson()))
+                        .content(jsonPdfDTO.write(bartCV).getJson()))
 
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.firstName", is("Bart")))
@@ -667,6 +680,7 @@ public class RootControllerTest {
 
     @Test
     void testUploadCurriculumVitaeNotFound() throws Exception {
+        when(authService.getToken(any(),any())).thenReturn(Token.builder().userId(1).build());
         doThrow(new NonExistentEntityException())
                 .when(studentService).uploadCurriculumVitae(any());
 
@@ -676,19 +690,25 @@ public class RootControllerTest {
     }
     @Test
     void testGetOfferPdfSuccess() throws Exception {
+        when(authService.getToken(any(),any())).thenReturn(Token.builder().userId(1).build());
         byte[] pdf = new byte[0];
         when(gestionnaireService.getOffrePdfById(anyLong())).thenReturn(pdf);
 
-        mockMvc.perform(get("/offerPdf/{id}", 1))
+        mockMvc.perform(put("/offerPdf/{id}", 1)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(jsonTokenDTO.write(token).getJson()))
                 .andExpect(status().isOk());
     }
 
     @Test
     void testGetOfferPdfNotFound() throws Exception {
+        when(authService.getToken(any(),any())).thenReturn(Token.builder().userId(1).build());
         doThrow(new NonExistentOfferExeption())
                 .when(gestionnaireService).getOffrePdfById(1L);
 
-        mockMvc.perform(get("/offerPdf/{id}", 1))
+        mockMvc.perform(put("/offerPdf/{id}", 1)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(jsonTokenDTO.write(token).getJson()))
                 .andExpect(status().isNotFound());
     }
 }

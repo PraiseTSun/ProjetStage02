@@ -45,7 +45,7 @@ public class StudentServiceTest {
 
         bart.setCv(new byte[0]);
 
-        bartCv = new PdfDTO("1", new byte[0]);
+        bartCv = PdfDTO.builder().studentId(1).pdf(new byte[0]).build();
     }
 
     @Test
