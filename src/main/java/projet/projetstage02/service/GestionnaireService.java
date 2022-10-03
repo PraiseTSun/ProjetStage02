@@ -181,4 +181,19 @@ public class GestionnaireService {
         studentRepository.save(student);
         return new StudentDTO(student);
     }
+
+    public StudentDTO removeStudentCvValidation(long id) throws NonExistentUserException {
+        Optional<Student> studentOpt = studentRepository.findById(id);
+        if(studentOpt.isEmpty()) throw new NonExistentUserException();
+        Student student = studentOpt.get();
+        student.setCvToValidate(null);
+        studentRepository.save(student);
+        return new StudentDTO(student);
+    }
+
+    public byte[] getStudentCvToValidate(long id) throws NonExistentUserException {
+        Optional<Student> studentOpt = studentRepository.findById(id);
+        if(studentOpt.isEmpty()) throw new NonExistentUserException();
+        return studentOpt.get().getCvToValidate();
+    }
 }

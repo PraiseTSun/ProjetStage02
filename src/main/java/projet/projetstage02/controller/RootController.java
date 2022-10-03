@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.*;
 import projet.projetstage02.DTO.*;
 import projet.projetstage02.exception.NonExistentOfferExeption;
 import projet.projetstage02.exception.NonExistentUserException;
+import projet.projetstage02.model.Student;
 import projet.projetstage02.service.CompanyService;
 import projet.projetstage02.service.GestionnaireService;
 import projet.projetstage02.service.StudentService;
@@ -258,6 +259,4 @@ public class RootController {
         List<StudentDTO> students = gestionnaireService.getUnvalidatedCVStudents();
         return ResponseEntity.ok(students);
     }
-
-//    @GetMapping
 }

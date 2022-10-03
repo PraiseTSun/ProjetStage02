@@ -487,7 +487,7 @@ public class GestionnaireServiceTest {
         when(studentRepository.findById(anyLong())).thenReturn(Optional.of(studentTest));
 
         // Act
-        StudentDTO studentDTO = service.validateStudentCV(anyLong());
+        StudentDTO studentDTO = service.validateStudentCV(1L);
 
         // Assert
         assertThat(studentDTO.getFirstName()).isEqualTo(studentTest.getFirstName());
@@ -502,7 +502,62 @@ public class GestionnaireServiceTest {
 
         // Act
         try {
-            service.validateStudentCV(anyLong());
+            service.validateStudentCV(1L);
+        } catch (NonExistentUserException e) {
+            return;
+        }
+        fail("NonExistentUserException not caught");
+    }
+
+    @Test
+    void testRemoveStudentCvValidationSuccess () throws NonExistentUserException {
+        // Arrange
+        studentTest.setCvToValidate(new byte[0]);
+        when(studentRepository.findById(anyLong())).thenReturn(Optional.of(studentTest));
+
+        // Act
+        StudentDTO studentDTO = service.removeStudentCvValidation(1L);
+
+        // Assert
+        assertThat(studentDTO.getEmail()).isEqualTo(studentTest.getEmail());
+        assertThat(studentDTO.getCvToValidate()).isNull();
+    }
+
+    @Test
+    void testRemoveStudentCvValidationNotFound (){
+        // Arrange
+        when(studentRepository.findById(anyLong())).thenReturn(Optional.empty());
+
+        // Act
+        try {
+            service.removeStudentCvValidation(1L);
+        } catch (NonExistentUserException e) {
+            return;
+        }
+        fail("NonExistentUserException not caught");
+    }
+
+    @Test
+    void testgetStudentCvToValidateSuccess() throws NonExistentUserException {
+        // Arrange
+        studentTest.setCvToValidate(new byte[0]);
+        when(studentRepository.findById(anyLong())).thenReturn(Optional.of(studentTest));
+
+        // Act
+        byte[] cv = service.getStudentCvToValidate(1L);
+
+        //
+        assertThat(cv).isEqualTo(studentTest.getCvToValidate());
+    }
+
+    @Test
+    void testgetStudentCvToValidateNotFound() {
+        // Arrange
+        when(studentRepository.findById(anyLong())).thenReturn(Optional.empty());
+
+        // Act
+        try {
+            service.getStudentCvToValidate(1L);
         } catch (NonExistentUserException e) {
             return;
         }
