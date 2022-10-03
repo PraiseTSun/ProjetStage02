@@ -66,7 +66,7 @@ public class StudentService {
     }
 
     public boolean deleteUnconfirmedStudent(StudentDTO dto) throws NonExistentEntityException {
-        Optional<Student> studentOpt = studentRepository.findById(dto.getId());
+        Optional<Student> studentOpt = studentRepository.findByEmail(dto.getEmail());
         if(studentOpt.isEmpty()) throw new NonExistentEntityException();
         Student student = studentOpt.get();
         if(!student.isEmailConfirmed() && Timestamp.valueOf(LocalDateTime.now()).getTime() - student.getInscriptionTimestamp() > MILLI_SECOND_DAY){

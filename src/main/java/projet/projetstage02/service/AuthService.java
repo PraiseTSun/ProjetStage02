@@ -4,7 +4,6 @@ import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import projet.projetstage02.DTO.*;
 import projet.projetstage02.exception.InvalidTokenException;
-import projet.projetstage02.exception.NonExistentEntityException;
 import projet.projetstage02.model.*;
 import projet.projetstage02.model.Token.UserTypes;
 import projet.projetstage02.repository.CompanyRepository;
@@ -12,7 +11,6 @@ import projet.projetstage02.repository.GestionnaireRepository;
 import projet.projetstage02.repository.StudentRepository;
 import projet.projetstage02.repository.TokenRepository;
 
-import java.time.LocalDateTime;
 import java.util.Optional;
 import java.util.UUID;
 

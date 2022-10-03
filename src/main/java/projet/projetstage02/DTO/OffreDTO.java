@@ -1,10 +1,7 @@
 package projet.projetstage02.DTO;
 
 import com.sun.istack.NotNull;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import projet.projetstage02.model.AbstractUser;
 import projet.projetstage02.model.Offre;
 
@@ -34,6 +31,7 @@ public class OffreDTO {
     @Size(min = 2)
     private String adresse;
     @NotNull
+    @ToString.Exclude
     private byte[] pdf;
     private String token;
     private boolean valide;

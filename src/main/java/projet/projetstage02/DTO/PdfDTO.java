@@ -1,10 +1,7 @@
 package projet.projetstage02.DTO;
 
 import com.sun.istack.NotNull;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import javax.validation.constraints.NotBlank;
 
@@ -15,6 +12,7 @@ import javax.validation.constraints.NotBlank;
 public class PdfDTO {
     private long studentId;
     @NotNull
+    @ToString.Exclude
     private byte[] pdf;
     @NotBlank
     private String token;

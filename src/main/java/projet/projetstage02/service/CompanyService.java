@@ -8,7 +8,6 @@ import projet.projetstage02.exception.NonExistentEntityException;
 import projet.projetstage02.model.AbstractUser.Department;
 import projet.projetstage02.model.Company;
 import projet.projetstage02.model.Offre;
-import projet.projetstage02.model.Student;
 import projet.projetstage02.repository.CompanyRepository;
 import projet.projetstage02.repository.OffreRepository;
 
@@ -77,11 +76,11 @@ public class CompanyService {
         return new CompanyDTO(companyOpt.get());
     }
     public boolean deleteUnconfirmedCompany(CompanyDTO dto) throws NonExistentEntityException {
-        Optional<Company> studentOpt = companyRepository.findById(dto.getId());
-        if(studentOpt.isEmpty()) throw new NonExistentEntityException();
-        Company student = studentOpt.get();
-        if(!student.isEmailConfirmed() && Timestamp.valueOf(LocalDateTime.now()).getTime() - student.getInscriptionTimestamp() > MILLI_SECOND_DAY){
-            companyRepository.delete(student);
+        Optional<Company> companyOpt = companyRepository.findByEmail(dto.getEmail());
+        if(companyOpt.isEmpty()) throw new NonExistentEntityException();
+        Company company = companyOpt.get();
+        if(!company.isEmailConfirmed() && Timestamp.valueOf(LocalDateTime.now()).getTime() - company.getInscriptionTimestamp() > MILLI_SECOND_DAY){
+            companyRepository.delete(company);
             return true;
         }
         return false;

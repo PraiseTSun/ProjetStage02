@@ -17,7 +17,6 @@ import projet.projetstage02.repository.TokenRepository;
 
 import java.util.Optional;
 
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.fail;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
@@ -207,7 +206,7 @@ public class AuthServiceTest {
         fail();
     }
     @Test
-    void getTokenStudentHappyDay() throws InvalidTokenException {
+    void testGetTokenStudentHappyDay() throws InvalidTokenException {
         //Arrange
         when(tokenRepository.findById(any())).thenReturn(
                 Optional.of(Token.builder().token(tokenDTO.getToken())
@@ -373,7 +372,7 @@ public class AuthServiceTest {
         fail();
     }
     @Test
-    void getTokenGestionnaireNotFound(){
+    void testGetTokenGestionnaireNotFound(){
         //Arrange
         when(tokenRepository.findById(any())).thenReturn(
                 Optional.empty());

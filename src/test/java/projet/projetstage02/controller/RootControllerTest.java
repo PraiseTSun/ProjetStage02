@@ -8,7 +8,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.boot.test.json.JacksonTester;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
@@ -196,7 +195,6 @@ public class RootControllerTest {
         mockMvc.perform(post("/createGestionnaire")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(jsonGestionnaireDTO.write(burns).getJson()))
-
                 .andExpect(status().isCreated());
     }
 

@@ -45,24 +45,35 @@ public class RootController {
     @SneakyThrows
     @PostMapping("/createStudent")
     public ResponseEntity<Map<String, String>> createStudent(@Valid @RequestBody StudentDTO studentDTO) {
-        logger.log(Level.INFO, "PostMapping: /createStudent entered with body : " + studentDTO.toString());
-        if (!studentService.isEmailUnique(studentDTO.getEmail())
-                && !studentService.deleteUnconfirmedStudent(studentDTO)) {
-            logger.log(Level.INFO, "PostMapping: /createStudent sent 409 response");
-            return ResponseEntity.status(CONFLICT)
-                    .body(getError("Cette adresse email est déjà utilisée."));
+        try{
+            logger.log(Level.INFO, "PostMapping: /createStudent entered with body : " + studentDTO.toString());
+            if (!studentService.isEmailUnique(studentDTO.getEmail())
+                    && !studentService.deleteUnconfirmedStudent(studentDTO)) {
+                logger.log(Level.INFO, "PostMapping: /createStudent sent 409 response");
+                return ResponseEntity.status(CONFLICT)
+                        .body(getError("Cette adresse email est déjà utilisée."));
+            }
+            studentDTO.setInscriptionTimestamp(currentTimestamp());
+            long id = studentService.saveStudent(studentDTO);
+            studentDTO.setId(id);
+            if(!EmailUtil.sendConfirmationMail(studentDTO.toModel())){
+                logger.log(Level.INFO, "PostMapping: /createCompany sent 500 response");
+                return ResponseEntity.status(INTERNAL_SERVER_ERROR).body(
+                        getError("Une erreur avec le service d'email est survenue"));
+            }
+            logger.log(Level.INFO, "PostMapping: /createStudent sent 201 response");
+            return ResponseEntity.status(CREATED).build();
+        }catch (NonExistentEntityException e){
+            logger.log(Level.INFO, "PostMapping: /createCompany sent 500 response");
+            return ResponseEntity.status(INTERNAL_SERVER_ERROR).body(
+                    getError("Une erreur est survenue"));
         }
-        studentDTO.setInscriptionTimestamp(currentTimestamp());
-        long id = studentService.saveStudent(studentDTO);
-        studentDTO.setId(id);
-        EmailUtil.sendConfirmationMail(studentDTO.toModel());
-        logger.log(Level.INFO, "PostMapping: /createStudent sent 201 response");
-        return ResponseEntity.status(CREATED).build();
     }
 
     @SneakyThrows
     @PostMapping("/createCompany")
     public ResponseEntity<Map<String, String>> createCompany(@Valid @RequestBody CompanyDTO companyDTO) {
+        try {
         logger.log(Level.INFO, "Post /createCompany entered with body : " + companyDTO.toString());
         if (!companyService.isEmailUnique(companyDTO.getEmail())
                 && !companyService.deleteUnconfirmedCompany(companyDTO)) {
@@ -73,31 +84,49 @@ public class RootController {
         companyDTO.setInscriptionTimestamp(currentTimestamp());
         long id = companyService.saveCompany(companyDTO);
         companyDTO.setId(id);
-        EmailUtil.sendConfirmationMail(companyDTO.toModel());
+        if(!EmailUtil.sendConfirmationMail(companyDTO.toModel())){
+            logger.log(Level.INFO, "PostMapping: /createCompany sent 500 response");
+            return ResponseEntity.status(INTERNAL_SERVER_ERROR).body(
+                    getError("Une erreur avec le service d'email est survenue"));
+            }
         logger.log(Level.INFO, "PostMapping: /createCompany sent 201 response");
         return ResponseEntity.status(CREATED).build();
+        }catch (NonExistentEntityException e){
+            logger.log(Level.INFO, "PostMapping: /createCompany sent 500 response");
+            return ResponseEntity.status(INTERNAL_SERVER_ERROR).body(
+                    getError("Une erreur est survenue"));
+        }
     }
 
     @SneakyThrows
     @PostMapping("/createGestionnaire")
     public ResponseEntity<Map<String, String>> createGestionnaire(@Valid @RequestBody GestionnaireDTO gestionnaireDTO) {
         try{
-            logger.log(Level.INFO, "Post /createGestionnaire entered with body : " + gestionnaireDTO.toString());
+            logger.log(Level.INFO, "Post /createGestionaire entered with body : " + gestionnaireDTO.toString());
             authService.getToken(gestionnaireDTO.getToken(), GESTIONNAIRE);
             if (!gestionnaireService.isEmailUnique(gestionnaireDTO.getEmail())
                     && !gestionnaireService.deleteUnconfirmedGestionnaire(gestionnaireDTO)) {
-                    logger.log(Level.INFO, "PostMapping: /createGestionnaire sent 409 response");
+                    logger.log(Level.INFO, "PostMapping: /createGestionaire sent 409 response");
                     return ResponseEntity.status(CONFLICT).body(getError("Cette adresse email est déjà utilisée."));
             }
             gestionnaireDTO.setInscriptionTimestamp(currentTimestamp());
             gestionnaireDTO.setConfirmed(true);
             long id = gestionnaireService.saveGestionnaire(gestionnaireDTO);
             gestionnaireDTO.setId(id);
-            EmailUtil.sendConfirmationMail(gestionnaireDTO.toModel());
+            if(!EmailUtil.sendConfirmationMail(gestionnaireDTO.toModel())){
+                logger.log(Level.INFO, "PostMapping: /createGestionaire sent 500 response");
+                return ResponseEntity.status(INTERNAL_SERVER_ERROR).body(
+                        getError("Une erreur avec le service d'email est survenue"));
+            };
+            logger.log(Level.INFO, "PostMapping: /createGestionaire sent 201 response");
             return ResponseEntity.status(CREATED).build();
         }catch (InvalidTokenException ex){
-                logger.log(Level.INFO, "PostMapping: /createGestionnaire sent 403 response");
-                return ResponseEntity.status(403).build();
+                logger.log(Level.INFO, "PostMapping: /createGestionaire sent 403 response");
+                return ResponseEntity.status(FORBIDDEN).build();
+        }catch (NonExistentEntityException e){
+            logger.log(Level.INFO, "PostMapping: /createGestionaire sent 500 response");
+            return ResponseEntity.status(INTERNAL_SERVER_ERROR).body(
+                    getError("Une erreur est survenue"));
         }
     }
 
@@ -107,20 +136,15 @@ public class RootController {
             logger.log(Level.INFO, "Post /createOffre entered with body : " + offreDTO.toString());
             Token token = authService.getToken(offreDTO.getToken(), COMPANY);
             companyService.getCompanyById(token.getUserId());
-            if (offreDTO.getPdf() == null || offreDTO.getNomDeCompagnie() == null || offreDTO.getAdresse() == null
-                    || offreDTO.getPosition() == null || offreDTO.getDepartment() == null
-                    || offreDTO.getHeureParSemaine() == 0) {
-                throw new IllegalArgumentException();
-            }
             companyService.createOffre(offreDTO);
             logger.log(Level.INFO, "PostMapping: /createOffre sent 201 response");
             return ResponseEntity.status(CREATED).build();
-        } catch (NonExistentEntityException | IllegalArgumentException e) {
+        } catch (NonExistentEntityException e) {
             logger.log(Level.INFO, "PostMapping: /createOffre sent 404 response");
             return ResponseEntity.notFound().build();
         } catch (InvalidTokenException ex) {
             logger.log(Level.INFO, "PostMapping: /createOffre sent 403 response");
-            return ResponseEntity.status(403).build();
+            return ResponseEntity.status(FORBIDDEN).build();
         }
     }
 
@@ -157,7 +181,7 @@ public class RootController {
             CompanyDTO companyDTO = companyService.getCompanyById(Long.parseLong(id));
             if (currentTimestamp() - companyDTO.getInscriptionTimestamp() > MILLI_SECOND_DAY) {
                 logger.log(Level.INFO, "PutMapping: /confirmEmail/company sent 400 response");
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                return ResponseEntity.status(BAD_REQUEST)
                         .body(getError("La période de confirmation est expirée"));
             }
             companyDTO.setEmailConfirmed(true);
@@ -170,18 +194,21 @@ public class RootController {
         }
     }
 
-    @PutMapping("/confirmEmail/gestionnaire/{id}")
+    @PutMapping("/confirmEmail/gestionaire/{id}")
     public ResponseEntity<Map<String, String>> confirmGestionnaireMail(@PathVariable String id) {
         try {
             GestionnaireDTO gestionnaireDTO = gestionnaireService.getGestionnaireById(Long.parseLong(id));
             if (currentTimestamp() - gestionnaireDTO.getInscriptionTimestamp() > MILLI_SECOND_DAY) {
-                return ResponseEntity.status(UNPROCESSABLE_ENTITY)
+                logger.log(Level.INFO, "PutMapping: /confirmEmail/gestionaire sent 400 response");
+                return ResponseEntity.status(BAD_REQUEST)
                         .body(getError("La période de confirmation est expirée"));
             }
             gestionnaireDTO.setEmailConfirmed(true);
             gestionnaireService.saveGestionnaire(gestionnaireDTO);
+            logger.log(Level.INFO, "PutMapping: /confirmEmail/gestionaire sent 201 response");
             return ResponseEntity.status(CREATED).build();
         } catch (NonExistentEntityException e) {
+            logger.log(Level.INFO, "PutMapping: /confirmEmail/gestionaire sent 404 response");
             return ResponseEntity.notFound().build();
         }
     }
@@ -191,9 +218,11 @@ public class RootController {
     public ResponseEntity<TokenDTO> studentLogin(@RequestBody LoginDTO loginDTO){
         try {
             String token = authService.loginIfValid(loginDTO,STUDENT);
+            logger.log(Level.INFO, "PostMapping: /student/login sent 201 response");
             return ResponseEntity.status(CREATED).body(TokenDTO.builder().token(token).build());
         }catch (InvalidTokenException e){
-            return ResponseEntity.status(403).build();
+            logger.log(Level.INFO, "PostMapping: /student/login sent 403 response");
+            return ResponseEntity.status(FORBIDDEN).build();
         }
 
     }
@@ -202,9 +231,11 @@ public class RootController {
     public ResponseEntity<TokenDTO> gestionnaireLogin(@RequestBody LoginDTO loginDTO){
         try {
             String token = authService.loginIfValid(loginDTO,GESTIONNAIRE);
+            logger.log(Level.INFO, "PostMapping: /gestionnaire/login sent 201 response");
             return ResponseEntity.status(CREATED).body(TokenDTO.builder().token(token).build());
         }catch (InvalidTokenException e){
-            return ResponseEntity.status(403).build();
+            logger.log(Level.INFO, "PostMapping: /gestionnaire/login sent 403 response");
+            return ResponseEntity.status(FORBIDDEN).build();
         }
 
     }
@@ -213,9 +244,11 @@ public class RootController {
     public ResponseEntity<TokenDTO> companyLogin(@RequestBody LoginDTO loginDTO){
         try {
             String token = authService.loginIfValid(loginDTO,COMPANY);
+            logger.log(Level.INFO, "PostMapping: /company/login sent 201 response");
             return ResponseEntity.status(CREATED).body(TokenDTO.builder().token(token).build());
         }catch (InvalidTokenException e){
-            return ResponseEntity.status(403).build();
+            logger.log(Level.INFO, "PostMapping: /company/login sent 403 response");
+            return ResponseEntity.status(FORBIDDEN).build();
         }
 
     }
@@ -236,7 +269,7 @@ public class RootController {
             return ResponseEntity.notFound().build();
         } catch (InvalidTokenException ex){
             logger.log(Level.INFO, "PutMapping: /student sent 403 response");
-            return ResponseEntity.status(403).build();
+            return ResponseEntity.status(FORBIDDEN).build();
         }
     }
 
@@ -253,10 +286,11 @@ public class RootController {
                     "Put /company entered sent 200 response");
             return !dto.isEmailConfirmed() ? ResponseEntity.notFound().build() : ResponseEntity.ok(dto);
         } catch (NonExistentEntityException e) {
-            logger.log(Level.INFO, "Put /company entered sent 400 response");
+            logger.log(Level.INFO, "Put /company entered sent 404 response");
             return ResponseEntity.notFound().build();
         }catch (InvalidTokenException ex){
-            return ResponseEntity.status(403).build();
+            logger.log(Level.INFO, "PutMapping: /company sent 403 response");
+            return ResponseEntity.status(FORBIDDEN).build();
         }
     }
 
@@ -275,7 +309,8 @@ public class RootController {
             logger.log(Level.INFO, "PutMapping: /gestionnaire sent 404 response");
             return ResponseEntity.notFound().build();
         }catch (InvalidTokenException ex){
-            return ResponseEntity.status(403).build();
+            logger.log(Level.INFO, "PutMapping: /gestionnaire sent 403 response");
+            return ResponseEntity.status(FORBIDDEN).build();
         }
     }
 
@@ -287,14 +322,14 @@ public class RootController {
             gestionnaireService.getGestionnaireById(token.getUserId());
             List<StudentDTO> unvalidatedStudents = gestionnaireService.getUnvalidatedStudents();
             unvalidatedStudents.forEach(student -> student.setPassword(""));
-            logger.log(Level.INFO, "GetMapping: /unvalidatedStudents sent 200 response");
+            logger.log(Level.INFO, "PutMapping: /unvalidatedStudents sent 200 response");
             return ResponseEntity.ok(unvalidatedStudents);
         }catch (NonExistentEntityException e){
-            logger.log(Level.INFO, "GetMapping: /unvalidatedStudents sent 404 response");
+            logger.log(Level.INFO, "PutMapping: /unvalidatedStudents sent 404 response");
             return ResponseEntity.notFound().build();
         }catch (InvalidTokenException ex){
-            logger.log(Level.INFO, "GetMapping: /unvalidatedStudents sent 403 response");
-            return ResponseEntity.status(403).build();
+            logger.log(Level.INFO, "PutMapping: /unvalidatedStudents sent 403 response");
+            return ResponseEntity.status(FORBIDDEN).build();
         }
     }
 
@@ -306,14 +341,14 @@ public class RootController {
             gestionnaireService.getGestionnaireById(token.getUserId());
             List<CompanyDTO> unvalidatedCompanies = gestionnaireService.getUnvalidatedCompanies();
             unvalidatedCompanies.forEach(company -> company.setPassword(""));
-            logger.log(Level.INFO, "GetMapping: /unvalidatedCompanies sent 200 response");
+            logger.log(Level.INFO, "PutMapping: /unvalidatedCompanies sent 200 response");
             return ResponseEntity.ok(unvalidatedCompanies);
         }catch (NonExistentEntityException e){
-            logger.log(Level.INFO, "GetMapping: /unvalidatedCompanies sent 404 response");
+            logger.log(Level.INFO, "PutMapping: /unvalidatedCompanies sent 404 response");
             return ResponseEntity.notFound().build();
         }catch (InvalidTokenException ex){
-            logger.log(Level.INFO, "GetMapping: /unvalidatedCompanies sent 403 response");
-            return ResponseEntity.status(403).build();
+            logger.log(Level.INFO, "PutMapping: /unvalidatedCompanies sent 403 response");
+            return ResponseEntity.status(FORBIDDEN).build();
         }
     }
 
@@ -328,11 +363,11 @@ public class RootController {
             return ResponseEntity.ok().build();
         } catch (NonExistentEntityException exception) {
             logger.log(Level.INFO, "PutMapping: /validateStudent sent 404 response");
-            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+            return ResponseEntity.status(NOT_FOUND)
                     .body(getError(exception.getMessage()));
         }catch (InvalidTokenException ex){
             logger.log(Level.INFO, "PutMapping: /validateStudent sent 403 response");
-            return ResponseEntity.status(403).build();
+            return ResponseEntity.status(FORBIDDEN).build();
         }
     }
 
@@ -350,7 +385,7 @@ public class RootController {
             return ResponseEntity.notFound().build();
         }catch (InvalidTokenException ex){
             logger.log(Level.INFO, "PutMapping: /validateCompany sent 403 response");
-            return ResponseEntity.status(403).build();
+            return ResponseEntity.status(FORBIDDEN).build();
         }
     }
 
@@ -368,7 +403,7 @@ public class RootController {
             return ResponseEntity.notFound().build();
         }catch (InvalidTokenException ex){
             logger.log(Level.INFO, "DeleteMapping: /removeStudent sent 403 response");
-            return ResponseEntity.status(403).build();
+            return ResponseEntity.status(FORBIDDEN).build();
         }
     }
 
@@ -386,7 +421,7 @@ public class RootController {
             return ResponseEntity.notFound().build();
         }catch (InvalidTokenException ex){
             logger.log(Level.INFO, "DeleteMapping: /removeCompany sent 403 response");
-            return ResponseEntity.status(403).build();
+            return ResponseEntity.status(FORBIDDEN).build();
         }
     }
 
@@ -394,12 +429,13 @@ public class RootController {
     public ResponseEntity<List<OffreDTO>> getOfferToValidate(@RequestBody TokenDTO tokenDTO) {
         try {
             authService.getToken(tokenDTO.getToken(),GESTIONNAIRE);
-            logger.log(Level.INFO, "get /unvalidatedOffers entered");
+            logger.log(Level.INFO, "put /unvalidatedOffers entered");
             List<OffreDTO> unvalidatedOffers = gestionnaireService.getNoneValidateOffers();
-            logger.log(Level.INFO, "GetMapping: /unvalidatedOffers sent 200 response");
+            logger.log(Level.INFO, "PutMapping: /unvalidatedOffers sent 200 response");
             return ResponseEntity.ok(unvalidatedOffers);
         } catch (InvalidTokenException e) {
-            return ResponseEntity.status(403).build();
+            logger.log(Level.INFO, "PutMapping: /unvalidatedOffers sent 403 response");
+            return ResponseEntity.status(FORBIDDEN).build();
         }
     }
 
@@ -416,7 +452,8 @@ public class RootController {
             logger.log(Level.INFO, "PutMapping: /validateOffer sent 404 response");
             return ResponseEntity.notFound().build();
         } catch (InvalidTokenException e) {
-            return ResponseEntity.status(403).build();
+            logger.log(Level.INFO, "PutMapping: /validateOffer sent 403 response");
+            return ResponseEntity.status(FORBIDDEN).build();
         }
     }
 
@@ -432,7 +469,8 @@ public class RootController {
             logger.log(Level.INFO, "DeleteMapping: /removeOffer sent 404 response");
             return ResponseEntity.notFound().build();
         } catch (InvalidTokenException e) {
-            return ResponseEntity.status(403).build();
+            logger.log(Level.INFO, "DeleteMapping: /removeOffer sent 403 response");
+            return ResponseEntity.status(FORBIDDEN).build();
         }
     }
 
@@ -442,11 +480,14 @@ public class RootController {
             authService.getToken(pdf.getToken(), STUDENT);
             StudentDTO dto = studentService.uploadCurriculumVitae(pdf);
             dto.setPassword("");
+            logger.log(Level.INFO, "PutMapping: /uploadStudentCV sent 200 response");
             return ResponseEntity.ok(dto);
         } catch (NonExistentEntityException e) {
+            logger.log(Level.INFO, "PutMapping: /uploadStudentCV sent 404 response");
             return ResponseEntity.notFound().build();
         }catch (InvalidTokenException e){
-            return ResponseEntity.status(403).build();
+            logger.log(Level.INFO, "PutMapping: /uploadStudentCV sent 403 response");
+            return ResponseEntity.status(FORBIDDEN).build();
         }
     }
 
@@ -456,13 +497,14 @@ public class RootController {
         try {
             authService.getToken(tokenId.getToken(), GESTIONNAIRE);
             byte[] offerPdf = gestionnaireService.getOffrePdfById(Long.parseLong(id));
-            logger.log(Level.INFO, "Get /offerPdf sent 200 response");
+            logger.log(Level.INFO, "PutMapping: /offerPdf sent 200 response");
             return ResponseEntity.ok(offerPdf);
         } catch (NonExistentOfferExeption e) {
-            logger.log(Level.INFO, "Get /offerPdf sent 404 response");
+            logger.log(Level.INFO, "PutMapping: /offerPdf sent 404 response");
             return ResponseEntity.notFound().build();
         } catch (InvalidTokenException e) {
-            return ResponseEntity.status(403).build();
+            logger.log(Level.INFO, "PutMapping: /offerPdf sent 403 response");
+            return ResponseEntity.status(FORBIDDEN).build();
         }
     }
 }

@@ -49,12 +49,10 @@ const ValidationGestionnaire = ({user}:{user:IUser}) => {
                     })
                 });
 
-            if (res.status == 409) {
+            if (!res.ok) {
                 const data = await res.json();
                 alert(data.error);
-            }
-
-            if (res.status == 201) {
+            }else {
                 alert("Utilisateur a été créé.");
             }
             setWaiting(false)
