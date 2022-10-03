@@ -189,9 +189,9 @@ public class RootController {
 
 
     @PostMapping("/student/login")
-    public ResponseEntity<TokenDTO> studentLogin(@RequestBody StudentDTO studentDTO){
+    public ResponseEntity<TokenDTO> studentLogin(@RequestBody LoginDTO loginDTO){
         try {
-            String token = authService.loginIfValid(studentDTO);
+            String token = authService.loginIfValid(loginDTO,STUDENT);
             return ResponseEntity.status(CREATED).body(TokenDTO.builder().token(token).build());
         }catch (InvalidTokenException e){
             return ResponseEntity.status(403).build();
@@ -200,9 +200,9 @@ public class RootController {
     }
 
     @PostMapping("/gestionnaire/login")
-    public ResponseEntity<TokenDTO> gestionnaireLogin(@RequestBody GestionnaireDTO gestionnaireDTO){
+    public ResponseEntity<TokenDTO> gestionnaireLogin(@RequestBody LoginDTO loginDTO){
         try {
-            String token = authService.loginIfValid(gestionnaireDTO);
+            String token = authService.loginIfValid(loginDTO,GESTIONNAIRE);
             return ResponseEntity.status(CREATED).body(TokenDTO.builder().token(token).build());
         }catch (InvalidTokenException e){
             return ResponseEntity.status(403).build();
@@ -211,9 +211,9 @@ public class RootController {
     }
 
     @PostMapping("/company/login")
-    public ResponseEntity<TokenDTO> companyLogin(@RequestBody CompanyDTO companyDTO){
+    public ResponseEntity<TokenDTO> companyLogin(@RequestBody LoginDTO loginDTO){
         try {
-            String token = authService.loginIfValid(companyDTO);
+            String token = authService.loginIfValid(loginDTO,COMPANY);
             return ResponseEntity.status(CREATED).body(TokenDTO.builder().token(token).build());
         }catch (InvalidTokenException e){
             return ResponseEntity.status(403).build();

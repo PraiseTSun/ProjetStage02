@@ -2,10 +2,7 @@ package projet.projetstage02.service;
 
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
-import projet.projetstage02.DTO.AbstractUserDTO;
-import projet.projetstage02.DTO.CompanyDTO;
-import projet.projetstage02.DTO.GestionnaireDTO;
-import projet.projetstage02.DTO.StudentDTO;
+import projet.projetstage02.DTO.*;
 import projet.projetstage02.exception.InvalidTokenException;
 import projet.projetstage02.exception.NonExistentEntityException;
 import projet.projetstage02.model.*;
@@ -32,35 +29,35 @@ public class AuthService {
     final StudentRepository studentRepository;
     final CompanyRepository companyRepository;
 
-    public <Y extends AbstractUser, T extends AbstractUserDTO<Y>> String loginIfValid(T dto)
+    public String loginIfValid(LoginDTO dto, Token.UserTypes userType)
             throws InvalidTokenException {
-        if (dto instanceof CompanyDTO companyDTO) {
-            return loginIfValidCompany(companyDTO);
-        } else if (dto instanceof StudentDTO studentDTO) {
-            return loginIfValidStudent(studentDTO);
-        } else if (dto instanceof GestionnaireDTO gestionnaireDTO) {
-            return loginIfValidGestionnaire(gestionnaireDTO);
+        if (userType == COMPANY) {
+            return loginIfValidCompany(dto);
+        } else if (userType == STUDENT) {
+            return loginIfValidStudent(dto);
+        } else if (userType == GESTIONNAIRE) {
+            return loginIfValidGestionnaire(dto);
         }
         throw new InvalidTokenException();
     }
 
-    private String loginIfValidGestionnaire(GestionnaireDTO gestionnaireDTO) throws InvalidTokenException {
+    private String loginIfValidGestionnaire(LoginDTO loginDTO) throws InvalidTokenException {
         Optional<Gestionnaire> gestionnaire = gestionnaireRepository.findByEmailAndPassword(
-                gestionnaireDTO.getEmail(), gestionnaireDTO.getPassword());
+                loginDTO.getEmail(), loginDTO.getPassword());
         validateOptional(gestionnaire);
         return createToken(gestionnaire.get(), GESTIONNAIRE);
     }
 
-    private String loginIfValidStudent(StudentDTO studentDTO) throws InvalidTokenException {
+    private String loginIfValidStudent(LoginDTO loginDTO) throws InvalidTokenException {
         Optional<Student> student = studentRepository.findByEmailAndPassword(
-                studentDTO.getEmail(), studentDTO.getPassword());
+                loginDTO.getEmail(), loginDTO.getPassword());
         validateOptional(student);
         return createToken(student.get(), STUDENT);
     }
 
-    private String loginIfValidCompany(CompanyDTO companyDTO) throws InvalidTokenException {
-        Optional<Company> company = companyRepository.findByEmailAndPassword(companyDTO.getEmail(),
-                companyDTO.getPassword());
+    private String loginIfValidCompany(LoginDTO loginDTO) throws InvalidTokenException {
+        Optional<Company> company = companyRepository.findByEmailAndPassword(loginDTO.getEmail(),
+                loginDTO.getPassword());
         validateOptional(company);
 
         return createToken(company.get(), COMPANY);
