@@ -140,7 +140,7 @@ function App() {
         <BrowserRouter>
           <Routes>
             <Route path="/" element={<GestionnaireDashboard deconnexion={deconnexion} user={user} />} />
-            <Route path="/userValidation" element={<UserValidation />} />
+            <Route path="/userValidation" element={<UserValidation connectedUser={user} />} />
             <Route path="/cvValidation" element={<StudentCvValidationPage deconnexion={deconnexion} />} />
             <Route path="*" element={<h1 className="text-center text-white display-1">404 - Page pas trouvé</h1>} />
           </Routes>
