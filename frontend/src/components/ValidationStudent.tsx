@@ -1,7 +1,8 @@
 import React, {useEffect, useState} from "react";
 import {Button, Col, Row} from "react-bootstrap";
+import IUser from "../models/IUser";
 
-const ValidationStudent = ({ onValidation, onRemove }: { onValidation: Function, onRemove : Function}) => {
+const ValidationStudent = ({connectedUser, onValidation, onRemove }: {connectedUser:IUser, onValidation: Function, onRemove : Function}) => {
     const user = "Student";
     const [students, setStudents] = useState<any[]>([]);
 
@@ -18,11 +19,13 @@ const ValidationStudent = ({ onValidation, onRemove }: { onValidation: Function,
     useEffect(() => {
         fetch(`http://localhost:8080/unvalidatedStudents`,
             {
-                method: "GET",
+                method: "PUT",
                 headers: {
                     'Accept': 'application/json',
                     'Content-Type': 'application/json',
                 },
+                body:JSON.stringify({token:connectedUser.token})
+
             })
             .then(response => response.json())
             .then(data => {

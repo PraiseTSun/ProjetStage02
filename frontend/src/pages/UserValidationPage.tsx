@@ -4,8 +4,9 @@ import ValidationStudent from "../components/ValidationStudent";
 import ValidationCompany from "../components/ValidationCompany";
 import ValidationGestionnaire from "../components/CreateGestionnaireForm";
 import { Link } from "react-router-dom";
+import IUser from "../models/IUser";
 
-const UserValidation = () => {
+const UserValidation = ({connectedUser}:{connectedUser:IUser}) => {
     const [user, setUser] = useState("Student");
 
     const onValidation = async (id: string, type: string) => {
@@ -14,7 +15,8 @@ const UserValidation = () => {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',
-                }
+                },
+                body:JSON.stringify({token:connectedUser.token})
             });
 
         if (res.status == 409) {
@@ -29,7 +31,8 @@ const UserValidation = () => {
                 method: 'DELETE',
                 headers: {
                     'Content-Type': 'application/json',
-                }
+                },
+                body:JSON.stringify({token:connectedUser.token})
             });
 
         if (res.status == 409) {
@@ -55,9 +58,9 @@ const UserValidation = () => {
                 </ToggleButtonGroup>
             </Row>
             <Row>
-                {user == "Student" ? <ValidationStudent onRemove={onRemove} onValidation={onValidation} /> :
-                    user == "Company" ? <ValidationCompany onRemove={onRemove} onValidation={onValidation} /> :
-                        <ValidationGestionnaire />
+                {user == "Student" ? <ValidationStudent connectedUser={connectedUser} onRemove={onRemove} onValidation={onValidation} /> :
+                    user == "Company" ? <ValidationCompany connectedUser={connectedUser} onRemove={onRemove} onValidation={onValidation} /> :
+                        <ValidationGestionnaire user={connectedUser}/>
                 }
             </Row>
         </Container>

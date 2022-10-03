@@ -2,10 +2,11 @@ import React from "react";
 import {useState} from 'react';
 import {Button, Col, Container, Form, Row} from "react-bootstrap";
 import {BeatLoader} from "react-spinners";
+import IUser from "../models/IUser";
 
 declare type FormControlElement = HTMLInputElement | HTMLTextAreaElement;
 
-const FormulaireSoumissionPage = (): JSX.Element => {
+const FormulaireSoumissionPage = ({user}:{user:IUser}): JSX.Element => {
     const [waiting, setWaiting] = useState(false);
     const [validated, setValidated] = useState(false);
     const [company, setCompany] = useState("")
@@ -26,7 +27,8 @@ const FormulaireSoumissionPage = (): JSX.Element => {
                 position: poste,
                 heureParSemaine: hoursPerWeek,
                 adresse: address,
-                pdf: pdf
+                pdf: pdf,
+                token: user.token
             }
 
             const headers = {

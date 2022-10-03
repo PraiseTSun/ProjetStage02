@@ -442,3 +442,67 @@ paths:
           description: Token invalide ou expiré
         404:
           description: L'étudiant avec cet id n'existe pas
+  /unvalidatedStudents:
+    get:
+      summary: Recevoir la listes des étudiants à valider
+      produces:
+        - application/json
+      responses:
+        200:
+          description: Liste des étudiants non validés
+          schema:
+            type: array
+            items:
+              type: object
+              properties:
+                id:
+                  type: number
+                firstName:
+                  type: string
+                lastName:
+                  type: string
+                email:
+                  type: string
+                isConfirmed:
+                  type: boolean
+                department:
+                  type: string
+                inscriptionTimestamp:
+                  type: number
+                emailConfirmed:
+                  type: boolean
+                cv:
+                  type: array
+                  items:
+                    type: number
+  /unvalidatedCompanies:
+    get:
+      summary: Recevoir la listes des compagnies à valider
+      produces:
+        - application/json
+      responses:
+        200:
+          description: Liste des compagnies non validés
+          schema:
+            type: array
+            items:
+              type: object
+              properties:
+                id:
+                  type: number
+                firstName:
+                  type: string
+                lastName:
+                  type: string
+                email:
+                  type: string
+                isConfirmed:
+                  type: boolean
+                department:
+                  type: string
+                inscriptionTimestamp:
+                  type: number
+                emailConfirmed:
+                  type: boolean
+                companyName:
+                  type: string

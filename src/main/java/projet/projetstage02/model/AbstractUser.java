@@ -3,8 +3,12 @@ package projet.projetstage02.model;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
+import lombok.experimental.SuperBuilder;
 
 import javax.persistence.*;
+import javax.validation.constraints.Email;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.Size;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.Arrays;
@@ -12,6 +16,7 @@ import java.util.Arrays;
 @Entity
 @Data
 @NoArgsConstructor
+@SuperBuilder
 @Inheritance(strategy = InheritanceType.JOINED)
 public abstract class AbstractUser {
     public enum Department {
@@ -37,10 +42,18 @@ public abstract class AbstractUser {
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "id", nullable = false)
     protected long id;
+    @NotBlank
+    @Size(min = 2)
     protected String firstName;
+    @NotBlank
+    @Size(min = 2)
     protected String lastName;
+    @NotBlank
+    @Email
     protected String email;
     @ToString.Exclude
+    @NotBlank
+    @Size(min = 2)
     protected String password;
     protected boolean isConfirm;
     protected long inscriptionTimestamp;
