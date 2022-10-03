@@ -159,7 +159,7 @@ public class GestionnaireService {
 
         studentRepository.findAll().stream()
                 .filter(student ->
-                        !student.isCvConfirm()
+                        student.getCvToValidate() != null && student.isConfirm()
                 )
                 .forEach(student -> {
                     StudentDTO dto = new StudentDTO(student);
@@ -170,5 +170,15 @@ public class GestionnaireService {
                 });
 
         return studentDTOS;
+    }
+
+    public StudentDTO validateStudentCV(long id) throws NonExistentUserException {
+        Optional<Student> studentOpt = studentRepository.findById(id);
+        if(studentOpt.isEmpty()) throw new NonExistentUserException();
+        Student student = studentOpt.get();
+        student.setCv(student.getCvToValidate());
+        student.setCvToValidate(null);
+        studentRepository.save(student);
+        return new StudentDTO(student);
     }
 }

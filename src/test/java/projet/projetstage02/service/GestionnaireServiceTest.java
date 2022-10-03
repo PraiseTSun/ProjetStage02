@@ -70,6 +70,7 @@ public class GestionnaireServiceTest {
                 "password",
                 AbstractUser.Department.Informatique
         );
+        studentTest.setCv(new byte[0]);
 
         offreTest = new Offre(
                 1L,
@@ -467,6 +468,8 @@ public class GestionnaireServiceTest {
         // Arrange
         List<Student> students = new ArrayList<>();
         students.add(studentTest);
+        studentTest.setCvToValidate(new byte[0]);
+        studentTest.setConfirm(true);
         when(studentRepository.findAll()).thenReturn(students);
 
         // Act
@@ -475,5 +478,34 @@ public class GestionnaireServiceTest {
         // Assert
         assertThat(unvalidatedStudentCV.get(0).getEmail()).isEqualTo(studentTest.getEmail());
         assertThat(unvalidatedStudentCV.get(0).getFirstName()).isEqualTo(studentTest.getFirstName());
+    }
+
+    @Test
+    void testValidateStudentCVSuccess() throws NonExistentUserException {
+        // Arrange
+        studentTest.setCvToValidate(new byte[0]);
+        when(studentRepository.findById(anyLong())).thenReturn(Optional.of(studentTest));
+
+        // Act
+        StudentDTO studentDTO = service.validateStudentCV(anyLong());
+
+        // Assert
+        assertThat(studentDTO.getFirstName()).isEqualTo(studentTest.getFirstName());
+        assertThat(studentDTO.getCv()).isEqualTo(new byte[0]);
+        assertThat(studentDTO.getCvToValidate()).isNull();
+    }
+
+    @Test
+    void testValidateStudentCVNotFound(){
+        // Arrange
+        when(studentRepository.findById(anyLong())).thenReturn(Optional.empty());
+
+        // Act
+        try {
+            service.validateStudentCV(anyLong());
+        } catch (NonExistentUserException e) {
+            return;
+        }
+        fail("NonExistentUserException not caught");
     }
 }

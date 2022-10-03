@@ -57,8 +57,7 @@ public class StudentService {
 
     public StudentDTO uploadCurriculumVitae(PdfDTO dto) throws NonExistentUserException {
         Student student = getStudentById(Long.parseLong(dto.getId())).toModel();
-        student.setCv(dto.getPdf());
-        student.setCvConfirm(false);
+        student.setCvToValidate(dto.getPdf());
         saveStudent(new StudentDTO(student));
         return new StudentDTO(student);
     }
