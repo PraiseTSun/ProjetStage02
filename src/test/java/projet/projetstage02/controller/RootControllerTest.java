@@ -628,9 +628,9 @@ public class RootControllerTest {
     void testGetStudentCvToValidateSuccess() throws Exception {
         byte[] cv = new byte[0];
         when(gestionnaireService.getStudentCvToValidate(anyLong())).thenReturn(cv);
+
         mockMvc.perform(get("/studentCv/{studentId}", 1))
                 .andExpect(status().isOk());
-//                .andExpect(jsonPath("$", is("")));
     }
 
     @Test

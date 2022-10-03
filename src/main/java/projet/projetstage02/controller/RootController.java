@@ -269,4 +269,14 @@ public class RootController {
             return ResponseEntity.notFound().build();
         }
     }
+
+    @PutMapping("/validateCv/{studentId}")
+    public ResponseEntity<StudentDTO> validateStudentCv(@PathVariable String studentId){
+        try {
+            StudentDTO studentDTO = gestionnaireService.validateStudentCV(Long.parseLong(studentId));
+            return ResponseEntity.ok(studentDTO);
+        } catch (NonExistentUserException e) {
+            return ResponseEntity.notFound().build();
+        }
+    }
 }
