@@ -21,9 +21,10 @@ const StudentCvValidationPage = ({ deconnexion }: { deconnexion: Function }): JS
         setStudents(data);
     }
 
-    async function validateCV(studentId: number, index: number): Promise<void> {
+    async function validateCV(studentId: number, index: number, valid: boolean) {
         try {
-            const response: Response = await fetch("http://localhost:8080/validateCV/" + studentId, {
+            const url: String = valid ? "http://localhost:8080/validateCV/" : "http://localhost:8080/refuseCV/";
+            const response: Response = await fetch(url + studentId.toString(), {
                 method: "PUT",
                 headers: {
                     'Accept': 'application/json',
@@ -41,32 +42,6 @@ const StudentCvValidationPage = ({ deconnexion }: { deconnexion: Function }): JS
             }
             else {
                 alert("Une erreur est survenue, ressayez.")
-            }
-        } catch (exception) {
-            alert("Une erreur est survenue, ressayez.")
-        }
-    }
-
-    async function refuseCV(studentId: number, index: number): Promise<void> {
-        try {
-            const response: Response = await fetch("http://localhost:8080/refuseCV/" + studentId, {
-                method: "PUT",
-                headers: {
-                    'Accept': 'application/json',
-                    'Content-Type': 'application/json',
-                },
-            });
-
-            //TODO add waiting beat loader
-            if (response.ok) {
-                setStudents(students.splice(index + 1, 1));
-            }
-            else if (response.status == 403) {
-                alert("Session expiré")
-                deconnexion()
-            }
-            else {
-                throw "Error code not handled";
             }
         } catch (exception) {
             alert("Une erreur est survenue, ressayez.")
@@ -105,8 +80,8 @@ const StudentCvValidationPage = ({ deconnexion }: { deconnexion: Function }): JS
                                         <td>{student.department}</td>
                                         <td><Link to={"/cv/" + student.id} className="btn btn-warning">CV</Link></td>
                                         <td>
-                                            <Button className="btn btn-success mx-2" onClick={() => validateCV(student.id, index)}>O</Button>
-                                            <Button className="btn btn-danger" onClick={() => refuseCV(student.id, index)}>X</Button>
+                                            <Button className="btn btn-success mx-2" onClick={() => validateCV(student.id, index, true)}>O</Button>
+                                            <Button className="btn btn-danger" onClick={() => validateCV(student.id, index, false)}>X</Button>
                                         </td>
                                     </tr>
                                 );
