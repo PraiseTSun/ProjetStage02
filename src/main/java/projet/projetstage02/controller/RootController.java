@@ -259,4 +259,14 @@ public class RootController {
         List<StudentDTO> students = gestionnaireService.getUnvalidatedCVStudents();
         return ResponseEntity.ok(students);
     }
+
+    @GetMapping("/studentCv/{studentId}")
+    public ResponseEntity<byte[]> getStudentCv(@PathVariable String studentId){
+        try {
+            byte[] cv = gestionnaireService.getStudentCvToValidate(Long.parseLong(studentId));
+            return ResponseEntity.ok(cv);
+        } catch (NonExistentUserException e) {
+            return ResponseEntity.notFound().build();
+        }
+    }
 }

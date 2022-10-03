@@ -538,7 +538,7 @@ public class GestionnaireServiceTest {
     }
 
     @Test
-    void testgetStudentCvToValidateSuccess() throws NonExistentUserException {
+    void testGetStudentCvToValidateSuccess() throws NonExistentUserException {
         // Arrange
         studentTest.setCvToValidate(new byte[0]);
         when(studentRepository.findById(anyLong())).thenReturn(Optional.of(studentTest));
@@ -551,7 +551,7 @@ public class GestionnaireServiceTest {
     }
 
     @Test
-    void testgetStudentCvToValidateNotFound() {
+    void testGetStudentCvToValidateNotFound() {
         // Arrange
         when(studentRepository.findById(anyLong())).thenReturn(Optional.empty());
 

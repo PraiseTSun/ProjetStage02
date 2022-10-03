@@ -623,4 +623,22 @@ public class RootControllerTest {
         mockMvc.perform(get("/unvalidatedCvStudents", 1))
                 .andExpect(status().isOk());
     }
+
+    @Test
+    void testGetStudentCvToValidateSuccess() throws Exception {
+        byte[] cv = new byte[0];
+        when(gestionnaireService.getStudentCvToValidate(anyLong())).thenReturn(cv);
+        mockMvc.perform(get("/studentCv/{studentId}", 1))
+                .andExpect(status().isOk());
+//                .andExpect(jsonPath("$", is("")));
+    }
+
+    @Test
+    void testGetStudentCvToValidateNotFound() throws Exception {
+        doThrow(new NonExistentUserException()).
+                when(gestionnaireService).getStudentCvToValidate(anyLong());
+
+        mockMvc.perform(get("/studentCv/{studentId}", 1))
+                .andExpect(status().isNotFound());
+    }
 }
