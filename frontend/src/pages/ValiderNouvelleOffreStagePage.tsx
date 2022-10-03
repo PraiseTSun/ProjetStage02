@@ -5,6 +5,7 @@ import IOffre from "../models/IOffre";
 
 
 const ValiderNouvelleOffreStagePage = ({setPdfId}: { setPdfId: Function }): JSX.Element => {
+
     const emptyOffre: IOffre = {
         id: 0,
         nomDeCompagnie: "",

@@ -22,7 +22,26 @@ const emptyUser: IUser = {
 
 function App() {
   const [user, setUser] = useState(emptyUser)
+  const [isOvrirPDF, setIsOvrirPDF] = useState(false)
   const [pdfid, setPdfid] = useState(0)
+  const [offresAttendreValide, setOffresAttendreValide] = useState([ {
+      "id" : "2",
+      "nomDeCompagnie" : "conpagnie",
+      "department" : "Technologie de genie Informatique",
+      "position": "position",
+      "heureParSemaine": 40,
+      "adresse" : "3232 rue bell",
+      "pdf" : "monfichier.pdf"
+  },
+      {
+          "id" : "2",
+          "nomDeCompagnie" : "conpagnie",
+          "department" : "Technologie de genie Informatique",
+          "position": "position",
+          "heureParSemaine": 40,
+          "adresse" : "3232 rue bell",
+          "pdf" : "monfichier.pdf"
+      }])
 
   const deconnexion = () => {
     setUser(emptyUser)
