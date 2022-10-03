@@ -159,7 +159,7 @@ public class GestionnaireService {
         return getOffer(id).getPdf();
     }
     public boolean deleteUnconfirmedGestionnaire(GestionnaireDTO dto) throws NonExistentEntityException {
-        Optional<Gestionnaire> studentOpt = gestionnaireRepository.findById(dto.getId());
+        Optional<Gestionnaire> studentOpt = gestionnaireRepository.findByEmail(dto.getEmail());
         if(studentOpt.isEmpty()) throw new NonExistentEntityException();
         Gestionnaire gestionnaire = studentOpt.get();
         if(!gestionnaire.isEmailConfirmed() && Timestamp.valueOf(LocalDateTime.now()).getTime() - gestionnaire.getInscriptionTimestamp() > MILLI_SECOND_DAY){

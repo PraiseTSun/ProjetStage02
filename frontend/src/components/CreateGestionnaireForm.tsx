@@ -53,7 +53,7 @@ const ValidationGestionnaire = ({user}:{user:IUser}) => {
                 const data = await res.json();
                 alert(data.error);
             }else {
-                alert("Utilisateur a été créé.");
+                alert("Le courriel de confirmation à été envoyé.");
             }
             setWaiting(false)
             setValidated(false)
