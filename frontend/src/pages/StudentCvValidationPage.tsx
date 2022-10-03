@@ -47,6 +47,32 @@ const StudentCvValidationPage = ({ deconnexion }: { deconnexion: Function }): JS
         }
     }
 
+    async function refuseCV(studentId: number, index: number): Promise<void> {
+        try {
+            const response: Response = await fetch("http://localhost:8080/refuseCV/" + studentId, {
+                method: "PUT",
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json',
+                },
+            });
+
+            //TODO add waiting beat loader
+            if (response.ok) {
+                setStudents(students.splice(index + 1, 1));
+            }
+            else if (response.status == 403) {
+                alert("Session expiré")
+                deconnexion()
+            }
+            else {
+                throw "Error code not handled";
+            }
+        } catch (exception) {
+            alert("Une erreur est survenue, ressayez.")
+        }
+    }
+
     return (
         <Container>
             <Row>
@@ -80,7 +106,7 @@ const StudentCvValidationPage = ({ deconnexion }: { deconnexion: Function }): JS
                                         <td><Link to={"/cv/" + student.id} className="btn btn-warning">CV</Link></td>
                                         <td>
                                             <Button className="btn btn-success mx-2" onClick={() => validateCV(student.id, index)}>O</Button>
-                                            <Button className="btn btn-danger">X</Button>
+                                            <Button className="btn btn-danger" onClick={() => refuseCV(student.id, index)}>X</Button>
                                         </td>
                                     </tr>
                                 );
