@@ -233,7 +233,7 @@ public class RootController {
     }
 
     @PutMapping("/uploadStudentCV")
-    public ResponseEntity<StudentDTO> uploadStudentCurriculumVitae(@Valid @RequestBody PdfDTO pdf){
+    public ResponseEntity<StudentDTO> uploadStudentCurriculumVitae(@Valid @RequestBody PdfDTO pdf) {
         try {
             StudentDTO dto = studentService.uploadCurriculumVitae(pdf);
             dto.setPassword("");
@@ -242,8 +242,9 @@ public class RootController {
             return ResponseEntity.notFound().build();
         }
     }
+
     @GetMapping("/offerPdf/{id}")
-    public ResponseEntity<byte[]> getOfferPdf(@PathVariable String id){
+    public ResponseEntity<byte[]> getOfferPdf(@PathVariable String id) {
         try {
             byte[] offerPdf = gestionnaireService.getOffrePdfById(Long.parseLong(id));
             return ResponseEntity.ok(offerPdf);
