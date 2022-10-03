@@ -123,7 +123,6 @@ public class RootControllerTest {
     void testCreateStudentHappyDay() throws Exception {
         when(studentService.isEmailUnique(anyString())).thenReturn(true);
         when(studentService.saveStudent(any())).thenReturn(1L);
-
         mockMvc.perform(post("/createStudent")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(jsonStudentDTO.write(bart).getJson()))
