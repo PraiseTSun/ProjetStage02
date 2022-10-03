@@ -6,6 +6,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import projet.projetstage02.DTO.PdfDTO;
 import projet.projetstage02.DTO.StudentDTO;
 import projet.projetstage02.exception.NonExistentEntityException;
 import projet.projetstage02.model.AbstractUser;
@@ -31,6 +32,7 @@ public class StudentServiceTest {
     StudentRepository studentRepository;
 
     Student bart;
+    PdfDTO bartCv;
 
     @BeforeEach
     void setup() {
@@ -42,6 +44,8 @@ public class StudentServiceTest {
                 AbstractUser.Department.Informatique);
 
         bart.setCv(new byte[0]);
+
+        bartCv = new PdfDTO("1", new byte[0]);
     }
 
     @Test
@@ -177,7 +181,7 @@ public class StudentServiceTest {
         when(studentRepository.save(any())).thenReturn(bart);
 
         //Act
-        studentService.uploadCurriculumVitae(new StudentDTO(bart));
+        studentService.uploadCurriculumVitae(bartCv);
 
         // Assert
         verify(studentRepository, times(1)).save(any());
@@ -190,7 +194,7 @@ public class StudentServiceTest {
 
         // Act
         try {
-            studentService.uploadCurriculumVitae(new StudentDTO(bart));
+            studentService.uploadCurriculumVitae(bartCv);
         } catch (NonExistentEntityException e) {
             return;
         }

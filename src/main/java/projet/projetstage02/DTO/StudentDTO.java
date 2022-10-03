@@ -21,6 +21,7 @@ public class StudentDTO extends AbstractUserDTO<Student> {
     private String department;
     @Lob
     private byte[] cv;
+    private boolean cvConfirm;
 
     public StudentDTO(Student student) {
         id = student.getId();
@@ -33,6 +34,7 @@ public class StudentDTO extends AbstractUserDTO<Student> {
         inscriptionTimestamp = student.getInscriptionTimestamp();
         emailConfirmed = student.isEmailConfirmed();
         cv = student.getCv();
+        cvConfirm = student.isCvConfirm();
     }
 
     @Override
@@ -48,6 +50,7 @@ public class StudentDTO extends AbstractUserDTO<Student> {
         );
         student.setId(id);
         student.setCv(cv);
+        student.setCvConfirm(cvConfirm);
         return student;
     }
 }

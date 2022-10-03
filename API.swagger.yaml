@@ -109,7 +109,7 @@ paths:
                 type: boolean
         404:
           description: Courriel et/ou mot de passe invalide
-  /8createStudentcreateStudent:
+  /createStudent:
     post:
       summary: Crée un étudiant et envoie le courriel de confirmation
       parameters:
@@ -323,13 +323,13 @@ paths:
             properties:
               error:
                 type: string
-  /validateCV/{id}:
+  /validateCV/{studentId}:
     put:
-      summary: Validé un cv par son id (Gestionnaire seulement)
+      summary: Validé un cv par son l'id de l'étudiant (Gestionnaire seulement)
       parameters:
         - in: path
-          name: id
-          description: id du CV
+          name: studentId
+          description: id de l'étudiant
           type: string
           required: true
         - in: body
@@ -348,14 +348,14 @@ paths:
         403:
           description: Token invalide ou expiré
         404:
-          description: Un cv avec ce id n'existe pas ou le token est invalide
-  /refuseCV/{id}:
+          description: Un étudiant avec ce id n'existe pas
+  /refuseCV/{studentId}:
     put:
-      summary: Refuse un cv par son id (Gestionnaire seulement)
+      summary: Refuse un cv par son l'id de l'étudiant (Gestionnaire seulement)
       parameters:
         - in: path
-          name: id
-          description: id du CV
+          name: studentId
+          description: id de l'étudiant
           type: string
           required: true
         - in: body
@@ -370,14 +370,14 @@ paths:
         - application/json
       responses:
         200:
-          description: CV refusé
+          description: CV refusé et enlevé de la BD
         403:
           description: Token invalide ou expiré
         404:
-          description: Un cv avec ce id n'existe pas
-  /unvalidatedCVS:
+          description: Un étudiant avec ce id n'existe pas
+  /unvalidatedCvStudents:
     put:
-      summary: Recevoir la listes des CVs à valider
+      summary: Recevoir la liste des étudiants avec des cvs non validés
       parameters:
         - in: body
           name: token
@@ -391,22 +391,57 @@ paths:
         - application/json
       responses:
         200:
-          description: Liste des CVs non validé
+          description: Liste des étudiants avec des CVs non validé
           schema:
             type: array
             items:
               type: object
               properties:
-                id:
-                  type: number
-                userId:
-                  type: number
-                cv:
-                  type: array
-                  items:
-                    type: number
+                firstName:
+                  type: string
+                lastName:
+                  type: string
+                email:
+                  type: string
+                isConfirmed:
+                  type: boolean
+                department:
+                  type: boolean
         403:
           description: Token invalide ou expiré
+  /studentCv/{studentId}:
+    put:
+      summary: Recevoir le CV d'un étudiant
+      parameters:
+        - in: path
+          name: studentId
+          description: id de l'étudiant
+          type: string
+          required: true
+        - in: body
+          name: token
+          description: Token valide du gestionnaire
+          schema:
+            type: object
+            properties:
+              token:
+                type: string
+      produces:
+        - application/json
+      responses:
+        200:
+          description: Le byte-array du cv
+          schema:
+            type: object
+            properties:
+              data:
+                type: array
+                items:
+                  type: number
+        403:
+          description: Token invalide ou expiré
+        404:
+          description: L'étudiant avec cet id n'existe pas
   /unvalidatedStudents:
     get:
       summary: Recevoir la listes des étudiants à valider

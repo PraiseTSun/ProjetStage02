@@ -400,12 +400,13 @@ public class RootController {
     }
 
     @PutMapping("/validateOffer/{id}")
-    public ResponseEntity<Map<String, String>> validateOffer(@PathVariable String id) {
+    public ResponseEntity<OffreDTO> validateOffer(@PathVariable String id) {
         logger.log(Level.INFO, "Put /validateOffer/{id} entered with id : " + id);
         try {
             gestionnaireService.validateOfferById(Long.parseLong(id));
             logger.log(Level.INFO, "PutMapping: /validateOffer sent 200 response");
-            return ResponseEntity.ok().build();
+            OffreDTO offreDTO = gestionnaireService.validateOfferById(Long.parseLong(id));
+            return ResponseEntity.ok(offreDTO);
         } catch (NonExistentOfferExeption exception) {
             logger.log(Level.INFO, "PutMapping: /validateOffer sent 404 response");
             return ResponseEntity.notFound().build();
@@ -421,6 +422,17 @@ public class RootController {
             return ResponseEntity.ok().build();
         } catch (NonExistentOfferExeption exception) {
             logger.log(Level.INFO, "DeleteMapping: /removeOffer sent 404 response");
+            return ResponseEntity.notFound().build();
+        }
+    }
+
+    @PutMapping("/uploadStudentCV")
+    public ResponseEntity<StudentDTO> uploadStudentCurriculumVitae(@Valid @RequestBody PdfDTO pdf) {
+        try {
+            StudentDTO dto = studentService.uploadCurriculumVitae(pdf);
+            dto.setPassword("");
+            return ResponseEntity.ok(dto);
+        } catch (NonExistentEntityException e) {
             return ResponseEntity.notFound().build();
         }
     }

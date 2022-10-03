@@ -61,6 +61,7 @@ public class RootControllerTest {
     JacksonTester<GestionnaireDTO> jsonGestionnaireDTO;
     JacksonTester<OffreDTO> jsonOffreDTO;
     JacksonTester<TokenDTO> jsonTokenDTO;
+    JacksonTester<PdfDTO> jsonPdfDTO;
 
     StudentDTO bart;
     CompanyDTO duffBeer;
@@ -68,6 +69,7 @@ public class RootControllerTest {
     LoginDTO login;
     GestionnaireDTO burns;
     OffreDTO duffOffre;
+    PdfDTO bartCV;
 
     // https://thepracticaldeveloper.com/guide-spring-boot-controller-tests/
     @BeforeEach
@@ -115,6 +117,8 @@ public class RootControllerTest {
                 .build();
 
         login = LoginDTO.builder().build();
+        bartCV = new PdfDTO("1", new byte[0]);
+
         JacksonTester.initFields(this, new ObjectMapper());
         mockMvc = MockMvcBuilders.standaloneSetup(rootController).build();
     }
@@ -610,8 +614,12 @@ public class RootControllerTest {
         duffOffre.setValide(true);
         when(gestionnaireService.validateOfferById(anyLong())).thenReturn(duffOffre);
 
-        mockMvc.perform(put("/validateOffer/{id}", 1))
-                .andExpect(status().isOk());
+        mockMvc.perform(put("/validateOffer/{id}", 1)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(jsonOffreDTO.write(duffOffre).getJson()))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.nomDeCompagnie", is("Duff Beer")))
+                .andExpect(jsonPath("$.valide", is(true)));
     }
 
     @Test
@@ -642,6 +650,30 @@ public class RootControllerTest {
                 .andExpect(status().isNotFound());
     }
 
+    @Test
+    void testUploadCurriculumVitaeSuccess() throws Exception {
+        bart.setCv(bartCV.getPdf());
+        when(studentService.uploadCurriculumVitae(any())).thenReturn(bart);
+
+        mockMvc.perform(put("/uploadStudentCV")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(jsonStudentDTO.write(bart).getJson()))
+
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.firstName", is("Bart")))
+                .andExpect(jsonPath("$.cv", is("")))
+                .andExpect(jsonPath("$.cvConfirm", is(false)));
+    }
+
+    @Test
+    void testUploadCurriculumVitaeNotFound() throws Exception {
+        doThrow(new NonExistentUserException())
+                .when(studentService).uploadCurriculumVitae(any());
+
+        mockMvc.perform(put("/uploadStudentCV")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(jsonPdfDTO.write(bartCV).getJson()));
+    }
     @Test
     void testGetOfferPdfSuccess() throws Exception {
         byte[] pdf = new byte[0];

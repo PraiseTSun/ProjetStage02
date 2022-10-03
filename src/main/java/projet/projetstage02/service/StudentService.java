@@ -2,6 +2,7 @@ package projet.projetstage02.service;
 
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
+import projet.projetstage02.DTO.PdfDTO;
 import projet.projetstage02.DTO.StudentDTO;
 import projet.projetstage02.exception.NonExistentEntityException;
 import projet.projetstage02.model.AbstractUser;
@@ -56,9 +57,10 @@ public class StudentService {
         return new StudentDTO(studentOpt.get());
     }
 
-    public StudentDTO uploadCurriculumVitae(StudentDTO dto) throws NonExistentEntityException {
-        Student student = getStudentById(dto.getId()).toModel();
-        student.setCv(dto.getCv());
+    public StudentDTO uploadCurriculumVitae(PdfDTO dto) throws NonExistentUserException {
+        Student student = getStudentById(Long.parseLong(dto.getId())).toModel();
+        student.setCv(dto.getPdf());
+        student.setCvConfirm(false);
         saveStudent(new StudentDTO(student));
         return new StudentDTO(student);
     }

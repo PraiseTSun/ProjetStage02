@@ -20,9 +20,11 @@ public class Student extends AbstractUser {
     @NotNull
     @Lob
     private byte[] cv;
+    private boolean cvConfirm;
     public Student(String firstName, String lastName, String email, String password, Department department) {
         super(firstName, lastName, email, password);
         this.department = department;
+        cvConfirm = false;
     }
 
     public Student(
