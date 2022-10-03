@@ -667,7 +667,7 @@ public class RootControllerTest {
 
     @Test
     void testUploadCurriculumVitaeNotFound() throws Exception {
-        doThrow(new NonExistentUserException())
+        doThrow(new NonExistentEntityException())
                 .when(studentService).uploadCurriculumVitae(any());
 
         mockMvc.perform(put("/uploadStudentCV")

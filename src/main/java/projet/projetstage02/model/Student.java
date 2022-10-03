@@ -17,7 +17,6 @@ import javax.validation.constraints.NotNull;
 public class Student extends AbstractUser {
     @NotNull
     private Department department;
-    @NotNull
     @Lob
     private byte[] cv;
     private boolean cvConfirm;
