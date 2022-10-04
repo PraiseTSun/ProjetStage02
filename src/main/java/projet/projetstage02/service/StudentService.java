@@ -62,8 +62,7 @@ public class StudentService {
 
     public StudentDTO uploadCurriculumVitae(PdfDTO dto) throws NonExistentEntityException {
         Student student = getStudentById(dto.getStudentId()).toModel();
-        student.setCv(dto.getPdf());
-        student.setCvValidated(false);
+        student.setCvToValidate(dto.getPdf());
         saveStudent(new StudentDTO(student));
         return new StudentDTO(student);
     }

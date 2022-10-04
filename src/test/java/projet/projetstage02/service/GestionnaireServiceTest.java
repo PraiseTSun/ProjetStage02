@@ -481,7 +481,7 @@ public class GestionnaireServiceTest {
     }
 
     @Test
-    void testValidateStudentCVSuccess() throws NonExistentUserException {
+    void testValidateStudentCVSuccess() throws NonExistentEntityException {
         // Arrange
         studentTest.setCvToValidate(new byte[0]);
         when(studentRepository.findById(anyLong())).thenReturn(Optional.of(studentTest));
@@ -503,14 +503,14 @@ public class GestionnaireServiceTest {
         // Act
         try {
             service.validateStudentCV(1L);
-        } catch (NonExistentUserException e) {
+        } catch (NonExistentEntityException e) {
             return;
         }
         fail("NonExistentUserException not caught");
     }
 
     @Test
-    void testRemoveStudentCvValidationSuccess () throws NonExistentUserException {
+    void testRemoveStudentCvValidationSuccess () throws NonExistentEntityException {
         // Arrange
         studentTest.setCvToValidate(new byte[0]);
         when(studentRepository.findById(anyLong())).thenReturn(Optional.of(studentTest));
@@ -531,14 +531,14 @@ public class GestionnaireServiceTest {
         // Act
         try {
             service.removeStudentCvValidation(1L);
-        } catch (NonExistentUserException e) {
+        } catch (NonExistentEntityException e) {
             return;
         }
         fail("NonExistentUserException not caught");
     }
 
     @Test
-    void testGetStudentCvToValidateSuccess() throws NonExistentUserException {
+    void testGetStudentCvToValidateSuccess() throws NonExistentEntityException {
         // Arrange
         studentTest.setCvToValidate(new byte[0]);
         when(studentRepository.findById(anyLong())).thenReturn(Optional.of(studentTest));
@@ -558,7 +558,7 @@ public class GestionnaireServiceTest {
         // Act
         try {
             service.getStudentCvToValidate(1L);
-        } catch (NonExistentUserException e) {
+        } catch (NonExistentEntityException e) {
             return;
         }
         fail("NonExistentUserException not caught");

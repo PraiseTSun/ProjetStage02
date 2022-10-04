@@ -13,6 +13,7 @@ import projet.projetstage02.DTO.*;
 import projet.projetstage02.exception.InvalidTokenException;
 import projet.projetstage02.exception.NonExistentEntityException;
 import projet.projetstage02.exception.NonExistentOfferExeption;
+
 import projet.projetstage02.model.Token;
 import projet.projetstage02.service.AuthService;
 import projet.projetstage02.service.CompanyService;
@@ -315,16 +316,12 @@ public class RootController {
     public ResponseEntity<List<StudentDTO>> getUnvalidatedStudents(@Valid @RequestBody TokenDTO tokenId) {
         try {
             logger.log(Level.INFO, "get /unvalidatedStudents entered");
-            Token token = authService.getToken(tokenId.getToken(), GESTIONNAIRE);
-            gestionnaireService.getGestionnaireById(token.getUserId());
+            authService.getToken(tokenId.getToken(), GESTIONNAIRE);
             List<StudentDTO> unvalidatedStudents = gestionnaireService.getUnvalidatedStudents();
             unvalidatedStudents.forEach(student -> student.setPassword(""));
             logger.log(Level.INFO, "PutMapping: /unvalidatedStudents sent 200 response");
             return ResponseEntity.ok(unvalidatedStudents);
-        } catch (NonExistentEntityException e) {
-            logger.log(Level.INFO, "PutMapping: /unvalidatedStudents sent 404 response");
-            return ResponseEntity.notFound().build();
-        } catch (InvalidTokenException ex) {
+        }catch (InvalidTokenException ex){
             logger.log(Level.INFO, "PutMapping: /unvalidatedStudents sent 403 response");
             return ResponseEntity.status(FORBIDDEN).build();
         }
@@ -334,16 +331,12 @@ public class RootController {
     public ResponseEntity<List<CompanyDTO>> getUnvalidatedCompanies(@Valid @RequestBody TokenDTO tokenId) {
         try {
             logger.log(Level.INFO, "get /unvalidatedCompanies entered");
-            Token token = authService.getToken(tokenId.getToken(), GESTIONNAIRE);
-            gestionnaireService.getGestionnaireById(token.getUserId());
+            authService.getToken(tokenId.getToken(), GESTIONNAIRE);
             List<CompanyDTO> unvalidatedCompanies = gestionnaireService.getUnvalidatedCompanies();
             unvalidatedCompanies.forEach(company -> company.setPassword(""));
             logger.log(Level.INFO, "PutMapping: /unvalidatedCompanies sent 200 response");
             return ResponseEntity.ok(unvalidatedCompanies);
-        } catch (NonExistentEntityException e) {
-            logger.log(Level.INFO, "PutMapping: /unvalidatedCompanies sent 404 response");
-            return ResponseEntity.notFound().build();
-        } catch (InvalidTokenException ex) {
+        }catch (InvalidTokenException ex){
             logger.log(Level.INFO, "PutMapping: /unvalidatedCompanies sent 403 response");
             return ResponseEntity.status(FORBIDDEN).build();
         }

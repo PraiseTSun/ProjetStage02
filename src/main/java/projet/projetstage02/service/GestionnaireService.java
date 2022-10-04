@@ -155,19 +155,6 @@ public class GestionnaireService {
         return getOffer(id).getPdf();
     }
 
-    public boolean deleteUnconfirmedGestionnaire(GestionnaireDTO dto) throws NonExistentEntityException {
-        Optional<Gestionnaire> studentOpt = gestionnaireRepository.findByEmail(dto.getEmail());
-        if (studentOpt.isEmpty())
-            throw new NonExistentEntityException();
-        Gestionnaire gestionnaire = studentOpt.get();
-        if (!gestionnaire.isEmailConfirmed() && Timestamp.valueOf(LocalDateTime.now()).getTime()
-                - gestionnaire.getInscriptionTimestamp() > MILLI_SECOND_DAY) {
-            gestionnaireRepository.delete(gestionnaire);
-            return true;
-        }
-        return false;
-    }
-
     public List<StudentDTO> getUnvalidatedCVStudents() {
         List<StudentDTO> studentDTOS = new ArrayList<>();
 
@@ -185,22 +172,38 @@ public class GestionnaireService {
     }
 
     public StudentDTO validateStudentCV(long id) throws NonExistentEntityException {
-        Student student = getStudent(id);
-        student.setCvValidated(true);
+        Optional<Student> studentOpt = studentRepository.findById(id);
+        if(studentOpt.isEmpty()) throw new NonExistentEntityException();
+        Student student = studentOpt.get();
+        student.setCv(student.getCvToValidate());
+        student.setCvToValidate(null);
         studentRepository.save(student);
         return new StudentDTO(student);
     }
 
     public StudentDTO removeStudentCvValidation(long id) throws NonExistentEntityException {
-        Student student = getStudent(id);
-        student.setCv(null);
+        Optional<Student> studentOpt = studentRepository.findById(id);
+        if(studentOpt.isEmpty()) throw new NonExistentEntityException();
+        Student student = studentOpt.get();
+        student.setCvToValidate(null);
         studentRepository.save(student);
         return new StudentDTO(student);
     }
 
     public byte[] getStudentCvToValidate(long id) throws NonExistentEntityException {
-        Student student = getStudent(id);
-        // TODO Don't return null
-        return student.getCv();
+        Optional<Student> studentOpt = studentRepository.findById(id);
+        if (studentOpt.isEmpty()) throw new NonExistentEntityException();
+        return studentOpt.get().getCvToValidate();
+    }
+
+    public boolean deleteUnconfirmedGestionnaire(GestionnaireDTO dto) throws NonExistentEntityException {
+        Optional<Gestionnaire> studentOpt = gestionnaireRepository.findByEmail(dto.getEmail());
+        if(studentOpt.isEmpty()) throw new NonExistentEntityException();
+        Gestionnaire gestionnaire = studentOpt.get();
+        if(!gestionnaire.isEmailConfirmed() && Timestamp.valueOf(LocalDateTime.now()).getTime() - gestionnaire.getInscriptionTimestamp() > MILLI_SECOND_DAY){
+            gestionnaireRepository.delete(gestionnaire);
+            return true;
+        }
+        return false;
     }
 }
