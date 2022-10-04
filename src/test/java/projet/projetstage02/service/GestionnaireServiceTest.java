@@ -486,7 +486,7 @@ public class GestionnaireServiceTest {
             return;
         }
         // Assert
-        Fail.fail("NonExistentEntityException not thrown");
+        fail("NonExistentEntityException not thrown");
     }
 
     @Test
