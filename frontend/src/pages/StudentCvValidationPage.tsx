@@ -4,6 +4,7 @@ import { Link } from "react-router-dom";
 
 const StudentCvValidationPage = ({ deconnexion }: { deconnexion: Function }): JSX.Element => {
     const [students, setStudents] = useState<any[]>([]);
+    const [showCV, setShowCV] = useState<boolean>(false)
 
     useEffect(() => {
         fetchUnvalidatedCvStudents()
@@ -32,7 +33,6 @@ const StudentCvValidationPage = ({ deconnexion }: { deconnexion: Function }): JS
                 },
             });
 
-            //TODO add waiting beat loader
             if (response.ok) {
                 setStudents(students.splice(index + 1, 1));
             }
@@ -78,7 +78,7 @@ const StudentCvValidationPage = ({ deconnexion }: { deconnexion: Function }): JS
                                         <td>{student.firstName}</td>
                                         <td>{student.lastName}</td>
                                         <td>{student.department}</td>
-                                        <td><Link to={"/cv/" + student.id} className="btn btn-warning">CV</Link></td>
+                                        <td><Button></Button></td>
                                         <td>
                                             <Button className="btn btn-success mx-2" onClick={() => validateCV(student.id, index, true)}>O</Button>
                                             <Button className="btn btn-danger" onClick={() => validateCV(student.id, index, false)}>X</Button>
