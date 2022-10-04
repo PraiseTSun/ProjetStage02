@@ -15,7 +15,11 @@ import javax.validation.constraints.Size;
 @AllArgsConstructor
 public abstract class AbstractUserDTO<T> {
     protected long id = 0;
+    @NotBlank
+    @Size(min = 2)
     protected String firstName;
+    @NotBlank
+    @Size(min = 2)
     protected String lastName;
     @NotBlank
     @Email

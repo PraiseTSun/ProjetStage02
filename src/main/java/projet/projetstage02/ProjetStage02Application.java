@@ -1,6 +1,6 @@
 package projet.projetstage02;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.AllArgsConstructor;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -15,15 +15,13 @@ import projet.projetstage02.service.GestionnaireService;
 import projet.projetstage02.service.StudentService;
 
 @SpringBootApplication
+@AllArgsConstructor
 public class ProjetStage02Application implements CommandLineRunner {
 
-    @Autowired
     private StudentService studentService;
 
-    @Autowired
     private CompanyService companyService;
 
-    @Autowired
     private GestionnaireService gestionnaireService;
 
     public static void main(String[] args) {
@@ -56,6 +54,7 @@ public class ProjetStage02Application implements CommandLineRunner {
                 35,
                 "My Home",
                 new byte[0],
+                "notoken",
                 false));
 
         System.out.println(studentService.getStudentById(1L));
@@ -66,5 +65,6 @@ public class ProjetStage02Application implements CommandLineRunner {
         System.out.println(companyService.getCompanyByEmailPassword("Bob@bell.com", "bestcompany"));
         System.out.println(gestionnaireService.getGestionnaireByEmailPassword("dave@gmail.ca", "cooldude"));
         System.out.println(gestionnaireService.getNoneValidateOffers());
+
     }
 }

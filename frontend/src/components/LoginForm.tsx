@@ -19,23 +19,32 @@ const LoginForm = (props: { setUser: Function }): JSX.Element => {
 
         if (form.checkValidity()) {
             setWaiting(true)
-            const headers = {
-                method: "PUT",
+            const getTokenHeaders = {
+                method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ "email": email, "password": password })
             };
-            const res = await fetch("http://localhost:8080/" + userType, headers)
-            if (res.ok) {
-                const data = await res.json()
-                const user: IUser = {
-                    firstName: data.firstName,
-                    lastName: data.lastName,
-                    userType: userType
-                }
-                props.setUser(user)
-                localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(user))
+            const tokenRes = await fetch("http://localhost:8080/" + userType + "/login", getTokenHeaders)
+            if (tokenRes.ok) {
+                const tokenData = await tokenRes.json()
+                const getUserHeaders = {
+                    method: "PUT",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({"token":tokenData.token})
+                };
+                const res = await fetch("http://localhost:8080/" + userType, getUserHeaders)
+                if (res.ok) {
+                    const data = await res.json()
+                    const user: IUser = {
+                        firstName: data.firstName,
+                        lastName: data.lastName,
+                        userType: userType,
+                        token: tokenData.token
+                    }
+                    props.setUser(user)
+                    localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(user))
+                } else setIsInvalidLoggin(true)
             } else setIsInvalidLoggin(true)
-
         }
         setWaiting(false)
         setValidated(true);

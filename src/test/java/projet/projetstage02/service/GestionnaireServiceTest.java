@@ -7,8 +7,8 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import projet.projetstage02.DTO.*;
+import projet.projetstage02.exception.NonExistentEntityException;
 import projet.projetstage02.exception.NonExistentOfferExeption;
-import projet.projetstage02.exception.NonExistentUserException;
 import projet.projetstage02.model.*;
 import projet.projetstage02.repository.CompanyRepository;
 import projet.projetstage02.repository.GestionnaireRepository;
@@ -122,7 +122,7 @@ public class GestionnaireServiceTest {
     }
 
     @Test
-    public void testGetGestionnaireByIdSuccess() throws NonExistentUserException {
+    public void testGetGestionnaireByIdSuccess() throws NonExistentEntityException {
         // Arrange
         when(gestionnaireRepository.findById(anyLong())).thenReturn(Optional.of(gestionnaireTest));
 
@@ -141,7 +141,7 @@ public class GestionnaireServiceTest {
         // Act
         try {
             service.getGestionnaireById(1L);
-        } catch (NonExistentUserException e) {
+        } catch (NonExistentEntityException e) {
             // Assert
             return;
         }
@@ -149,7 +149,7 @@ public class GestionnaireServiceTest {
     }
 
     @Test
-    public void testGetGestionnaireByEmailPasswordSuccess() throws NonExistentUserException {
+    public void testGetGestionnaireByEmailPasswordSuccess() throws NonExistentEntityException {
         // Arrange
         when(gestionnaireRepository.findByEmailAndPassword(anyString(), anyString()))
                 .thenReturn(Optional.of(gestionnaireTest));
@@ -171,7 +171,7 @@ public class GestionnaireServiceTest {
         // Act
         try {
             service.getGestionnaireByEmailPassword(anyString(), anyString());
-        } catch (NonExistentUserException e) {
+        } catch (NonExistentEntityException e) {
             // Assert
             return;
         }
@@ -179,7 +179,7 @@ public class GestionnaireServiceTest {
     }
 
     @Test
-    public void testValidateCompanySuccess() throws NonExistentUserException{
+    public void testValidateCompanySuccess() throws NonExistentEntityException{
         // Arrange
         when(companyRepository.findById(anyLong())).thenReturn(Optional.of(companyTest));
 
@@ -198,14 +198,14 @@ public class GestionnaireServiceTest {
         // Act
         try {
             service.validateCompany(1L);
-        } catch (NonExistentUserException e) {
+        } catch (NonExistentEntityException e) {
             return;
         }
         fail("NonExistentUserException not caught");
     }
 
     @Test
-    public void testValidateStudentSuccess() throws NonExistentUserException{
+    public void testValidateStudentSuccess() throws NonExistentEntityException{
         // Arrange
         when(studentRepository.findById(anyLong())).thenReturn(Optional.of(studentTest));
 
@@ -224,7 +224,7 @@ public class GestionnaireServiceTest {
         // Act
         try {
             service.validateStudent(1L);
-        } catch (NonExistentUserException e) {
+        } catch (NonExistentEntityException e) {
             return;
         }
 
@@ -232,7 +232,7 @@ public class GestionnaireServiceTest {
     }
 
     @Test
-    public void testRemoveCompanySuccess() throws NonExistentUserException {
+    public void testRemoveCompanySuccess() throws NonExistentEntityException {
         // Arrange
         when(companyRepository.findById(anyLong())).thenReturn(Optional.of(companyTest));
         doNothing().when(companyRepository).delete(any());
@@ -252,7 +252,7 @@ public class GestionnaireServiceTest {
         // Act
         try {
             service.removeCompany(1L);
-        } catch (NonExistentUserException e) {
+        } catch (NonExistentEntityException e) {
             return;
         }
 
@@ -260,7 +260,7 @@ public class GestionnaireServiceTest {
     }
 
     @Test
-    public void testRemoveStudentSuccess() throws NonExistentUserException {
+    public void testRemoveStudentSuccess() throws NonExistentEntityException {
         // Arrange
         when(studentRepository.findById(anyLong())).thenReturn(Optional.of(studentTest));
         doNothing().when(studentRepository).delete(any());
@@ -280,7 +280,7 @@ public class GestionnaireServiceTest {
         // Act
         try {
             service.removeStudent(1L);
-        } catch (NonExistentUserException e) {
+        } catch (NonExistentEntityException e) {
             return;
         }
         fail("NonExistentUserException not caught");
@@ -481,7 +481,7 @@ public class GestionnaireServiceTest {
     }
 
     @Test
-    void testValidateStudentCVSuccess() throws NonExistentUserException {
+    void testValidateStudentCVSuccess() throws NonExistentEntityException {
         // Arrange
         studentTest.setCvToValidate(new byte[0]);
         when(studentRepository.findById(anyLong())).thenReturn(Optional.of(studentTest));
@@ -503,14 +503,14 @@ public class GestionnaireServiceTest {
         // Act
         try {
             service.validateStudentCV(1L);
-        } catch (NonExistentUserException e) {
+        } catch (NonExistentEntityException e) {
             return;
         }
         fail("NonExistentUserException not caught");
     }
 
     @Test
-    void testRemoveStudentCvValidationSuccess () throws NonExistentUserException {
+    void testRemoveStudentCvValidationSuccess () throws NonExistentEntityException {
         // Arrange
         studentTest.setCvToValidate(new byte[0]);
         when(studentRepository.findById(anyLong())).thenReturn(Optional.of(studentTest));
@@ -531,14 +531,14 @@ public class GestionnaireServiceTest {
         // Act
         try {
             service.removeStudentCvValidation(1L);
-        } catch (NonExistentUserException e) {
+        } catch (NonExistentEntityException e) {
             return;
         }
         fail("NonExistentUserException not caught");
     }
 
     @Test
-    void testGetStudentCvToValidateSuccess() throws NonExistentUserException {
+    void testGetStudentCvToValidateSuccess() throws NonExistentEntityException {
         // Arrange
         studentTest.setCvToValidate(new byte[0]);
         when(studentRepository.findById(anyLong())).thenReturn(Optional.of(studentTest));
@@ -558,7 +558,7 @@ public class GestionnaireServiceTest {
         // Act
         try {
             service.getStudentCvToValidate(1L);
-        } catch (NonExistentUserException e) {
+        } catch (NonExistentEntityException e) {
             return;
         }
         fail("NonExistentUserException not caught");
