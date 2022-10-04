@@ -6,6 +6,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import projet.projetstage02.DTO.CompanyDTO;
 import projet.projetstage02.DTO.PdfDTO;
 import projet.projetstage02.DTO.StudentDTO;
 import projet.projetstage02.exception.NonExistentEntityException;
@@ -200,5 +201,32 @@ public class StudentServiceTest {
         }
 
         fail("NonExistentUserException not caught");
+    }
+    @Test
+    void testDeleteUncofirmedStudentHappyDay() throws NonExistentEntityException {
+        // Arrange
+        bart.setInscriptionTimestamp(0);
+        when(studentRepository.findByEmail(any())).thenReturn(Optional.of(bart));
+
+        // Act
+        studentService.deleteUnconfirmedStudent(new StudentDTO(bart));
+
+        // Assert
+        verify(studentRepository, times(1)).delete(any());
+    }
+    @Test
+    void testDeleteUncofirmedStudentThrowsException()  {
+        // Arrange
+        bart.setInscriptionTimestamp(0);
+        when(studentRepository.findByEmail(any())).thenReturn(Optional.empty());
+
+        // Act
+        try{
+            studentService.deleteUnconfirmedStudent(new StudentDTO(bart));
+        }catch (NonExistentEntityException e){
+            return;
+        }
+        // Assert
+        fail("NonExistentEntityException not thrown");
     }
 }

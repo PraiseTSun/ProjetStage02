@@ -70,7 +70,6 @@ public class GestionnaireServiceTest {
                 "password",
                 AbstractUser.Department.Informatique
         );
-        studentTest.setCv(new byte[0]);
 
         offreTest = new Offre(
                 1L,
@@ -461,6 +460,33 @@ public class GestionnaireServiceTest {
             return;
         }
         fail("NonExistentOfferException not caught");
+    }
+    @Test
+    void testDeleteUncofirmedStudentHappyDay() throws NonExistentEntityException {
+        // Arrange
+        gestionnaireTest.setInscriptionTimestamp(0);
+        when(gestionnaireRepository.findByEmail(any())).thenReturn(Optional.of(gestionnaireTest));
+
+        // Act
+        service.deleteUnconfirmedGestionnaire(new GestionnaireDTO(gestionnaireTest));
+
+        // Assert
+        verify(gestionnaireRepository, times(1)).delete(any());
+    }
+    @Test
+    void testDeleteUncofirmedStudentThrowsException()  {
+        // Arrange
+        gestionnaireTest.setInscriptionTimestamp(0);
+        when(gestionnaireRepository.findByEmail(any())).thenReturn(Optional.empty());
+
+        // Act
+        try{
+            service.deleteUnconfirmedGestionnaire(new GestionnaireDTO(gestionnaireTest));
+        }catch (NonExistentEntityException e){
+            return;
+        }
+        // Assert
+        Fail.fail("NonExistentEntityException not thrown");
     }
 
     @Test
