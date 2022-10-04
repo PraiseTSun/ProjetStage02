@@ -470,14 +470,20 @@ public class GestionnaireServiceTest {
         students.add(studentTest);
         studentTest.setCvToValidate(new byte[0]);
         studentTest.setConfirm(true);
+
+        Student studentCvValidated = new Student();
+        studentCvValidated.setConfirm(true);
+
+        students.add(studentCvValidated);
         when(studentRepository.findAll()).thenReturn(students);
 
         // Act
         List<StudentDTO> unvalidatedStudentCV = service.getUnvalidatedCVStudents();
-
         // Assert
         assertThat(unvalidatedStudentCV.get(0).getEmail()).isEqualTo(studentTest.getEmail());
         assertThat(unvalidatedStudentCV.get(0).getFirstName()).isEqualTo(studentTest.getFirstName());
+        assertThat(unvalidatedStudentCV.get(0).getCvToValidate()).isNotNull();
+        assertThat(unvalidatedStudentCV.size()).isEqualTo(1);
     }
 
     @Test
