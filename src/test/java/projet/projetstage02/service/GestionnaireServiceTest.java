@@ -1,5 +1,6 @@
 package projet.projetstage02.service;
 
+import org.assertj.core.api.Fail;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -460,5 +461,32 @@ public class GestionnaireServiceTest {
             return;
         }
         fail("NonExistentOfferException not caught");
+    }
+    @Test
+    void testDeleteUncofirmedStudentHappyDay() throws NonExistentEntityException {
+        // Arrange
+        gestionnaireTest.setInscriptionTimestamp(0);
+        when(gestionnaireRepository.findByEmail(any())).thenReturn(Optional.of(gestionnaireTest));
+
+        // Act
+        service.deleteUnconfirmedGestionnaire(new GestionnaireDTO(gestionnaireTest));
+
+        // Assert
+        verify(gestionnaireRepository, times(1)).delete(any());
+    }
+    @Test
+    void testDeleteUncofirmedStudentThrowsException()  {
+        // Arrange
+        gestionnaireTest.setInscriptionTimestamp(0);
+        when(gestionnaireRepository.findByEmail(any())).thenReturn(Optional.empty());
+
+        // Act
+        try{
+            service.deleteUnconfirmedGestionnaire(new GestionnaireDTO(gestionnaireTest));
+        }catch (NonExistentEntityException e){
+            return;
+        }
+        // Assert
+        Fail.fail("NonExistentEntityException not thrown");
     }
 }

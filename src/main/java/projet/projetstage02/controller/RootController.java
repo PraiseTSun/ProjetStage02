@@ -42,7 +42,6 @@ public class RootController {
 
     private final Logger logger = LogManager.getLogger(RootController.class);
 
-    @SneakyThrows
     @PostMapping("/createStudent")
     public ResponseEntity<Map<String, String>> createStudent(@Valid @RequestBody StudentDTO studentDTO) {
         try{
@@ -70,7 +69,6 @@ public class RootController {
         }
     }
 
-    @SneakyThrows
     @PostMapping("/createCompany")
     public ResponseEntity<Map<String, String>> createCompany(@Valid @RequestBody CompanyDTO companyDTO) {
         try {
@@ -134,14 +132,10 @@ public class RootController {
     public ResponseEntity<Map<String, String>> createOffre(@Valid @RequestBody OffreDTO offreDTO) {
         try {
             logger.log(Level.INFO, "Post /createOffre entered with body : " + offreDTO.toString());
-            Token token = authService.getToken(offreDTO.getToken(), COMPANY);
-            companyService.getCompanyById(token.getUserId());
+            authService.getToken(offreDTO.getToken(), COMPANY);
             companyService.createOffre(offreDTO);
             logger.log(Level.INFO, "PostMapping: /createOffre sent 201 response");
             return ResponseEntity.status(CREATED).build();
-        } catch (NonExistentEntityException e) {
-            logger.log(Level.INFO, "PostMapping: /createOffre sent 404 response");
-            return ResponseEntity.notFound().build();
         } catch (InvalidTokenException ex) {
             logger.log(Level.INFO, "PostMapping: /createOffre sent 403 response");
             return ResponseEntity.status(FORBIDDEN).build();

@@ -6,6 +6,8 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.MockedStatic;
+import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.boot.test.json.JacksonTester;
 import org.springframework.http.MediaType;
@@ -22,6 +24,8 @@ import projet.projetstage02.service.AuthService;
 import projet.projetstage02.service.CompanyService;
 import projet.projetstage02.service.GestionnaireService;
 import projet.projetstage02.service.StudentService;
+import projet.projetstage02.utils.EmailUtil;
+import projet.projetstage02.utils.TimeUtil;
 
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
@@ -34,6 +38,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static projet.projetstage02.model.Token.UserTypes.*;
+import static projet.projetstage02.utils.TimeUtil.currentTimestamp;
 
 @ExtendWith(MockitoExtension.class)
 public class RootControllerTest {
@@ -152,7 +157,27 @@ public class RootControllerTest {
 
                 .andExpect(status().isBadRequest());
     }
+    @Test
+    void testCreateStudentExistingEmailDeleteOld() throws Exception {
+        when(studentService.isEmailUnique(anyString())).thenReturn(false);
+        when(studentService.deleteUnconfirmedStudent(any())).thenReturn(true);
+        mockMvc.perform(post("/createStudent")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(jsonStudentDTO.write(bart).getJson()))
 
+                .andExpect(status().isCreated());
+    }
+
+    @Test
+    void testCreateStudentExistingEmailDeleteOldNotFound() throws Exception {
+        when(studentService.isEmailUnique(anyString())).thenReturn(false);
+        when(studentService.deleteUnconfirmedStudent(any())).thenThrow(new NonExistentEntityException());
+        mockMvc.perform(post("/createStudent")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(jsonStudentDTO.write(bart).getJson()))
+
+                .andExpect(status().isInternalServerError());
+    }
     @Test
     void testCreateCompanyHappyDay() throws Exception {
         when(companyService.isEmailUnique(anyString())).thenReturn(true);
@@ -175,6 +200,16 @@ public class RootControllerTest {
 
                 .andExpect(status().isConflict());
     }
+    @Test
+    void testCreateCompanyExistingEmailDeleteOld() throws Exception {
+        when(companyService.isEmailUnique(anyString())).thenReturn(false);
+        when(companyService.deleteUnconfirmedCompany(any())).thenReturn(true);
+        mockMvc.perform(post("/createCompany")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(jsonCompanyDTO.write(duffBeer).getJson()))
+
+                .andExpect(status().isCreated());
+    }
 
     @Test
     void testCreateCompanyBadRequest() throws Exception {
@@ -184,7 +219,16 @@ public class RootControllerTest {
 
                 .andExpect(status().isBadRequest());
     }
+    @Test
+    void testCreateCompanyExistingEmailDeleteOldNotFound() throws Exception {
+        when(companyService.isEmailUnique(anyString())).thenReturn(false);
+        when(companyService.deleteUnconfirmedCompany(any())).thenThrow(new NonExistentEntityException());
+        mockMvc.perform(post("/createCompany")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(jsonCompanyDTO.write(duffBeer).getJson()))
 
+                .andExpect(status().isInternalServerError());
+    }
     @Test
     void testCreateGestionnaireHappyDay() throws Exception {
         burns.setToken(token.getToken());
@@ -220,7 +264,25 @@ public class RootControllerTest {
 
                 .andExpect(status().isBadRequest());
     }
+    @Test
+    void testCreateGestionnaireExistingEmailDeleteOldNotFound() throws Exception {
+        when(gestionnaireService.isEmailUnique(anyString())).thenReturn(false);
+        when(gestionnaireService.deleteUnconfirmedGestionnaire(any())).thenThrow(new NonExistentEntityException());
+        mockMvc.perform(post("/createGestionnaire")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(jsonGestionnaireDTO.write(burns).getJson()))
 
+                .andExpect(status().isInternalServerError());
+    }
+    @Test
+    void testCreateGestionnaireInvalidToken() throws Exception {
+        when(authService.getToken(any(),any())).thenThrow(new InvalidTokenException());
+        mockMvc.perform(post("/createGestionnaire")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(jsonGestionnaireDTO.write(burns).getJson()))
+
+                .andExpect(status().isForbidden());
+    }
     @Test
     void testCreateOffreHappyDay() throws Exception {
         duffOffre.setToken(token.getToken());
@@ -242,6 +304,16 @@ public class RootControllerTest {
                         .content(jsonOffreDTO.write(new OffreDTO()).getJson()))
 
                 .andExpect(status().isBadRequest());
+    }
+    @Test
+    void testCreateOffreInvalidToken() throws Exception {
+        duffOffre.setToken(token.getToken());
+        when(authService.getToken(any(),any())).thenThrow(new InvalidTokenException());
+        mockMvc.perform(post("/createOffre")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(jsonOffreDTO.write(duffOffre).getJson()))
+
+                .andExpect(status().isForbidden());
     }
 
     @Test
@@ -307,7 +379,37 @@ public class RootControllerTest {
 
                 .andExpect(status().isBadRequest());
     }
+    @Test
+    void testConfirmGestionnaireEmailHappyDay() throws Exception {
+        burns.setInscriptionTimestamp(currentTimestamp());
+        when(gestionnaireService.getGestionnaireById(1L)).thenReturn(burns);
+        when(gestionnaireService.saveGestionnaire(burns)).thenReturn(1L);
 
+        mockMvc.perform(
+                        put("/confirmEmail/gestionaire/{id}", 1))
+
+                .andExpect(status().isCreated());
+    }
+
+    @Test
+    void testConfirmGestionnaireEmailNotFound() throws Exception {
+        when(gestionnaireService.getGestionnaireById(1L)).thenThrow(new NonExistentEntityException());
+        mockMvc.perform(
+                        put("/confirmEmail/gestionaire/{id}", 1))
+
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    void testConfirmGestionnaireEmailExpired() throws Exception {
+        bart.setInscriptionTimestamp(Timestamp.valueOf(LocalDateTime.now().minusMonths(1)).getTime());
+        when(gestionnaireService.getGestionnaireById(1L)).thenReturn(burns);
+
+        mockMvc.perform(
+                        put("/confirmEmail/gestionaire/{id}", 1))
+
+                .andExpect(status().isBadRequest());
+    }
     @Test
     void testGetTokenStudentHappyDay() throws Exception {
         login.setEmail(bart.getEmail());
@@ -481,6 +583,15 @@ public class RootControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$[0].firstName", is("Bart")));
     }
+    @Test
+    void testUnvalidatedStudentsInvalidToken() throws Exception {
+        when(authService.getToken(any(),any())).thenThrow(new InvalidTokenException());
+
+        mockMvc.perform(put("/unvalidatedStudents")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(jsonTokenDTO.write(token).getJson()))
+                .andExpect(status().isForbidden());
+    }
 
     @Test
     void testUnvalidatedCompaniesHappyDay() throws Exception {
@@ -493,6 +604,14 @@ public class RootControllerTest {
                         .content(jsonTokenDTO.write(token).getJson()))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$[0].firstName", is("Duff")));
+    }
+    @Test
+    void testUnvalidatedCompaniesInvalidToken() throws Exception {
+        when(authService.getToken(any(),any())).thenThrow(new InvalidTokenException());
+        mockMvc.perform(put("/unvalidatedCompanies")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(jsonTokenDTO.write(token).getJson()))
+                .andExpect(status().isForbidden());
     }
 
     @Test
@@ -521,6 +640,15 @@ public class RootControllerTest {
                 .content(jsonTokenDTO.write(token).getJson()))
                 .andExpect(status().isNotFound());
     }
+    @Test
+    void testValidateStudentInvalidToken() throws Exception {
+        when(authService.getToken(any(),any())).thenThrow(new InvalidTokenException());
+
+        mockMvc.perform(put("/validateStudent/{id}", 1)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(jsonTokenDTO.write(token).getJson()))
+                .andExpect(status().isForbidden());
+    }
 
     @Test
     void testValidateCompanyHappyDay() throws Exception {
@@ -547,7 +675,15 @@ public class RootControllerTest {
                 .content(jsonTokenDTO.write(token).getJson()))
                 .andExpect(status().isNotFound());
     }
+    @Test
+    void testValidateCompanyInvalidToken() throws Exception {
+        when(authService.getToken(any(),any())).thenThrow(new InvalidTokenException());
 
+        mockMvc.perform(put("/validateCompany/{id}", 1)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(jsonTokenDTO.write(token).getJson()))
+                .andExpect(status().isForbidden());
+    }
     @Test
     void testRemoveStudentHappyDay() throws Exception {
         when(authService.getToken(any(),any())).thenReturn(Token.builder().userId(1).build());
@@ -570,6 +706,15 @@ public class RootControllerTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(jsonTokenDTO.write(token).getJson()))
                 .andExpect(status().isNotFound());
+    }
+    @Test
+    void testRemoveStudentInvalidToken() throws Exception {
+        when(authService.getToken(any(),any())).thenThrow(new InvalidTokenException());
+
+        mockMvc.perform(delete("/removeStudent/{id}", 1)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(jsonTokenDTO.write(token).getJson()))
+                .andExpect(status().isForbidden());
     }
 
     @Test
@@ -595,6 +740,15 @@ public class RootControllerTest {
                 .content(jsonTokenDTO.write(token).getJson()))
                 .andExpect(status().isNotFound());
     }
+    @Test
+    void testRemoveCompanyInvalidToken() throws Exception {
+        when(authService.getToken(any(),any())).thenThrow(new InvalidTokenException());
+
+        mockMvc.perform(delete("/removeCompany/{id}", 1)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(jsonTokenDTO.write(token).getJson()))
+                .andExpect(status().isForbidden());
+    }
 
     @Test
     void testUnvalidatedOffers() throws Exception {
@@ -607,6 +761,15 @@ public class RootControllerTest {
                 .content(jsonTokenDTO.write(token).getJson()))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$[0].nomDeCompagnie", is("Duff Beer")));
+    }
+    @Test
+    void testUnvalidatedOffersInvalidToken() throws Exception {
+        when(authService.getToken(any(),any())).thenThrow(new InvalidTokenException());
+
+        mockMvc.perform(put("/unvalidatedOffers")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(jsonTokenDTO.write(token).getJson()))
+                .andExpect(status().isForbidden());
     }
 
 
@@ -633,6 +796,15 @@ public class RootControllerTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(jsonTokenDTO.write(token).getJson()))
                 .andExpect(status().isNotFound());
+    }
+    @Test
+    void testValidationOfferInvalidToken() throws Exception {
+        when(authService.getToken(any(),any())).thenThrow(new InvalidTokenException());
+
+        mockMvc.perform(put("/validateOffer/{id}", 1)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(jsonTokenDTO.write(token).getJson()))
+                .andExpect(status().isForbidden());
     }
 
     @Test

@@ -36,10 +36,6 @@ public class CompanyService {
 
         return offreRepository.save(offre).getId();
     }
-    public List<Offre> findOffre(){
-        return offreRepository.findAll();
-    }
-
     public void saveCompany(String firstName, String lastName, String name, String email, String password,
             Department department) {
         CompanyDTO dto = CompanyDTO.builder()
@@ -77,7 +73,8 @@ public class CompanyService {
     }
     public boolean deleteUnconfirmedCompany(CompanyDTO dto) throws NonExistentEntityException {
         Optional<Company> companyOpt = companyRepository.findByEmail(dto.getEmail());
-        if(companyOpt.isEmpty()) throw new NonExistentEntityException();
+        if(companyOpt.isEmpty())
+            throw new NonExistentEntityException();
         Company company = companyOpt.get();
         if(!company.isEmailConfirmed() && Timestamp.valueOf(LocalDateTime.now()).getTime() - company.getInscriptionTimestamp() > MILLI_SECOND_DAY){
             companyRepository.delete(company);
