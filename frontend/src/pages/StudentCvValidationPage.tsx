@@ -2,36 +2,40 @@ import React, { useEffect, useState } from "react";
 import { Container, Row, Col, Table, Button } from "react-bootstrap";
 import { Link } from "react-router-dom";
 import IUser from "../models/IUser";
+import { Viewer } from '@react-pdf-viewer/core';
 
 const StudentCvValidationPage = ({ connectedUser, deconnexion }: { connectedUser: IUser, deconnexion: Function }): JSX.Element => {
     const [students, setStudents] = useState<any[]>([]);
+    const [pdf, setpdf] = useState<number[]>([])
     const [showCV, setShowCV] = useState<boolean>(false)
 
     useEffect(() => {
+        const fetchUnvalidatedCvStudents = async () => {
+            try {
+                const response = await fetch("http://localhost:8080/unvalidatedCvStudents", {
+                    method: "PUT",
+                    headers: {
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ "token": connectedUser.token })
+                });
+                if (response.ok) {
+                    const data = await response.json();
+                    setStudents(data);
+                }
+                else {
+                    console.log(response.status)
+                    throw new Error("Error code not handled");
+                }
+            }
+            catch {
+                alert("Une erreur est survenue, ressayez.");
+                window.location.href = "/"
+            }
+        }
         fetchUnvalidatedCvStudents()
-    }, []);
-
-    async function fetchUnvalidatedCvStudents(): Promise<void> {
-        try {
-            const response = await fetch("http://localhost:8080/unvalidatedCvStudents", {
-                method: "PUT",
-                headers: {
-                    'Accept': 'application/json',
-                    'Content-Type': 'application/json',
-                },
-            });
-            if (response.ok) {
-                const data = await response.json();
-                setStudents(data);
-            }
-            else {
-                throw "Error code not handled";
-            }
-        }
-        catch {
-            alert("Une erreur est survenue, ressayez.");
-        }
-    }
+    }, [connectedUser]);
 
     async function validateCV(studentId: number, index: number, valid: boolean): Promise<void> {
         try {
@@ -48,12 +52,12 @@ const StudentCvValidationPage = ({ connectedUser, deconnexion }: { connectedUser
             if (response.ok) {
                 setStudents(students.splice(index + 1, 1));
             }
-            else if (response.status == 403) {
+            else if (response.status === 403) {
                 alert("Session expiré");
                 deconnexion();
             }
             else {
-                throw "Error code not handled";
+                throw new Error("Error code not handled");
             }
         } catch (exception) {
             alert("Une erreur est survenue, ressayez.");
@@ -73,21 +77,39 @@ const StudentCvValidationPage = ({ connectedUser, deconnexion }: { connectedUser
 
             if (response.ok) {
                 const data = await response.json();
+                setpdf(data.pdf)
+                setShowCV(true)
             }
-            else if (response.status == 403) {
+            else if (response.status === 403) {
                 alert("Session expiré");
                 deconnexion();
             }
             else {
-                throw "Error code not handled";
+                throw new Error("Error code not handled");
             }
         } catch (exception) {
             alert("Une erreur est survenue, ressayez.");
         }
     }
 
+    if (showCV) {
+        return (
+            <Container>
+                <div className="bg-dark p-2">
+                    <Button className="Btn btn-primary" onClick={() => setShowCV(false)}>
+                        Fermer
+                    </Button>
+                </div>
+                <div>
+                    <Viewer fileUrl={new Uint8Array(pdf)} />
+                </div>
+            </Container>
+        );
+    }
+
     return (
-        <Container>
+        <Container className="vh-100">
+            <Button className="btn btn-warning" onClick={() => setShowCV(true)}>Kill me</Button>
             <Row>
                 <Col sm={2}>
                     <Link to="/" className="btn btn-primary my-3">Home</Link>

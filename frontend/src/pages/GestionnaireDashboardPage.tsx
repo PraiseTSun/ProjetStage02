@@ -6,7 +6,7 @@ import IUser from "../models/IUser";
 const GestionnaireDashboard = ({ user, deconnexion }: { user: IUser, deconnexion: Function }): JSX.Element => {
 
     return (
-        <>
+        <div className="vh-100">
             <Button className="btn btn-danger my-2" onClick={() => deconnexion()}>
                 Déconnexion
             </Button>
@@ -15,7 +15,7 @@ const GestionnaireDashboard = ({ user, deconnexion }: { user: IUser, deconnexion
                 <Link to="/userValidation" className="btn btn-primary">Validation des utilisateurs</Link>
                 <Link to="/cvValidation" className="btn btn-primary mt-3">Validation des curriculums vitae des étudiants</Link>
             </Row>
-        </>
+        </div>
     );
 }
 

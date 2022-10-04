@@ -26,37 +26,46 @@ function App() {
   const [currentlyVerifyingToken, setCurrentlyVerifyingToken] = useState(false)
   const [isValidToken, setValidToken] = useState(true)
   const [count, setCount] = useState(0)
+
   useEffect(() => {
     const timer = setTimeout(() => setCount(count + 1), 10000)
+
+    const verifyToken = async () => {
+      if (user === emptyUser) {
+        return
+      }
+      const getTokenHeaders = {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ "token": user.token })
+      };
+      const userRes = await fetch("http://localhost:8080/" + user.userType, getTokenHeaders)
+      if (!userRes.ok) {
+        alert("Votre session est expiré.")
+        setValidToken(false)
+        deconnexion()
+      }
+    }
+
+    const validateToken = async () => {
+      if (!currentlyVerifyingToken) {
+        setCurrentlyVerifyingToken(true)
+        await verifyToken()
+        setCurrentlyVerifyingToken(false)
+      }
+    }
+
     validateToken()
     return () => clearTimeout(timer)
-  }, [count])
+  }, [count, currentlyVerifyingToken, user])
 
   const deconnexion = () => {
     setUser(emptyUser)
     localStorage.removeItem(LOCAL_STORAGE_KEY)
   }
 
-  const verifyToken = async () => {
-    if (user == emptyUser) {
-      return
-    }
-    const getTokenHeaders = {
-      method: "PUT",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ "token": user.token })
-    };
-    const userRes = await fetch("http://localhost:8080/" + user.userType, getTokenHeaders)
-    console.log("test")
-    if (!userRes.ok) {
-      alert("Votre session est expiré.")
-      setValidToken(false)
-      deconnexion()
-    }
-  }
-
   const loginFromLocalStorage = async () => {
-    if (localStorage.getItem(LOCAL_STORAGE_KEY) != null && user == emptyUser) {
+    if (localStorage.getItem(LOCAL_STORAGE_KEY) != null && user === emptyUser) {
       let user: IUser = JSON.parse(localStorage.getItem(LOCAL_STORAGE_KEY)!);
       const getTokenHeaders = {
         method: "PUT",
@@ -75,24 +84,13 @@ function App() {
 
   }
   const checkIfUserExistsInLocalStorage = async () => {
-    console.log(verifiedLoginFromLocalStorage)
     if (!verifiedLoginFromLocalStorage) {
       setVerifiedLoginFromLocalStorage(true)
       await loginFromLocalStorage()
     }
   }
 
-  const validateToken = async () => {
-    if (!currentlyVerifyingToken) {
-      setCurrentlyVerifyingToken(true)
-      console.log(currentlyVerifyingToken)
-      await verifyToken()
-      setCurrentlyVerifyingToken(false)
-    }
-  }
-
-
-  if (user == emptyUser) {
+  if (user === emptyUser) {
     checkIfUserExistsInLocalStorage()
     return (
       <Container className="vh-100">
@@ -107,7 +105,7 @@ function App() {
     );
   }
 
-  if (user.userType == "student") {
+  if (user.userType === "student") {
     return (
       <Container className="vh-100">
         <BrowserRouter>
@@ -120,7 +118,7 @@ function App() {
     );
   }
 
-  else if (user.userType == "company") {
+  else if (user.userType === "company") {
     return (
       <Container className="vh-100">
         <BrowserRouter>
@@ -134,9 +132,9 @@ function App() {
     );
   }
 
-  else if (user.userType == "gestionnaire") {
+  else if (user.userType === "gestionnaire") {
     return (
-      <Container className="vh-100">
+      <Container>
         <BrowserRouter>
           <Routes>
             <Route path="/" element={<GestionnaireDashboard deconnexion={deconnexion} user={user} />} />
