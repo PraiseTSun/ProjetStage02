@@ -466,7 +466,6 @@ public class RootController {
             return ResponseEntity.status(FORBIDDEN).build();
         }
     }
-
     @PutMapping("/uploadStudentCV")
     public ResponseEntity<StudentDTO> uploadStudentCurriculumVitae(@Valid @RequestBody PdfDTO pdf) {
         try {
@@ -500,13 +499,14 @@ public class RootController {
             return ResponseEntity.status(FORBIDDEN).build();
         }
     }
+//Todo add tokens
 
     @GetMapping("/unvalidatedCvStudents")
     public ResponseEntity<List<StudentDTO>> getUnvalidatedCvStudent(){
         List<StudentDTO> students = gestionnaireService.getUnvalidatedCVStudents();
         return ResponseEntity.ok(students);
     }
-
+//todo use not byte array as return
     @GetMapping("/studentCv/{studentId}")
     public ResponseEntity<byte[]> getStudentCv(@PathVariable String studentId){
         try {

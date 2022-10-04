@@ -468,7 +468,7 @@ public class GestionnaireServiceTest {
         // Arrange
         List<Student> students = new ArrayList<>();
         students.add(studentTest);
-        studentTest.setCvToValidate(new byte[0]);
+        studentTest.setCvToValidate(new byte[]{1, 2, 3});
         studentTest.setConfirm(true);
 
         Student studentCvValidated = new Student();
@@ -482,7 +482,7 @@ public class GestionnaireServiceTest {
         // Assert
         assertThat(unvalidatedStudentCV.get(0).getEmail()).isEqualTo(studentTest.getEmail());
         assertThat(unvalidatedStudentCV.get(0).getFirstName()).isEqualTo(studentTest.getFirstName());
-        assertThat(unvalidatedStudentCV.get(0).getCvToValidate()).isNotNull();
+        assertThat(unvalidatedStudentCV.get(0).getCvToValidate()).isNotEmpty();
         assertThat(unvalidatedStudentCV.size()).isEqualTo(1);
     }
 
@@ -498,7 +498,7 @@ public class GestionnaireServiceTest {
         // Assert
         assertThat(studentDTO.getFirstName()).isEqualTo(studentTest.getFirstName());
         assertThat(studentDTO.getCv()).isEqualTo(new byte[0]);
-        assertThat(studentDTO.getCvToValidate()).isNull();
+        assertThat(studentDTO.getCvToValidate()).isEmpty();
     }
 
     @Test
@@ -526,7 +526,7 @@ public class GestionnaireServiceTest {
 
         // Assert
         assertThat(studentDTO.getEmail()).isEqualTo(studentTest.getEmail());
-        assertThat(studentDTO.getCvToValidate()).isNull();
+        assertThat(studentDTO.getCvToValidate()).isEmpty();
     }
 
     @Test

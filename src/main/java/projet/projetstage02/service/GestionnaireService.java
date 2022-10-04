@@ -164,12 +164,14 @@ public class GestionnaireService {
 
         studentRepository.findAll().stream()
                 .filter(student ->
-                        student.getCvToValidate() != null && student.isConfirm()
+                        student.getCvToValidate() != null &&
+                                student.getCvToValidate().length > 0
+                                && student.isConfirm()
                 )
                 .forEach(student -> {
                     StudentDTO dto = new StudentDTO(student);
                     dto.setPassword("");
-                    dto.setCv(null);
+                    dto.setCv(new byte[0]);
 
                     studentDTOS.add(dto);
                 });
@@ -182,7 +184,7 @@ public class GestionnaireService {
         if(studentOpt.isEmpty()) throw new NonExistentEntityException();
         Student student = studentOpt.get();
         student.setCv(student.getCvToValidate());
-        student.setCvToValidate(null);
+        student.setCvToValidate(new byte[0]);
         studentRepository.save(student);
         return new StudentDTO(student);
     }
@@ -191,13 +193,13 @@ public class GestionnaireService {
         Optional<Student> studentOpt = studentRepository.findById(id);
         if(studentOpt.isEmpty()) throw new NonExistentEntityException();
         Student student = studentOpt.get();
-        student.setCvToValidate(null);
+        student.setCvToValidate(new byte[0]);
         studentRepository.save(student);
         return new StudentDTO(student);
     }
 
-    public byte[] getStudentCvToValidate(long id) throws NonExistentEntityException {
-        Optional<Student> studentOpt = studentRepository.findById(id);
+    public byte[] getStudentCvToValidate(long studentId) throws NonExistentEntityException {
+        Optional<Student> studentOpt = studentRepository.findById(studentId);
         if (studentOpt.isEmpty()) throw new NonExistentEntityException();
         return studentOpt.get().getCvToValidate();
     }
