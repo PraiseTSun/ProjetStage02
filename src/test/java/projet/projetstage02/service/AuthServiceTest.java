@@ -17,10 +17,10 @@ import projet.projetstage02.repository.TokenRepository;
 
 import java.util.Optional;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.fail;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
-import static org.assertj.core.api.Assertions.assertThat;
 import static projet.projetstage02.model.Token.UserTypes.*;
 import static projet.projetstage02.utils.TimeUtil.currentTimestamp;
 

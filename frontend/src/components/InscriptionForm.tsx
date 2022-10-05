@@ -1,7 +1,8 @@
-import React, { useState } from "react";
-import { Container, ListGroup, Tab } from "react-bootstrap";
+import React from "react";
+import {Container, ListGroup, Tab} from "react-bootstrap";
 import FormulaireEtudiant from "./FormulaireEtudiant";
 import FormulaireEntreprise from "./FormulaireEntreprise";
+
 const InscriptionForm = ({ setIsLogginPage }: { setIsLogginPage: Function }): JSX.Element => {
 
     const onInscrire = async (compte: object, type: string) => {

@@ -23,11 +23,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import static projet.projetstage02.utils.TimeUtil.MILLI_SECOND_DAY;
+import static projet.projetstage02.utils.TimeUtil.currentTimestamp;
+
 @Service
 @AllArgsConstructor
 public class GestionnaireService {
-    //TODO when merging with token branch, user TimeUtil stuff
-    private final long MILLI_SECOND_DAY = 864000000;
     private final GestionnaireRepository gestionnaireRepository;
     private final CompanyRepository companyRepository;
     private final StudentRepository studentRepository;
@@ -208,7 +209,7 @@ public class GestionnaireService {
         Optional<Gestionnaire> studentOpt = gestionnaireRepository.findByEmail(dto.getEmail());
         if(studentOpt.isEmpty()) throw new NonExistentEntityException();
         Gestionnaire gestionnaire = studentOpt.get();
-        if(!gestionnaire.isEmailConfirmed() && Timestamp.valueOf(LocalDateTime.now()).getTime() - gestionnaire.getInscriptionTimestamp() > MILLI_SECOND_DAY){
+        if(currentTimestamp() - gestionnaire.getInscriptionTimestamp() > MILLI_SECOND_DAY){
             gestionnaireRepository.delete(gestionnaire);
             return true;
         }

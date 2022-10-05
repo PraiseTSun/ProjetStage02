@@ -2,7 +2,7 @@ package projet.projetstage02.service;
 
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
-import projet.projetstage02.DTO.*;
+import projet.projetstage02.DTO.LoginDTO;
 import projet.projetstage02.exception.InvalidTokenException;
 import projet.projetstage02.model.*;
 import projet.projetstage02.model.Token.UserTypes;

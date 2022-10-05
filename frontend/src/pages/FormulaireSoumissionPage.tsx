@@ -1,5 +1,4 @@
-import React from "react";
-import {useState} from 'react';
+import React, {useState} from "react";
 import {Button, Col, Container, Form, Row} from "react-bootstrap";
 import {BeatLoader} from "react-spinners";
 import IUser from "../models/IUser";
