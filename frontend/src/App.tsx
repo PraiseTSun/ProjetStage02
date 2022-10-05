@@ -29,43 +29,34 @@ function App() {
 
   useEffect(() => {
     const timer = setTimeout(() => setCount(count + 1), 10000)
-
-    const verifyToken = async () => {
-      if (user === emptyUser) {
-        return
-      }
-      const getTokenHeaders = {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ "token": user.token })
-      };
-      const userRes = await fetch("http://localhost:8080/" + user.userType, getTokenHeaders)
-      if (!userRes.ok) {
-        alert("Votre session est expiré.")
-        setValidToken(false)
-        deconnexion()
-      }
-    }
-
-    const validateToken = async () => {
-      if (!currentlyVerifyingToken) {
-        setCurrentlyVerifyingToken(true)
-        await verifyToken()
-        setCurrentlyVerifyingToken(false)
-      }
-    }
-
     validateToken()
     return () => clearTimeout(timer)
-  }, [count, currentlyVerifyingToken, user])
+  }, [count])
 
   const deconnexion = () => {
     setUser(emptyUser)
     localStorage.removeItem(LOCAL_STORAGE_KEY)
   }
 
+  const verifyToken = async () => {
+    if (user == emptyUser) {
+      return
+    }
+    const getTokenHeaders = {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ "token": user.token })
+    };
+    const userRes = await fetch("http://localhost:8080/" + user.userType, getTokenHeaders)
+    if (!userRes.ok) {
+      alert("Votre session est expiré.")
+      setValidToken(false)
+      deconnexion()
+    }
+  }
+
   const loginFromLocalStorage = async () => {
-    if (localStorage.getItem(LOCAL_STORAGE_KEY) != null && user === emptyUser) {
+    if (localStorage.getItem(LOCAL_STORAGE_KEY) != null && user == emptyUser) {
       let user: IUser = JSON.parse(localStorage.getItem(LOCAL_STORAGE_KEY)!);
       const getTokenHeaders = {
         method: "PUT",
@@ -90,7 +81,16 @@ function App() {
     }
   }
 
-  if (user === emptyUser) {
+  const validateToken = async () => {
+    if (!currentlyVerifyingToken) {
+      setCurrentlyVerifyingToken(true)
+      await verifyToken()
+      setCurrentlyVerifyingToken(false)
+    }
+  }
+
+
+  if (user == emptyUser) {
     checkIfUserExistsInLocalStorage()
     return (
       <Container className="vh-100">
@@ -105,7 +105,7 @@ function App() {
     );
   }
 
-  if (user.userType === "student") {
+  if (user.userType == "student") {
     return (
       <Container className="vh-100">
         <BrowserRouter>
@@ -118,7 +118,7 @@ function App() {
     );
   }
 
-  else if (user.userType === "company") {
+  else if (user.userType == "company") {
     return (
       <Container className="vh-100">
         <BrowserRouter>
@@ -132,7 +132,7 @@ function App() {
     );
   }
 
-  else if (user.userType === "gestionnaire") {
+  else if (user.userType == "gestionnaire") {
     return (
       <Container>
         <BrowserRouter>

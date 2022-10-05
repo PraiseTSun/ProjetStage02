@@ -6,7 +6,7 @@ import { Viewer } from '@react-pdf-viewer/core';
 
 const StudentCvValidationPage = ({ connectedUser, deconnexion }: { connectedUser: IUser, deconnexion: Function }): JSX.Element => {
     const [students, setStudents] = useState<any[]>([]);
-    const [pdf, setpdf] = useState<number[]>([])
+    const [pdf, setpdf] = useState<Uint8Array>(new Uint8Array([]))
     const [showCV, setShowCV] = useState<boolean>(false)
 
     useEffect(() => {
@@ -35,7 +35,8 @@ const StudentCvValidationPage = ({ connectedUser, deconnexion }: { connectedUser
             }
         }
         fetchUnvalidatedCvStudents()
-    }, [connectedUser]);
+        setShowCV(pdf.length > 0)
+    }, [connectedUser, pdf]);
 
     async function validateCV(studentId: number, index: number, valid: boolean): Promise<void> {
         try {
@@ -77,8 +78,8 @@ const StudentCvValidationPage = ({ connectedUser, deconnexion }: { connectedUser
 
             if (response.ok) {
                 const data = await response.json();
-                setpdf(data.pdf)
-                setShowCV(true)
+                let utf8Encode = new TextEncoder();
+                setpdf(utf8Encode.encode(data.pdf));
             }
             else if (response.status === 403) {
                 alert("Session expiré");
@@ -101,7 +102,7 @@ const StudentCvValidationPage = ({ connectedUser, deconnexion }: { connectedUser
                     </Button>
                 </div>
                 <div>
-                    <Viewer fileUrl={new Uint8Array(pdf)} />
+                    <Viewer fileUrl={pdf} />
                 </div>
             </Container>
         );
@@ -109,7 +110,6 @@ const StudentCvValidationPage = ({ connectedUser, deconnexion }: { connectedUser
 
     return (
         <Container className="vh-100">
-            <Button className="btn btn-warning" onClick={() => setShowCV(true)}>Kill me</Button>
             <Row>
                 <Col sm={2}>
                     <Link to="/" className="btn btn-primary my-3">Home</Link>
@@ -138,7 +138,7 @@ const StudentCvValidationPage = ({ connectedUser, deconnexion }: { connectedUser
                                         <td>{student.firstName}</td>
                                         <td>{student.lastName}</td>
                                         <td>{student.department}</td>
-                                        <td><Button className="btn btn-warning" onClick={() => getPDF(student.id)}></Button></td>
+                                        <td><Button className="btn btn-warning" onClick={() => getPDF(student.id)}>CV</Button></td>
                                         <td>
                                             <Button className="btn btn-success mx-2" onClick={() => validateCV(student.id, index, true)}>O</Button>
                                             <Button className="btn btn-danger" onClick={() => validateCV(student.id, index, false)}>X</Button>

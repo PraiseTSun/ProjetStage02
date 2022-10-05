@@ -42,7 +42,7 @@ const UserValidation = ({ connectedUser }: { connectedUser: IUser }) => {
     }
 
     return (
-        <Container className="">
+        <Container className="vh-100">
             <Link to="/" className="btn btn-primary my-3">Home</Link>
             <Row>
                 <ToggleButtonGroup className="" type="radio" name="options" defaultValue="Student">
