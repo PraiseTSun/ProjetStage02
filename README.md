@@ -28,12 +28,11 @@ Notre définition de Done est:
 
 > Lorsque le plan de démo à été testé à fond.
 
-## Point d'action
+## Points d'actions
 
-- Garder la meme peer pour toute la story
 - Avoir une pratique de démo à fin du sprint
 - 3 daily / semaine
-  - Lundi durant la pause du cours
-  - Mercredi 17:00
-  - Vendredi 14:30
+  - Lundi durant la pause du cours (Class)
+  - Mercredi 17:00 (Class)
+  - Vendredi 14:30 (TEAM)
 - Autour de 24h de travail par personne dans un sprint.
