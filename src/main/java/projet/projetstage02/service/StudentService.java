@@ -70,7 +70,7 @@ public class StudentService {
         Optional<Student> studentOpt = studentRepository.findByEmail(dto.getEmail());
         if(studentOpt.isEmpty()) throw new NonExistentEntityException();
         Student student = studentOpt.get();
-        if(!(currentTimestamp() - student.getInscriptionTimestamp() > MILLI_SECOND_DAY)){
+        if(currentTimestamp() - student.getInscriptionTimestamp() > MILLI_SECOND_DAY){
              studentRepository.delete(student);
              return true;
         }
