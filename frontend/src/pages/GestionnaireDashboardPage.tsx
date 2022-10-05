@@ -10,7 +10,7 @@ const GestionnaireDashboard = ({ user, deconnexion }: { user: IUser, deconnexion
             <Button className="btn btn-danger my-2" onClick={() => deconnexion()}>
                 Déconnexion
             </Button>
-            <h1 className="p-5 text-center ">Bienvenue {user.firstName} {user.lastName}</h1>
+            <h1 className="p-5 text-center fw-bold text-white display-4">Bienvenue {user.firstName} {user.lastName}</h1>
             <Row className="d-flex justify-content-center">
                 <Link to="/userValidation" className="btn btn-primary">Validation des utilisateurs</Link>
                 <Link to="/cvValidation" className="btn btn-primary mt-3">Validation des curriculums vitae des étudiants</Link>

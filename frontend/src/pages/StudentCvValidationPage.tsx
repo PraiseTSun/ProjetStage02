@@ -118,14 +118,14 @@ const StudentCvValidationPage = ({ connectedUser, deconnexion }: { connectedUser
                     <Link to="/" className="btn btn-primary my-3">Home</Link>
                 </Col>
                 <Col sm={8} className="text-center pt-2">
-                    <h1 className="fw-bold">Validation de CV</h1>
+                    <h1 className="fw-bold text-white display-3 pb-2">Liste de stages</h1>
                 </Col>
                 <Col sm={2}></Col>
             </Row>
             <Row>
                 <Col>
                     <Table className="text-center" hover>
-                        <thead className="bg-primary">
+                        <thead className="bg-primary text-white">
                             <tr>
                                 <th>Prénom</th>
                                 <th>Nom</th>
