@@ -6,8 +6,10 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import projet.projetstage02.DTO.CompanyDTO;
+import projet.projetstage02.DTO.PdfDTO;
 import projet.projetstage02.DTO.StudentDTO;
-import projet.projetstage02.exception.NonExistentUserException;
+import projet.projetstage02.exception.NonExistentEntityException;
 import projet.projetstage02.model.AbstractUser;
 import projet.projetstage02.model.Student;
 import projet.projetstage02.repository.StudentRepository;
@@ -31,6 +33,7 @@ public class StudentServiceTest {
     StudentRepository studentRepository;
 
     Student bart;
+    PdfDTO bartCv;
 
     @BeforeEach
     void setup() {
@@ -42,10 +45,12 @@ public class StudentServiceTest {
                 AbstractUser.Department.Informatique);
 
         bart.setCv(new byte[0]);
+
+        bartCv = PdfDTO.builder().studentId(1).pdf(new byte[0]).build();
     }
 
     @Test
-    void getStudentByIdHappyDayTest() throws NonExistentUserException {
+    void getStudentByIdHappyDayTest() throws NonExistentEntityException {
         // Arrange
         when(studentRepository.findById(anyLong()))
                 .thenReturn(Optional.of(bart));
@@ -66,7 +71,7 @@ public class StudentServiceTest {
         // Act
         try {
             studentService.getStudentById(1L);
-        } catch (NonExistentUserException e) {
+        } catch (NonExistentEntityException e) {
 
             // Assert
             return;
@@ -75,7 +80,7 @@ public class StudentServiceTest {
     }
 
     @Test
-    void getStudentByEmailAndPasswordHappyDayTest() throws NonExistentUserException {
+    void getStudentByEmailAndPasswordHappyDayTest() throws NonExistentEntityException {
         // Arrange
         when(studentRepository.findByEmailAndPassword(
                 "bart.simpson@springfield.com",
@@ -103,7 +108,7 @@ public class StudentServiceTest {
             studentService.getStudentByEmailPassword(
                     "bart.simpson@springfield.com",
                     "eatMyShorts");
-        } catch (NonExistentUserException e) {
+        } catch (NonExistentEntityException e) {
 
             // Assert
             return;
@@ -171,13 +176,13 @@ public class StudentServiceTest {
     }
 
     @Test
-    void testUploadCurriculumVitaeSuccess() throws NonExistentUserException {
+    void testUploadCurriculumVitaeSuccess() throws NonExistentEntityException {
         // Arrange
         when(studentRepository.findById(anyLong())).thenReturn(Optional.of(bart));
         when(studentRepository.save(any())).thenReturn(bart);
 
         //Act
-        studentService.uploadCurriculumVitae(new StudentDTO(bart));
+        studentService.uploadCurriculumVitae(bartCv);
 
         // Assert
         verify(studentRepository, times(1)).save(any());
@@ -190,11 +195,38 @@ public class StudentServiceTest {
 
         // Act
         try {
-            studentService.uploadCurriculumVitae(new StudentDTO(bart));
-        } catch (NonExistentUserException e) {
+            studentService.uploadCurriculumVitae(bartCv);
+        } catch (NonExistentEntityException e) {
             return;
         }
 
         fail("NonExistentUserException not caught");
+    }
+    @Test
+    void testDeleteUncofirmedStudentHappyDay() throws NonExistentEntityException {
+        // Arrange
+        bart.setInscriptionTimestamp(0);
+        when(studentRepository.findByEmail(any())).thenReturn(Optional.of(bart));
+
+        // Act
+        studentService.deleteUnconfirmedStudent(new StudentDTO(bart));
+
+        // Assert
+        verify(studentRepository, times(1)).delete(any());
+    }
+    @Test
+    void testDeleteUncofirmedStudentThrowsException()  {
+        // Arrange
+        bart.setInscriptionTimestamp(0);
+        when(studentRepository.findByEmail(any())).thenReturn(Optional.empty());
+
+        // Act
+        try{
+            studentService.deleteUnconfirmedStudent(new StudentDTO(bart));
+        }catch (NonExistentEntityException e){
+            return;
+        }
+        // Assert
+        fail("NonExistentEntityException not thrown");
     }
 }

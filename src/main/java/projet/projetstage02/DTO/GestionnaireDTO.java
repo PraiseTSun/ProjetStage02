@@ -7,10 +7,12 @@ import projet.projetstage02.model.Gestionnaire;
 @Data
 @EqualsAndHashCode(callSuper = false)
 @NoArgsConstructor
+@AllArgsConstructor
 @SuperBuilder
 @ToString(callSuper = true)
 public class GestionnaireDTO extends AbstractUserDTO<Gestionnaire> {
 
+    private String token;
 
     public GestionnaireDTO(Gestionnaire gestionnaire) {
         id = gestionnaire.getId();
@@ -21,6 +23,7 @@ public class GestionnaireDTO extends AbstractUserDTO<Gestionnaire> {
         inscriptionTimestamp = gestionnaire.getInscriptionTimestamp();
         emailConfirmed = gestionnaire.isEmailConfirmed();
         isConfirmed = gestionnaire.isConfirm();
+
     }
 
     @Override

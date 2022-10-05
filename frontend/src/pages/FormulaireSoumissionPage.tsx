@@ -2,11 +2,11 @@ import React from "react";
 import {useState} from 'react';
 import {Button, Col, Container, Form, Row} from "react-bootstrap";
 import {BeatLoader} from "react-spinners";
-import {Link} from "react-router-dom";
+import IUser from "../models/IUser";
 
 declare type FormControlElement = HTMLInputElement | HTMLTextAreaElement;
 
-const FormulaireSoumissionPage = (): JSX.Element => {
+const FormulaireSoumissionPage = ({user}:{user:IUser}): JSX.Element => {
     const [waiting, setWaiting] = useState(false);
     const [validated, setValidated] = useState(false);
     const [company, setCompany] = useState("")
@@ -27,7 +27,8 @@ const FormulaireSoumissionPage = (): JSX.Element => {
                 position: poste,
                 heureParSemaine: hoursPerWeek,
                 adresse: address,
-                pdf: pdf
+                pdf: pdf,
+                token: user.token
             }
 
             const headers = {
@@ -40,7 +41,7 @@ const FormulaireSoumissionPage = (): JSX.Element => {
                 alert("Formulaire envoyé")
             }
             setWaiting(false);
-            location.href = "/"
+            window.location.href = "/"
         }
         setValidated(true);
     }
@@ -82,17 +83,12 @@ const FormulaireSoumissionPage = (): JSX.Element => {
     }
     if (waiting) {
         return (
-            <>
-                <Link to="/" className="btn btn-primary my-3">Home</Link>
-                <div className="d-flex justify-content-center py-5 bg-light">
-                    <BeatLoader className="text-center" color="#292b2c" size={100}/>
-                </div>
-            </>
+            <div className="d-flex justify-content-center py-5 bg-light">
+                <BeatLoader className="text-center" color="#292b2c" size={100}/>
+            </div>
         );
     }
     return (
-        <>
-            <Link to="/" className="btn btn-primary my-3">Home</Link>
         <Container className="d-flex justify-content-center">
 
             <Row className="col-12 my-3 card">
@@ -152,7 +148,6 @@ const FormulaireSoumissionPage = (): JSX.Element => {
                 </Form>
             </Row>
         </Container>
-        </>
     );
 
 
