@@ -124,7 +124,7 @@ public class RootControllerTest {
 
     @Test
     void testCreateStudentHappyDay() throws Exception {
-        when(studentService.isEmailUnique(anyString())).thenReturn(true);
+        when(studentService.invalidStudent(anyString())).thenReturn(false);
         when(studentService.saveStudent(any())).thenReturn(1L);
         mockMvc.perform(post("/createStudent")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -135,7 +135,7 @@ public class RootControllerTest {
 
     @Test
     void testCreateStudentConflict() throws Exception {
-        when(studentService.isEmailUnique(anyString())).thenReturn(false);
+        when(studentService.invalidStudent(anyString())).thenReturn(true);
 
         mockMvc.perform(post("/createStudent")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -154,8 +154,7 @@ public class RootControllerTest {
     }
     @Test
     void testCreateStudentExistingEmailDeleteOld() throws Exception {
-        when(studentService.isEmailUnique(anyString())).thenReturn(false);
-        when(studentService.deleteUnconfirmedStudent(any())).thenReturn(true);
+        when(studentService.invalidStudent(anyString())).thenReturn(false);
         mockMvc.perform(post("/createStudent")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(jsonStudentDTO.write(bart).getJson()))
@@ -165,8 +164,7 @@ public class RootControllerTest {
 
     @Test
     void testCreateStudentExistingEmailDeleteOldNotFound() throws Exception {
-        when(studentService.isEmailUnique(anyString())).thenReturn(false);
-        when(studentService.deleteUnconfirmedStudent(any())).thenThrow(new NonExistentEntityException());
+        when(studentService.invalidStudent(anyString())).thenThrow(new NonExistentEntityException());
         mockMvc.perform(post("/createStudent")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(jsonStudentDTO.write(bart).getJson()))
@@ -175,7 +173,7 @@ public class RootControllerTest {
     }
     @Test
     void testCreateCompanyHappyDay() throws Exception {
-        when(companyService.isEmailUnique(anyString())).thenReturn(true);
+        when(companyService.invalidCompany(anyString())).thenReturn(false);
         when(companyService.saveCompany(any())).thenReturn(1L);
 
         mockMvc.perform(post("/createCompany")
@@ -187,7 +185,7 @@ public class RootControllerTest {
 
     @Test
     void testCreateCompanyConflict() throws Exception {
-        when(companyService.isEmailUnique(anyString())).thenReturn(false);
+        when(companyService.invalidCompany(anyString())).thenReturn(true);
 
         mockMvc.perform(post("/createCompany")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -197,8 +195,7 @@ public class RootControllerTest {
     }
     @Test
     void testCreateCompanyExistingEmailDeleteOld() throws Exception {
-        when(companyService.isEmailUnique(anyString())).thenReturn(false);
-        when(companyService.deleteUnconfirmedCompany(any())).thenReturn(true);
+        when(companyService.invalidCompany(anyString())).thenReturn(false);
         mockMvc.perform(post("/createCompany")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(jsonCompanyDTO.write(duffBeer).getJson()))
@@ -216,8 +213,7 @@ public class RootControllerTest {
     }
     @Test
     void testCreateCompanyExistingEmailDeleteOldNotFound() throws Exception {
-        when(companyService.isEmailUnique(anyString())).thenReturn(false);
-        when(companyService.deleteUnconfirmedCompany(any())).thenThrow(new NonExistentEntityException());
+        when(companyService.invalidCompany(anyString())).thenThrow(new NonExistentEntityException());
         mockMvc.perform(post("/createCompany")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(jsonCompanyDTO.write(duffBeer).getJson()))
@@ -228,7 +224,7 @@ public class RootControllerTest {
     void testCreateGestionnaireHappyDay() throws Exception {
         burns.setToken(token.getToken());
 
-        when(gestionnaireService.isEmailUnique(anyString())).thenReturn(true);
+        when(gestionnaireService.invalidGestionnaire(anyString())).thenReturn(false);
         when(gestionnaireService.saveGestionnaire(any())).thenReturn(1L);
 
         mockMvc.perform(post("/createGestionnaire")
@@ -241,7 +237,7 @@ public class RootControllerTest {
     void testCreateGestionnaireConflict() throws Exception {
         burns.setToken(token.getToken());
 
-        when(gestionnaireService.isEmailUnique(anyString())).thenReturn(false);
+        when(gestionnaireService.invalidGestionnaire(anyString())).thenReturn(true);
 
         mockMvc.perform(post("/createGestionnaire")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -261,12 +257,10 @@ public class RootControllerTest {
     }
     @Test
     void testCreateGestionnaireExistingEmailDeleteOldNotFound() throws Exception {
-        when(gestionnaireService.isEmailUnique(anyString())).thenReturn(false);
-        when(gestionnaireService.deleteUnconfirmedGestionnaire(any())).thenThrow(new NonExistentEntityException());
+        when(gestionnaireService.invalidGestionnaire(anyString())).thenThrow(new NonExistentEntityException());
         mockMvc.perform(post("/createGestionnaire")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(jsonGestionnaireDTO.write(burns).getJson()))
-
                 .andExpect(status().isInternalServerError());
     }
     @Test
