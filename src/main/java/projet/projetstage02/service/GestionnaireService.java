@@ -2,10 +2,7 @@ package projet.projetstage02.service;
 
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
-import projet.projetstage02.DTO.CompanyDTO;
-import projet.projetstage02.DTO.GestionnaireDTO;
-import projet.projetstage02.DTO.OffreDTO;
-import projet.projetstage02.DTO.StudentDTO;
+import projet.projetstage02.DTO.*;
 import projet.projetstage02.exception.NonExistentEntityException;
 import projet.projetstage02.exception.NonExistentOfferExeption;
 import projet.projetstage02.model.Company;
@@ -17,9 +14,11 @@ import projet.projetstage02.repository.GestionnaireRepository;
 import projet.projetstage02.repository.OffreRepository;
 import projet.projetstage02.repository.StudentRepository;
 
+import java.nio.charset.StandardCharsets;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
@@ -198,10 +197,12 @@ public class GestionnaireService {
         return new StudentDTO(student);
     }
 
-    public byte[] getStudentCvToValidate(long studentId) throws NonExistentEntityException {
+    public PdfOutDTO getStudentCvToValidate(long studentId) throws NonExistentEntityException {
         Optional<Student> studentOpt = studentRepository.findById(studentId);
         if (studentOpt.isEmpty()) throw new NonExistentEntityException();
-        return studentOpt.get().getCvToValidate();
+        byte[] cv = studentOpt.get().getCvToValidate();
+        String cvConvert = Arrays.toString(cv).replaceAll("\\s+","");
+        return new PdfOutDTO(studentOpt.get().getId(), cvConvert);
     }
 
     public boolean deleteUnconfirmedGestionnaire(GestionnaireDTO dto) throws NonExistentEntityException {
