@@ -52,7 +52,7 @@ public class GestionnaireService {
     }
 
 
-    public boolean isEmailUnique(String email) {
+    private boolean isEmailUnique(String email) {
         return gestionnaireRepository.findByEmail(email).isEmpty();
     }
 
@@ -205,8 +205,8 @@ public class GestionnaireService {
         return studentOpt.get().getCvToValidate();
     }
 
-    public boolean deleteUnconfirmedGestionnaire(GestionnaireDTO dto) throws NonExistentEntityException {
-        Optional<Gestionnaire> studentOpt = gestionnaireRepository.findByEmail(dto.getEmail());
+    private boolean deleteUnconfirmedGestionnaire(String email) throws NonExistentEntityException {
+        Optional<Gestionnaire> studentOpt = gestionnaireRepository.findByEmail(email);
         if(studentOpt.isEmpty()) throw new NonExistentEntityException();
         Gestionnaire gestionnaire = studentOpt.get();
         if(currentTimestamp() - gestionnaire.getInscriptionTimestamp() > MILLI_SECOND_DAY){
@@ -214,5 +214,10 @@ public class GestionnaireService {
             return true;
         }
         return false;
+    }
+
+    public boolean invalidGestionnaire(String email) throws NonExistentEntityException {
+        return !isEmailUnique(email)
+                && !deleteUnconfirmedGestionnaire(email);
     }
 }

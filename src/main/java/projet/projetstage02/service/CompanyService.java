@@ -56,7 +56,7 @@ public class CompanyService {
         return companyRepository.save(dto.toModel()).getId();
     }
 
-    public boolean isEmailUnique(String email) {
+    private boolean isEmailUnique(String email) {
         return companyRepository.findByEmail(email).isEmpty();
     }
 
@@ -71,8 +71,8 @@ public class CompanyService {
         if (companyOpt.isEmpty()) throw new NonExistentEntityException();
         return new CompanyDTO(companyOpt.get());
     }
-    public boolean deleteUnconfirmedCompany(CompanyDTO dto) throws NonExistentEntityException {
-        Optional<Company> companyOpt = companyRepository.findByEmail(dto.getEmail());
+    private boolean deleteUnconfirmedCompany(String email) throws NonExistentEntityException {
+        Optional<Company> companyOpt = companyRepository.findByEmail(email);
         if(companyOpt.isEmpty())
             throw new NonExistentEntityException();
         Company company = companyOpt.get();
@@ -81,5 +81,10 @@ public class CompanyService {
             return true;
         }
         return false;
+    }
+
+    public boolean invalidCompany(String email) throws NonExistentEntityException {
+        return !isEmailUnique(email)
+                && !deleteUnconfirmedCompany(email);
     }
 }

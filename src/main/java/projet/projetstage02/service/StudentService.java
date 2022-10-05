@@ -42,7 +42,7 @@ public class StudentService {
         return studentRepository.save(dto.toModel()).getId();
     }
 
-    public boolean isEmailUnique(String email) {
+    private boolean isEmailUnique(String email) {
         return studentRepository.findByEmail(email).isEmpty();
     }
 
@@ -65,8 +65,8 @@ public class StudentService {
         return new StudentDTO(student);
     }
 
-    public boolean deleteUnconfirmedStudent(StudentDTO dto) throws NonExistentEntityException {
-        Optional<Student> studentOpt = studentRepository.findByEmail(dto.getEmail());
+    private boolean deleteUnconfirmedStudent(String email) throws NonExistentEntityException {
+        Optional<Student> studentOpt = studentRepository.findByEmail(email);
         if(studentOpt.isEmpty()) throw new NonExistentEntityException();
         Student student = studentOpt.get();
         if(currentTimestamp() - student.getInscriptionTimestamp() > MILLI_SECOND_DAY){
@@ -74,5 +74,10 @@ public class StudentService {
              return true;
         }
         return false;
+    }
+
+    public boolean invalidStudent(String email) throws NonExistentEntityException {
+        return !isEmailUnique(email)
+                && !deleteUnconfirmedStudent(email);
     }
 }
