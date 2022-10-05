@@ -41,7 +41,7 @@ const FormulaireSoumissionPage = ({user}:{user:IUser}): JSX.Element => {
                 alert("Formulaire envoyé")
             }
             setWaiting(false);
-            location.href = "/"
+            window.location.href = "/"
         }
         setValidated(true);
     }
