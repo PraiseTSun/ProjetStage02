@@ -36,6 +36,8 @@ function App() {
   const deconnexion = () => {
     setUser(emptyUser)
     localStorage.removeItem(LOCAL_STORAGE_KEY)
+    window.location.href = "/"
+
   }
 
   const verifyToken = async () => {

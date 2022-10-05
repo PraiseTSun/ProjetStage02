@@ -24,6 +24,10 @@ const StudentCvValidationPage = ({ connectedUser, deconnexion }: { connectedUser
                     const data = await response.json();
                     setStudents(data);
                 }
+                else if (response.status === 403) {
+                    alert("Session expiré");
+                    deconnexion();
+                }
                 else {
                     console.log(response.status)
                     throw new Error("Error code not handled");
