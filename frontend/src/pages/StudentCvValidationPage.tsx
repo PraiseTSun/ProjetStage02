@@ -40,7 +40,7 @@ const StudentCvValidationPage = ({ connectedUser, deconnexion }: { connectedUser
 
     async function validateCV(studentId: number, index: number, valid: boolean): Promise<void> {
         try {
-            const url: String = valid ? "http://localhost:8080/validateCV/" : "http://localhost:8080/refuseCV/";
+            const url: String = valid ? "http://localhost:8080/validateCv/" : "http://localhost:8080/refuseCv/";
             const response: Response = await fetch(url + studentId.toString(), {
                 method: "PUT",
                 headers: {
@@ -78,8 +78,7 @@ const StudentCvValidationPage = ({ connectedUser, deconnexion }: { connectedUser
 
             if (response.ok) {
                 const data = await response.json();
-                let utf8Encode = new TextEncoder();
-                setpdf(utf8Encode.encode(data.pdf));
+                setpdf(new Uint8Array(JSON.parse(data.token)));
             }
             else if (response.status === 403) {
                 alert("Session expiré");
@@ -130,6 +129,7 @@ const StudentCvValidationPage = ({ connectedUser, deconnexion }: { connectedUser
                                 <th>CV</th>
                                 <th>CV Valide</th>
                             </tr>
+                            
                         </thead>
                         <tbody className="bg-light">
                             {students.map((student, index) => {
