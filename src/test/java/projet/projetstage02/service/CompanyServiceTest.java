@@ -13,6 +13,7 @@ import projet.projetstage02.model.AbstractUser;
 import projet.projetstage02.model.Company;
 import projet.projetstage02.repository.CompanyRepository;
 import projet.projetstage02.repository.OffreRepository;
+import projet.projetstage02.utils.TimeUtil;
 
 import java.util.Optional;
 
@@ -20,6 +21,8 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.assertj.core.api.Fail.fail;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
+import static projet.projetstage02.utils.TimeUtil.currentTimestamp;
+
 @ExtendWith(MockitoExtension.class)
 public class CompanyServiceTest {
 
@@ -122,33 +125,6 @@ public class CompanyServiceTest {
         fail("NonExistentUserException not caught");
     }
 
-    @Test
-    void isEmailUniqueExistsTest() {
-        // Arrange
-        when(companyRepository.findByEmail(anyString()))
-                .thenReturn(Optional.of(duffBeer));
-
-        // Act
-        boolean isEmailUnique = companyService
-                .isEmailUnique("duff.beer@springfield.com");
-
-        // Assert
-        assertThat(isEmailUnique).isFalse();
-    }
-
-    @Test
-    void isEmailUniqueNotExistsTest() {
-        // Arrange
-        when(companyRepository.findByEmail(anyString()))
-                .thenReturn(Optional.empty());
-
-        // Act
-        boolean isEmailUnique = companyService
-                .isEmailUnique("el.barto@springfield.com");
-
-        // Assert
-        assertThat(isEmailUnique).isTrue();
-    }
 
     @Test
     void saveCompanyMultipleParametersTest() {
@@ -195,26 +171,34 @@ public class CompanyServiceTest {
         verify(offreRepository, times(1)).save(any());
     }
     @Test
-    void testDeleteUncofirmedCompanyHappyDay() throws NonExistentEntityException {
+    void testInvalidCompanyHappyDay() throws NonExistentEntityException {
         // Arrange
         duffBeer.setInscriptionTimestamp(0);
         when(companyRepository.findByEmail(any())).thenReturn(Optional.of(duffBeer));
 
         // Act
-        companyService.deleteUnconfirmedCompany(new CompanyDTO(duffBeer));
+        companyService.invalidCompany(duffBeer.getEmail());
 
         // Assert
         verify(companyRepository, times(1)).delete(any());
     }
     @Test
-    void testDeleteUncofirmedCompanyThrowsException()  {
+    void testInvalidCompanyReturnFalse() throws NonExistentEntityException {
+        // Arrange
+        duffBeer.setInscriptionTimestamp(currentTimestamp());
+        when(companyRepository.findByEmail(any())).thenReturn(Optional.empty());
+        // Assert
+        assertThat(companyService.invalidCompany(duffBeer.getEmail())).isFalse();
+    }
+    @Test
+    void testInvalidCompanyThrowsException()  {
         // Arrange
         duffBeer.setInscriptionTimestamp(0);
-        when(companyRepository.findByEmail(any())).thenReturn(Optional.empty());
+        when(companyRepository.findByEmail(any())).thenReturn(Optional.of(duffBeer),Optional.empty());
 
         // Act
         try{
-            companyService.deleteUnconfirmedCompany(new CompanyDTO(duffBeer));
+            companyService.invalidCompany(duffBeer.getEmail());
         }catch (NonExistentEntityException e){
             return;
         }
