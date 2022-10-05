@@ -1,111 +1,163 @@
-import React, {useEffect, useState} from "react";
-import {Button, Container, Table} from "react-bootstrap";
-import {Link} from "react-router-dom";
-import IOffre from "../models/IOffre";
+import React, { useEffect, useState } from "react";
+import { Container, Row, Col, Table, Button } from "react-bootstrap";
+import { Link } from "react-router-dom";
+import IUser from "../models/IUser";
+//import { Viewer } from '@react-pdf-viewer/core';
 
-
-const ValiderNouvelleOffreStagePage = ({setPdfId}: { setPdfId: Function }): JSX.Element => {
-
-    const emptyOffre: IOffre = {
-        id: 0,
-        nomDeCompagnie: "",
-        department: "",
-        position: "",
-        heureParSemaine: 0,
-        adresse: "",
-    }
-    const [offresAValider, setOffresAValider] = useState([emptyOffre])
-
-    const deleteOffre = async (id: number) => {
-        const res = await fetch(`http://localhost:8080/removeOffer/${id}`,
-            {
-                method: 'DELETE',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(id)
-            })
-    }
+const ValiderNouvelleOffreStagePage = ({ connectedUser, deconnexion }: { connectedUser: IUser, deconnexion: Function }): JSX.Element => {
+    const [offers, setOffers] = useState<any[]>([]);
+    const [pdf, setpdf] = useState<Uint8Array>(new Uint8Array([]))
+    const [showPDF, setShowPDF] = useState<boolean>(false)
 
     useEffect(() => {
+        const fetchOffresAttendreValide = async () => {
+            try {
+                const response = await fetch("http://localhost:8080/unvalidatedOffers", {
+                    method: "PUT",
+                    headers: {
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ "token": connectedUser.token })
+                });
+                if (response.ok) {
+                    const data = await response.json();
+                    setOffers(data);
+                }
+                else if (response.status === 403) {
+                    alert("Session expiré");
+                    deconnexion();
+                }
+                else {
+                    console.log(response.status)
+                    throw new Error("Error code not handled");
+                }
+            }
+            catch {
+                alert("Une erreur est survenue, ressayez.");
+                window.location.href = "/"
+            }
+        }
         fetchOffresAttendreValide()
-    }, [])
-    const fetchOffresAttendreValide = async () => {
-        const res = await fetch(`http://localhost:8080/unvalidatedOffers`,
-        {
-            method: 'GET',
-                headers: {
-            'Content-Type': 'application/json',
-        }
-        })
-        const data = await res.json()
+        setShowPDF(pdf.length > 0)
+    }, [connectedUser, pdf]);
 
-        if (res.status === 200) {
-            setOffresAValider(data)
-        }
-    }
-
-    const valideOffre = async (id: number) => {
-        const res = await fetch(`http://localhost:8080/validateOffer/${id}`,
-            {
-                method: 'PUT',
+    async function valideOffre(offerId: number, index: number, valid: boolean): Promise<void> {
+        try {
+            const url: String = valid ? "http://localhost:8080/validateOffer/" : "http://localhost:8080/removeOffer/";
+            const response: Response = await fetch(url + offerId.toString(), {
+                method: "PUT",
                 headers: {
+                    'Accept': 'application/json',
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify(id)
-            })
+                body: JSON.stringify({ "token": connectedUser.token })
+            });
 
-    }
-    const setId = (offreId: number) => {
-        setPdfId(offreId)
+            if (response.ok) {
+                setOffers(offers.splice(index + 1, 1));
+            }
+            else if (response.status === 403) {
+                alert("Session expiré");
+                deconnexion();
+            }
+            else {
+                throw new Error("Error code not handled");
+            }
+        } catch (exception) {
+            alert("Une erreur est survenue, ressayez.");
+        }
     }
 
-    if (offresAValider.length == 1 && offresAValider[0] == emptyOffre) {
-        return <>
-            <Link to="/" className="btn btn-primary my-3">Home</Link>
-            <h1>Aucune offre à valider</h1>
-        </>
+    async function getPDF(offerId: number): Promise<void> {
+        try {
+            const response = await fetch("http://localhost:8080/offerPdf/" + offerId.toString(), {
+                method: "PUT",
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ "token": connectedUser.token })
+            });
+
+            if (response.ok) {
+                const data = await response.json();
+                setpdf(new Uint8Array(JSON.parse(data.pdf)));
+            }
+            else if (response.status === 403) {
+                alert("Session expiré");
+                deconnexion();
+            }
+            else {
+                throw new Error("Error code not handled");
+            }
+        } catch (exception) {
+            alert("Une erreur est survenue, ressayez.");
+        }
     }
-    return (<>
-            <Link to="/" className="btn btn-primary my-3">Home</Link>
-            <Container className="justify-content-center">
-                <h1 className="card-header text-center mb-2 p-5">Valider les nouveaux offres</h1>
-                <Table striped bordered hover bgcolor="Azure">
-                    <thead>
-                    <tr className="text-uppercase">
-                        <th>Nom De Compagnie</th>
-                        <th>Départment / Position</th>
-                        <th>Heure Par Semaine / Adresse</th>
-                        <th>Pdf</th>
-                        <th>Valide</th>
-                        <th>Non Valide</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    {offresAValider.map((offre: any) => {
-                        console.log(offre.id)
-                        return (
-                            <tr key={offre.id}>
-                                <td>{offre.nomDeCompagnie}</td>
-                                <td>{offre.department}<br/>{offre.position}</td>
-                                <td>Heure : {offre.heureParSemaine}<br/>{offre.adresse}</td>
-                                <td>
-                                    <Link to={"/pdf"} onClick={() => setId(offre.id)} className="btn btn-warning ">Ouvrir
-                                        PDF</Link>
-                                </td>
-                                <td><Button className="bg-success" onClick={() => {
-                                    valideOffre(offre.id)
-                                }}>Valide</Button></td>
-                                <td><Button className="bg-danger" onClick={() => {
-                                    deleteOffre(offre.id)
-                                }}>Non Valide</Button></td>
-                            </tr>
-                        )
-                    })}
-                    </tbody>
-                </Table>
+
+    if (showPDF) {
+        return (
+            <Container>
+                <div className="bg-dark p-2">
+                    <Button className="Btn btn-primary" onClick={() => setShowPDF(false)}>
+                        Fermer
+                    </Button>
+                </div>
+                <div>
+
+                </div>
             </Container>
-        </>
+        );
+    }
+
+    return (
+        <Container className="vh-100">
+            <Row>
+                <Col sm={2}>
+                    <Link to="/" className="btn btn-primary my-3">Home</Link>
+                </Col>
+                <Col sm={8} className="text-center pt-2">
+                    <h1 className="fw-bold">Validation de CV</h1>
+                </Col>
+                <Col sm={2}></Col>
+            </Row>
+            <Row>
+                <Col>
+                    <Table className="text-center" hover>
+                        <thead className="bg-primary">
+                        <tr>
+                            <th>Nom De Compagnie</th>
+                            <th>Départment / Position</th>
+                            <th>Heure Par Semaine / Adresse</th>
+                            <th>Pdf</th>
+                            <th>Valide</th>
+                            <th>Non Valide</th>
+                        </tr>
+
+                        </thead>
+                        <tbody className="bg-light">
+                        {offers.map((offer, index) => {
+                            return (
+                                <tr key={index}>
+                                    <td>{offer.nomDeCompagnie}</td>
+                                    <td>{offer.department} <br/> {offer.position}</td>
+                                    <td>{offer.heureParSemaine} <br/> {offer.adresse}</td>
+                                    <td><Button className="btn btn-warning" onClick={() => getPDF(offer.id)}>pdf</Button></td>
+                                    <td>
+                                        <Button className="btn btn-success mx-2" onClick={() => valideOffre(offer.id, index, true)}>O</Button>
+                                        <Button className="btn btn-danger" onClick={() => valideOffre(offer.id, index, false)}>X</Button>
+                                    </td>
+                                </tr>
+                            );
+                        })}
+                        </tbody>
+                    </Table>
+                </Col>
+            </Row>
+        </Container>
     );
 }
+
 export default ValiderNouvelleOffreStagePage;
+

@@ -12,12 +12,11 @@ const PdfPage = ({setPdfId,pdfId} : {setPdfId:Function,pdfId:number}) => {
         console.log("ouvrirPDF")
         if(res.status == 200){
             const data = await res.json();
-            await setPdf({data:new Uint8Array(data.data)})
+            await setPdf({data:new Uint8Array(data.pdf)})
             await console.log("data length : " + data.data.byteLength)
         }
     }
     const {Document, Page, pdfjs} = require('react-pdf');
-    pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.js`;
 
     const [numPages, setNumPages] = useState(null);
     const [pageNumber, setPageNumber] = useState(1);
