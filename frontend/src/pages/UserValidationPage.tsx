@@ -6,7 +6,7 @@ import ValidationGestionnaire from "../components/CreateGestionnaireForm";
 import { Link } from "react-router-dom";
 import IUser from "../models/IUser";
 
-const UserValidation = ({connectedUser}:{connectedUser:IUser}) => {
+const UserValidation = ({ connectedUser }: { connectedUser: IUser }) => {
     const [user, setUser] = useState("Student");
 
     const onValidation = async (id: string, type: string) => {
@@ -16,10 +16,10 @@ const UserValidation = ({connectedUser}:{connectedUser:IUser}) => {
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body:JSON.stringify({token:connectedUser.token})
+                body: JSON.stringify({ token: connectedUser.token })
             });
 
-        if (res.status == 409) {
+        if (res.status === 409) {
             const data = await res.json();
             alert(data.error);
         }
@@ -32,17 +32,17 @@ const UserValidation = ({connectedUser}:{connectedUser:IUser}) => {
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body:JSON.stringify({token:connectedUser.token})
+                body: JSON.stringify({ token: connectedUser.token })
             });
 
-        if (res.status == 409) {
+        if (res.status === 409) {
             const data = await res.json();
             alert(data.error);
         }
     }
 
     return (
-        <Container className="">
+        <Container className="vh-100">
             <Link to="/" className="btn btn-primary my-3">Home</Link>
             <Row>
                 <ToggleButtonGroup className="" type="radio" name="options" defaultValue="Student">
@@ -58,9 +58,9 @@ const UserValidation = ({connectedUser}:{connectedUser:IUser}) => {
                 </ToggleButtonGroup>
             </Row>
             <Row>
-                {user == "Student" ? <ValidationStudent connectedUser={connectedUser} onRemove={onRemove} onValidation={onValidation} /> :
-                    user == "Company" ? <ValidationCompany connectedUser={connectedUser} onRemove={onRemove} onValidation={onValidation} /> :
-                        <ValidationGestionnaire user={connectedUser}/>
+                {user === "Student" ? <ValidationStudent connectedUser={connectedUser} onRemove={onRemove} onValidation={onValidation} /> :
+                    user === "Company" ? <ValidationCompany connectedUser={connectedUser} onRemove={onRemove} onValidation={onValidation} /> :
+                        <ValidationGestionnaire user={connectedUser} />
                 }
             </Row>
         </Container>
