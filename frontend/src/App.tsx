@@ -42,7 +42,7 @@ function App() {
   }
 
   const verifyToken = async () => {
-    if (user == emptyUser) {
+    if (user === emptyUser) {
       return
     }
     const getTokenHeaders = {
@@ -59,7 +59,7 @@ function App() {
   }
 
   const loginFromLocalStorage = async () => {
-    if (localStorage.getItem(LOCAL_STORAGE_KEY) != null && user == emptyUser) {
+    if (localStorage.getItem(LOCAL_STORAGE_KEY) != null && user === emptyUser) {
       let user: IUser = JSON.parse(localStorage.getItem(LOCAL_STORAGE_KEY)!);
       const getTokenHeaders = {
         method: "PUT",
@@ -93,7 +93,7 @@ function App() {
   }
 
 
-  if (user == emptyUser) {
+  if (user === emptyUser) {
     checkIfUserExistsInLocalStorage()
     return (
       <Container className="vh-100">
@@ -108,7 +108,7 @@ function App() {
     );
   }
 
-  if (user.userType == "student") {
+  if (user.userType === "student") {
     return (
       <Container className="vh-100">
         <BrowserRouter>
@@ -122,7 +122,7 @@ function App() {
     );
   }
 
-  else if (user.userType == "company") {
+  else if (user.userType === "company") {
     return (
       <Container className="vh-100">
         <BrowserRouter>
@@ -136,7 +136,7 @@ function App() {
     );
   }
 
-  else if (user.userType == "gestionnaire") {
+  else if (user.userType === "gestionnaire") {
     return (
       <Container>
         <BrowserRouter>
