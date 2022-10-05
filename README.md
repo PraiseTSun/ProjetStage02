@@ -32,4 +32,8 @@ Notre définition de Done est:
 
 - Garder la meme peer pour toute la story
 - Avoir une pratique de démo à fin du sprint
-
+- 3 daily / semaine
+  - Lundi durant la pause du cours
+  - Mercredi 17:00
+  - Vendredi 14:30
+- Autour de 24h de travail par personne dans un sprint.
