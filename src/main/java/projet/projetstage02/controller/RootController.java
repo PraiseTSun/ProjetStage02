@@ -479,7 +479,7 @@ public class RootController {
 
     @PutMapping("/offerPdf/{id}")
     public ResponseEntity<byte[]> getOfferPdf(@PathVariable String id, TokenDTO tokenId) {
-        logger.log(Level.INFO, "Get /offerPdf/{id} entered with id : " + id);
+        logger.log(Level.INFO, "Put /offerPdf/{id} entered with id : " + id);
         try {
             authService.getToken(tokenId.getToken(), GESTIONNAIRE);
             byte[] offerPdf = gestionnaireService.getOffrePdfById(Long.parseLong(id));
@@ -495,39 +495,67 @@ public class RootController {
     }
 //Todo add tokens
 
-    @GetMapping("/unvalidatedCvStudents")
-    public ResponseEntity<List<StudentDTO>> getUnvalidatedCvStudent(){
-        List<StudentDTO> students = gestionnaireService.getUnvalidatedCVStudents();
-        return ResponseEntity.ok(students);
-    }
-//todo use not byte array as return
-    @GetMapping("/studentCv/{studentId}")
-    public ResponseEntity<byte[]> getStudentCv(@PathVariable String studentId){
+    @PutMapping("/unvalidatedCvStudents")
+    public ResponseEntity<List<StudentDTO>> getUnvalidatedCvStudent(@RequestBody TokenDTO tokenId){
+        logger.log(Level.INFO, "Put /unvalidatedCvStudents entered with id : ");
         try {
+            authService.getToken(tokenId.getToken(), GESTIONNAIRE);
+            List<StudentDTO> students = gestionnaireService.getUnvalidatedCVStudents();
+            logger.log(Level.INFO, "PutMapping: /unvalidatedCvStudents sent 200 response");
+            return ResponseEntity.ok(students);
+        }catch (InvalidTokenException e){
+            logger.log(Level.INFO, "PutMapping: /unvalidatedCvStudents sent 403 response");
+            return ResponseEntity.status(FORBIDDEN).build();
+        }
+    }
+    @PutMapping("/studentCv/{studentId}")
+    public ResponseEntity<PdfDTO> getStudentCv(@PathVariable String studentId,@RequestBody TokenDTO tokenId){
+        logger.log(Level.INFO, "Put /studentCv entered with id : ");
+        try {
+            authService.getToken(tokenId.getToken(), GESTIONNAIRE);
             byte[] cv = gestionnaireService.getStudentCvToValidate(Long.parseLong(studentId));
-            return ResponseEntity.ok(cv);
+            logger.log(Level.INFO, "PutMapping: /studentCv sent 200 response");
+            return ResponseEntity.ok(PdfDTO.builder().pdf(cv).build());
         } catch (NonExistentEntityException e) {
+            logger.log(Level.INFO, "PutMapping: /studentCv sent 404 response");
             return ResponseEntity.notFound().build();
+        } catch (InvalidTokenException e) {
+            logger.log(Level.INFO, "PutMapping: /studentCv sent 403 response");
+            return ResponseEntity.status(FORBIDDEN).build();
         }
     }
 
     @PutMapping("/validateCv/{studentId}")
-    public ResponseEntity<StudentDTO> validateStudentCv(@PathVariable String studentId){
+    public ResponseEntity<StudentDTO> validateStudentCv(@PathVariable String studentId,@RequestBody TokenDTO tokenId){
+        logger.log(Level.INFO, "Put /validateCv entered with id : ");
         try {
+            authService.getToken(tokenId.getToken(), GESTIONNAIRE);
             StudentDTO studentDTO = gestionnaireService.validateStudentCV(Long.parseLong(studentId));
+            logger.log(Level.INFO, "PutMapping: /validateCv sent 200 response");
             return ResponseEntity.ok(studentDTO);
         } catch (NonExistentEntityException e) {
+            logger.log(Level.INFO, "PutMapping: /validateCv sent 404 response");
             return ResponseEntity.notFound().build();
+        } catch (InvalidTokenException e) {
+            logger.log(Level.INFO, "PutMapping: /validateCv sent 403 response");
+            return ResponseEntity.status(FORBIDDEN).build();
         }
     }
 
     @PutMapping("/refuseCv/{studentId}")
-    public ResponseEntity<StudentDTO> refuseStudentCv(@PathVariable String studentId){
+    public ResponseEntity<StudentDTO> refuseStudentCv(@PathVariable String studentId,@RequestBody TokenDTO tokenId){
+        logger.log(Level.INFO, "Put /refuseCv entered with id : ");
         try {
+            authService.getToken(tokenId.getToken(), GESTIONNAIRE);
             StudentDTO studentDTO = gestionnaireService.removeStudentCvValidation(Long.parseLong(studentId));
+            logger.log(Level.INFO, "PutMapping: /refuseCv sent 200 response");
             return ResponseEntity.ok(studentDTO);
         } catch (NonExistentEntityException e) {
+            logger.log(Level.INFO, "PutMapping: /refuseCv sent 404 response");
             return ResponseEntity.notFound().build();
+        } catch (InvalidTokenException e) {
+            logger.log(Level.INFO, "PutMapping: /refuseCv sent 403 response");
+            return ResponseEntity.status(FORBIDDEN).build();
         }
     }
 }

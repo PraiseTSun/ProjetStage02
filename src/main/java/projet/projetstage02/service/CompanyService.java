@@ -10,17 +10,19 @@ import projet.projetstage02.model.Company;
 import projet.projetstage02.model.Offre;
 import projet.projetstage02.repository.CompanyRepository;
 import projet.projetstage02.repository.OffreRepository;
+import projet.projetstage02.utils.TimeUtil;
 
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
+import static projet.projetstage02.utils.TimeUtil.MILLI_SECOND_DAY;
+import static projet.projetstage02.utils.TimeUtil.currentTimestamp;
+
 @Service
 @AllArgsConstructor
 public class CompanyService {
-    //TODO when merging with token branch, user TimeUtil stuff
-    private final long MILLI_SECOND_DAY = 864000000;
     private final CompanyRepository companyRepository;
     private final OffreRepository offreRepository;
 
@@ -76,7 +78,7 @@ public class CompanyService {
         if(companyOpt.isEmpty())
             throw new NonExistentEntityException();
         Company company = companyOpt.get();
-        if(!company.isEmailConfirmed() && Timestamp.valueOf(LocalDateTime.now()).getTime() - company.getInscriptionTimestamp() > MILLI_SECOND_DAY){
+        if(!company.isEmailConfirmed() && currentTimestamp() - company.getInscriptionTimestamp() > MILLI_SECOND_DAY){
             companyRepository.delete(company);
             return true;
         }

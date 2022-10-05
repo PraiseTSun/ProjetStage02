@@ -831,7 +831,15 @@ public class RootControllerTest {
                         .content(jsonTokenDTO.write(token).getJson()))
                 .andExpect(status().isNotFound());
     }
+    @Test
+    void testRemoveOfferInvalidToken() throws Exception {
+        when(authService.getToken(any(),any())).thenThrow(new InvalidTokenException());
 
+        mockMvc.perform(delete("/removeOffer/{id}", 1)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(jsonTokenDTO.write(token).getJson()))
+                .andExpect(status().isForbidden());
+    }
     @Test
     void testUploadCurriculumVitaeSuccess() throws Exception {
         when(authService.getToken(any(),any())).thenReturn(Token.builder().userId(1).build());
@@ -858,6 +866,14 @@ public class RootControllerTest {
                 .content(jsonPdfDTO.write(bartCV).getJson()));
     }
     @Test
+    void testUploadCurriculumVitaeInvalidToken() throws Exception {
+        when(authService.getToken(any(),any())).thenThrow(new InvalidTokenException());
+
+        mockMvc.perform(put("/uploadStudentCV")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(jsonPdfDTO.write(bartCV).getJson()))
+                .andExpect(status().isForbidden());}
+    @Test
     void testGetOfferPdfSuccess() throws Exception {
         when(authService.getToken(any(),any())).thenReturn(Token.builder().userId(1).build());
         byte[] pdf = new byte[0];
@@ -880,70 +896,133 @@ public class RootControllerTest {
                         .content(jsonTokenDTO.write(token).getJson()))
                 .andExpect(status().isNotFound());
     }
+    @Test
+    void testGetOfferPdfInvalidToken() throws Exception {
+        when(authService.getToken(any(),any())).thenThrow(new InvalidTokenException());
 
+        mockMvc.perform(put("/offerPdf/{id}", 1)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(jsonTokenDTO.write(token).getJson()))
+                .andExpect(status().isForbidden());
+    }
     @Test
     void testUnvalidatedCvStudents() throws Exception {
+        when(authService.getToken(any(),any())).thenReturn(Token.builder().userId(1).build());
         when(gestionnaireService.getUnvalidatedCVStudents()).thenReturn(List.of(bart));
 
-        mockMvc.perform(get("/unvalidatedCvStudents", 1))
+        mockMvc.perform(put("/unvalidatedCvStudents", 1)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(jsonTokenDTO.write(token).getJson()))
+                .andExpect(jsonPath("$[0].firstName", is("Bart")))
                 .andExpect(status().isOk());
     }
+    @Test
+    void testUnvalidatedCvStudentsInvalidToken() throws Exception {
+        when(authService.getToken(any(),any())).thenThrow(new InvalidTokenException());
 
+        mockMvc.perform(put("/unvalidatedCvStudents", 1)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(jsonTokenDTO.write(token).getJson()))
+                .andExpect(status().isForbidden());
+    }
     @Test
     void testGetStudentCvToValidateSuccess() throws Exception {
+        when(authService.getToken(any(),any())).thenReturn(Token.builder().userId(1).build());
         byte[] cv = new byte[0];
         when(gestionnaireService.getStudentCvToValidate(anyLong())).thenReturn(cv);
 
-        mockMvc.perform(get("/studentCv/{studentId}", 1))
+        mockMvc.perform(put("/studentCv/{studentId}", 1)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(jsonTokenDTO.write(token).getJson()))
+                .andExpect(jsonPath("$.pdf", is("")))
                 .andExpect(status().isOk());
     }
 
     @Test
     void testGetStudentCvToValidateNotFound() throws Exception {
+        when(authService.getToken(any(),any())).thenReturn(Token.builder().userId(1).build());
         doThrow(new NonExistentEntityException()).
                 when(gestionnaireService).getStudentCvToValidate(anyLong());
 
-        mockMvc.perform(get("/studentCv/{studentId}", 1))
+        mockMvc.perform(put("/studentCv/{studentId}", 1)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(jsonTokenDTO.write(token).getJson()))
                 .andExpect(status().isNotFound());
     }
+    @Test
+    void testGetStudentCvToValidateInvalidToken() throws Exception {
+        when(authService.getToken(any(),any())).thenThrow(new InvalidTokenException());
 
+        mockMvc.perform(put("/studentCv/{studentId}", 1)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(jsonTokenDTO.write(token).getJson()))
+                .andExpect(status().isForbidden());
+    }
     @Test
     void testValidateStudentCVSuccess () throws Exception {
         when(gestionnaireService.validateStudentCV(anyLong())).thenReturn(bart);
 
         mockMvc.perform(put("/validateCv/{studentId}", 1)
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .content(jsonStudentDTO.write(bart).getJson()))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(jsonTokenDTO.write(token).getJson()))
+
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.firstName", is(bart.getFirstName())));
     }
 
     @Test
     void testValidateStudentCVNotFound () throws Exception {
+        when(authService.getToken(any(),any())).thenReturn(Token.builder().userId(1).build());
         doThrow(new NonExistentEntityException()).
                 when(gestionnaireService).validateStudentCV(anyLong());
 
-        mockMvc.perform(put("/validateCv/{studentId}", 1))
+        mockMvc.perform(put("/validateCv/{studentId}", 1)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(jsonTokenDTO.write(token).getJson()))
                 .andExpect(status().isNotFound());
     }
+    @Test
+    void testValidateStudentCVInvalidToken() throws Exception {
+        when(authService.getToken(any(),any())).thenThrow(new InvalidTokenException());
 
+        mockMvc.perform(put("/validateCv/{studentId}", 1)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(jsonTokenDTO.write(token).getJson()))
+                .andExpect(status().isForbidden());
+    }
     @Test
     void testRefuseStudentCVSuccess () throws Exception {
+        when(authService.getToken(any(),any())).thenReturn(Token.builder().userId(1).build());
         when(gestionnaireService.removeStudentCvValidation(anyLong())).thenReturn(bart);
 
         mockMvc.perform(put("/refuseCv/{studentId}", 1)
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(jsonStudentDTO.write(bart).getJson()))
+                        .content(jsonTokenDTO.write(token).getJson()))
+
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.firstName", is(bart.getFirstName())));
     }
 
     @Test
     void testRefuseStudentCVNotFound () throws Exception {
+        when(authService.getToken(any(),any())).thenReturn(Token.builder().userId(1).build());
         doThrow(new NonExistentEntityException()).
                 when(gestionnaireService).removeStudentCvValidation(anyLong());
 
-        mockMvc.perform(put("/refuseCv/{studentId}", 1))
+        mockMvc.perform(put("/refuseCv/{studentId}", 1)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(jsonTokenDTO.write(token).getJson()))
+                .andExpect(status().isNotFound());
+    }
+    @Test
+    void testRefuseStudentCVInvalidToken () throws Exception {
+        when(authService.getToken(any(),any())).thenReturn(Token.builder().userId(1).build());
+        doThrow(new NonExistentEntityException()).
+                when(gestionnaireService).removeStudentCvValidation(anyLong());
+
+        mockMvc.perform(put("/refuseCv/{studentId}", 1)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(jsonTokenDTO.write(token).getJson()))
                 .andExpect(status().isNotFound());
     }
 }

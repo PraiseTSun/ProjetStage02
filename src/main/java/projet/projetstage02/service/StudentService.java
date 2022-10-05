@@ -8,17 +8,19 @@ import projet.projetstage02.exception.NonExistentEntityException;
 import projet.projetstage02.model.AbstractUser;
 import projet.projetstage02.model.Student;
 import projet.projetstage02.repository.StudentRepository;
+import projet.projetstage02.utils.TimeUtil;
 
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.Optional;
 
+import static projet.projetstage02.utils.TimeUtil.MILLI_SECOND_DAY;
+import static projet.projetstage02.utils.TimeUtil.currentTimestamp;
+
 @Service
 @AllArgsConstructor
 public class StudentService {
     private final StudentRepository studentRepository;
-    //TODO when merging with token branch, user TimeUtil stuff
-    private final long MILLI_SECOND_DAY = 864000000;
     public void saveStudent(String firstName,
                             String lastName,
                             String email,
@@ -68,7 +70,7 @@ public class StudentService {
         Optional<Student> studentOpt = studentRepository.findByEmail(dto.getEmail());
         if(studentOpt.isEmpty()) throw new NonExistentEntityException();
         Student student = studentOpt.get();
-        if(!student.isEmailConfirmed() && Timestamp.valueOf(LocalDateTime.now()).getTime() - student.getInscriptionTimestamp() > MILLI_SECOND_DAY){
+        if(!(currentTimestamp() - student.getInscriptionTimestamp() > MILLI_SECOND_DAY)){
              studentRepository.delete(student);
              return true;
         }
