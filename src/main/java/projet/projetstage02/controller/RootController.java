@@ -45,8 +45,7 @@ public class RootController {
     public ResponseEntity<Map<String, String>> createStudent(@Valid @RequestBody StudentDTO studentDTO) {
         try{
             logger.log(Level.INFO, "PostMapping: /createStudent entered with body : " + studentDTO.toString());
-            if (!studentService.isEmailUnique(studentDTO.getEmail())
-                    && !studentService.deleteUnconfirmedStudent(studentDTO)) {
+            if (studentService.invalidStudent(studentDTO.getEmail())) {
                 logger.log(Level.INFO, "PostMapping: /createStudent sent 409 response");
                 return ResponseEntity.status(CONFLICT)
                         .body(getError("Cette adresse email est déjà utilisée."));
@@ -72,8 +71,7 @@ public class RootController {
     public ResponseEntity<Map<String, String>> createCompany(@Valid @RequestBody CompanyDTO companyDTO) {
         try {
         logger.log(Level.INFO, "Post /createCompany entered with body : " + companyDTO.toString());
-        if (!companyService.isEmailUnique(companyDTO.getEmail())
-                && !companyService.deleteUnconfirmedCompany(companyDTO)) {
+        if (companyService.invalidCompany(companyDTO.getEmail())) {
             logger.log(Level.INFO, "PostMapping: /createCompany sent 409 response");
             return ResponseEntity.status(CONFLICT)
                     .body(getError("Cette adresse email est déjà utilisée."));
@@ -101,8 +99,7 @@ public class RootController {
         try{
             logger.log(Level.INFO, "Post /createGestionaire entered with body : " + gestionnaireDTO.toString());
             authService.getToken(gestionnaireDTO.getToken(), GESTIONNAIRE);
-            if (!gestionnaireService.isEmailUnique(gestionnaireDTO.getEmail())
-                    && !gestionnaireService.deleteUnconfirmedGestionnaire(gestionnaireDTO)) {
+            if (gestionnaireService.invalidGestionnaire(gestionnaireDTO.getEmail())) {
                     logger.log(Level.INFO, "PostMapping: /createGestionaire sent 409 response");
                     return ResponseEntity.status(CONFLICT).body(getError("Cette adresse email est déjà utilisée."));
             }
