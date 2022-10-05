@@ -8,23 +8,24 @@ import projet.projetstage02.exception.NonExistentEntityException;
 import projet.projetstage02.model.AbstractUser;
 import projet.projetstage02.model.Student;
 import projet.projetstage02.repository.StudentRepository;
+import projet.projetstage02.utils.TimeUtil;
 
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.Optional;
 
+import static projet.projetstage02.utils.TimeUtil.MILLI_SECOND_DAY;
+import static projet.projetstage02.utils.TimeUtil.currentTimestamp;
+
 @Service
 @AllArgsConstructor
 public class StudentService {
     private final StudentRepository studentRepository;
-    // TODO when merging with token branch, user TimeUtil stuff
-    private final long MILLI_SECOND_DAY = 864000000;
-
     public void saveStudent(String firstName,
-            String lastName,
-            String email,
-            String password,
-            AbstractUser.Department department) {
+                            String lastName,
+                            String email,
+                            String password,
+                            AbstractUser.Department department) {
         StudentDTO dto = StudentDTO.builder()
                 .firstName(firstName)
                 .lastName(lastName)
@@ -48,15 +49,13 @@ public class StudentService {
 
     public StudentDTO getStudentById(Long id) throws NonExistentEntityException {
         var studentOpt = studentRepository.findById(id);
-        if (studentOpt.isEmpty())
-            throw new NonExistentEntityException();
+        if (studentOpt.isEmpty()) throw new NonExistentEntityException();
         return new StudentDTO(studentOpt.get());
     }
 
     public StudentDTO getStudentByEmailPassword(String email, String password) throws NonExistentEntityException {
         var studentOpt = studentRepository.findByEmailAndPassword(email.toLowerCase(), password);
-        if (studentOpt.isEmpty())
-            throw new NonExistentEntityException();
+        if (studentOpt.isEmpty()) throw new NonExistentEntityException();
         return new StudentDTO(studentOpt.get());
     }
 
@@ -69,13 +68,11 @@ public class StudentService {
 
     public boolean deleteUnconfirmedStudent(StudentDTO dto) throws NonExistentEntityException {
         Optional<Student> studentOpt = studentRepository.findByEmail(dto.getEmail());
-        if (studentOpt.isEmpty())
-            throw new NonExistentEntityException();
+        if(studentOpt.isEmpty()) throw new NonExistentEntityException();
         Student student = studentOpt.get();
-        if (!student.isEmailConfirmed() && Timestamp.valueOf(LocalDateTime.now()).getTime()
-                - student.getInscriptionTimestamp() > MILLI_SECOND_DAY) {
-            studentRepository.delete(student);
-            return true;
+        if(currentTimestamp() - student.getInscriptionTimestamp() > MILLI_SECOND_DAY){
+             studentRepository.delete(student);
+             return true;
         }
         return false;
     }

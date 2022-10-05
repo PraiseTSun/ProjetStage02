@@ -70,7 +70,6 @@ public class GestionnaireServiceTest {
                 "password",
                 AbstractUser.Department.Informatique
         );
-        studentTest.setCv(new byte[0]);
 
         offreTest = new Offre(
                 1L,
@@ -462,22 +461,55 @@ public class GestionnaireServiceTest {
         }
         fail("NonExistentOfferException not caught");
     }
+    @Test
+    void testDeleteUncofirmedStudentHappyDay() throws NonExistentEntityException {
+        // Arrange
+        gestionnaireTest.setInscriptionTimestamp(0);
+        when(gestionnaireRepository.findByEmail(any())).thenReturn(Optional.of(gestionnaireTest));
+
+        // Act
+        service.deleteUnconfirmedGestionnaire(new GestionnaireDTO(gestionnaireTest));
+
+        // Assert
+        verify(gestionnaireRepository, times(1)).delete(any());
+    }
+    @Test
+    void testDeleteUncofirmedStudentThrowsException()  {
+        // Arrange
+        gestionnaireTest.setInscriptionTimestamp(0);
+        when(gestionnaireRepository.findByEmail(any())).thenReturn(Optional.empty());
+
+        // Act
+        try{
+            service.deleteUnconfirmedGestionnaire(new GestionnaireDTO(gestionnaireTest));
+        }catch (NonExistentEntityException e){
+            return;
+        }
+        // Assert
+        fail("NonExistentEntityException not thrown");
+    }
 
     @Test
     void testGetUnvalidatedStudentCV() {
         // Arrange
         List<Student> students = new ArrayList<>();
         students.add(studentTest);
-        studentTest.setCvToValidate(new byte[0]);
+        studentTest.setCvToValidate(new byte[]{1, 2, 3});
         studentTest.setConfirm(true);
+
+        Student studentCvValidated = new Student();
+        studentCvValidated.setConfirm(true);
+
+        students.add(studentCvValidated);
         when(studentRepository.findAll()).thenReturn(students);
 
         // Act
         List<StudentDTO> unvalidatedStudentCV = service.getUnvalidatedCVStudents();
-
         // Assert
         assertThat(unvalidatedStudentCV.get(0).getEmail()).isEqualTo(studentTest.getEmail());
         assertThat(unvalidatedStudentCV.get(0).getFirstName()).isEqualTo(studentTest.getFirstName());
+        assertThat(unvalidatedStudentCV.get(0).getCvToValidate()).isNotEmpty();
+        assertThat(unvalidatedStudentCV.size()).isEqualTo(1);
     }
 
     @Test
@@ -492,7 +524,7 @@ public class GestionnaireServiceTest {
         // Assert
         assertThat(studentDTO.getFirstName()).isEqualTo(studentTest.getFirstName());
         assertThat(studentDTO.getCv()).isEqualTo(new byte[0]);
-        assertThat(studentDTO.getCvToValidate()).isNull();
+        assertThat(studentDTO.getCvToValidate()).isEmpty();
     }
 
     @Test
@@ -520,7 +552,7 @@ public class GestionnaireServiceTest {
 
         // Assert
         assertThat(studentDTO.getEmail()).isEqualTo(studentTest.getEmail());
-        assertThat(studentDTO.getCvToValidate()).isNull();
+        assertThat(studentDTO.getCvToValidate()).isEmpty();
     }
 
     @Test

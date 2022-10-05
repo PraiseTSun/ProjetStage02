@@ -20,7 +20,6 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.assertj.core.api.Fail.fail;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
-
 @ExtendWith(MockitoExtension.class)
 public class CompanyServiceTest {
 
@@ -194,5 +193,32 @@ public class CompanyServiceTest {
 
         // Assert
         verify(offreRepository, times(1)).save(any());
+    }
+    @Test
+    void testDeleteUncofirmedCompanyHappyDay() throws NonExistentEntityException {
+        // Arrange
+        duffBeer.setInscriptionTimestamp(0);
+        when(companyRepository.findByEmail(any())).thenReturn(Optional.of(duffBeer));
+
+        // Act
+        companyService.deleteUnconfirmedCompany(new CompanyDTO(duffBeer));
+
+        // Assert
+        verify(companyRepository, times(1)).delete(any());
+    }
+    @Test
+    void testDeleteUncofirmedCompanyThrowsException()  {
+        // Arrange
+        duffBeer.setInscriptionTimestamp(0);
+        when(companyRepository.findByEmail(any())).thenReturn(Optional.empty());
+
+        // Act
+        try{
+            companyService.deleteUnconfirmedCompany(new CompanyDTO(duffBeer));
+        }catch (NonExistentEntityException e){
+            return;
+        }
+        // Assert
+        fail("NonExistentEntityException not thrown");
     }
 }
