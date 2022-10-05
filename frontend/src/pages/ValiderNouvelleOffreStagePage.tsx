@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Container, Row, Col, Table, Button } from "react-bootstrap";
 import { Link } from "react-router-dom";
 import IUser from "../models/IUser";
-//import { Viewer } from '@react-pdf-viewer/core';
+import { Viewer } from '@react-pdf-viewer/core';
 
 const ValiderNouvelleOffreStagePage = ({ connectedUser, deconnexion }: { connectedUser: IUser, deconnexion: Function }): JSX.Element => {
     const [offers, setOffers] = useState<any[]>([]);
@@ -105,7 +105,7 @@ const ValiderNouvelleOffreStagePage = ({ connectedUser, deconnexion }: { connect
                     </Button>
                 </div>
                 <div>
-
+                    <Viewer fileUrl={pdf} />
                 </div>
             </Container>
         );
