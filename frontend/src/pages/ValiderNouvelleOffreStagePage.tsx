@@ -82,7 +82,7 @@ const ValiderNouvelleOffreStagePage = ({ connectedUser, deconnexion }: { connect
 
             if (response.ok) {
                 const data = await response.json();
-                setpdf(new Uint8Array(JSON.parse(data.pdf)));
+                setpdf(new Uint8Array(JSON.parse(data.token)));
             }
             else if (response.status === 403) {
                 alert("Session expiré");
@@ -145,7 +145,9 @@ const ValiderNouvelleOffreStagePage = ({ connectedUser, deconnexion }: { connect
                                     <td>{offer.heureParSemaine} <br/> {offer.adresse}</td>
                                     <td><Button className="btn btn-warning" onClick={() => getPDF(offer.id)}>pdf</Button></td>
                                     <td>
-                                        <Button className="btn btn-success mx-2" onClick={() => valideOffre(offer.id, index, true)}>O</Button>
+                                        <Button className="btn btn-success mx-5" onClick={() => valideOffre(offer.id, index, true)}>O</Button>
+                                    </td>
+                                    <td>
                                         <Button className="btn btn-danger" onClick={() => valideOffre(offer.id, index, false)}>X</Button>
                                     </td>
                                 </tr>

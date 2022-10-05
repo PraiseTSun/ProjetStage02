@@ -14,6 +14,7 @@ const GestionnaireDashboard = ({ user, deconnexion }: { user: IUser, deconnexion
             <Row className="d-flex justify-content-center">
                 <Link to="/userValidation" className="btn btn-primary">Validation des utilisateurs</Link>
                 <Link to="/cvValidation" className="btn btn-primary mt-3">Validation des curriculums vitae des étudiants</Link>
+                <Link to="/validerNouvelleOffre" className="btn btn-primary mt-3">Validation nouvelle offre stage</Link>
             </Row>
         </div>
     );
