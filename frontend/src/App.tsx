@@ -10,6 +10,7 @@ import CompanyDashboard from './pages/CompanyDashboardPage';
 import GestionnaireDashboard from './pages/GestionnaireDashboardPage';
 import UserValidation from './pages/UserValidationPage';
 import FormulaireSoumissionPage from './pages/FormulaireSoumissionPage';
+import ValiderNouvelleOffreStagePage from "./pages/ValiderNouvelleOffreStagePage";
 
 export const LOCAL_STORAGE_KEY = "MASSI_BEST_PROGRAMMER_PROJET_STAGE_02_CURRENT_CONNECTED_USER"
 const emptyUser: IUser = {
@@ -141,6 +142,7 @@ function App() {
             <Route path="/" element={<GestionnaireDashboard deconnexion={deconnexion} user={user} />} />
             <Route path="/userValidation" element={<UserValidation connectedUser={user}/>} />
             <Route path="*" element={<h1 className="text-center text-white display-1">404 - Page pas trouvé</h1>} />
+            <Route path="/validerNouvelleOffre" element={<ValiderNouvelleOffreStagePage connectedUser={user} deconnexion={deconnexion}/>} />
           </Routes>
         </BrowserRouter>
       </Container>

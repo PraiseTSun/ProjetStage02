@@ -105,7 +105,7 @@ const ValiderNouvelleOffreStagePage = ({ connectedUser, deconnexion }: { connect
                     </Button>
                 </div>
                 <div>
-                    <Viewer fileUrl={pdf} />
+                    <Viewer fileUrl={pdf}/>
                 </div>
             </Container>
         );
