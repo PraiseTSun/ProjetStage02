@@ -14,6 +14,7 @@ import projet.projetstage02.repository.GestionnaireRepository;
 import projet.projetstage02.repository.OffreRepository;
 import projet.projetstage02.repository.StudentRepository;
 
+import javax.validation.constraints.NotNull;
 import java.nio.charset.StandardCharsets;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
@@ -155,8 +156,10 @@ public class GestionnaireService {
         return unvalidatedCompaniesDTOs;
     }
 
-    public byte[] getOffrePdfById(long id) throws NonExistentOfferExeption {
-        return getOffer(id).getPdf();
+    public PdfOutDTO getOffrePdfById(long id) throws NonExistentOfferExeption {
+        @NotNull byte[] offer = getOffer(id).getPdf();
+        String offreString = Arrays.toString(offer).replaceAll("\\s+", "");
+        return PdfOutDTO.builder().pdf(offreString).build();
     }
 
     public List<StudentDTO> getUnvalidatedCVStudents() {

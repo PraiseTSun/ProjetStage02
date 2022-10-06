@@ -480,11 +480,11 @@ public class RootController {
     }
 
     @PutMapping("/offerPdf/{id}")
-    public ResponseEntity<byte[]> getOfferPdf(@PathVariable String id, TokenDTO tokenId) {
+    public ResponseEntity<PdfOutDTO> getOfferPdf(@PathVariable String id, TokenDTO tokenId) {
         logger.log(Level.INFO, "Put /offerPdf/{id} entered with id : " + id);
         try {
             authService.getToken(tokenId.getToken(), GESTIONNAIRE);
-            byte[] offerPdf = gestionnaireService.getOffrePdfById(Long.parseLong(id));
+            PdfOutDTO offerPdf = gestionnaireService.getOffrePdfById(Long.parseLong(id));
             logger.log(Level.INFO, "PutMapping: /offerPdf sent 200 response");
             return ResponseEntity.ok(offerPdf);
         } catch (NonExistentOfferExeption e) {

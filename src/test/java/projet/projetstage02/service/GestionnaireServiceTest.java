@@ -15,10 +15,7 @@ import projet.projetstage02.repository.GestionnaireRepository;
 import projet.projetstage02.repository.OffreRepository;
 import projet.projetstage02.repository.StudentRepository;
 
-import java.util.ArrayList;
-import java.util.HexFormat;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 import static com.jayway.jsonpath.internal.path.PathCompiler.fail;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -443,10 +440,10 @@ public class GestionnaireServiceTest {
         when(offreRepository.findById(any())).thenReturn(Optional.of(offreTest));
 
         // Act
-        byte[] pdf = service.getOffrePdfById(1L);
+        PdfOutDTO pdf = service.getOffrePdfById(1L);
 
         // Assert
-        assertThat(pdf).isEqualTo(offreTest.getPdf());
+        assertThat(pdf.getPdf()).isEqualTo(Arrays.toString(offreTest.getPdf()).replaceAll("\\s+", ""));
     }
 
     @Test

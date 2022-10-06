@@ -876,7 +876,7 @@ public class RootControllerTest {
     @Test
     void testGetOfferPdfSuccess() throws Exception {
         when(authService.getToken(any(),any())).thenReturn(Token.builder().userId(1).build());
-        byte[] pdf = new byte[0];
+        PdfOutDTO pdf = PdfOutDTO.builder().pdf("").build();
         when(gestionnaireService.getOffrePdfById(anyLong())).thenReturn(pdf);
 
         mockMvc.perform(put("/offerPdf/{id}", 1)
