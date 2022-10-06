@@ -512,13 +512,13 @@ public class RootController {
     }
 
     @PutMapping("/studentCv/{studentId}")
-    public ResponseEntity<PdfDTO> getStudentCv(@PathVariable String studentId, @RequestBody TokenDTO tokenId) {
+    public ResponseEntity<PdfOutDTO> getStudentCv(@PathVariable String studentId,@RequestBody TokenDTO tokenId){
         logger.log(Level.INFO, "Put /studentCv entered with id : ");
         try {
             authService.getToken(tokenId.getToken(), GESTIONNAIRE);
-            byte[] cv = gestionnaireService.getStudentCvToValidate(Long.parseLong(studentId));
+            PdfOutDTO cv = gestionnaireService.getStudentCvToValidate(Long.parseLong(studentId));
             logger.log(Level.INFO, "PutMapping: /studentCv sent 200 response");
-            return ResponseEntity.ok(PdfDTO.builder().pdf(cv).build());
+            return ResponseEntity.ok(cv);
         } catch (NonExistentEntityException e) {
             logger.log(Level.INFO, "PutMapping: /studentCv sent 404 response");
             return ResponseEntity.notFound().build();

@@ -82,7 +82,7 @@ const StudentCvValidationPage = ({ connectedUser, deconnexion }: { connectedUser
 
             if (response.ok) {
                 const data = await response.json();
-                setpdf(new Uint8Array(JSON.parse(data.token)));
+                setpdf(new Uint8Array(JSON.parse(data.pdf)));
             }
             else if (response.status === 403) {
                 alert("Session expiré");
@@ -133,7 +133,7 @@ const StudentCvValidationPage = ({ connectedUser, deconnexion }: { connectedUser
                                 <th>CV</th>
                                 <th>CV Valide</th>
                             </tr>
-                            
+
                         </thead>
                         <tbody className="bg-light">
                             {students.map((student, index) => {
