@@ -13,7 +13,6 @@ import projet.projetstage02.model.AbstractUser;
 import projet.projetstage02.model.Company;
 import projet.projetstage02.repository.CompanyRepository;
 import projet.projetstage02.repository.OffreRepository;
-import projet.projetstage02.utils.TimeUtil;
 
 import java.util.Optional;
 
@@ -125,7 +124,6 @@ public class CompanyServiceTest {
         fail("NonExistentUserException not caught");
     }
 
-
     @Test
     void saveCompanyMultipleParametersTest() {
         // Arrange
@@ -170,6 +168,7 @@ public class CompanyServiceTest {
         // Assert
         verify(offreRepository, times(1)).save(any());
     }
+
     @Test
     void testInvalidCompanyHappyDay() throws NonExistentEntityException {
         // Arrange
@@ -177,29 +176,31 @@ public class CompanyServiceTest {
         when(companyRepository.findByEmail(any())).thenReturn(Optional.of(duffBeer));
 
         // Act
-        companyService.invalidCompany(duffBeer.getEmail());
+        companyService.isCompanyInvalid(duffBeer.getEmail());
 
         // Assert
         verify(companyRepository, times(1)).delete(any());
     }
+
     @Test
     void testInvalidCompanyReturnFalse() throws NonExistentEntityException {
         // Arrange
         duffBeer.setInscriptionTimestamp(currentTimestamp());
         when(companyRepository.findByEmail(any())).thenReturn(Optional.empty());
         // Assert
-        assertThat(companyService.invalidCompany(duffBeer.getEmail())).isFalse();
+        assertThat(companyService.isCompanyInvalid(duffBeer.getEmail())).isFalse();
     }
+
     @Test
-    void testInvalidCompanyThrowsException()  {
+    void testInvalidCompanyThrowsException() {
         // Arrange
         duffBeer.setInscriptionTimestamp(0);
-        when(companyRepository.findByEmail(any())).thenReturn(Optional.of(duffBeer),Optional.empty());
+        when(companyRepository.findByEmail(any())).thenReturn(Optional.of(duffBeer), Optional.empty());
 
         // Act
-        try{
-            companyService.invalidCompany(duffBeer.getEmail());
-        }catch (NonExistentEntityException e){
+        try {
+            companyService.isCompanyInvalid(duffBeer.getEmail());
+        } catch (NonExistentEntityException e) {
             return;
         }
         // Assert

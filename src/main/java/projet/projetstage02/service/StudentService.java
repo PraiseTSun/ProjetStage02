@@ -20,11 +20,12 @@ import static projet.projetstage02.utils.TimeUtil.currentTimestamp;
 @AllArgsConstructor
 public class StudentService {
     private final StudentRepository studentRepository;
+
     public void saveStudent(String firstName,
-                            String lastName,
-                            String email,
-                            String password,
-                            AbstractUser.Department department) {
+            String lastName,
+            String email,
+            String password,
+            AbstractUser.Department department) {
         StudentDTO dto = StudentDTO.builder()
                 .firstName(firstName)
                 .lastName(lastName)
@@ -48,13 +49,15 @@ public class StudentService {
 
     public StudentDTO getStudentById(Long id) throws NonExistentEntityException {
         var studentOpt = studentRepository.findById(id);
-        if (studentOpt.isEmpty()) throw new NonExistentEntityException();
+        if (studentOpt.isEmpty())
+            throw new NonExistentEntityException();
         return new StudentDTO(studentOpt.get());
     }
 
     public StudentDTO getStudentByEmailPassword(String email, String password) throws NonExistentEntityException {
         var studentOpt = studentRepository.findByEmailAndPassword(email.toLowerCase(), password);
-        if (studentOpt.isEmpty()) throw new NonExistentEntityException();
+        if (studentOpt.isEmpty())
+            throw new NonExistentEntityException();
         return new StudentDTO(studentOpt.get());
     }
 
@@ -67,16 +70,17 @@ public class StudentService {
 
     private boolean deleteUnconfirmedStudent(String email) throws NonExistentEntityException {
         Optional<Student> studentOpt = studentRepository.findByEmail(email);
-        if(studentOpt.isEmpty()) throw new NonExistentEntityException();
+        if (studentOpt.isEmpty())
+            throw new NonExistentEntityException();
         Student student = studentOpt.get();
-        if(currentTimestamp() - student.getInscriptionTimestamp() > MILLI_SECOND_DAY){
-             studentRepository.delete(student);
-             return true;
+        if (currentTimestamp() - student.getInscriptionTimestamp() > MILLI_SECOND_DAY) {
+            studentRepository.delete(student);
+            return true;
         }
         return false;
     }
 
-    public boolean invalidStudent(String email) throws NonExistentEntityException {
+    public boolean isStudentInvalid(String email) throws NonExistentEntityException {
         return !isEmailUnique(email)
                 && !deleteUnconfirmedStudent(email);
     }

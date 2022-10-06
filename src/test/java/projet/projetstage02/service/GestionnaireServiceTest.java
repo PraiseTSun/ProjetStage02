@@ -17,7 +17,6 @@ import projet.projetstage02.repository.CompanyRepository;
 import projet.projetstage02.repository.GestionnaireRepository;
 import projet.projetstage02.repository.OffreRepository;
 import projet.projetstage02.repository.StudentRepository;
-import projet.projetstage02.utils.TimeUtil;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -51,13 +50,12 @@ public class GestionnaireServiceTest {
     private Offre offreTest;
 
     @BeforeEach
-    void beforeEach(){
+    void beforeEach() {
         gestionnaireTest = new Gestionnaire(
                 "prenom",
                 "nom",
                 "email@email.com",
-                "password"
-        );
+                "password");
 
         companyTest = new Company(
                 "prenom",
@@ -65,16 +63,14 @@ public class GestionnaireServiceTest {
                 "email@email.com",
                 "password",
                 AbstractUser.Department.Transport,
-                "Company Test"
-        );
+                "Company Test");
 
         studentTest = new Student(
                 "prenom",
                 "nom",
                 "email@email.com",
                 "password",
-                AbstractUser.Department.Informatique
-        );
+                AbstractUser.Department.Informatique);
 
         offreTest = new Offre(
                 1L,
@@ -84,8 +80,7 @@ public class GestionnaireServiceTest {
                 40,
                 "69 shitty street",
                 false,
-                new byte[0]
-        );
+                new byte[0]);
     }
 
     @Test
@@ -111,7 +106,6 @@ public class GestionnaireServiceTest {
         // Assert
         verify(gestionnaireRepository, times(1)).save(any());
     }
-
 
     @Test
     public void testGetGestionnaireByIdSuccess() throws NonExistentEntityException {
@@ -278,9 +272,8 @@ public class GestionnaireServiceTest {
         fail("NonExistentUserException not caught");
     }
 
-
     @Test
-    public void testOffreNotValidated(){
+    public void testOffreNotValidated() {
         // Arrange
         List<Offre> offres = new ArrayList<>();
         Offre offre = new Offre();
@@ -362,7 +355,7 @@ public class GestionnaireServiceTest {
     }
 
     @Test
-    public void testGetUnvalidatedStudents(){
+    public void testGetUnvalidatedStudents() {
         // Arrange
         List<Student> students = new ArrayList<>();
 
@@ -396,7 +389,7 @@ public class GestionnaireServiceTest {
     }
 
     @Test
-    public void testGetUnvalidatedCompanies(){
+    public void testGetUnvalidatedCompanies() {
         // Arrange
         List<Company> companies = new ArrayList<>();
 
@@ -454,6 +447,7 @@ public class GestionnaireServiceTest {
         }
         fail("NonExistentOfferException not caught");
     }
+
     @Test
     void testInvalidGestionnaireHappyDay() throws NonExistentEntityException {
         // Arrange
@@ -461,36 +455,38 @@ public class GestionnaireServiceTest {
         when(gestionnaireRepository.findByEmail(any())).thenReturn(Optional.of(gestionnaireTest));
 
         // Act
-        service.invalidGestionnaire(gestionnaireTest.getEmail());
+        service.isGestionnaireInvalid(gestionnaireTest.getEmail());
 
         // Assert
         verify(gestionnaireRepository, times(1)).delete(any());
     }
+
     @Test
-    void testInvalidGestionnaireThrowsException()  {
+    void testInvalidGestionnaireThrowsException() {
         // Arrange
         gestionnaireTest.setInscriptionTimestamp(0);
-        when(gestionnaireRepository.findByEmail(any())).thenReturn(Optional.of(gestionnaireTest),Optional.empty());
+        when(gestionnaireRepository.findByEmail(any())).thenReturn(Optional.of(gestionnaireTest), Optional.empty());
 
         // Act
-        try{
-            service.invalidGestionnaire(gestionnaireTest.getEmail());
-        }catch (NonExistentEntityException e){
+        try {
+            service.isGestionnaireInvalid(gestionnaireTest.getEmail());
+        } catch (NonExistentEntityException e) {
             return;
         }
         // Assert
         fail("NonExistentEntityException not thrown");
     }
+
     @Test
-    void testInvalidGestionnaireReturnFalse()  {
+    void testInvalidGestionnaireReturnFalse() {
         // Arrange
         gestionnaireTest.setInscriptionTimestamp(currentTimestamp());
-        when(gestionnaireRepository.findByEmail(any())).thenReturn(Optional.of(gestionnaireTest),Optional.empty());
+        when(gestionnaireRepository.findByEmail(any())).thenReturn(Optional.of(gestionnaireTest), Optional.empty());
 
         // Act
-        try{
-            service.invalidGestionnaire(gestionnaireTest.getEmail());
-        }catch (NonExistentEntityException e){
+        try {
+            service.isGestionnaireInvalid(gestionnaireTest.getEmail());
+        } catch (NonExistentEntityException e) {
             return;
         }
         // Assert
@@ -502,7 +498,7 @@ public class GestionnaireServiceTest {
         // Arrange
         List<Student> students = new ArrayList<>();
         students.add(studentTest);
-        studentTest.setCvToValidate(new byte[]{1, 2, 3});
+        studentTest.setCvToValidate(new byte[] { 1, 2, 3 });
         studentTest.setConfirm(true);
 
         Student studentCvValidated = new Student();
@@ -550,7 +546,7 @@ public class GestionnaireServiceTest {
     }
 
     @Test
-    void testRemoveStudentCvValidationSuccess () throws NonExistentEntityException {
+    void testRemoveStudentCvValidationSuccess() throws NonExistentEntityException {
         // Arrange
         studentTest.setCvToValidate(new byte[0]);
         when(studentRepository.findById(anyLong())).thenReturn(Optional.of(studentTest));

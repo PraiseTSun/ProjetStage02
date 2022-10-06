@@ -12,7 +12,6 @@ import projet.projetstage02.exception.NonExistentEntityException;
 import projet.projetstage02.model.AbstractUser;
 import projet.projetstage02.model.Student;
 import projet.projetstage02.repository.StudentRepository;
-import projet.projetstage02.utils.TimeUtil;
 
 import java.util.Optional;
 
@@ -173,6 +172,7 @@ public class StudentServiceTest {
 
         fail("NonExistentUserException not caught");
     }
+
     @Test
     void testInvalidStudentHappyDay() throws NonExistentEntityException {
         // Arrange
@@ -180,26 +180,28 @@ public class StudentServiceTest {
         when(studentRepository.findByEmail(any())).thenReturn(Optional.of(bart));
 
         // Act
-        studentService.invalidStudent(bart.getEmail());
+        studentService.isStudentInvalid(bart.getEmail());
 
         // Assert
         verify(studentRepository, times(1)).delete(any());
     }
+
     @Test
-    void testInvalidStudentThrowsException()  {
+    void testInvalidStudentThrowsException() {
         // Arrange
         bart.setInscriptionTimestamp(0);
-        when(studentRepository.findByEmail(any())).thenReturn(Optional.of(bart),Optional.empty());
+        when(studentRepository.findByEmail(any())).thenReturn(Optional.of(bart), Optional.empty());
 
         // Act
-        try{
-            studentService.invalidStudent(bart.getEmail());
-        }catch (NonExistentEntityException e){
+        try {
+            studentService.isStudentInvalid(bart.getEmail());
+        } catch (NonExistentEntityException e) {
             return;
         }
         // Assert
         fail("NonExistentEntityException not thrown");
     }
+
     @Test
     void testInvalidStudentReturnsFalse() throws NonExistentEntityException {
         // Arrange
@@ -207,6 +209,6 @@ public class StudentServiceTest {
         when(studentRepository.findByEmail(any())).thenReturn(Optional.empty());
 
         // Act
-            assertThat(studentService.invalidStudent(bart.getEmail())).isFalse();
+        assertThat(studentService.isStudentInvalid(bart.getEmail())).isFalse();
     }
 }
