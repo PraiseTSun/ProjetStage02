@@ -149,6 +149,7 @@ const ValiderNouvelleOffreStagePage = ({ connectedUser, deconnexion }: { connect
 
     return (
         <Container className="vh-100">
+
             <Row>
                 <Col sm={2}>
                     <Link to="/" className="btn btn-primary my-3">Home</Link>
@@ -172,10 +173,10 @@ const ValiderNouvelleOffreStagePage = ({ connectedUser, deconnexion }: { connect
                         </tr>
 
                         </thead>
-                        <tbody className="bg-light">
+                        <tbody role="tbody" className="bg-light">
                         {offers.map((offer, index) => {
                             return (
-                                <tr key={index}>
+                                <tr key={index} data-testid="offre-container">
                                     <td>{offer.nomDeCompagnie}</td>
                                     <td>{offer.department} <br/> {offer.position}</td>
                                     <td>{offer.heureParSemaine} <br/> {offer.adresse}</td>
@@ -184,7 +185,7 @@ const ValiderNouvelleOffreStagePage = ({ connectedUser, deconnexion }: { connect
                                         <Button className="btn btn-success mx-5" onClick={() => valideOffre(offer.id, index, true)}>O</Button>
                                     </td>
                                     <td>
-                                        <Button className="btn btn-danger" onClick={() => valideOffre(offer.id, index, false)}>X</Button>
+                                        <Button  className="btn btn-danger" onClick={() => valideOffre(offer.id, index, false)}>X</Button>
                                     </td>
                                 </tr>
                             );

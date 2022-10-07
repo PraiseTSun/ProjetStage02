@@ -96,13 +96,13 @@ const FormulaireSoumissionPage = ({ user }: { user: IUser }): JSX.Element => {
                 <Form className="card-body p-3" onSubmit={onSubmit} validated={validated} noValidate>
                     <Form.Group>
                         <Form.Label className="fw-bold h5">Nom de la compagnie</Form.Label>
-                        <Form.Control type="text" required value={company}
+                        <Form.Control data-testid="nomCompanyFormulaireSoumission" type="text" required value={company}
                             onChange={field => setCompany(field.target.value)}></Form.Control>
                         <Form.Control.Feedback type="invalid">Champ requis</Form.Control.Feedback>
                     </Form.Group>
                     <Form.Group>
                         <Form.Label className="fw-bold mt-2 h5">Département</Form.Label>
-                        <Form.Select required
+                        <Form.Select data-testid="departmentFormulaireSoumission" required
                             value={department} onChange={(e) => setDepartment(e.target.value)}>
                             <option hidden value="" disabled>Choix d'un département</option>
                             <option value="Techniques de linformatique">
@@ -116,25 +116,25 @@ const FormulaireSoumissionPage = ({ user }: { user: IUser }): JSX.Element => {
                     </Form.Group>
                     <Form.Group>
                         <Form.Label className="fw-bold h5">Poste</Form.Label>
-                        <Form.Control type="text" required value={poste}
+                        <Form.Control data-testid="posteFormulaireSoumission" type="text" required value={poste}
                             onChange={field => setPoste(field.target.value)}></Form.Control>
                         <Form.Control.Feedback type="invalid">Champ requis</Form.Control.Feedback>
                     </Form.Group>
                     <Form.Group>
                         <Form.Label className="fw-bold h5">Heures par semaine</Form.Label>
-                        <Form.Control type="number" min="1" max="40" required value={hoursPerWeek}
+                        <Form.Control data-testid="hoursFormulaireSoumission"  type="number" min="1" max="40" required value={hoursPerWeek}
                             onChange={field => setHoursPerWeekFromField(field)}></Form.Control>
                         <Form.Control.Feedback type="invalid">Nombre d'heures entre 0 et 40</Form.Control.Feedback>
                     </Form.Group>
                     <Form.Group>
                         <Form.Label className="fw-bold h5">Adresse</Form.Label>
-                        <Form.Control type="text" required value={address}
+                        <Form.Control data-testid="addressFormulaireSoumission" type="text" required value={address}
                             onChange={field => setAddress(field.target.value)}></Form.Control>
                         <Form.Control.Feedback type="invalid">Champ requis</Form.Control.Feedback>
                     </Form.Group>
                     <Form.Group>
                         <Form.Label className="fw-bold h5">Document PDF</Form.Label>
-                        <input className="form-control" accept=".pdf"
+                        <input data-testid="pdfFormulaireSoumission" className="form-control" accept=".pdf"
                             required type="file" onChange={(e) => {
                                 uploadFile(e.target.files![0]);
                             }} />
@@ -142,7 +142,7 @@ const FormulaireSoumissionPage = ({ user }: { user: IUser }): JSX.Element => {
                     </Form.Group>
                     <Row className="mt-3">
                         <Col className="text-center">
-                            <Button type="submit" className="btn btn-success mx-auto w-75">Envoyer</Button>
+                            <Button data-testid="envoyerFormulaireSoumission" type="submit" className="btn btn-success mx-auto w-75">Envoyer</Button>
                         </Col>
                     </Row>
                 </Form>
