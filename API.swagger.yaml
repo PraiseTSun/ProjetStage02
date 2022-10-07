@@ -907,3 +907,37 @@ paths:
           description: Token invalide ou expiré
         404:
           description: L'étudiant avec ce cv n'existe pas
+  /stageOffers/{department}:
+    put:
+      summary: Recevoir la listes des offres de stage d'un département
+      parameters:
+        - in: body
+          name: token
+          description: Token valide de l'étudiant
+          schema:
+            type: object
+            properties:
+              token:
+                type: string
+      produces:
+        - application/json
+      responses:
+        200:
+          description: Liste des offres de stage du département
+          schema:
+            type: array
+            items:
+              type: object
+              properties:
+                id:
+                  type: number
+                nomDeCompagnie:
+                  type: string
+                position:
+                  type: string
+                heureParSemaine:
+                  type: string
+                adresse:
+                  type: string
+        403:
+          description: Token invalide
