@@ -20,6 +20,7 @@ import projet.projetstage02.repository.StudentRepository;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
@@ -57,16 +58,13 @@ public class GestionnaireService {
 
     public GestionnaireDTO getGestionnaireById(Long id) throws NonExistentEntityException {
         var gestionnaireOpt = gestionnaireRepository.findById(id);
-        if (gestionnaireOpt.isEmpty())
-            throw new NonExistentEntityException();
+        if (gestionnaireOpt.isEmpty()) throw new NonExistentEntityException();
         return new GestionnaireDTO(gestionnaireOpt.get());
     }
 
-    public GestionnaireDTO getGestionnaireByEmailPassword(String email, String password)
-            throws NonExistentEntityException {
+    public GestionnaireDTO getGestionnaireByEmailPassword(String email, String password) throws NonExistentEntityException {
         var gestionnaireOpt = gestionnaireRepository.findByEmailAndPassword(email.toLowerCase(), password);
-        if (gestionnaireOpt.isEmpty())
-            throw new NonExistentEntityException();
+        if (gestionnaireOpt.isEmpty()) throw new NonExistentEntityException();
         return new GestionnaireDTO(gestionnaireOpt.get());
     }
 
@@ -98,29 +96,29 @@ public class GestionnaireService {
 
     private Company getCompany(long id) throws NonExistentEntityException {
         Optional<Company> companyOptional = companyRepository.findById(id);
-        if (companyOptional.isEmpty())
-            throw new NonExistentEntityException();
+        if (companyOptional.isEmpty()) throw new NonExistentEntityException();
         return companyOptional.get();
     }
 
     private Student getStudent(long id) throws NonExistentEntityException {
         Optional<Student> studentOptional = studentRepository.findById(id);
-        if (studentOptional.isEmpty())
-            throw new NonExistentEntityException();
+        if (studentOptional.isEmpty()) throw new NonExistentEntityException();
         return studentOptional.get();
     }
 
     private Offre getOffer(long id) throws NonExistentOfferExeption {
         Optional<Offre> offreOpt = offreRepository.findById(id);
-        if (offreOpt.isEmpty())
-            throw new NonExistentOfferExeption();
+        if (offreOpt.isEmpty()) throw new NonExistentOfferExeption();
         return offreOpt.get();
     }
 
     public List<OffreDTO> getNoneValidateOffers() {
         List<OffreDTO> offres = new ArrayList<>();
-        offreRepository.findAll().stream().filter(offre -> !offre.isValide())
-                .forEach(offre -> offres.add(new OffreDTO(offre)));
+        offreRepository.findAll().stream().
+                filter(offre ->
+                        !offre.isValide())
+                .forEach(offre ->
+                        offres.add(new OffreDTO(offre)));
         return offres;
     }
 
@@ -139,16 +137,22 @@ public class GestionnaireService {
     public List<StudentDTO> getUnvalidatedStudents() {
         List<StudentDTO> unvalidatedStudentDTOs = new ArrayList<>();
         studentRepository.findAll().stream()
-                .filter(student -> student.isEmailConfirmed() && !student.isConfirm())
-                .forEach(student -> unvalidatedStudentDTOs.add(new StudentDTO(student)));
+                .filter(student ->
+                        student.isEmailConfirmed() && !student.isConfirm()
+                )
+                .forEach(student ->
+                        unvalidatedStudentDTOs.add(new StudentDTO(student)));
         return unvalidatedStudentDTOs;
     }
 
     public List<CompanyDTO> getUnvalidatedCompanies() {
         List<CompanyDTO> unvalidatedCompaniesDTOs = new ArrayList<>();
         companyRepository.findAll().stream()
-                .filter(company -> !company.isConfirm() && company.isEmailConfirmed())
-                .forEach(company -> unvalidatedCompaniesDTOs.add(new CompanyDTO(company)));
+                .filter(company ->
+                        !company.isConfirm() && company.isEmailConfirmed()
+                )
+                .forEach(company ->
+                        unvalidatedCompaniesDTOs.add(new CompanyDTO(company)));
         return unvalidatedCompaniesDTOs;
     }
 
@@ -160,9 +164,11 @@ public class GestionnaireService {
         List<StudentDTO> studentDTOS = new ArrayList<>();
 
         studentRepository.findAll().stream()
-                .filter(student -> student.getCvToValidate() != null &&
-                        student.getCvToValidate().length > 0
-                        && student.isConfirm())
+                .filter(student ->
+                        student.getCvToValidate() != null &&
+                                student.getCvToValidate().length > 0
+                                && student.isConfirm()
+                )
                 .forEach(student -> {
                     StudentDTO dto = new StudentDTO(student);
                     dto.setPassword("");
@@ -176,8 +182,7 @@ public class GestionnaireService {
 
     public StudentDTO validateStudentCV(long id) throws NonExistentEntityException {
         Optional<Student> studentOpt = studentRepository.findById(id);
-        if (studentOpt.isEmpty())
-            throw new NonExistentEntityException();
+        if(studentOpt.isEmpty()) throw new NonExistentEntityException();
         Student student = studentOpt.get();
         student.setCv(student.getCvToValidate());
         student.setCvToValidate(new byte[0]);
@@ -187,19 +192,19 @@ public class GestionnaireService {
 
     public StudentDTO removeStudentCvValidation(long id) throws NonExistentEntityException {
         Optional<Student> studentOpt = studentRepository.findById(id);
-        if (studentOpt.isEmpty())
-            throw new NonExistentEntityException();
+        if(studentOpt.isEmpty()) throw new NonExistentEntityException();
         Student student = studentOpt.get();
         student.setCvToValidate(new byte[0]);
         studentRepository.save(student);
         return new StudentDTO(student);
     }
 
-    public byte[] getStudentCvToValidate(long studentId) throws NonExistentEntityException {
+    public PdfOutDTO getStudentCvToValidate(long studentId) throws NonExistentEntityException {
         Optional<Student> studentOpt = studentRepository.findById(studentId);
-        if (studentOpt.isEmpty())
-            throw new NonExistentEntityException();
-        return studentOpt.get().getCvToValidate();
+        if (studentOpt.isEmpty()) throw new NonExistentEntityException();
+        byte[] cv = studentOpt.get().getCvToValidate();
+        String cvConvert = Arrays.toString(cv).replaceAll("\\s+","");
+        return new PdfOutDTO(studentOpt.get().getId(), cvConvert);
     }
 
     private boolean deleteUnconfirmedGestionnaire(String email) throws NonExistentEntityException {

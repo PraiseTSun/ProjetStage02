@@ -949,13 +949,13 @@ public class RootControllerTest {
     @Test
     void testGetStudentCvToValidateSuccess() throws Exception {
         when(authService.getToken(any(),any())).thenReturn(Token.builder().userId(1).build());
-        byte[] cv = new byte[0];
+        PdfOutDTO cv = new PdfOutDTO(1L, "[96,17,69]");
         when(gestionnaireService.getStudentCvToValidate(anyLong())).thenReturn(cv);
 
         mockMvc.perform(put("/studentCv/{studentId}", 1)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(jsonTokenDTO.write(token).getJson()))
-                .andExpect(jsonPath("$.pdf", is("")))
+                .andExpect(jsonPath("$.pdf", is("[96,17,69]")))
                 .andExpect(status().isOk());
     }
 

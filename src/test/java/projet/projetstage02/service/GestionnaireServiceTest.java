@@ -19,6 +19,7 @@ import projet.projetstage02.repository.OffreRepository;
 import projet.projetstage02.repository.StudentRepository;
 
 import java.util.ArrayList;
+import java.util.HexFormat;
 import java.util.List;
 import java.util.Optional;
 
@@ -576,14 +577,16 @@ public class GestionnaireServiceTest {
     @Test
     void testGetStudentCvToValidateSuccess() throws NonExistentEntityException {
         // Arrange
-        studentTest.setCvToValidate(new byte[0]);
+        String result = "[72,101,108,108,111,32,87,111,114,100]";
+        byte[] stored = HexFormat.of().parseHex("48656c6c6f20576f7264");
+        studentTest.setCvToValidate(stored);
         when(studentRepository.findById(anyLong())).thenReturn(Optional.of(studentTest));
 
         // Act
-        byte[] cv = service.getStudentCvToValidate(1L);
+        PdfOutDTO cv = service.getStudentCvToValidate(1L);
 
         //
-        assertThat(cv).isEqualTo(studentTest.getCvToValidate());
+        assertThat(cv.getPdf()).isEqualTo(result);
     }
 
     @Test
