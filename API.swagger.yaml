@@ -907,9 +907,41 @@ paths:
           description: Token invalide ou expiré
         404:
           description: L'étudiant avec ce cv n'existe pas
+  /unvalidatedCV:
+    put:
+      summary: Recevoir la listes des CVs à valider
+      parameters:
+        - in: body
+          name: token
+          description: Token valide du gestionnaire
+          schema:
+            type: object
+            properties:
+              token:
+                type: string
+      produces:
+        - application/json
+      responses:
+        200:
+          description: Liste des CVs non validés
+          schema:
+            type: array
+            items:
+              type: object
+              properties:
+                id:
+                  type: number
+                firstName:
+                  type: string
+                lastName:
+                  type: string
+                department:
+                  type: string
+        403:
+          description: Token invalide
   /stageOffers/{department}:
     put:
-      summary: EQ2-26 Recevoir la listes des offres de stage d'un département (Doit avoir le token student)
+      summary: Recevoir la listes des offres de stage d'un département
       parameters:
         - in: body
           name: token
@@ -941,3 +973,5 @@ paths:
                   type: string
         403:
           description: Token invalide
+        404:
+          description: L'étudiant avec ce cv n'existe pas
