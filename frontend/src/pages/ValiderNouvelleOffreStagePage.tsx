@@ -154,7 +154,7 @@ const ValiderNouvelleOffreStagePage = ({ connectedUser, deconnexion }: { connect
                     <Link to="/" className="btn btn-primary my-3">Home</Link>
                 </Col>
                 <Col sm={8} className="text-center pt-2">
-                    <h1 className="fw-bold">Validation de offer</h1>
+                    <h1 className="fw-bold">Validation de offre</h1>
                 </Col>
                 <Col sm={2}></Col>
             </Row>
