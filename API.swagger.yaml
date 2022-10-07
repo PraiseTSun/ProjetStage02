@@ -909,7 +909,7 @@ paths:
           description: L'étudiant avec ce cv n'existe pas
   /stageOffers/{department}:
     put:
-      summary: Recevoir la listes des offres de stage d'un département
+      summary: EQ2-26 Recevoir la listes des offres de stage d'un département
       parameters:
         - in: body
           name: token
