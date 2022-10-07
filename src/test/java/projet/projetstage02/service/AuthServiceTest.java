@@ -91,6 +91,7 @@ public class AuthServiceTest {
     void testLoginStudentHappyDay() throws InvalidTokenException {
         //Arrange
         studentTest.setEmailConfirmed(true);
+        studentTest.setConfirm(true);
         when(studentRepository.findByEmailAndPassword(any(),any()))
                 .thenReturn(Optional.of(studentTest));
         //Act
@@ -116,6 +117,22 @@ public class AuthServiceTest {
     @Test
     void testLoginStudentEmailUnconfirmed(){
         //Arrange
+        studentTest.setConfirm(true);
+        when(studentRepository.findByEmailAndPassword(any(),any()))
+                .thenReturn(Optional.of(studentTest));
+        //Act
+        try {
+            service.loginIfValid(studentLoginDTO,STUDENT);
+        }catch (InvalidTokenException e){
+            //Assert
+            return;
+        };
+        fail();
+    }
+    @Test
+    void testLoginStudentUnconfirmed(){
+        //Arrange
+        studentTest.setEmailConfirmed(true);
         when(studentRepository.findByEmailAndPassword(any(),any()))
                 .thenReturn(Optional.of(studentTest));
         //Act
@@ -131,6 +148,7 @@ public class AuthServiceTest {
     void testLoginCompanyHappyDay() throws InvalidTokenException {
         //Arrange
         companyTest.setEmailConfirmed(true);
+        companyTest.setConfirm(true);
         when(companyRepository.findByEmailAndPassword(any(),any()))
                 .thenReturn(Optional.of(companyTest));
         //Act
@@ -154,6 +172,22 @@ public class AuthServiceTest {
     @Test
     void testLoginCompanyEmailUnconfirmed() {
         //Arrange
+        companyTest.setConfirm(true);
+        when(companyRepository.findByEmailAndPassword(any(),any()))
+                .thenReturn(Optional.of(companyTest));
+        //Act
+        try {
+            service.loginIfValid(companyLoginDTO,COMPANY);
+        }catch (InvalidTokenException e){
+            //Assert
+            return;
+        };
+        fail();
+    }
+    @Test
+    void testLoginCompanyUnconfirmed() {
+        //Arrange
+        companyTest.setEmailConfirmed(true);
         when(companyRepository.findByEmailAndPassword(any(),any()))
                 .thenReturn(Optional.of(companyTest));
         //Act
