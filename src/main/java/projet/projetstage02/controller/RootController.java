@@ -480,7 +480,7 @@ public class RootController {
     }
 
     @PutMapping("/offerPdf/{id}")
-    public ResponseEntity<PdfOutDTO> getOfferPdf(@PathVariable String id, TokenDTO tokenId) {
+    public ResponseEntity<PdfOutDTO> getOfferPdf(@PathVariable String id,@RequestBody TokenDTO tokenId) {
         logger.log(Level.INFO, "Put /offerPdf/{id} entered with id : " + id);
         try {
             authService.getToken(tokenId.getToken(), GESTIONNAIRE);
