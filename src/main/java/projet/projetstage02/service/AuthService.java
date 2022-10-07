@@ -50,6 +50,9 @@ public class AuthService {
         Optional<Student> student = studentRepository.findByEmailAndPassword(
                 loginDTO.getEmail(), loginDTO.getPassword());
         validateOptional(student);
+        if(!student.get().isConfirm()){
+            throw new InvalidTokenException();
+        }
         return createToken(student.get(), STUDENT);
     }
 
@@ -57,7 +60,9 @@ public class AuthService {
         Optional<Company> company = companyRepository.findByEmailAndPassword(loginDTO.getEmail(),
                 loginDTO.getPassword());
         validateOptional(company);
-
+        if(!company.get().isConfirm()){
+            throw new InvalidTokenException();
+        }
         return createToken(company.get(), COMPANY);
     }
 
