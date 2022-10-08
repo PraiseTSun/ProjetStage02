@@ -2,10 +2,12 @@ package projet.projetstage02.service;
 
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
+import projet.projetstage02.DTO.OffreDTO;
 import projet.projetstage02.DTO.PdfDTO;
 import projet.projetstage02.DTO.StudentDTO;
 import projet.projetstage02.exception.NonExistentEntityException;
 import projet.projetstage02.model.AbstractUser;
+import projet.projetstage02.model.Offre;
 import projet.projetstage02.model.Student;
 import projet.projetstage02.repository.OffreRepository;
 import projet.projetstage02.repository.StudentRepository;
@@ -13,8 +15,11 @@ import projet.projetstage02.utils.TimeUtil;
 
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
+import static projet.projetstage02.model.AbstractUser.*;
 import static projet.projetstage02.utils.TimeUtil.MILLI_SECOND_DAY;
 import static projet.projetstage02.utils.TimeUtil.currentTimestamp;
 
@@ -27,7 +32,7 @@ public class StudentService {
                             String lastName,
                             String email,
                             String password,
-                            AbstractUser.Department department) {
+                            Department department) {
         StudentDTO dto = StudentDTO.builder()
                 .firstName(firstName)
                 .lastName(lastName)
@@ -77,5 +82,19 @@ public class StudentService {
              return true;
         }
         return false;
+    }
+
+    public List<OffreDTO> getOffersByDepartment(Department department) {
+        List<OffreDTO> offers = new ArrayList<>();
+        offreRepository.findAll().stream().
+                filter(offre ->
+                    offre.isValide()
+                    && offre.getDepartment().equals(department)
+                )
+                .forEach(offre ->
+                    offers.add(new OffreDTO(offre))
+                );
+
+        return offers;
     }
 }

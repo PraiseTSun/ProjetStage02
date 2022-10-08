@@ -7,6 +7,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import projet.projetstage02.DTO.CompanyDTO;
+import projet.projetstage02.DTO.OffreDTO;
 import projet.projetstage02.DTO.PdfDTO;
 import projet.projetstage02.DTO.StudentDTO;
 import projet.projetstage02.exception.NonExistentEntityException;
@@ -17,6 +18,8 @@ import projet.projetstage02.model.Student;
 import projet.projetstage02.repository.OffreRepository;
 import projet.projetstage02.repository.StudentRepository;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
@@ -235,4 +238,26 @@ public class StudentServiceTest {
         fail("NonExistentEntityException not thrown");
     }
 
+    @Test
+    void testGetOffersByDepartment(){
+        // Arrange
+        Department department = Department.Informatique;
+        Offre successOffer = Offre.builder().valide(true).department(Department.Informatique).build();
+        Offre failOffer1   = Offre.builder().valide(false).department(Department.Informatique).build();
+        Offre failOffer2   = Offre.builder().valide(true).department(Department.Transport).build();
+        List<Offre> offres = new ArrayList<>(){{
+            add(successOffer);
+            add(failOffer1);
+            add(failOffer2);
+        }};
+        when(offreRepository.findAll()).thenReturn(offres);
+
+        // Act
+        List<OffreDTO> offerDTOs = studentService.getOffersByDepartment(department);
+
+        // Assert
+        assertThat(offerDTOs.size()).isEqualTo(1);
+        assertThat(offerDTOs.get(0).isValide()).isEqualTo(true);
+        assertThat(offerDTOs.get(0).getDepartment()).isEqualTo(department.departement);
+    }
 }
