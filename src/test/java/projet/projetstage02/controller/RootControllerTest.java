@@ -1038,4 +1038,14 @@ public class RootControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$[0].nomDeCompagnie", is(duffOffre.getNomDeCompagnie())));
     }
+
+
+    @Test
+    void testGetOffersByDepartmentInvalidToken() throws Exception{
+        when(authService.getToken(any(),any())).thenThrow(new InvalidTokenException());
+        mockMvc.perform(put("/getOffers/{department}", Department.Transport.toString())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(jsonTokenDTO.write(token).getJson()))
+                .andExpect(status().isForbidden());
+    }
 }
