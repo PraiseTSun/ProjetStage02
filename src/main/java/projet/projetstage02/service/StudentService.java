@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import projet.projetstage02.DTO.OffreDTO;
 import projet.projetstage02.DTO.PdfDTO;
+import projet.projetstage02.DTO.PdfOutDTO;
 import projet.projetstage02.DTO.StudentDTO;
 import projet.projetstage02.exception.NonExistentEntityException;
 import projet.projetstage02.model.AbstractUser;
@@ -16,6 +17,7 @@ import projet.projetstage02.utils.TimeUtil;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
@@ -91,10 +93,20 @@ public class StudentService {
                     offre.isValide()
                     && offre.getDepartment().equals(department)
                 )
-                .forEach(offre ->
-                    offers.add(new OffreDTO(offre))
-                );
+                .forEach(offre -> {
+                    OffreDTO dto = new OffreDTO(offre);
+                    dto.setPdf(new byte[0]);
+                    offers.add(dto);
+                });
 
         return offers;
+    }
+
+    public PdfOutDTO getOfferById(long id) throws NonExistentEntityException {
+        Optional<Offre> offerOpt = offreRepository.findById(id);
+        if(offerOpt.isEmpty()) throw new NonExistentEntityException();
+        Offre offre = offerOpt.get();
+        String cv = Arrays.toString(offre.getPdf()).replaceAll("\\s+","");
+        return new PdfOutDTO(offre.getId(), cv);
     }
 }
