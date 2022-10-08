@@ -78,10 +78,12 @@ const addOffres = (offres : any) => {
 
 }
 describe('App', () => {
+    render(<FormulaireSoumission user={company} />);
+    render(<ValiderNouvelleOffreStage connectedUser={gestionnaire} deconnexion={deconnexion}/>);
+    addOffres(offres)
 
     it('test il y a pas de offre qui a besoin de valider ', async () => {
 
-        render(<ValiderNouvelleOffreStage connectedUser={gestionnaire} deconnexion={deconnexion}/>);
         const h1Element = screen.getByRole("heading", {name: /Validation de offre/i});
         const LinkElement = screen.getByRole("link", {name: /Home/i});
         const trElement = screen.getAllByTestId("offre-container");
@@ -93,9 +95,7 @@ describe('App', () => {
     });
 
     it('test valider une nouvelle offre ', async () => {
-        render(<FormulaireSoumission user={company} />);
-        render(<ValiderNouvelleOffreStage connectedUser={gestionnaire} deconnexion={deconnexion}/>);
-        addOffres(offres)
+
         const element = screen.getByTestId("offre-container")
         const buttonElement = screen.getByRole("button", { name: /O/i})
         const trElement = screen.getAllByTestId("offre-container")
@@ -105,10 +105,6 @@ describe('App', () => {
     });
 
     it('test supprimer une nouvelle offre ', async () => {
-        render(<FormulaireSoumission user={company} />);
-        render(<ValiderNouvelleOffreStage connectedUser={gestionnaire} deconnexion={deconnexion}/>);
-
-        addOffres(offres)
 
         const buttonElement = screen.getByRole("button", { name: /X/i})
         const trElement = screen.getAllByTestId("offre-container")
