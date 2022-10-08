@@ -907,3 +907,5 @@ paths:
           description: Token invalide ou expiré
         404:
           description: L'étudiant avec ce cv n'existe pas
+paths:
+  /pet:

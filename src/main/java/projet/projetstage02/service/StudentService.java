@@ -7,6 +7,7 @@ import projet.projetstage02.DTO.StudentDTO;
 import projet.projetstage02.exception.NonExistentEntityException;
 import projet.projetstage02.model.AbstractUser;
 import projet.projetstage02.model.Student;
+import projet.projetstage02.repository.OffreRepository;
 import projet.projetstage02.repository.StudentRepository;
 import projet.projetstage02.utils.TimeUtil;
 
@@ -21,6 +22,7 @@ import static projet.projetstage02.utils.TimeUtil.currentTimestamp;
 @AllArgsConstructor
 public class StudentService {
     private final StudentRepository studentRepository;
+    private final OffreRepository offreRepository;
     public void saveStudent(String firstName,
                             String lastName,
                             String email,

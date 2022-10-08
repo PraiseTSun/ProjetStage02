@@ -11,7 +11,10 @@ import projet.projetstage02.DTO.PdfDTO;
 import projet.projetstage02.DTO.StudentDTO;
 import projet.projetstage02.exception.NonExistentEntityException;
 import projet.projetstage02.model.AbstractUser;
+import projet.projetstage02.model.AbstractUser.Department;
+import projet.projetstage02.model.Offre;
 import projet.projetstage02.model.Student;
+import projet.projetstage02.repository.OffreRepository;
 import projet.projetstage02.repository.StudentRepository;
 
 import java.util.Optional;
@@ -31,6 +34,8 @@ public class StudentServiceTest {
 
     @Mock
     StudentRepository studentRepository;
+    @Mock
+    OffreRepository offreRepository;
 
     Student bart;
     PdfDTO bartCv;
@@ -42,7 +47,7 @@ public class StudentServiceTest {
                 "Simpson",
                 "bart.simpson@springfield.com",
                 "eatMyShorts",
-                AbstractUser.Department.Informatique);
+                Department.Informatique);
 
         bart.setCv(new byte[0]);
 
@@ -229,4 +234,5 @@ public class StudentServiceTest {
         // Assert
         fail("NonExistentEntityException not thrown");
     }
+
 }
