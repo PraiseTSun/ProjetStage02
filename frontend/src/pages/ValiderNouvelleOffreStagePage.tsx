@@ -161,7 +161,7 @@ const ValiderNouvelleOffreStagePage = ({ connectedUser, deconnexion }: { connect
             </Row>
             <Row>
                 <Col>
-                    <Table className="text-center" hover>
+                    <Table data-testid="tableValiderNouvelleOffreStage" className="text-center" hover>
                         <thead className="bg-primary">
                         <tr>
                             <th>Nom De Compagnie</th>
@@ -173,7 +173,7 @@ const ValiderNouvelleOffreStagePage = ({ connectedUser, deconnexion }: { connect
                         </tr>
 
                         </thead>
-                        <tbody role="tbody" className="bg-light">
+                        <tbody role="tbody" className="bg-light"  data-testid="offre-container">
                         {offers.map((offer, index) => {
                             return (
                                 <tr key={index} data-testid="offre-container">
