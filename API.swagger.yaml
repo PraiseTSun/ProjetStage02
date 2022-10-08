@@ -941,3 +941,36 @@ paths:
                   type: string
         403:
           description: Token invalide
+  /getOfferForStudent/{id}:
+    put:
+      summary: Retourne une offre (Doit avoir un token Student)
+      parameters:
+        - in: path
+          name: id
+          description: id de l'offre
+          type: string
+          required: true
+        - in: body
+          name: token
+          description: Token valide du gestionnaire
+          schema:
+            type: object
+            properties:
+              token:
+                type: string
+      produces:
+        - application/json
+      responses:
+        200:
+          description: L'offre a été envoyé
+          schema:
+            type: array
+            properties:
+              id:
+                type: string
+              pdf:
+                type: string
+        403:
+          description: Token invalide ou expiré
+        404:
+          description: L'offre avec cette id n'existe pas
