@@ -1025,4 +1025,6 @@ public class RootControllerTest {
                         .content(jsonTokenDTO.write(token).getJson()))
                 .andExpect(status().isNotFound());
     }
+
+    
 }
