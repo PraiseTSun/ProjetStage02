@@ -575,7 +575,8 @@ public class RootController {
             logger.log(Level.INFO, "PutMapping: /getOffersByDepartment sent 200 response");
             return ResponseEntity.ok(offers);
         } catch (InvalidTokenException e) {
-            throw new RuntimeException(e);
+            logger.log(Level.INFO, "PutMapping: /getOffersByDepartment sent 403 response");
+            return ResponseEntity.status(FORBIDDEN).build();
         }
     }
 }

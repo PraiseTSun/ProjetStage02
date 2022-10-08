@@ -1026,5 +1026,16 @@ public class RootControllerTest {
                 .andExpect(status().isNotFound());
     }
 
-    
+    @Test
+    void testGetOffersByDepartmentSuccess() throws Exception{
+        when(authService.getToken(any(),any())).thenReturn(Token.builder().userId(1).build());
+        when(studentService.getOffersByDepartment(any())).thenReturn(List.of(duffOffre));
+
+        mockMvc.perform(put("/getOffers/{department}", Department.Transport.toString())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(jsonTokenDTO.write(token).getJson()))
+
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[0].nomDeCompagnie", is(duffOffre.getNomDeCompagnie())));
+    }
 }
