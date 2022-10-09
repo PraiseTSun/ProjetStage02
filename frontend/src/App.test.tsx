@@ -4,6 +4,7 @@ import IUser from "./models/IUser";
 import UploaderMonCV from "./pages/UploaderMonCV";
 
 const etudiant: IUser = {
+    id : 1,
     token : "34245",
     firstName: "Yan",
     lastName: "Zhou",

@@ -15,7 +15,8 @@ const UploaderMonCV = ({user} : {user : IUser}) => {
             setWaiting(true)
             const obj = {
                 id : user.id,
-                pdf: cv
+                pdf: cv,
+                token : user.token
             }
             console.log(obj)
             const headers = {
