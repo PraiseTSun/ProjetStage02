@@ -12,6 +12,7 @@ const etudiant: IUser = {
 
 }
 
+const cv =  new FileReader();
 const addOffres = (offres : any) => {
     const controlNomCompanyElement= screen.getByTestId("nomCompanyFormulaireSoumission")
     const controlDepartmentElement = screen.getByTestId("departmentFormulaireSoumission")
@@ -39,6 +40,7 @@ describe('App', () => {
         const h4Element = screen.getByRole("heading", {name: /Document CV/i});
         const buttonElement = screen.getByRole("button", {name: /Envoyer/i});
         const inputUploaderMonCV = screen.getByTestId("uploaderMonCV")
+        fireEvent.change(inputUploaderMonCV , {target:{value:cv}})
         expect(h4Element).toBeInTheDocument();
         expect(buttonElement).toBeInTheDocument();
 
