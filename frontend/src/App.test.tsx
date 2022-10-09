@@ -72,7 +72,7 @@ const addOffres = (offres : any) => {
         fireEvent.change(controlPosteElement , {target:{value:offre.position}})
         fireEvent.change(controlHoursFormulaireSoumissionElement , {target:{value:offre.heureParSemaine}})
         fireEvent.change(controlAddressFormulaireSoumissionElement , {target:{value:offre.adresse}})
-        fireEvent.change(inputPdfFormulaireSoumissionElement , {target:{value:offre.pdf.firstName}})
+        fireEvent.change(inputPdfFormulaireSoumissionElement , {target:{value:offre.pdf.filename}})
         fireEvent.click(buttonElement);
     })
 
