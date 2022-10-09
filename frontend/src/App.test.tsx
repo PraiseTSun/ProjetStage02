@@ -78,7 +78,7 @@ describe('App', () => {
 
 
     it('test il y a pas de offre qui a besoin de valider ', async () => {
-
+        render(<ValiderNouvelleOffreStage connectedUser={gestionnaire} deconnexion={mockdeconnexion}/>);
         const h1Element = screen.getByRole("heading", {name: /Validation de offre/i});
         const LinkElement = screen.getByRole("link", {name: /Home/i});
         const trElement = screen.getAllByTestId("offre-container");
