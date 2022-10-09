@@ -283,4 +283,19 @@ public class StudentServiceTest {
         assertThat(dto.getId()).isEqualTo(1L);
         assertThat(dto.getPdf()).isEqualTo("[1,2,3,4,5,6,7,8,9]");
     }
+
+    @Test
+    void testGetOfferByIdNotFound() {
+        // Arrange
+        when(offreRepository.findById(anyLong())).thenReturn(Optional.empty());
+
+        // Act
+        try {
+            studentService.getOfferById(1L);
+        } catch (NonExistentEntityException e) {
+            return;
+        }
+
+        fail("NonExistentEntityException not thrown");
+    }
 }
