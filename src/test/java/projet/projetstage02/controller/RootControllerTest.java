@@ -1066,4 +1066,15 @@ public class RootControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.pdf", is(duffOfferOut.getPdf())));
     }
+
+    @Test
+    void testGetOfferStudentNotFound() throws Exception{
+        when(authService.getToken(any(),any())).thenReturn(Token.builder().userId(1).build());
+        when(studentService.getOfferById(anyLong())).thenThrow(new NonExistentEntityException());
+
+        mockMvc.perform(put("/getOfferStudent/{id}", 1)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(jsonTokenDTO.write(token).getJson()))
+                .andExpect(status().isNotFound());
+    }
 }
