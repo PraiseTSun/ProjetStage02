@@ -25,7 +25,7 @@ const offres : object = [{
     position: "position",
     heureParSemaine: 40,
     adresse: "addresse",
-    pdf: File,
+    pdf: new FileReader(),
     token: gestionnaire.token
 },
     {
@@ -34,7 +34,7 @@ const offres : object = [{
         position: "position1",
         heureParSemaine: 40,
         adresse: "addresse1",
-        pdf: File,
+        pdf: new FileReader(),
         token: gestionnaire.token
     }]
 const deconnexion = () => {
@@ -72,15 +72,13 @@ const addOffres = (offres : any) => {
         fireEvent.change(controlPosteElement , {target:{value:offre.position}})
         fireEvent.change(controlHoursFormulaireSoumissionElement , {target:{value:offre.heureParSemaine}})
         fireEvent.change(controlAddressFormulaireSoumissionElement , {target:{value:offre.adresse}})
-        fireEvent.change(inputPdfFormulaireSoumissionElement , {target:{value:offre.pdf}})
+        fireEvent.change(inputPdfFormulaireSoumissionElement , {target:{value:offre.pdf.firstName}})
         fireEvent.click(buttonElement);
     })
 
 }
 describe('App', () => {
-    render(<FormulaireSoumission user={company} />);
-    render(<ValiderNouvelleOffreStage connectedUser={gestionnaire} deconnexion={deconnexion}/>);
-    addOffres(offres)
+
 
     it('test il y a pas de offre qui a besoin de valider ', async () => {
 
@@ -95,22 +93,27 @@ describe('App', () => {
     });
 
     it('test valider une nouvelle offre ', async () => {
+        render(<FormulaireSoumission user={company} />);
+        render(<ValiderNouvelleOffreStage connectedUser={gestionnaire} deconnexion={deconnexion}/>);
+        addOffres(offres)
 
-        const element = screen.getByTestId("offre-container")
         const buttonElement = screen.getByRole("button", { name: /O/i})
         const trElement = screen.getAllByTestId("offre-container")
         expect(buttonElement).toBeInTheDocument();
         fireEvent.click(buttonElement)
-        expect(trElement.length).toBe(0)
+        expect(trElement.length).toBe(1)
     });
 
     it('test supprimer une nouvelle offre ', async () => {
+        render(<FormulaireSoumission user={company} />);
+        render(<ValiderNouvelleOffreStage connectedUser={gestionnaire} deconnexion={deconnexion}/>);
+        addOffres(offres)
 
-        const buttonElement = screen.getByRole("button", { name: /X/i})
-        const trElement = screen.getAllByTestId("offre-container")
+        const buttonElement = screen.getByRole("button", { name: /x/i})
+        const trElements = screen.getAllByTestId("offre-container")
 
         expect(buttonElement).toBeInTheDocument();
         fireEvent.click(buttonElement)
-        expect(trElement.length).toBe(0)
+        expect(trElements.length).toBe(1)
     });
 });
