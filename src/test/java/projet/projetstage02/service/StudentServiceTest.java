@@ -6,10 +6,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import projet.projetstage02.DTO.CompanyDTO;
-import projet.projetstage02.DTO.OffreDTO;
-import projet.projetstage02.DTO.PdfDTO;
-import projet.projetstage02.DTO.StudentDTO;
+import projet.projetstage02.DTO.*;
 import projet.projetstage02.exception.NonExistentEntityException;
 import projet.projetstage02.model.AbstractUser;
 import projet.projetstage02.model.AbstractUser.Department;
@@ -43,6 +40,8 @@ public class StudentServiceTest {
     Student bart;
     PdfDTO bartCv;
 
+    Offre duffOffer;
+
     @BeforeEach
     void setup() {
         bart = new Student(
@@ -55,6 +54,17 @@ public class StudentServiceTest {
         bart.setCv(new byte[0]);
 
         bartCv = PdfDTO.builder().studentId(1).pdf(new byte[0]).build();
+
+        duffOffer = Offre.builder()
+                .id(1L)
+                .nomDeCompagnie("Duff")
+                .department(Department.Transport)
+                .position("Manager")
+                .heureParSemaine(69)
+                .adresse("Somewhere")
+                .valide(true)
+                .pdf(new byte[]{1, 2, 3, 4, 5, 6, 7, 8, 9})
+                .build();
     }
 
     @Test
@@ -259,5 +269,18 @@ public class StudentServiceTest {
         assertThat(offerDTOs.size()).isEqualTo(1);
         assertThat(offerDTOs.get(0).isValide()).isEqualTo(true);
         assertThat(offerDTOs.get(0).getDepartment()).isEqualTo(department.departement);
+    }
+
+    @Test
+    void testGetOfferByIdSuccess() throws NonExistentEntityException {
+        // Arrange
+        when(offreRepository.findById(anyLong())).thenReturn(Optional.of(duffOffer));
+
+        // Act
+        PdfOutDTO dto = studentService.getOfferById(1L);
+
+        // Assert
+        assertThat(dto.getId()).isEqualTo(1L);
+        assertThat(dto.getPdf()).isEqualTo("[1,2,3,4,5,6,7,8,9]");
     }
 }
