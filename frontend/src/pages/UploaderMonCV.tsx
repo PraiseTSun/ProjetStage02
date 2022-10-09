@@ -87,7 +87,7 @@ const UploaderMonCV = ({user} : {user : IUser}) => {
                         }
                     </Row>
                     <Row className="m-4">
-                        <Button type="submit" className="btn btn-success mx-auto w-75">Envoyer</Button>
+                        <Button data-testid="buttonid" type="submit" className="btn btn-success mx-auto w-75">Envoyer</Button>
                     </Row>
                 </Form>
             </Col>

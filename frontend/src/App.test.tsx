@@ -7,23 +7,25 @@ const etudiant: IUser = {
     token : "34245",
     firstName: "Yan",
     lastName: "Zhou",
-    userType: "gestionnaire"
+    userType: "student"
 }
 
-const uploaderCV = (cv : any) => {
+const uploaderCV = (cv : File) => {
     const inputUploaderMonCV = screen.getByTestId("uploaderMonCV")
-    fireEvent.change(inputUploaderMonCV , {target:{value:cv.filename}})
+    fireEvent.change(inputUploaderMonCV , {target:{value:cv.name}})
 }
 describe('App', () => {
 
-    it('test page uploader mon cv ', () => {
-        const cv = new FileReader()
-        render(<UploaderMonCV user={etudiant}/>);
-        uploaderCV(cv)
-        const h4Element = screen.getByRole("heading", {name: /Document CV/i});
-        const buttonElement = screen.getByRole("button", {name: /Envoyer/i});
+    it('test page uploader mon cv ', async () => {
 
-        expect(h4Element).toBeInTheDocument();
-        expect(buttonElement).toBeInTheDocument();
+            render(<UploaderMonCV user={etudiant}/>);
+            const cv = new File([""],"test.pdf");
+            uploaderCV(cv);
+            const h4Element = screen.getByRole("heading", {name: /Document CV/i});
+            const buttonElement = screen.getByRole("button", {name: /Envoyer/i});
+
+            expect(h4Element).toBeInTheDocument();
+            expect(buttonElement).toBeInTheDocument();
+
     });
 });

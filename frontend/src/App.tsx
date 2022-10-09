@@ -14,6 +14,7 @@ import StudentCvValidationPage from './pages/StudentCvValidationPage';
 
 export const LOCAL_STORAGE_KEY = "MASSI_BEST_PROGRAMMER_PROJET_STAGE_02_CURRENT_CONNECTED_USER"
 const emptyUser: IUser = {
+  id : 0,
   firstName: "",
   lastName: "",
   userType: "",
