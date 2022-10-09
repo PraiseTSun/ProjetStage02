@@ -2,13 +2,11 @@ package projet.projetstage02.service;
 
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
-import projet.projetstage02.DTO.CompanyDTO;
-import projet.projetstage02.DTO.GestionnaireDTO;
-import projet.projetstage02.DTO.OffreDTO;
-import projet.projetstage02.DTO.StudentDTO;
+import projet.projetstage02.DTO.*;
+import projet.projetstage02.exception.NonExistentEntityException;
 import projet.projetstage02.exception.NonExistentOfferExeption;
-import projet.projetstage02.exception.NonExistentUserException;
 import projet.projetstage02.model.Company;
+import projet.projetstage02.model.Gestionnaire;
 import projet.projetstage02.model.Offre;
 import projet.projetstage02.model.Student;
 import projet.projetstage02.repository.CompanyRepository;
@@ -16,16 +14,19 @@ import projet.projetstage02.repository.GestionnaireRepository;
 import projet.projetstage02.repository.OffreRepository;
 import projet.projetstage02.repository.StudentRepository;
 
+import java.nio.charset.StandardCharsets;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
 @Service
 @AllArgsConstructor
 public class GestionnaireService {
-
+    //TODO when merging with token branch, user TimeUtil stuff
+    private final long MILLI_SECOND_DAY = 864000000;
     private final GestionnaireRepository gestionnaireRepository;
     private final CompanyRepository companyRepository;
     private final StudentRepository studentRepository;
@@ -53,50 +54,53 @@ public class GestionnaireService {
         return gestionnaireRepository.findByEmail(email).isEmpty();
     }
 
-    public GestionnaireDTO getGestionnaireById(Long id) throws NonExistentUserException {
+    public GestionnaireDTO getGestionnaireById(Long id) throws NonExistentEntityException {
         var gestionnaireOpt = gestionnaireRepository.findById(id);
-        if (gestionnaireOpt.isEmpty()) throw new NonExistentUserException();
+        if (gestionnaireOpt.isEmpty()) throw new NonExistentEntityException();
         return new GestionnaireDTO(gestionnaireOpt.get());
     }
 
-    public GestionnaireDTO getGestionnaireByEmailPassword(String email, String password) throws NonExistentUserException {
+    public GestionnaireDTO getGestionnaireByEmailPassword(String email, String password) throws NonExistentEntityException {
         var gestionnaireOpt = gestionnaireRepository.findByEmailAndPassword(email.toLowerCase(), password);
-        if (gestionnaireOpt.isEmpty()) throw new NonExistentUserException();
+        if (gestionnaireOpt.isEmpty()) throw new NonExistentEntityException();
         return new GestionnaireDTO(gestionnaireOpt.get());
     }
 
-    public void validateCompany(Long id) throws NonExistentUserException {
+    public void validateCompany(Long id) throws NonExistentEntityException {
+        //Throws NonExistentUserException
         Company company = getCompany(id);
         company.setConfirm(true);
         companyRepository.save(company);
     }
 
-    public void validateStudent(Long id) throws NonExistentUserException {
+    public void validateStudent(Long id) throws NonExistentEntityException {
+        //Throws NonExistentUserException
         Student student = getStudent(id);
         student.setConfirm(true);
         studentRepository.save(student);
     }
 
-    public void removeCompany(long id) throws NonExistentUserException {
+    public void removeCompany(long id) throws NonExistentEntityException {
+        // Throws NonExistentUserException
         Company company = getCompany(id);
         companyRepository.delete(company);
     }
 
-    public void removeStudent(long id) throws NonExistentUserException {
+    public void removeStudent(long id) throws NonExistentEntityException {
         // Throws NonExistentUserException
         Student student = getStudent(id);
         studentRepository.delete(student);
     }
 
-    private Company getCompany(long id) throws NonExistentUserException {
+    private Company getCompany(long id) throws NonExistentEntityException {
         Optional<Company> companyOptional = companyRepository.findById(id);
-        if (companyOptional.isEmpty()) throw new NonExistentUserException();
+        if (companyOptional.isEmpty()) throw new NonExistentEntityException();
         return companyOptional.get();
     }
 
-    private Student getStudent(long id) throws NonExistentUserException {
+    private Student getStudent(long id) throws NonExistentEntityException {
         Optional<Student> studentOptional = studentRepository.findById(id);
-        if (studentOptional.isEmpty()) throw new NonExistentUserException();
+        if (studentOptional.isEmpty()) throw new NonExistentEntityException();
         return studentOptional.get();
     }
 
@@ -152,5 +156,63 @@ public class GestionnaireService {
 
     public byte[] getOffrePdfById(long id) throws NonExistentOfferExeption {
         return getOffer(id).getPdf();
+    }
+
+    public List<StudentDTO> getUnvalidatedCVStudents() {
+        List<StudentDTO> studentDTOS = new ArrayList<>();
+
+        studentRepository.findAll().stream()
+                .filter(student ->
+                        student.getCvToValidate() != null &&
+                                student.getCvToValidate().length > 0
+                                && student.isConfirm()
+                )
+                .forEach(student -> {
+                    StudentDTO dto = new StudentDTO(student);
+                    dto.setPassword("");
+                    dto.setCv(new byte[0]);
+
+                    studentDTOS.add(dto);
+                });
+
+        return studentDTOS;
+    }
+
+    public StudentDTO validateStudentCV(long id) throws NonExistentEntityException {
+        Optional<Student> studentOpt = studentRepository.findById(id);
+        if(studentOpt.isEmpty()) throw new NonExistentEntityException();
+        Student student = studentOpt.get();
+        student.setCv(student.getCvToValidate());
+        student.setCvToValidate(new byte[0]);
+        studentRepository.save(student);
+        return new StudentDTO(student);
+    }
+
+    public StudentDTO removeStudentCvValidation(long id) throws NonExistentEntityException {
+        Optional<Student> studentOpt = studentRepository.findById(id);
+        if(studentOpt.isEmpty()) throw new NonExistentEntityException();
+        Student student = studentOpt.get();
+        student.setCvToValidate(new byte[0]);
+        studentRepository.save(student);
+        return new StudentDTO(student);
+    }
+
+    public PdfOutDTO getStudentCvToValidate(long studentId) throws NonExistentEntityException {
+        Optional<Student> studentOpt = studentRepository.findById(studentId);
+        if (studentOpt.isEmpty()) throw new NonExistentEntityException();
+        byte[] cv = studentOpt.get().getCvToValidate();
+        String cvConvert = Arrays.toString(cv).replaceAll("\\s+","");
+        return new PdfOutDTO(studentOpt.get().getId(), cvConvert);
+    }
+
+    public boolean deleteUnconfirmedGestionnaire(GestionnaireDTO dto) throws NonExistentEntityException {
+        Optional<Gestionnaire> studentOpt = gestionnaireRepository.findByEmail(dto.getEmail());
+        if(studentOpt.isEmpty()) throw new NonExistentEntityException();
+        Gestionnaire gestionnaire = studentOpt.get();
+        if(!gestionnaire.isEmailConfirmed() && Timestamp.valueOf(LocalDateTime.now()).getTime() - gestionnaire.getInscriptionTimestamp() > MILLI_SECOND_DAY){
+            gestionnaireRepository.delete(gestionnaire);
+            return true;
+        }
+        return false;
     }
 }

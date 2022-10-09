@@ -8,10 +8,9 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import projet.projetstage02.DTO.CompanyDTO;
 import projet.projetstage02.DTO.OffreDTO;
-import projet.projetstage02.exception.NonExistentUserException;
+import projet.projetstage02.exception.NonExistentEntityException;
 import projet.projetstage02.model.AbstractUser;
 import projet.projetstage02.model.Company;
-import projet.projetstage02.model.Offre;
 import projet.projetstage02.repository.CompanyRepository;
 import projet.projetstage02.repository.OffreRepository;
 
@@ -21,7 +20,6 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.assertj.core.api.Fail.fail;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
-
 @ExtendWith(MockitoExtension.class)
 public class CompanyServiceTest {
 
@@ -35,7 +33,7 @@ public class CompanyServiceTest {
     OffreRepository offreRepository;
 
     Company duffBeer;
-    Offre duffBeerOffre;
+    OffreDTO duffBeerOffre;
 
     @BeforeEach
     void setup() {
@@ -47,9 +45,9 @@ public class CompanyServiceTest {
                 AbstractUser.Department.Transport,
                 "Duff Beer");
 
-        duffBeerOffre = Offre.builder()
+        duffBeerOffre = OffreDTO.builder()
                 .adresse("653 Duff Street")
-                .department(AbstractUser.Department.Transport)
+                .department(AbstractUser.Department.Transport.departement)
                 .heureParSemaine(40)
                 .position("Delivery Guy")
                 .nomDeCompagnie("Duff beer")
@@ -58,7 +56,7 @@ public class CompanyServiceTest {
     }
 
     @Test
-    void getCompanyByIdHappyDayTest() throws NonExistentUserException {
+    void getCompanyByIdHappyDayTest() throws NonExistentEntityException {
         // Arrange
         when(companyRepository.findById(anyLong()))
                 .thenReturn(Optional.of(duffBeer));
@@ -79,7 +77,7 @@ public class CompanyServiceTest {
         // Act
         try {
             companyService.getCompanyById(1L);
-        } catch (NonExistentUserException e) {
+        } catch (NonExistentEntityException e) {
 
             // Assert
             return;
@@ -88,7 +86,7 @@ public class CompanyServiceTest {
     }
 
     @Test
-    void getCompanyByEmailAndPasswordHappyDayTest() throws NonExistentUserException {
+    void getCompanyByEmailAndPasswordHappyDayTest() throws NonExistentEntityException{
         // Arrange
         when(companyRepository.findByEmailAndPassword(
                 "duff.beer@springfield.com",
@@ -116,7 +114,7 @@ public class CompanyServiceTest {
             companyService.getCompanyByEmailPassword(
                     "duff.beer@springfield.com",
                     "bestBeer");
-        } catch (NonExistentUserException e) {
+        } catch (NonExistentEntityException e) {
 
             // Assert
             return;
@@ -188,12 +186,39 @@ public class CompanyServiceTest {
     @Test
     void createOffreTest() {
         // Arrange
-        when(offreRepository.save(any())).thenReturn(duffBeerOffre);
+        when(offreRepository.save(any())).thenReturn(duffBeerOffre.toModel());
 
         // Act
-        companyService.createOffre(new OffreDTO(duffBeerOffre));
+        companyService.createOffre(duffBeerOffre);
 
         // Assert
         verify(offreRepository, times(1)).save(any());
+    }
+    @Test
+    void testDeleteUncofirmedCompanyHappyDay() throws NonExistentEntityException {
+        // Arrange
+        duffBeer.setInscriptionTimestamp(0);
+        when(companyRepository.findByEmail(any())).thenReturn(Optional.of(duffBeer));
+
+        // Act
+        companyService.deleteUnconfirmedCompany(new CompanyDTO(duffBeer));
+
+        // Assert
+        verify(companyRepository, times(1)).delete(any());
+    }
+    @Test
+    void testDeleteUncofirmedCompanyThrowsException()  {
+        // Arrange
+        duffBeer.setInscriptionTimestamp(0);
+        when(companyRepository.findByEmail(any())).thenReturn(Optional.empty());
+
+        // Act
+        try{
+            companyService.deleteUnconfirmedCompany(new CompanyDTO(duffBeer));
+        }catch (NonExistentEntityException e){
+            return;
+        }
+        // Assert
+        fail("NonExistentEntityException not thrown");
     }
 }

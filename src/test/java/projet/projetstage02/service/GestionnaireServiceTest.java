@@ -7,8 +7,8 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import projet.projetstage02.DTO.*;
+import projet.projetstage02.exception.NonExistentEntityException;
 import projet.projetstage02.exception.NonExistentOfferExeption;
-import projet.projetstage02.exception.NonExistentUserException;
 import projet.projetstage02.model.*;
 import projet.projetstage02.repository.CompanyRepository;
 import projet.projetstage02.repository.GestionnaireRepository;
@@ -16,6 +16,7 @@ import projet.projetstage02.repository.OffreRepository;
 import projet.projetstage02.repository.StudentRepository;
 
 import java.util.ArrayList;
+import java.util.HexFormat;
 import java.util.List;
 import java.util.Optional;
 
@@ -121,7 +122,7 @@ public class GestionnaireServiceTest {
     }
 
     @Test
-    public void testGetGestionnaireByIdSuccess() throws NonExistentUserException {
+    public void testGetGestionnaireByIdSuccess() throws NonExistentEntityException {
         // Arrange
         when(gestionnaireRepository.findById(anyLong())).thenReturn(Optional.of(gestionnaireTest));
 
@@ -140,7 +141,7 @@ public class GestionnaireServiceTest {
         // Act
         try {
             service.getGestionnaireById(1L);
-        } catch (NonExistentUserException e) {
+        } catch (NonExistentEntityException e) {
             // Assert
             return;
         }
@@ -148,7 +149,7 @@ public class GestionnaireServiceTest {
     }
 
     @Test
-    public void testGetGestionnaireByEmailPasswordSuccess() throws NonExistentUserException {
+    public void testGetGestionnaireByEmailPasswordSuccess() throws NonExistentEntityException {
         // Arrange
         when(gestionnaireRepository.findByEmailAndPassword(anyString(), anyString()))
                 .thenReturn(Optional.of(gestionnaireTest));
@@ -170,7 +171,7 @@ public class GestionnaireServiceTest {
         // Act
         try {
             service.getGestionnaireByEmailPassword(anyString(), anyString());
-        } catch (NonExistentUserException e) {
+        } catch (NonExistentEntityException e) {
             // Assert
             return;
         }
@@ -178,7 +179,7 @@ public class GestionnaireServiceTest {
     }
 
     @Test
-    public void testValidateCompanySuccess() throws NonExistentUserException{
+    public void testValidateCompanySuccess() throws NonExistentEntityException{
         // Arrange
         when(companyRepository.findById(anyLong())).thenReturn(Optional.of(companyTest));
 
@@ -197,14 +198,14 @@ public class GestionnaireServiceTest {
         // Act
         try {
             service.validateCompany(1L);
-        } catch (NonExistentUserException e) {
+        } catch (NonExistentEntityException e) {
             return;
         }
         fail("NonExistentUserException not caught");
     }
 
     @Test
-    public void testValidateStudentSuccess() throws NonExistentUserException{
+    public void testValidateStudentSuccess() throws NonExistentEntityException{
         // Arrange
         when(studentRepository.findById(anyLong())).thenReturn(Optional.of(studentTest));
 
@@ -223,7 +224,7 @@ public class GestionnaireServiceTest {
         // Act
         try {
             service.validateStudent(1L);
-        } catch (NonExistentUserException e) {
+        } catch (NonExistentEntityException e) {
             return;
         }
 
@@ -231,7 +232,7 @@ public class GestionnaireServiceTest {
     }
 
     @Test
-    public void testRemoveCompanySuccess() throws NonExistentUserException {
+    public void testRemoveCompanySuccess() throws NonExistentEntityException {
         // Arrange
         when(companyRepository.findById(anyLong())).thenReturn(Optional.of(companyTest));
         doNothing().when(companyRepository).delete(any());
@@ -251,7 +252,7 @@ public class GestionnaireServiceTest {
         // Act
         try {
             service.removeCompany(1L);
-        } catch (NonExistentUserException e) {
+        } catch (NonExistentEntityException e) {
             return;
         }
 
@@ -259,7 +260,7 @@ public class GestionnaireServiceTest {
     }
 
     @Test
-    public void testRemoveStudentSuccess() throws NonExistentUserException {
+    public void testRemoveStudentSuccess() throws NonExistentEntityException {
         // Arrange
         when(studentRepository.findById(anyLong())).thenReturn(Optional.of(studentTest));
         doNothing().when(studentRepository).delete(any());
@@ -279,7 +280,7 @@ public class GestionnaireServiceTest {
         // Act
         try {
             service.removeStudent(1L);
-        } catch (NonExistentUserException e) {
+        } catch (NonExistentEntityException e) {
             return;
         }
         fail("NonExistentUserException not caught");
@@ -460,5 +461,141 @@ public class GestionnaireServiceTest {
             return;
         }
         fail("NonExistentOfferException not caught");
+    }
+    @Test
+    void testDeleteUncofirmedStudentHappyDay() throws NonExistentEntityException {
+        // Arrange
+        gestionnaireTest.setInscriptionTimestamp(0);
+        when(gestionnaireRepository.findByEmail(any())).thenReturn(Optional.of(gestionnaireTest));
+
+        // Act
+        service.deleteUnconfirmedGestionnaire(new GestionnaireDTO(gestionnaireTest));
+
+        // Assert
+        verify(gestionnaireRepository, times(1)).delete(any());
+    }
+    @Test
+    void testDeleteUncofirmedStudentThrowsException()  {
+        // Arrange
+        gestionnaireTest.setInscriptionTimestamp(0);
+        when(gestionnaireRepository.findByEmail(any())).thenReturn(Optional.empty());
+
+        // Act
+        try{
+            service.deleteUnconfirmedGestionnaire(new GestionnaireDTO(gestionnaireTest));
+        }catch (NonExistentEntityException e){
+            return;
+        }
+        // Assert
+        fail("NonExistentEntityException not thrown");
+    }
+
+    @Test
+    void testGetUnvalidatedStudentCV() {
+        // Arrange
+        List<Student> students = new ArrayList<>();
+        students.add(studentTest);
+        studentTest.setCvToValidate(new byte[]{1, 2, 3});
+        studentTest.setConfirm(true);
+
+        Student studentCvValidated = new Student();
+        studentCvValidated.setConfirm(true);
+
+        students.add(studentCvValidated);
+        when(studentRepository.findAll()).thenReturn(students);
+
+        // Act
+        List<StudentDTO> unvalidatedStudentCV = service.getUnvalidatedCVStudents();
+        // Assert
+        assertThat(unvalidatedStudentCV.get(0).getEmail()).isEqualTo(studentTest.getEmail());
+        assertThat(unvalidatedStudentCV.get(0).getFirstName()).isEqualTo(studentTest.getFirstName());
+        assertThat(unvalidatedStudentCV.get(0).getCvToValidate()).isNotEmpty();
+        assertThat(unvalidatedStudentCV.size()).isEqualTo(1);
+    }
+
+    @Test
+    void testValidateStudentCVSuccess() throws NonExistentEntityException {
+        // Arrange
+        studentTest.setCvToValidate(new byte[0]);
+        when(studentRepository.findById(anyLong())).thenReturn(Optional.of(studentTest));
+
+        // Act
+        StudentDTO studentDTO = service.validateStudentCV(1L);
+
+        // Assert
+        assertThat(studentDTO.getFirstName()).isEqualTo(studentTest.getFirstName());
+        assertThat(studentDTO.getCv()).isEqualTo(new byte[0]);
+        assertThat(studentDTO.getCvToValidate()).isEmpty();
+    }
+
+    @Test
+    void testValidateStudentCVNotFound(){
+        // Arrange
+        when(studentRepository.findById(anyLong())).thenReturn(Optional.empty());
+
+        // Act
+        try {
+            service.validateStudentCV(1L);
+        } catch (NonExistentEntityException e) {
+            return;
+        }
+        fail("NonExistentUserException not caught");
+    }
+
+    @Test
+    void testRemoveStudentCvValidationSuccess () throws NonExistentEntityException {
+        // Arrange
+        studentTest.setCvToValidate(new byte[0]);
+        when(studentRepository.findById(anyLong())).thenReturn(Optional.of(studentTest));
+
+        // Act
+        StudentDTO studentDTO = service.removeStudentCvValidation(1L);
+
+        // Assert
+        assertThat(studentDTO.getEmail()).isEqualTo(studentTest.getEmail());
+        assertThat(studentDTO.getCvToValidate()).isEmpty();
+    }
+
+    @Test
+    void testRemoveStudentCvValidationNotFound (){
+        // Arrange
+        when(studentRepository.findById(anyLong())).thenReturn(Optional.empty());
+
+        // Act
+        try {
+            service.removeStudentCvValidation(1L);
+        } catch (NonExistentEntityException e) {
+            return;
+        }
+        fail("NonExistentUserException not caught");
+    }
+
+    @Test
+    void testGetStudentCvToValidateSuccess() throws NonExistentEntityException {
+        // Arrange
+        String result = "[72,101,108,108,111,32,87,111,114,100]";
+        byte[] stored = HexFormat.of().parseHex("48656c6c6f20576f7264");
+        studentTest.setCvToValidate(stored);
+        when(studentRepository.findById(anyLong())).thenReturn(Optional.of(studentTest));
+
+        // Act
+        PdfOutDTO cv = service.getStudentCvToValidate(1L);
+
+        //
+        assertThat(cv.getPdf()).isEqualTo(result);
+    }
+
+    @Test
+    void testGetStudentCvToValidateNotFound() {
+        // Arrange
+        when(studentRepository.findById(anyLong())).thenReturn(Optional.empty());
+
+        // Act
+        try {
+            service.getStudentCvToValidate(1L);
+        } catch (NonExistentEntityException e) {
+            return;
+        }
+        fail("NonExistentUserException not caught");
     }
 }

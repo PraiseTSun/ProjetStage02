@@ -6,6 +6,8 @@ import projet.projetstage02.model.AbstractUser.Department;
 import projet.projetstage02.model.Student;
 
 import javax.persistence.Lob;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.Pattern;
 
 @Data
 @EqualsAndHashCode(callSuper = false)
@@ -14,10 +16,13 @@ import javax.persistence.Lob;
 @SuperBuilder
 @ToString(callSuper = true)
 public class StudentDTO extends AbstractUserDTO<Student> {
+    @NotBlank
+    @Pattern(regexp = ("Techniques de linformatique|Techniques de la logistique du transport"))
     private String department;
     @Lob
     private byte[] cv;
-    private boolean cvConfirm;
+    @Lob
+    private byte[] cvToValidate;
 
     public StudentDTO(Student student) {
         id = student.getId();
@@ -30,7 +35,7 @@ public class StudentDTO extends AbstractUserDTO<Student> {
         inscriptionTimestamp = student.getInscriptionTimestamp();
         emailConfirmed = student.isEmailConfirmed();
         cv = student.getCv();
-        cvConfirm = student.isCvConfirm();
+        cvToValidate = student.getCvToValidate();
     }
 
     @Override
@@ -46,7 +51,7 @@ public class StudentDTO extends AbstractUserDTO<Student> {
         );
         student.setId(id);
         student.setCv(cv);
-        student.setCvConfirm(cvConfirm);
+        student.setCvToValidate(cvToValidate);
         return student;
     }
 }

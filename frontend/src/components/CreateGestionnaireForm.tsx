@@ -1,8 +1,9 @@
 import React, { useState } from "react";
 import { Button, Col, Form, Row } from "react-bootstrap";
 import { BeatLoader } from "react-spinners";
+import IUser from "../models/IUser";
 
-const ValidationGestionnaire = () => {
+const ValidationGestionnaire = ({user}:{user:IUser}) => {
     const [waiting, setWaiting] = useState(false);
     const [validated, setValidated] = useState(false);
     const [firstName, setFirstName] = useState("");
@@ -43,17 +44,16 @@ const ValidationGestionnaire = () => {
                         "firstName": firstName,
                         "lastName": lastName,
                         "email": email,
-                        "password": password
+                        "password": password,
+                        "token":user.token
                     })
                 });
 
-            if (res.status == 409) {
+            if (!res.ok) {
                 const data = await res.json();
                 alert(data.error);
-            }
-
-            if (res.status == 201) {
-                alert("Utilisateur a été créé.");
+            }else {
+                alert("Le courriel de confirmation à été envoyé.");
             }
             setWaiting(false)
             setValidated(false)
@@ -81,7 +81,8 @@ const ValidationGestionnaire = () => {
                     <Col>
                         <Form.Group>
                             <Form.Label className="fw-bold h5">Prénom</Form.Label>
-                            <Form.Control type="text" required value={firstName} onChange={field => setFirstName(field.target.value)}></Form.Control>
+                            <Form.Control type="text" minLength={2} required value={firstName}  
+                                          onChange={field => setFirstName(field.target.value)}></Form.Control>
 
                             <Form.Control.Feedback type="invalid">Champ requis</Form.Control.Feedback>
                         </Form.Group>
@@ -89,16 +90,18 @@ const ValidationGestionnaire = () => {
                     <Col>
                         <Form.Group>
                             <Form.Label className="fw-bold h5">Nom de famille</Form.Label>
-                            <Form.Control type="text" required value={lastName} onChange={field => setLastName(field.target.value)}></Form.Control>
+                            <Form.Control minLength={2} type="text" required value={lastName}
+                                          onChange={field => setLastName(field.target.value)}></Form.Control>
 
-                            <Form.Control.Feedback type="invalid">Champ requis</Form.Control.Feedback>
+                            <Form.Control.Feedback  type="invalid">Champ requis</Form.Control.Feedback>
                         </Form.Group>
                     </Col>
                 </Row>
                 <Row>
                     <Form.Group>
                         <Form.Label className="fw-bold mt-2 h5">Courriel</Form.Label>
-                        <Form.Control type="email" required value={email} onChange={field => setEmail(field.target.value)}></Form.Control>
+                        <Form.Control type="email" required value={email}
+                                      onChange={field => setEmail(field.target.value)}></Form.Control>
 
                         <Form.Control.Feedback type="invalid">Courriel invalide</Form.Control.Feedback>
                     </Form.Group>
@@ -107,7 +110,8 @@ const ValidationGestionnaire = () => {
                     <Col>
                         <Form.Group>
                             <Form.Label className="fw-bold mt-2 h5">Mot de passe</Form.Label>
-                            <Form.Control type="password" required minLength={8} value={password} onChange={field => setPassword(field.target.value)}></Form.Control>
+                            <Form.Control type="password" required minLength={8} value={password} 
+                            onChange={field => setPassword(field.target.value)}></Form.Control>
 
                             <Form.Control.Feedback type="invalid">Longueur minimum de 8 requise</Form.Control.Feedback>
                         </Form.Group>
@@ -115,7 +119,8 @@ const ValidationGestionnaire = () => {
                     <Col>
                         <Form.Group>
                             <Form.Label className="fw-bold mt-2 h5">Confirmer le mot de passe</Form.Label>
-                            <Form.Control type="password" required value={confirmPassword} onChange={field => setConfirmPassword(field.target.value)}></Form.Control>
+                            <Form.Control type="password" minLength={8} required value={confirmPassword} 
+                            onChange={field => setConfirmPassword(field.target.value)}></Form.Control>
 
                         </Form.Group>
                     </Col>

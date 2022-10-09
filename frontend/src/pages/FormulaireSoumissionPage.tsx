@@ -1,11 +1,12 @@
 import React from "react";
-import {useState} from 'react';
-import {Button, Col, Container, Form, Row} from "react-bootstrap";
-import {BeatLoader} from "react-spinners";
+import { useState } from 'react';
+import { Button, Col, Container, Form, Row } from "react-bootstrap";
+import { BeatLoader } from "react-spinners";
+import IUser from "../models/IUser";
 
 declare type FormControlElement = HTMLInputElement | HTMLTextAreaElement;
 
-const FormulaireSoumissionPage = (): JSX.Element => {
+const FormulaireSoumissionPage = ({ user }: { user: IUser }): JSX.Element => {
     const [waiting, setWaiting] = useState(false);
     const [validated, setValidated] = useState(false);
     const [company, setCompany] = useState("")
@@ -26,12 +27,13 @@ const FormulaireSoumissionPage = (): JSX.Element => {
                 position: poste,
                 heureParSemaine: hoursPerWeek,
                 adresse: address,
-                pdf: pdf
+                pdf: pdf,
+                token: user.token
             }
 
             const headers = {
                 method: "POST",
-                headers: {"Content-Type": "application/json"},
+                headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(obj)
             };
             const res = await fetch("http://localhost:8080/createOffre", headers)
@@ -39,7 +41,7 @@ const FormulaireSoumissionPage = (): JSX.Element => {
                 alert("Formulaire envoyé")
             }
             setWaiting(false);
-            location.href = "/"
+            window.location.href = "/"
         }
         setValidated(true);
     }
@@ -82,7 +84,7 @@ const FormulaireSoumissionPage = (): JSX.Element => {
     if (waiting) {
         return (
             <div className="d-flex justify-content-center py-5 bg-light">
-                <BeatLoader className="text-center" color="#292b2c" size={100}/>
+                <BeatLoader className="text-center" color="#292b2c" size={100} />
             </div>
         );
     }
@@ -95,13 +97,13 @@ const FormulaireSoumissionPage = (): JSX.Element => {
                     <Form.Group>
                         <Form.Label className="fw-bold h5">Nom de la compagnie</Form.Label>
                         <Form.Control type="text" required value={company}
-                                      onChange={field => setCompany(field.target.value)}></Form.Control>
+                            onChange={field => setCompany(field.target.value)}></Form.Control>
                         <Form.Control.Feedback type="invalid">Champ requis</Form.Control.Feedback>
                     </Form.Group>
                     <Form.Group>
                         <Form.Label className="fw-bold mt-2 h5">Département</Form.Label>
                         <Form.Select required
-                                     value={department} onChange={(e) => setDepartment(e.target.value)}>
+                            value={department} onChange={(e) => setDepartment(e.target.value)}>
                             <option hidden value="" disabled>Choix d'un département</option>
                             <option value="Techniques de linformatique">
                                 Technique de l'informatique
@@ -115,27 +117,27 @@ const FormulaireSoumissionPage = (): JSX.Element => {
                     <Form.Group>
                         <Form.Label className="fw-bold h5">Poste</Form.Label>
                         <Form.Control type="text" required value={poste}
-                                      onChange={field => setPoste(field.target.value)}></Form.Control>
+                            onChange={field => setPoste(field.target.value)}></Form.Control>
                         <Form.Control.Feedback type="invalid">Champ requis</Form.Control.Feedback>
                     </Form.Group>
                     <Form.Group>
                         <Form.Label className="fw-bold h5">Heures par semaine</Form.Label>
                         <Form.Control type="number" min="1" max="40" required value={hoursPerWeek}
-                                      onChange={field => setHoursPerWeekFromField(field)}></Form.Control>
+                            onChange={field => setHoursPerWeekFromField(field)}></Form.Control>
                         <Form.Control.Feedback type="invalid">Nombre d'heures entre 0 et 40</Form.Control.Feedback>
                     </Form.Group>
                     <Form.Group>
                         <Form.Label className="fw-bold h5">Adresse</Form.Label>
                         <Form.Control type="text" required value={address}
-                                      onChange={field => setAddress(field.target.value)}></Form.Control>
+                            onChange={field => setAddress(field.target.value)}></Form.Control>
                         <Form.Control.Feedback type="invalid">Champ requis</Form.Control.Feedback>
                     </Form.Group>
                     <Form.Group>
                         <Form.Label className="fw-bold h5">Document PDF</Form.Label>
                         <input className="form-control" accept=".pdf"
-                               required type="file" onChange={(e) => {
-                            uploadFile(e.target.files![0]);
-                        }}/>
+                            required type="file" onChange={(e) => {
+                                uploadFile(e.target.files![0]);
+                            }} />
                         <Form.Control.Feedback type="invalid">Champ requis</Form.Control.Feedback>
                     </Form.Group>
                     <Row className="mt-3">

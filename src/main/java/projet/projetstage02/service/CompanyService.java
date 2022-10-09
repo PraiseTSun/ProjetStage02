@@ -4,14 +4,21 @@ import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import projet.projetstage02.DTO.CompanyDTO;
 import projet.projetstage02.DTO.OffreDTO;
-import projet.projetstage02.exception.NonExistentUserException;
+import projet.projetstage02.exception.NonExistentEntityException;
 import projet.projetstage02.model.AbstractUser.Department;
+import projet.projetstage02.model.Company;
 import projet.projetstage02.model.Offre;
 import projet.projetstage02.repository.CompanyRepository;
 import projet.projetstage02.repository.OffreRepository;
+import projet.projetstage02.utils.TimeUtil;
 
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Optional;
+
+import static projet.projetstage02.utils.TimeUtil.MILLI_SECOND_DAY;
+import static projet.projetstage02.utils.TimeUtil.currentTimestamp;
 
 @Service
 @AllArgsConstructor
@@ -31,7 +38,6 @@ public class CompanyService {
 
         return offreRepository.save(offre).getId();
     }
-
     public void saveCompany(String firstName, String lastName, String name, String email, String password,
             Department department) {
         CompanyDTO dto = CompanyDTO.builder()
@@ -56,17 +62,26 @@ public class CompanyService {
         return companyRepository.findByEmail(email).isEmpty();
     }
 
-    public CompanyDTO getCompanyById(Long id) throws NonExistentUserException {
+    public CompanyDTO getCompanyById(Long id) throws NonExistentEntityException {
         var companyOpt = companyRepository.findById(id);
-        if (companyOpt.isEmpty())
-            throw new NonExistentUserException();
+        if (companyOpt.isEmpty()) throw new NonExistentEntityException();
         return new CompanyDTO(companyOpt.get());
     }
 
-    public CompanyDTO getCompanyByEmailPassword(String email, String password) throws NonExistentUserException {
+    public CompanyDTO getCompanyByEmailPassword(String email, String password) throws NonExistentEntityException {
         var companyOpt = companyRepository.findByEmailAndPassword(email.toLowerCase(), password);
-        if (companyOpt.isEmpty())
-            throw new NonExistentUserException();
+        if (companyOpt.isEmpty()) throw new NonExistentEntityException();
         return new CompanyDTO(companyOpt.get());
+    }
+    public boolean deleteUnconfirmedCompany(CompanyDTO dto) throws NonExistentEntityException {
+        Optional<Company> companyOpt = companyRepository.findByEmail(dto.getEmail());
+        if(companyOpt.isEmpty())
+            throw new NonExistentEntityException();
+        Company company = companyOpt.get();
+        if(!company.isEmailConfirmed() && currentTimestamp() - company.getInscriptionTimestamp() > MILLI_SECOND_DAY){
+            companyRepository.delete(company);
+            return true;
+        }
+        return false;
     }
 }

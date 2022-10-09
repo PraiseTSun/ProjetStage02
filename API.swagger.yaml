@@ -7,9 +7,9 @@ host: localhost:8080
 schemes:
   - http
 paths:
-  /student:
-    put:
-      summary: Retour d'un DTO étudiant avec si le courriel et mot de passe est valide.
+  /student/login:
+    post:
+      summary: Retourne le token de l'étudiant si valide.
       parameters:
         - in: body
           name: Paramètres
@@ -20,6 +20,82 @@ paths:
               email:
                 type: string
               password:
+                type: string
+      produces:
+        - application/json
+      responses:
+        201:
+          description: Token
+          schema:
+            type: object
+            properties:
+              token:
+                type: string
+        403:
+          description: Courriel et/ou mot de passe invalide
+  /gestionnaire/login:
+    post:
+      summary: Retourne le token du gestionnaire si valide
+      parameters:
+        - in: body
+          name: Paramètres
+          description: Adresse courriel et mot de passe
+          schema:
+            type: object
+            properties:
+              email:
+                type: string
+              password:
+                type: string
+      produces:
+        - application/json
+      responses:
+        201:
+          description: Token
+          schema:
+            type: object
+            properties:
+              token:
+                type: string
+        403:
+          description: Courriel et/ou mot de passe invalide
+  /company/login:
+    post:
+      summary: Retourne le token de la compagnie si valide
+      parameters:
+        - in: body
+          name: Paramètres
+          description: Adresse courriel et mot de passe
+          schema:
+            type: object
+            properties:
+              email:
+                type: string
+              password:
+                type: string
+      produces:
+        - application/json
+      responses:
+        201:
+          description: Token
+          schema:
+            type: object
+            properties:
+              token:
+                type: string
+        403:
+          description: Courriel et/ou mot de passe invalide
+  /student:
+    put:
+      summary: Retour d'un DTO étudiant si le token est valide.
+      parameters:
+        - in: body
+          name: Paramètres
+          description: Token de l'étudiant
+          schema:
+            type: object
+            properties:
+              token:
                 type: string
       produces:
         - application/json
@@ -39,21 +115,21 @@ paths:
                 type: boolean
               department:
                 type: boolean
+        403:
+          description: Token invalide
         404:
-          description: Courriel et/ou mot de passe invalide
+          description: Courriel pas validé
   /gestionnaire:
     put:
-      summary: Retour d'un DTO gestionnaire avec si le courriel et mot de passe est valide.
+      summary: Retour d'un DTO gestionnaire si le token est valide.
       parameters:
         - in: body
           name: Paramètres
-          description: Adresse courriel et mot de passe
+          description: Token du gestionnaire
           schema:
             type: object
             properties:
-              email:
-                type: string
-              password:
+              token:
                 type: string
       produces:
         - application/json
@@ -73,21 +149,21 @@ paths:
                 type: boolean
               department:
                 type: boolean
+        403:
+          description: Token invalide
         404:
-          description: Courriel et/ou mot de passe invalide
+          description: Courriel pas validé
   /company:
     put:
-      summary: Retour d'un DTO entreprise avec si le courriel et mot de passe est valide.
+      summary: Retour d'un DTO entreprise si le token est valide.
       parameters:
         - in: body
           name: Paramètres
-          description: Adresse courriel et mot de passe
+          description: Token de la compagnie
           schema:
             type: object
             properties:
-              email:
-                type: string
-              password:
+              token:
                 type: string
       produces:
         - application/json
@@ -107,8 +183,10 @@ paths:
                 type: boolean
               department:
                 type: boolean
+        403:
+          description: Token invalide
         404:
-          description: Courriel et/ou mot de passe invalide
+          description: Courriel pas validé
   /createStudent:
     post:
       summary: Crée un étudiant et envoie le courriel de confirmation
@@ -135,6 +213,13 @@ paths:
         201:
           description: Ne retourne pas d'objet
         409:
+          description: Message d'erreur
+          schema:
+            type: object
+            properties:
+              error:
+                type: string
+        500:
           description: Message d'erreur
           schema:
             type: object
@@ -175,6 +260,13 @@ paths:
             properties:
               error:
                 type: string
+        500:
+          description: Message d'erreur
+          schema:
+            type: object
+            properties:
+              error:
+                type: string
   /createGestionaire:
     post:
       summary: Crée un gestionnaire et envoie le courriel de confirmation
@@ -205,6 +297,20 @@ paths:
             properties:
               error:
                 type: string
+        403:
+          description: Token invalide
+          schema:
+            type: object
+            properties:
+              error:
+                type: string
+        500:
+          description: Message d'erreur
+          schema:
+            type: object
+            properties:
+              error:
+                type: string
   /confirmEmail/student/{id}:
     put:
       summary: Confirme le courriel d'un étudiant
@@ -226,8 +332,8 @@ paths:
             properties:
               error:
                 type: string
-        422:
-          description: Message d'erreur si email exawpiré
+        400:
+          description: Message d'erreur si email expiré
           schema:
             type: object
             properties:
@@ -254,7 +360,7 @@ paths:
             properties:
               error:
                 type: string
-        422:
+        400:
           description: Message d'erreur si email expiré
           schema:
             type: object
@@ -282,7 +388,7 @@ paths:
             properties:
               error:
                 type: string
-        422:
+        400:
           description: Message d'erreur si email expiré
           schema:
             type: object
@@ -291,11 +397,11 @@ paths:
                 type: string
   /createOffre:
     post:
-      summary: Retour d'un DTO offre avec si le pdf est valide.
+      summary: Retour d'un DTO offre avec si le pdf et le token (Compagnie) est valide.
       parameters:
         - in: body
           name: Paramètres
-          description: Nom de compagie department position heur par semaine adresse et pdf
+          description: Nom de compagie department position heures par semaine, adresse et pdf
           schema:
             type: object
             properties:
@@ -309,13 +415,20 @@ paths:
                 type: integer
               adresse:
                 type: string
+              token:
+                type: string
               pdf:
                 type: array
+                items:
+                  type: number
+
       produces:
         - application/json
       responses:
         200:
           description: Ne retourne rien
+        403:
+          description: Le token de la compagnie n'est pas valide
         404:
           description: Les champs ne peuvent pas être vide
           schema:
@@ -323,13 +436,13 @@ paths:
             properties:
               error:
                 type: string
-  /validateCV/{id}:
+  /validateCV/{studentId}:
     put:
-      summary: Validé un cv par son id (Gestionnaire seulement)
+      summary: Validé un cv par son l'id de l'étudiant (Gestionnaire seulement)
       parameters:
         - in: path
-          name: id
-          description: id du CV
+          name: studentId
+          description: id de l'étudiant
           type: string
           required: true
         - in: body
@@ -348,14 +461,14 @@ paths:
         403:
           description: Token invalide ou expiré
         404:
-          description: Un cv avec ce id n'existe pas ou le token est invalide
-  /refuseCV/{id}:
+          description: Un étudiant avec ce id n'existe pas
+  /refuseCV/{studentId}:
     put:
-      summary: Refuse un cv par son id (Gestionnaire seulement)
+      summary: Refuse un cv par son l'id de l'étudiant (Gestionnaire seulement)
       parameters:
         - in: path
-          name: id
-          description: id du CV
+          name: studentId
+          description: id de l'étudiant
           type: string
           required: true
         - in: body
@@ -370,12 +483,431 @@ paths:
         - application/json
       responses:
         200:
-          description: CV refusé
+          description: CV refusé et enlevé de la BD
         403:
           description: Token invalide ou expiré
         404:
-          description: Un cv avec ce id n'existe pas
-  /unvalidatedCVS:
+          description: Un étudiant avec ce id n'existe pas
+  /unvalidatedCvStudents:
+    put:
+      summary: Recevoir la liste des étudiants avec des cvs non validés
+      parameters:
+        - in: body
+          name: token
+          description: Token valide du gestionnaire
+          schema:
+            type: object
+            properties:
+              token:
+                type: string
+      produces:
+        - application/json
+      responses:
+        200:
+          description: Liste des étudiants avec des CVs non validé
+          schema:
+            type: array
+            items:
+              type: object
+              properties:
+                firstName:
+                  type: string
+                lastName:
+                  type: string
+                email:
+                  type: string
+                isConfirmed:
+                  type: boolean
+                department:
+                  type: boolean
+        403:
+          description: Token invalide ou expiré
+  /studentCv/{studentId}:
+    put:
+      summary: Recevoir le CV d'un étudiant
+      parameters:
+        - in: path
+          name: studentId
+          description: id de l'étudiant
+          type: string
+          required: true
+        - in: body
+          name: token
+          description: Token valide du gestionnaire
+          schema:
+            type: object
+            properties:
+              token:
+                type: string
+      produces:
+        - application/json
+      responses:
+        200:
+          description: Le byte-array du cv
+          schema:
+            type: object
+            properties:
+              data:
+                type: array
+                items:
+                  type: number
+        403:
+          description: Token invalide ou expiré
+        404:
+          description: L'étudiant avec cet id n'existe pas
+  /unvalidatedStudents:
+    put:
+      summary: Recevoir la listes des étudiants à valider
+      parameters:
+        - in: body
+          name: token
+          description: Token valide du gestionnaire
+          schema:
+            type: object
+            properties:
+              token:
+                type: string
+      produces:
+        - application/json
+      responses:
+        200:
+          description: Liste des étudiants non validés
+          schema:
+            type: array
+            items:
+              type: object
+              properties:
+                id:
+                  type: number
+                firstName:
+                  type: string
+                lastName:
+                  type: string
+                email:
+                  type: string
+                isConfirmed:
+                  type: boolean
+                department:
+                  type: string
+                inscriptionTimestamp:
+                  type: number
+                emailConfirmed:
+                  type: boolean
+                cv:
+                  type: array
+                  items:
+                    type: number
+        403:
+          description: Token invalide
+  /unvalidatedCompanies:
+    put:
+      summary: Recevoir la listes des compagnies à valider
+      parameters:
+        - in: body
+          name: token
+          description: Token valide du gestionnaire
+          schema:
+            type: object
+            properties:
+              token:
+                type: string
+      produces:
+        - application/json
+      responses:
+        200:
+          description: Liste des compagnies non validés
+          schema:
+            type: array
+            items:
+              type: object
+              properties:
+                id:
+                  type: number
+                firstName:
+                  type: string
+                lastName:
+                  type: string
+                email:
+                  type: string
+                isConfirmed:
+                  type: boolean
+                department:
+                  type: string
+                inscriptionTimestamp:
+                  type: number
+                emailConfirmed:
+                  type: boolean
+                companyName:
+                  type: string
+        403:
+          description: Token invalide
+  /removeStudent/{id}:
+    put:
+      summary: Supprime un étudiant (Doit avoir un token gestionnaire)
+      parameters:
+        - in: path
+          name: id
+          description: id de l'étudiant
+          type: string
+          required: true
+        - in: body
+          name: token
+          description: Token valide du gestionnaire
+          schema:
+            type: object
+            properties:
+              token:
+                type: string
+      produces:
+        - application/json
+      responses:
+        200:
+          description: L'étudiant a été supprimé
+        403:
+          description: Token invalide ou expiré
+        404:
+          description: L'étudiant avec cet id n'existe pas
+  /removeCompany/{id}:
+    put:
+      summary: Supprime une compagnie (Doit avoir un token gestionnaire)
+      parameters:
+        - in: path
+          name: id
+          description: id de la compagnie
+          type: string
+          required: true
+        - in: body
+          name: token
+          description: Token valide du gestionnaire
+          schema:
+            type: object
+            properties:
+              token:
+                type: string
+      produces:
+        - application/json
+      responses:
+        200:
+          description: La compagnie a été supprimé
+        403:
+          description: Token invalide ou expiré
+        404:
+          description: La compagnie avec cet id n'existe pas
+  /validateStudent/{id}:
+    put:
+      summary: Valide un étudiant (Doit avoir un token gestionnaire)
+      parameters:
+        - in: path
+          name: id
+          description: id de l'étudiant
+          type: string
+          required: true
+        - in: body
+          name: token
+          description: Token valide du gestionnaire
+          schema:
+            type: object
+            properties:
+              token:
+                type: string
+      produces:
+        - application/json
+      responses:
+        200:
+          description: L'étudiant a été validé
+        403:
+          description: Token invalide ou expiré
+        404:
+          description: L'étudiant avec cet id n'existe pas
+  /validateCompany/{id}:
+    put:
+      summary: Valide une compagnie (Doit avoir un token gestionnaire)
+      parameters:
+        - in: path
+          name: id
+          description: id de la compagnie
+          type: string
+          required: true
+        - in: body
+          name: token
+          description: Token valide du gestionnaire
+          schema:
+            type: object
+            properties:
+              token:
+                type: string
+      produces:
+        - application/json
+      responses:
+        200:
+          description: La compagnie a été validé
+        403:
+          description: Token invalide ou expiré
+        404:
+          description: La compagnie avec cet id n'existe pas
+  /unvalidatedOffers:
+    put:
+      summary: Recevoir la listes des offres à valider
+      parameters:
+        - in: body
+          name: token
+          description: Token valide du gestionnaire
+          schema:
+            type: object
+            properties:
+              token:
+                type: string
+      produces:
+        - application/json
+      responses:
+        200:
+          description: Liste des offres non validés
+          schema:
+            type: array
+            items:
+              type: object
+              properties:
+                id:
+                  type: number
+                department:
+                  type: string
+                position:
+                  type: string
+                heureParSemaine:
+                  type: string
+                adresse:
+                  type: boolean
+        403:
+          description: Token invalide
+  /validateOffer/{id}:
+    put:
+      summary: Valide une offre (Doit avoir un token gestionnaire)
+      parameters:
+        - in: path
+          name: id
+          description: id de l'offre
+          type: string
+          required: true
+        - in: body
+          name: token
+          description: Token valide du gestionnaire
+          schema:
+            type: object
+            properties:
+              token:
+                type: string
+      produces:
+        - application/json
+      responses:
+        200:
+          description: L'offre a été validé
+        403:
+          description: Token invalide ou expiré
+        404:
+          description: L'offre avec cet id n'existe pas
+  /removeOffer/{id}:
+    put:
+      summary: Supprime une offre (Doit avoir un token gestionnaire)
+      parameters:
+        - in: path
+          name: id
+          description: id de l'offre
+          type: string
+          required: true
+        - in: body
+          name: token
+          description: Token valide du gestionnaire
+          schema:
+            type: object
+            properties:
+              token:
+                type: string
+      produces:
+        - application/json
+      responses:
+        200:
+          description: L'offre a été supprimé
+        403:
+          description: Token invalide ou expiré
+        404:
+          description: L'offre avec cet id n'existe pas
+  /uploadStudentCV:
+    put:
+      summary: Upload un cv (Doit avoir un token gestionnaire)
+      parameters:
+        - in: body
+          name: token
+          description: Token valide du gestionnaire
+          schema:
+            type: object
+            properties:
+              token:
+                type: string
+
+
+      produces:
+        - application/json
+      responses:
+        200:
+          description: Le cv a été enregistré
+          schema:
+            type: object
+            properties:
+              id:
+                type: number
+              firstName:
+                type: string
+              lastName:
+                type: string
+              email:
+                type: string
+              isConfirmed:
+                type: boolean
+              department:
+                type: string
+              inscriptionTimestamp:
+                type: number
+              emailConfirmed:
+                type: boolean
+              cv:
+                type: array
+                items:
+                  type: number
+        403:
+          description: Token invalide ou expiré
+        404:
+          description: L'étudiant avec ce cv n'existe pas
+  /offerPDF/{id}:
+    put:
+      summary: Upload un cv (Doit avoir un token gestionnaire)
+      parameters:
+        - in: path
+          name: id
+          description: id de l'offre
+          type: string
+          required: true
+        - in: body
+          name: token
+          description: Token valide du gestionnaire
+          schema:
+            type: object
+            properties:
+              token:
+                type: string
+      produces:
+        - application/json
+      responses:
+        200:
+          description: Le cv a été enregistré
+          schema:
+            type: array
+            items:
+              type: number
+        403:
+          description: Token invalide ou expiré
+        404:
+          description: L'étudiant avec ce cv n'existe pas
+  /unvalidatedCV:
     put:
       summary: Recevoir la listes des CVs à valider
       parameters:
@@ -391,19 +923,88 @@ paths:
         - application/json
       responses:
         200:
-          description: Liste des CVs non validé
+          description: Liste des CVs non validés
           schema:
             type: array
             items:
               type: object
               properties:
                 id:
+                  type: number
+                firstName:
                   type: string
-                userId:
+                lastName:
                   type: string
-                cv:
-                  type: array
-                  items:
-                    type: number
+                department:
+                  type: string
+        403:
+          description: Token invalide
+  /stageOffers/{department}:
+    put:
+      summary: Recevoir la listes des offres de stage d'un département (Doit avoir le token student)
+
+      parameters:
+        - in: body
+          name: token
+          description: Token valide de l'étudiant
+          schema:
+            type: object
+            properties:
+              token:
+                type: string
+      produces:
+        - application/json
+      responses:
+        200:
+          description: Liste des offres de stage du département
+          schema:
+            type: array
+            items:
+              type: object
+              properties:
+                id:
+                  type: number
+                nomDeCompagnie:
+                  type: string
+                position:
+                  type: string
+                heureParSemaine:
+                  type: string
+                adresse:
+                  type: string
+        403:
+          description: Token invalide
+        404:
+          description: L'étudiant avec ce cv n'existe pas
+  /getOfferForStudent/{id}:
+    put:
+      summary: Retourne une offre (Doit avoir un token Student)
+      parameters:
+        - in: path
+          name: id
+          description: id de l'offre
+          type: string
+          required: true
+        - in: body
+          name: token
+          description: Token valide du gestionnaire
+          schema:
+            type: object
+            properties:
+              token:
+                type: string
+      produces:
+        - application/json
+      responses:
+        200:
+          description: L'offre a été envoyé
+          schema:
+            properties:
+              id:
+                type: string
+              pdf:
+                type: string
         403:
           description: Token invalide ou expiré
+        404:
+          description: L'offre avec cette id n'existe pas
