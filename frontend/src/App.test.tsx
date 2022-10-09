@@ -1,7 +1,6 @@
 import {render, screen, fireEvent} from "@testing-library/react";
 import {BrowserRouter} from "react-router-dom";
 import IUser from "./models/IUser";
-import {LOCAL_STORAGE_KEY} from "./App";
 import ValiderNouvelleOffreStagePage from "./pages/ValiderNouvelleOffreStagePage";
 import FormulaireSoumissionPage from "./pages/FormulaireSoumissionPage";
 
@@ -25,7 +24,7 @@ const offres : object = [{
     position: "position",
     heureParSemaine: 40,
     adresse: "addresse",
-    pdf: new FileReader(),
+    pdf: new File([""], "file1.pdf"),
     token: gestionnaire.token
 },
     {
@@ -34,7 +33,7 @@ const offres : object = [{
         position: "position1",
         heureParSemaine: 40,
         adresse: "addresse1",
-        pdf: new FileReader(),
+        pdf: new File([""], "file2.pdf"),
         token: gestionnaire.token
     }]
 const mockdeconnexion  = jest.fn()
@@ -69,7 +68,7 @@ const addOffres = (offres : any) => {
         fireEvent.change(controlPosteElement , {target:{value:offre.position}})
         fireEvent.change(controlHoursFormulaireSoumissionElement , {target:{value:offre.heureParSemaine}})
         fireEvent.change(controlAddressFormulaireSoumissionElement , {target:{value:offre.adresse}})
-        fireEvent.change(inputPdfFormulaireSoumissionElement , {target:{value:offre.pdf.filename}})
+        fireEvent.change(inputPdfFormulaireSoumissionElement , {target:{value:offre.pdf.name}})
         fireEvent.click(buttonElement);
     })
 
