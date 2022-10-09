@@ -37,10 +37,7 @@ const offres : object = [{
         pdf: new FileReader(),
         token: gestionnaire.token
     }]
-const deconnexion = () => {
-    localStorage.removeItem(LOCAL_STORAGE_KEY)
-    window.location.href = "/"
-}
+const mockdeconnexion  = jest.fn()
 
 const ValiderNouvelleOffreStage = ({connectedUser, deconnexion}:{connectedUser : IUser, deconnexion : Function}) => {
     return (
@@ -94,7 +91,7 @@ describe('App', () => {
 
     it('test valider une nouvelle offre ', async () => {
         render(<FormulaireSoumission user={company} />);
-        render(<ValiderNouvelleOffreStage connectedUser={gestionnaire} deconnexion={deconnexion}/>);
+        render(<ValiderNouvelleOffreStage connectedUser={gestionnaire} deconnexion={mockdeconnexion}/>);
         addOffres(offres)
 
         const buttonElement = screen.getByRole("button", { name: /O/i})
@@ -106,7 +103,7 @@ describe('App', () => {
 
     it('test supprimer une nouvelle offre ', async () => {
         render(<FormulaireSoumission user={company} />);
-        render(<ValiderNouvelleOffreStage connectedUser={gestionnaire} deconnexion={deconnexion}/>);
+        render(<ValiderNouvelleOffreStage connectedUser={gestionnaire} deconnexion={mockdeconnexion}/>);
         addOffres(offres)
 
         const buttonElement = screen.getByRole("button", { name: /x/i})
