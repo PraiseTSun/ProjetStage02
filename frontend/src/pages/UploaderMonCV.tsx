@@ -75,7 +75,7 @@ const UploaderMonCV = ({user} : {user : IUser}) => {
                 <Form onSubmit={onSubmit} validated={validated} noValidate className="">
                     <Row>
                         <Form.Group className="">
-                            <input className="form-control" accept=".pdf" name="file"
+                            <input data-testid="uploaderMonCV" className="form-control" accept=".pdf" name="file"
                                    required type="file" onChange={(e) => {
                                 uploadFile(e.target.files![0]);
                             }}/>
