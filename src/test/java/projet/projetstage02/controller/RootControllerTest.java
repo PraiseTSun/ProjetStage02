@@ -73,6 +73,7 @@ public class RootControllerTest {
     LoginDTO login;
     GestionnaireDTO burns;
     OffreDTO duffOffre;
+    PdfOutDTO duffOfferOut;
     PdfDTO bartCV;
 
     // https://thepracticaldeveloper.com/guide-spring-boot-controller-tests/
@@ -125,6 +126,11 @@ public class RootControllerTest {
 
         JacksonTester.initFields(this, new ObjectMapper());
         mockMvc = MockMvcBuilders.standaloneSetup(rootController).build();
+
+        duffOfferOut = PdfOutDTO.builder()
+                .id(1L)
+                .pdf("[1,2,3,4,5,6,7,8,9]")
+                .build();
     }
 
     @Test
@@ -1049,5 +1055,15 @@ public class RootControllerTest {
                 .andExpect(status().isForbidden());
     }
 
+    @Test
+    void testGetOfferStudentSuccess() throws Exception{
+        when(authService.getToken(any(),any())).thenReturn(Token.builder().userId(1).build());
+        when(studentService.getOfferById(anyLong())).thenReturn(duffOfferOut);
 
+        mockMvc.perform(put("/getOfferStudent/{id}", 1)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(jsonTokenDTO.write(token).getJson()))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.pdf", is(duffOfferOut.getPdf())));
+    }
 }
