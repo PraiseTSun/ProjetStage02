@@ -964,7 +964,6 @@ paths:
         200:
           description: L'offre a été envoyé
           schema:
-            type: array
             properties:
               id:
                 type: string
