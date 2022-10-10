@@ -1,10 +1,11 @@
-import {render, screen, fireEvent} from "@testing-library/react";
+import {render, screen, fireEvent, waitForElementToBeRemoved, act} from "@testing-library/react";
 import {BrowserRouter} from "react-router-dom";
 import IUser from "./models/IUser";
 import StudentCvValidationPage from "./pages/StudentCvValidationPage";
 import ValiderNouvelleOffreStagePage from "./pages/ValiderNouvelleOffreStagePage";
 import FormulaireSoumissionPage from "./pages/FormulaireSoumissionPage";
-import { emptyUser } from "./App";
+import {emptyUser} from "./App";
+import {wait} from "@testing-library/user-event/dist/utils";
 
 const gestionnaire: IUser = {
     firstName: "Yan",
@@ -20,13 +21,12 @@ const company: IUser = {
     token: "324324332"
 }
 
-const offres : object = [{
+const offres: Array<object> = [{
     nomDeCompagnie: "Desjardins",
     department: "Techniques de linformatique",
     position: "position",
     heureParSemaine: 40,
     adresse: "addresse",
-    pdf: new File([""], "file1.pdf"),
     token: gestionnaire.token
 },
     {
@@ -35,12 +35,12 @@ const offres : object = [{
         position: "position1",
         heureParSemaine: 40,
         adresse: "addresse1",
-        pdf: new File([""], "file2.pdf"),
         token: gestionnaire.token
     }]
-const mockdeconnexion  = jest.fn()
 
-const ValiderNouvelleOffreStage = ({connectedUser, deconnexion}:{connectedUser : IUser, deconnexion : Function}) => {
+const mockdeconnexion = jest.fn()
+
+const ValiderNouvelleOffreStage = ({connectedUser, deconnexion}: { connectedUser: IUser, deconnexion: Function }) => {
     return (
         <BrowserRouter>
             <ValiderNouvelleOffreStagePage connectedUser={connectedUser} deconnexion={deconnexion}/>
@@ -48,15 +48,15 @@ const ValiderNouvelleOffreStage = ({connectedUser, deconnexion}:{connectedUser :
     )
 }
 
-const FormulaireSoumission = ({user}:{user : IUser}) => {
+const FormulaireSoumission = ({user}: { user: IUser }) => {
     return (
         <BrowserRouter>
-            <FormulaireSoumissionPage user={user} />
+            <FormulaireSoumissionPage user={user}/>
         </BrowserRouter>
     )
 }
-const addOffres = (offres : any) => {
-    const controlNomCompanyElement= screen.getByTestId("nomCompanyFormulaireSoumission")
+const addOffres = (offres: any) => {
+    const controlNomCompanyElement = screen.getByTestId("nomCompanyFormulaireSoumission")
     const controlDepartmentElement = screen.getByTestId("departmentFormulaireSoumission")
     const controlPosteElement = screen.getByTestId("posteFormulaireSoumission")
     const controlHoursFormulaireSoumissionElement = screen.getByTestId("hoursFormulaireSoumission")
@@ -64,19 +64,38 @@ const addOffres = (offres : any) => {
     const inputPdfFormulaireSoumissionElement = screen.getByTestId("pdfFormulaireSoumission")
     const buttonElement = screen.getByTestId("envoyerFormulaireSoumission")
 
-    offres.forEach((offre : any)=>{
-        fireEvent.change(controlNomCompanyElement , {target:{value:offre.nomDeCompagnie}})
-        fireEvent.change(controlDepartmentElement , {target:{value:offre.department}})
-        fireEvent.change(controlPosteElement , {target:{value:offre.position}})
-        fireEvent.change(controlHoursFormulaireSoumissionElement , {target:{value:offre.heureParSemaine}})
-        fireEvent.change(controlAddressFormulaireSoumissionElement , {target:{value:offre.adresse}})
-        fireEvent.change(inputPdfFormulaireSoumissionElement , {target:{value:offre.pdf.name}})
+    offres.forEach((offre: any) => {
+        fireEvent.change(controlNomCompanyElement, {target: {value: offre.nomDeCompagnie}})
+        fireEvent.change(controlDepartmentElement, {target: {value: offre.department}})
+        fireEvent.change(controlPosteElement, {target: {value: offre.position}})
+        fireEvent.change(controlHoursFormulaireSoumissionElement, {target: {value: offre.heureParSemaine}})
+        fireEvent.change(controlAddressFormulaireSoumissionElement, {target: {value: offre.adresse}})
+        fireEvent.change(inputPdfFormulaireSoumissionElement, {target: new File([], "test.pdf", {type: "application/pdf"})})
         fireEvent.click(buttonElement);
     })
-
 }
-describe('App', () => {
 
+describe('App', () => {
+    global.fetch = jest.fn(() =>
+        Promise.resolve({
+            ok: true,
+            json: () => Promise.resolve([{
+                    nomDeCompagnie: "Desjardins",
+                    department: "Techniques de linformatique",
+                    position: "position",
+                    heureParSemaine: 40,
+                    adresse: "addresse",
+                },
+                {
+                    nomDeCompagnie: "Pirate",
+                    department: "Techniques de linformatique",
+                    position: "position1",
+                    heureParSemaine: 40,
+                    adresse: "addresse1",
+                }]
+            ),
+        }),
+    ) as jest.Mock;
 
     it('test il y a pas de offre qui a besoin de valider ', async () => {
         render(<ValiderNouvelleOffreStage connectedUser={gestionnaire} deconnexion={mockdeconnexion}/>);
@@ -107,11 +126,14 @@ describe('App', () => {
         render(<ValiderNouvelleOffreStage connectedUser={gestionnaire} deconnexion={mockdeconnexion}/>);
         addOffres(offres)
 
-        const buttonElement = screen.getByRole("button", {name: /x/i})
+        const buttonElement = await screen.findByRole("button", {name: /X/i})
         const trElements = screen.getAllByTestId("offre-container")
 
-        expect(buttonElement).toBeInTheDocument();
-        fireEvent.click(buttonElement)
+        await act(() => {
+            fireEvent.click(buttonElement);
+        });
+
+        //await waitForElementToBeRemoved(() => screen.queryByText(/Pirate/i))
         expect(trElements.length).toBe(1)
     });
 });
@@ -134,13 +156,13 @@ describe("StudentCvValidationPage test", () => {
     const MockPage = () => {
         return (
             <BrowserRouter>
-                <StudentCvValidationPage connectedUser={emptyUser} deconnexion={() => null} />
+                <StudentCvValidationPage connectedUser={emptyUser} deconnexion={() => null}/>
             </BrowserRouter>
         );
     }
 
     it("Successful fetch", async () => {
-        render(<MockPage />);
+        render(<MockPage/>);
         await new Promise((r) => setTimeout(r, 1000));
 
         const studentName = screen.getByText("Bart");
