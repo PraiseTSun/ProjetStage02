@@ -6,8 +6,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.MockedStatic;
-import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.boot.test.json.JacksonTester;
 import org.springframework.http.MediaType;
@@ -24,8 +22,6 @@ import projet.projetstage02.service.AuthService;
 import projet.projetstage02.service.CompanyService;
 import projet.projetstage02.service.GestionnaireService;
 import projet.projetstage02.service.StudentService;
-import projet.projetstage02.utils.EmailUtil;
-import projet.projetstage02.utils.TimeUtil;
 
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
@@ -928,13 +924,13 @@ public class RootControllerTest {
     @Test
     void testGetStudentCvToValidateSuccess() throws Exception {
         when(authService.getToken(any(),any())).thenReturn(Token.builder().userId(1).build());
-        byte[] cv = new byte[0];
+        PdfOutDTO cv = new PdfOutDTO(1L, "[96,17,69]");
         when(gestionnaireService.getStudentCvToValidate(anyLong())).thenReturn(cv);
 
         mockMvc.perform(put("/studentCv/{studentId}", 1)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(jsonTokenDTO.write(token).getJson()))
-                .andExpect(jsonPath("$.pdf", is("")))
+                .andExpect(jsonPath("$.pdf", is("[96,17,69]")))
                 .andExpect(status().isOk());
     }
 
