@@ -1,8 +1,10 @@
 import {render, screen, fireEvent} from "@testing-library/react";
 import {BrowserRouter} from "react-router-dom";
 import IUser from "./models/IUser";
+import StudentCvValidationPage from "./pages/StudentCvValidationPage";
 import ValiderNouvelleOffreStagePage from "./pages/ValiderNouvelleOffreStagePage";
 import FormulaireSoumissionPage from "./pages/FormulaireSoumissionPage";
+import { emptyUser } from "./App";
 
 const gestionnaire: IUser = {
     firstName: "Yan",
@@ -89,11 +91,11 @@ describe('App', () => {
     });
 
     it('test valider une nouvelle offre ', async () => {
-        render(<FormulaireSoumission user={company} />);
+        render(<FormulaireSoumission user={company}/>);
         render(<ValiderNouvelleOffreStage connectedUser={gestionnaire} deconnexion={mockdeconnexion}/>);
         addOffres(offres)
 
-        const buttonElement = screen.getByRole("button", { name: /O/i})
+        const buttonElement = screen.getByRole("button", {name: /O/i})
         const trElement = screen.getAllByTestId("offre-container")
         expect(buttonElement).toBeInTheDocument();
         fireEvent.click(buttonElement)
@@ -101,15 +103,48 @@ describe('App', () => {
     });
 
     it('test supprimer une nouvelle offre ', async () => {
-        render(<FormulaireSoumission user={company} />);
+        render(<FormulaireSoumission user={company}/>);
         render(<ValiderNouvelleOffreStage connectedUser={gestionnaire} deconnexion={mockdeconnexion}/>);
         addOffres(offres)
 
-        const buttonElement = screen.getByRole("button", { name: /x/i})
+        const buttonElement = screen.getByRole("button", {name: /x/i})
         const trElements = screen.getAllByTestId("offre-container")
 
         expect(buttonElement).toBeInTheDocument();
         fireEvent.click(buttonElement)
         expect(trElements.length).toBe(1)
+    });
+});
+describe("StudentCvValidationPage test", () => {
+
+    global.fetch = jest.fn(() =>
+        Promise.resolve({
+            ok: true,
+            json: () => Promise.resolve([{
+                "id": 1,
+                "firstName": "Bart",
+                "lastName": "Simpson",
+                "department": "Informatique"
+            }]),
+        }),
+    ) as jest.Mock;
+
+    window.alert = jest.fn(() => null) as jest.Mock;
+
+    const MockPage = () => {
+        return (
+            <BrowserRouter>
+                <StudentCvValidationPage connectedUser={emptyUser} deconnexion={() => null} />
+            </BrowserRouter>
+        );
+    }
+
+    it("Successful fetch", async () => {
+        render(<MockPage />);
+        await new Promise((r) => setTimeout(r, 1000));
+
+        const studentName = screen.getByText("Bart");
+        expect(studentName).toBeInTheDocument();
+        expect(fetch).toBeCalledTimes(1);
     });
 });

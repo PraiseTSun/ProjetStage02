@@ -29,7 +29,6 @@ const StudentCvValidationPage = ({ connectedUser, deconnexion }: { connectedUser
                     deconnexion();
                 }
                 else {
-                    console.log(response.status)
                     throw new Error("Error code not handled");
                 }
             }
@@ -40,7 +39,7 @@ const StudentCvValidationPage = ({ connectedUser, deconnexion }: { connectedUser
         }
         fetchUnvalidatedCvStudents()
         setShowCV(pdf.length > 0)
-    }, [connectedUser, pdf]);
+    }, [connectedUser, pdf, deconnexion]);
 
     async function validateCV(studentId: number, index: number, valid: boolean): Promise<void> {
         try {

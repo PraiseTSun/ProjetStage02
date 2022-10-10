@@ -6,7 +6,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import projet.projetstage02.DTO.CompanyDTO;
 import projet.projetstage02.DTO.PdfDTO;
 import projet.projetstage02.DTO.StudentDTO;
 import projet.projetstage02.exception.NonExistentEntityException;
