@@ -6,13 +6,17 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import projet.projetstage02.DTO.PdfDTO;
-import projet.projetstage02.DTO.StudentDTO;
+import projet.projetstage02.DTO.*;
 import projet.projetstage02.exception.NonExistentEntityException;
 import projet.projetstage02.model.AbstractUser;
+import projet.projetstage02.model.AbstractUser.Department;
+import projet.projetstage02.model.Offre;
 import projet.projetstage02.model.Student;
+import projet.projetstage02.repository.OffreRepository;
 import projet.projetstage02.repository.StudentRepository;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
@@ -30,9 +34,13 @@ public class StudentServiceTest {
 
     @Mock
     StudentRepository studentRepository;
+    @Mock
+    OffreRepository offreRepository;
 
     Student bart;
     PdfDTO bartCv;
+
+    Offre duffOffer;
 
     @BeforeEach
     void setup() {
@@ -41,11 +49,22 @@ public class StudentServiceTest {
                 "Simpson",
                 "bart.simpson@springfield.com",
                 "eatMyShorts",
-                AbstractUser.Department.Informatique);
+                Department.Informatique);
 
         bart.setCv(new byte[0]);
 
         bartCv = PdfDTO.builder().studentId(1).pdf(new byte[0]).build();
+
+        duffOffer = Offre.builder()
+                .id(1L)
+                .nomDeCompagnie("Duff")
+                .department(Department.Transport)
+                .position("Manager")
+                .heureParSemaine(69)
+                .adresse("Somewhere")
+                .valide(true)
+                .pdf(new byte[]{1, 2, 3, 4, 5, 6, 7, 8, 9})
+                .build();
     }
 
     @Test
@@ -226,6 +245,57 @@ public class StudentServiceTest {
             return;
         }
         // Assert
+        fail("NonExistentEntityException not thrown");
+    }
+
+    @Test
+    void testGetOffersByDepartment(){
+        // Arrange
+        Department department = Department.Informatique;
+        Offre successOffer = Offre.builder().valide(true).department(Department.Informatique).build();
+        Offre failOffer1   = Offre.builder().valide(false).department(Department.Informatique).build();
+        Offre failOffer2   = Offre.builder().valide(true).department(Department.Transport).build();
+        List<Offre> offres = new ArrayList<>(){{
+            add(successOffer);
+            add(failOffer1);
+            add(failOffer2);
+        }};
+        when(offreRepository.findAll()).thenReturn(offres);
+
+        // Act
+        List<OffreDTO> offerDTOs = studentService.getOffersByDepartment(department);
+
+        // Assert
+        assertThat(offerDTOs.size()).isEqualTo(1);
+        assertThat(offerDTOs.get(0).isValide()).isEqualTo(true);
+        assertThat(offerDTOs.get(0).getDepartment()).isEqualTo(department.departement);
+    }
+
+    @Test
+    void testGetOfferByIdSuccess() throws NonExistentEntityException {
+        // Arrange
+        when(offreRepository.findById(anyLong())).thenReturn(Optional.of(duffOffer));
+
+        // Act
+        PdfOutDTO dto = studentService.getOfferById(1L);
+
+        // Assert
+        assertThat(dto.getId()).isEqualTo(1L);
+        assertThat(dto.getPdf()).isEqualTo("[1,2,3,4,5,6,7,8,9]");
+    }
+
+    @Test
+    void testGetOfferByIdNotFound() {
+        // Arrange
+        when(offreRepository.findById(anyLong())).thenReturn(Optional.empty());
+
+        // Act
+        try {
+            studentService.getOfferById(1L);
+        } catch (NonExistentEntityException e) {
+            return;
+        }
+
         fail("NonExistentEntityException not thrown");
     }
 }

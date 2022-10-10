@@ -69,6 +69,7 @@ public class RootControllerTest {
     LoginDTO login;
     GestionnaireDTO burns;
     OffreDTO duffOffre;
+    PdfOutDTO duffOfferOut;
     PdfDTO bartCV;
 
     // https://thepracticaldeveloper.com/guide-spring-boot-controller-tests/
@@ -121,6 +122,11 @@ public class RootControllerTest {
 
         JacksonTester.initFields(this, new ObjectMapper());
         mockMvc = MockMvcBuilders.standaloneSetup(rootController).build();
+
+        duffOfferOut = PdfOutDTO.builder()
+                .id(1L)
+                .pdf("[1,2,3,4,5,6,7,8,9]")
+                .build();
     }
 
     @Test
@@ -1020,5 +1026,61 @@ public class RootControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(jsonTokenDTO.write(token).getJson()))
                 .andExpect(status().isNotFound());
+    }
+
+    @Test
+    void testGetOffersByDepartmentSuccess() throws Exception{
+        when(authService.getToken(any(),any())).thenReturn(Token.builder().userId(1).build());
+        when(studentService.getOffersByDepartment(any())).thenReturn(List.of(duffOffre));
+
+        mockMvc.perform(put("/getOffers/{department}", Department.Transport.toString())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(jsonTokenDTO.write(token).getJson()))
+
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[0].nomDeCompagnie", is(duffOffre.getNomDeCompagnie())));
+    }
+
+
+    @Test
+    void testGetOffersByDepartmentInvalidToken() throws Exception{
+        when(authService.getToken(any(),any())).thenThrow(new InvalidTokenException());
+        mockMvc.perform(put("/getOffers/{department}", Department.Transport.toString())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(jsonTokenDTO.write(token).getJson()))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    void testGetOfferStudentSuccess() throws Exception{
+        when(authService.getToken(any(),any())).thenReturn(Token.builder().userId(1).build());
+        when(studentService.getOfferById(anyLong())).thenReturn(duffOfferOut);
+
+        mockMvc.perform(put("/getOfferStudent/{id}", 1)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(jsonTokenDTO.write(token).getJson()))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.pdf", is(duffOfferOut.getPdf())));
+    }
+
+    @Test
+    void testGetOfferStudentNotFound() throws Exception{
+        when(authService.getToken(any(),any())).thenReturn(Token.builder().userId(1).build());
+        when(studentService.getOfferById(anyLong())).thenThrow(new NonExistentEntityException());
+
+        mockMvc.perform(put("/getOfferStudent/{id}", 1)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(jsonTokenDTO.write(token).getJson()))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    void testGetOfferStudentInvalidToken() throws Exception{
+        when(authService.getToken(any(),any())).thenThrow(new InvalidTokenException());
+
+        mockMvc.perform(put("/getOfferStudent/{id}", 1)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(jsonTokenDTO.write(token).getJson()))
+                .andExpect(status().isForbidden());
     }
 }

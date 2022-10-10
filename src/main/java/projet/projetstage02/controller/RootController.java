@@ -14,6 +14,9 @@ import projet.projetstage02.exception.InvalidTokenException;
 import projet.projetstage02.exception.NonExistentEntityException;
 import projet.projetstage02.exception.NonExistentOfferExeption;
 
+import projet.projetstage02.model.AbstractUser;
+import projet.projetstage02.model.AbstractUser.Department;
+import projet.projetstage02.model.Student;
 import projet.projetstage02.model.Token;
 import projet.projetstage02.service.AuthService;
 import projet.projetstage02.service.CompanyService;
@@ -558,6 +561,39 @@ public class RootController {
             return ResponseEntity.notFound().build();
         } catch (InvalidTokenException e) {
             logger.log(Level.INFO, "PutMapping: /refuseCv sent 403 response");
+            return ResponseEntity.status(FORBIDDEN).build();
+        }
+    }
+
+    @PutMapping("/getOffers/{department}")
+    public ResponseEntity<List<OffreDTO>> getOffersByDepartment(@PathVariable String department, @RequestBody TokenDTO tokenId){
+        logger.log(Level.INFO, "Put /getOffersByDepartment entered with Department : " + department);
+
+        try {
+            authService.getToken(tokenId.getToken(), STUDENT);
+            List<OffreDTO> offers = studentService.getOffersByDepartment(Department.valueOf(department));
+            logger.log(Level.INFO, "PutMapping: /getOffersByDepartment sent 200 response");
+            return ResponseEntity.ok(offers);
+        } catch (InvalidTokenException e) {
+            logger.log(Level.INFO, "PutMapping: /getOffersByDepartment sent 403 response");
+            return ResponseEntity.status(FORBIDDEN).build();
+        }
+    }
+
+    @PutMapping("/getOfferStudent/{id}")
+    public ResponseEntity<PdfOutDTO> getOfferStudent (@PathVariable String id, @RequestBody TokenDTO tokenId){
+        logger.log(Level.INFO, "Put /getOfferStudent entered with id : " + id);
+
+        try {
+            authService.getToken(tokenId.getToken(), STUDENT);
+            PdfOutDTO dto = studentService.getOfferById(Long.parseLong(id));
+            logger.log(Level.INFO, "Put /getOfferStudent sent 200 response");
+            return ResponseEntity.ok(dto);
+        } catch (NonExistentEntityException e) {
+            logger.log(Level.INFO, "Put /getOfferStudent sent 404 response");
+            return ResponseEntity.notFound().build();
+        } catch (InvalidTokenException e) {
+            logger.log(Level.INFO, "Put /getOfferStudent sent 403 response");
             return ResponseEntity.status(FORBIDDEN).build();
         }
     }
