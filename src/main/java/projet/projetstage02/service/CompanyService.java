@@ -10,11 +10,9 @@ import projet.projetstage02.model.Company;
 import projet.projetstage02.model.Offre;
 import projet.projetstage02.repository.CompanyRepository;
 import projet.projetstage02.repository.OffreRepository;
-import projet.projetstage02.utils.TimeUtil;
 
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
-import java.util.List;
 import java.util.Optional;
 
 import static projet.projetstage02.utils.TimeUtil.MILLI_SECOND_DAY;

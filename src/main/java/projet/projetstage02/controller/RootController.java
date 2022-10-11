@@ -512,7 +512,7 @@ public class RootController {
     }
 
     @PutMapping("/studentCv/{studentId}")
-    public ResponseEntity<PdfOutDTO> getStudentCv(@PathVariable String studentId,@RequestBody TokenDTO tokenId){
+    public ResponseEntity<PdfOutDTO> getStudentCv(@PathVariable String studentId, @RequestBody TokenDTO tokenId) {
         logger.log(Level.INFO, "Put /studentCv entered with id : ");
         try {
             authService.getToken(tokenId.getToken(), GESTIONNAIRE);
