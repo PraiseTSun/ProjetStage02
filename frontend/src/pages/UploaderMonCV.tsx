@@ -3,7 +3,7 @@ import React, {useState} from "react";
 import {BeatLoader} from "react-spinners";
 import IUser from "../models/IUser";
 
-const UploaderMonCV = ({user} : {user : IUser}) => {
+const UploaderMonCV = ({user}: { user: IUser }) => {
     const [waiting, setWaiting] = useState(false);
     const [isSelected, setIsSelected] = useState(false);
     const [validated, setValidated] = useState(false);
@@ -14,11 +14,10 @@ const UploaderMonCV = ({user} : {user : IUser}) => {
         if (form.checkValidity()) {
             setWaiting(true)
             const obj = {
-                id : user.id,
+                id: user.id,
                 pdf: cv,
-                token : user.token
+                token: user.token
             }
-            console.log(obj)
             const headers = {
                 method: "PUT",
                 headers: {"Content-Type": "application/json"},
@@ -29,7 +28,7 @@ const UploaderMonCV = ({user} : {user : IUser}) => {
                 alert("CV envoyé")
             }
             setWaiting(false);
-            location.href = "/"
+            window.location.href = "/"
         }
         setValidated(true);
     }
@@ -52,7 +51,8 @@ const UploaderMonCV = ({user} : {user : IUser}) => {
         return bytes;
     };
 
-    const uploadFile = async (file:File) => {
+    const uploadFile = async (file: File) => {
+
         const fileText = await file.arrayBuffer()
         const view = new Uint8Array(fileText)
         const array = intToByteArray(view)
@@ -75,9 +75,10 @@ const UploaderMonCV = ({user} : {user : IUser}) => {
                 <Form onSubmit={onSubmit} validated={validated} noValidate className="">
                     <Row>
                         <Form.Group className="">
-                            <input data-testid="uploaderMonCV" className="form-control" accept=".pdf" name="file"
-                                   required type="file" onChange={(e) => {
-                                uploadFile(e.target.files![0]);
+                            <input data-testid="uploaderMonCV" className="form-control" accept="application/pdf"
+                                   name="file"
+                                   required type="file" onChange={async (e) => {
+                                await uploadFile(e.target.files![0]);
                             }}/>
                             <Form.Control.Feedback type="invalid">Champ requis</Form.Control.Feedback>
                         </Form.Group>
@@ -87,7 +88,8 @@ const UploaderMonCV = ({user} : {user : IUser}) => {
                         }
                     </Row>
                     <Row className="m-4">
-                        <Button data-testid="buttonid" type="submit" className="btn btn-success mx-auto w-75">Envoyer</Button>
+                        <Button data-testid="buttonid" type="submit"
+                                className="btn btn-success mx-auto w-75">Envoyer</Button>
                     </Row>
                 </Form>
             </Col>
