@@ -42,7 +42,7 @@ const ValiderNouvelleOffreStagePage = ({ connectedUser, deconnexion }:
         fetchOffresAttendreValide()
     }, [connectedUser]);
 
-    async function valideOffre(offerId: number, index: number, valid: boolean): Promise<void> {
+    async function valideOffre(offerId: number, valid: boolean): Promise<void> {
         try {
             const url: String = valid ? "http://localhost:8080/validateOffer/" : "http://localhost:8080/removeOffer/";
             const response: Response = valid ? await fetch(url + offerId.toString(), {
@@ -62,7 +62,7 @@ const ValiderNouvelleOffreStagePage = ({ connectedUser, deconnexion }:
             });
 
             if (response.ok) {
-                setOffers(offers.splice(index + 1, 1));
+                setOffers(offers.filter(offer => offer.id != offerId));
             }
             else if (response.status === 403) {
                 alert("Session expiré");
@@ -89,7 +89,7 @@ const ValiderNouvelleOffreStagePage = ({ connectedUser, deconnexion }:
 
             if (response.ok) {
                 const data = await response.json();
-                setpdf(data.pdf);
+                setpdf(new Uint8Array(JSON.parse(data.pdf)))
                 setShowPDF(true);
             }
             else if (response.status === 403) {
@@ -152,10 +152,10 @@ const ValiderNouvelleOffreStagePage = ({ connectedUser, deconnexion }:
                                         <td>{offer.heureParSemaine} <br /> {offer.adresse}</td>
                                         <td><Button className="btn btn-warning" onClick={async () => await getPDF(offer.id)}>pdf</Button></td>
                                         <td>
-                                            <Button className="btn btn-success mx-5" onClick={async () => await valideOffre(offer.id, index, true)}>O</Button>
+                                            <Button className="btn btn-success mx-5" onClick={async () => await valideOffre(offer.id, true)}>O</Button>
                                         </td>
                                         <td>
-                                            <Button className="btn btn-danger" onClick={async () => await valideOffre(offer.id, index, false)}>X</Button>
+                                            <Button className="btn btn-danger" onClick={async () => await valideOffre(offer.id, false)}>X</Button>
                                         </td>
                                     </tr>
                                 );

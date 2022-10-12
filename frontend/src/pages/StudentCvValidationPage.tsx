@@ -41,7 +41,7 @@ const StudentCvValidationPage = ({ connectedUser, deconnexion }: { connectedUser
         setShowCV(pdf.length > 0)
     }, [connectedUser, pdf, deconnexion]);
 
-    async function validateCV(studentId: number, index: number, valid: boolean): Promise<void> {
+    async function validateCV(studentId: number, valid: boolean): Promise<void> {
         try {
             const url: String = valid ? "http://localhost:8080/validateCv/" : "http://localhost:8080/refuseCv/";
             const response: Response = await fetch(url + studentId.toString(), {
@@ -54,7 +54,7 @@ const StudentCvValidationPage = ({ connectedUser, deconnexion }: { connectedUser
             });
 
             if (response.ok) {
-                setStudents(students.splice(index + 1, 1));
+                setStudents(students.filter(student => student.id != studentId));
             }
             else if (response.status === 403) {
                 alert("Session expiré");
@@ -143,8 +143,8 @@ const StudentCvValidationPage = ({ connectedUser, deconnexion }: { connectedUser
                                         <td>{student.department}</td>
                                         <td><Button className="btn btn-warning" onClick={() => getPDF(student.id)}>CV</Button></td>
                                         <td>
-                                            <Button className="btn btn-success mx-2" onClick={() => validateCV(student.id, index, true)}>O</Button>
-                                            <Button className="btn btn-danger" onClick={() => validateCV(student.id, index, false)}>X</Button>
+                                            <Button className="btn btn-success mx-2" onClick={() => validateCV(student.id, true)}>O</Button>
+                                            <Button className="btn btn-danger" onClick={() => validateCV(student.id, false)}>X</Button>
                                         </td>
                                     </tr>
                                 );
