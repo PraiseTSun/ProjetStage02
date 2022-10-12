@@ -68,12 +68,12 @@ const LoginForm = (props: { setUser: Function }): JSX.Element => {
                 <Col className="px-4 pb-2 pt-1">
                     <Form.Group>
                         <Form.Label className="fw-bold h5">Adresse courriel</Form.Label>
-                        <Form.Control type="email" required value={email} onChange={field => setEmail(field.target.value)}></Form.Control>
+                        <Form.Control data-testid="courreielLoginForm" type="email" required value={email} onChange={field => setEmail(field.target.value)}></Form.Control>
                         <Form.Control.Feedback type="invalid">Courriel invalide</Form.Control.Feedback>
                     </Form.Group>
                     <Form.Group >
-                        <Form.Label className="fw-bold mt-2 h5">Mot de passe</Form.Label>
-                        <Form.Control type="password" required value={password} minLength={8} onChange={field => setPassword(field.target.value)}></Form.Control>
+                        <Form.Label data-testid="labelmotDePasseLoginForm" className="fw-bold mt-2 h5">Mot de passe</Form.Label>
+                        <Form.Control data-testid="motDePasseLoginForm" type="password" required value={password} minLength={8} onChange={field => setPassword(field.target.value)}></Form.Control>
                         <Form.Control.Feedback type="invalid">Mot de passe plus petit que 8 caractères</Form.Control.Feedback>
                     </Form.Group>
                     {isInvalidLoggin ? <h5 className="text-danger fw-bold text-center mt-2">Aucun compte n'existe avec ce courriel et mot de passe</h5> : <></>}

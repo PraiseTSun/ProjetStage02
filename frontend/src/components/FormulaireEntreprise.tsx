@@ -58,65 +58,65 @@ const FormulaireEntreprise = ({ onInscrire }: { onInscrire: Function }) => {
 
                 <Row>
                     <FormGroup className="mb-3 col-6">
-                        <Form.Label>Nom</Form.Label>
-                        <Form.Control type='text' required placeholder='Nom'
+                        <Form.Label data-testid="nomLabelFormulaireEntreprise">Nom</Form.Label>
+                        <Form.Control data-testid="nomInputFormulaireEntreprise"  type='text' required placeholder='Nom'
                             value={nom} minLength={2}
                             onChange={(e) => setNom(e.target.value)} />
-                        <Form.Control.Feedback type="invalid">Minimum de deux charactères</Form.Control.Feedback>
+                        <Form.Control.Feedback  data-testid="errorNomFormulaireEntreprise" type="invalid">Minimum de deux charactères</Form.Control.Feedback>
                     </FormGroup>
 
                     <FormGroup className="mb-3 col-6">
-                        <Form.Label>Prénom</Form.Label>
-                        <Form.Control type='text' required placeholder='Prénom'
+                        <Form.Label data-testid="prenomLabelFormulaireEntreprise">Prénom</Form.Label>
+                        <Form.Control data-testid="prenomInputFormulaireEntreprise" type='text' required placeholder='Prénom'
                             value={prenom} minLength={2}
                             onChange={(e) => setPrenom(e.target.value)} />
-                        <Form.Control.Feedback type="invalid">Minimum de deux charactères</Form.Control.Feedback>
+                        <Form.Control.Feedback data-testid="errorPrenomFormulaireEntreprise" type="invalid">Minimum de deux charactères</Form.Control.Feedback>
                     </FormGroup>
                 </Row>
                 <FormGroup className="mb-3">
-                    <Form.Label>Entreprise</Form.Label>
-                    <Form.Control type='text' required placeholder="Entreprise"
+                    <Form.Label data-testid="labelEntrepriseFormulaireEntreprise">Entreprise</Form.Label>
+                    <Form.Control data-testid="inputEntrepriseFormulaireEntreprise" type='text' required placeholder="Entreprise"
                         value={entreprise} minLength={2}
                         onChange={(e) => setEntreprise(e.target.value)} />
-                    <Form.Control.Feedback type="invalid">Minimum de deux charactères</Form.Control.Feedback>
+                    <Form.Control.Feedback data-testid="errorEntrepriseFormulaireEntreprise" type="invalid">Minimum de deux charactères</Form.Control.Feedback>
                 </FormGroup>
 
                 <FormGroup className="mb-3">
-                    <Form.Label>Courriel</Form.Label>
-                    <Form.Control type='email' placeholder='Courriel'
+                    <Form.Label data-testid="labelCourrielFormulaireEntreprise">Courriel</Form.Label>
+                    <Form.Control data-testid="inputCourrielFormulaireEntreprise" type='email' placeholder='Courriel'
                         value={courriel}
                         onChange={(e) => setCourriel(e.target.value)}
                         required />
-                    <Form.Control.Feedback type="invalid">Courriel invalide</Form.Control.Feedback>
+                    <Form.Control.Feedback data-testid="errorCourrielFormulaireEntreprise" type="invalid">Courriel invalide</Form.Control.Feedback>
                 </FormGroup>
 
                 <Row>
                     <FormGroup className="mb-3">
-                        <Form.Label>Mot de passe</Form.Label>
-                        <Form.Control type='password' required placeholder='Mot de passe'
+                        <Form.Label data-testid="labelMotDePasseFormulaireEntreprise">Mot de passe</Form.Label>
+                        <Form.Control data-testid="inputMotDePasseFormulaireEntreprise" type='password' required placeholder='Mot de passe'
                             value={motDePasse} minLength={8}
                             onChange={(e) => setMotDePasse(e.target.value)} />
-                        <Form.Control.Feedback type="invalid">Minimum de huit charactères</Form.Control.Feedback>
+                        <Form.Control.Feedback data-testid="errorMotDePasseFormulaireEntreprise" type="invalid">Minimum de huit charactères</Form.Control.Feedback>
                     </FormGroup>
                 </Row>
-                <Row>
 
+                <Row>
                     <FormGroup className="mb-3">
-                        <Form.Label>Vérifier votre mot de passe</Form.Label>
-                        <Form.Control type='password' placeholder='Confirmation mot de passe'
+                        <Form.Label data-testid="labelVerifierMotDePasseFormulaireEntreprise">Vérifier votre mot de passe</Form.Label>
+                        <Form.Control data-testid="inputVerifierMotDePasseFormulaireEntreprise" type='password' placeholder='Confirmation mot de passe'
                             value={validationMotDePasse}
                             onChange={(e) => setValidationMotDePasse(e.target.value)} />
                     </FormGroup>
                 </Row>
 
                 <FormGroup className="">
-                    <Form.Label className="mb-3">
+                    <Form.Label data-testid="labelDepartementFormulaireEntreprise" className="mb-3">
                         Département
-                        <Form.Select required
+                        <Form.Select data-testid="selelctDepartementFormulaireEntreprise" required
                             value={departement} onChange={(e) => setDepartement(e.target.value)}>
-                            <option hidden value="" disabled>Choix d'un département</option>
-                            <option value="Techniques de linformatique">Techniques de l'informatique</option>
-                            <option value="Techniques de la logistique du transport">Techniques de la logistique du
+                            <option data-testid="selelct-option-FormulaireEntreprise" hidden value="" disabled>Choix d'un département</option>
+                            <option data-testid="selelct-option-FormulaireEntreprise" value="Techniques de linformatique">Techniques de l'informatique</option>
+                            <option data-testid="selelct-option-FormulaireEntreprise" value="Techniques de la logistique du transport">Techniques de la logistique du
                                 transport
                             </option>
                         </Form.Select>
@@ -125,7 +125,7 @@ const FormulaireEntreprise = ({ onInscrire }: { onInscrire: Function }) => {
 
                 </FormGroup>
 
-                <Button type='submit' className="mt-3 btn btn-success col-12" >S'inscrire</Button>
+                <Button data-testid="button_inscrire" type='submit' className="mt-3 btn btn-success col-12" >S'inscrire</Button>
             </Form>
 
         </Container>
