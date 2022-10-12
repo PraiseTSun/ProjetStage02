@@ -3,7 +3,7 @@ import React, { useEffect, useState } from "react";
 import { Button, Col, Container, Row, Table } from "react-bootstrap";
 import { Link } from "react-router-dom";
 import IUser from "../models/IUser";
-import IOffer from "../models/Offer";
+import IOffer from "../models/IOffer";
 
 const OffersListPage = ({ connectedUser, deconnexion }: { connectedUser: IUser, deconnexion: Function }): JSX.Element => {
     const [offers, setOffers] = useState<IOffer[]>([]);
