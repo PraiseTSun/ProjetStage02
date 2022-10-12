@@ -1,6 +1,6 @@
-import { act, fireEvent, render, screen, waitForElementToBeRemoved } from "@testing-library/react";
-import { BrowserRouter } from "react-router-dom";
-import { emptyUser } from "./App";
+import {act, fireEvent, render, screen, waitForElementToBeRemoved} from "@testing-library/react";
+import {BrowserRouter} from "react-router-dom";
+import {emptyUser} from "./App";
 import StudentCvValidationPage from "./pages/StudentCvValidationPage";
 import IUser from "./models/IUser";
 import CompanyDashboardPage from "./pages/CompanyDashboardPage";
@@ -135,8 +135,8 @@ describe("CompanyDashboardPage test", () => {
         })
 
         expect(await screen.findByText(/Bienvenue Bob Marley/i)).toBeInTheDocument()
-        expect(await screen.findByRole("button", {name: /soumettre une offre de stage/i})).toBeInTheDocument()
-        expect(await screen.findByRole("button", {name: /deconnexion/i})).toBeInTheDocument()
+        expect(await screen.findByRole("link", {name: /Soumettre une offre de stage/i})).toBeInTheDocument()
+        expect(await screen.findByRole("button", {name: /déconnexion/i})).toBeInTheDocument()
     })
     it("CompanyDashboardSoumettreOffreButtonTest", async () => {
 
@@ -152,20 +152,20 @@ describe("CompanyDashboardPage test", () => {
         act(() => {
             render(<MockPage/>)
         })
-        const offreStageButton = await screen.findByRole("button", {name: /soumettre une offre de stage/i});
+        const offreStageButton = await screen.findByRole("link", {name: /soumettre une offre de stage/i});
 
         act(() => {
             fireEvent.click(offreStageButton);
         });
-        expect
+        expect(window.location.href).toBe("http://localhost/soumettreOffre")
+        //expect(await screen.findByText(/Formulaire de soumission de stage/i)).toBeInTheDocument();
     })
     it("CompanyDashboardDeconnexionButtonTest", async () => {
-
+        const deconnexion = jest.fn()
         const MockPage = () => {
-
             return (
                 <BrowserRouter>
-                    <CompanyDashboardPage deconnexion={() => null} user={company}/>
+                    <CompanyDashboardPage deconnexion={deconnexion} user={company}/>
                 </BrowserRouter>
             );
         }
@@ -173,12 +173,12 @@ describe("CompanyDashboardPage test", () => {
         act(() => {
             render(<MockPage/>)
         })
-        const deconnexionButton = await screen.findByRole("button", {name: /deconnexion/i});
+        const deconnexionButton = await screen.findByRole("button", {name: /déconnexion/i});
 
         act(() => {
             fireEvent.click(deconnexionButton);
         });
-        expect
+        expect(deconnexion).toBeCalledTimes(1)
     })
 })
 
