@@ -1,5 +1,5 @@
 import {act, fireEvent, render, screen, waitForElementToBeRemoved} from "@testing-library/react";
-import {BrowserRouter, useParams} from "react-router-dom";
+import {BrowserRouter} from "react-router-dom";
 import {emptyUser} from "./App";
 import StudentCvValidationPage from "./pages/StudentCvValidationPage";
 import IUser from "./models/IUser";
@@ -137,8 +137,8 @@ describe("CompanyDashboardPage test", () => {
         })
 
         expect(await screen.findByText(/Bienvenue Bob Marley/i)).toBeInTheDocument()
-        expect(await screen.findByRole("button", {name: /soumettre une offre de stage/i})).toBeInTheDocument()
-        expect(await screen.findByRole("button", {name: /deconnexion/i})).toBeInTheDocument()
+        expect(await screen.findByRole("link", {name: /Soumettre une offre de stage/i})).toBeInTheDocument()
+        expect(await screen.findByRole("button", {name: /déconnexion/i})).toBeInTheDocument()
     })
     it("CompanyDashboardSoumettreOffreButtonTest", async () => {
 
@@ -154,20 +154,20 @@ describe("CompanyDashboardPage test", () => {
         act(() => {
             render(<MockPage/>)
         })
-        const offreStageButton = await screen.findByRole("button", {name: /soumettre une offre de stage/i});
+        const offreStageButton = await screen.findByRole("link", {name: /soumettre une offre de stage/i});
 
         act(() => {
             fireEvent.click(offreStageButton);
         });
-        expect
+        expect(window.location.href).toBe("http://localhost/soumettreOffre")
+        //expect(await screen.findByText(/Formulaire de soumission de stage/i)).toBeInTheDocument();
     })
     it("CompanyDashboardDeconnexionButtonTest", async () => {
-
+        const deconnexion = jest.fn()
         const MockPage = () => {
-
             return (
                 <BrowserRouter>
-                    <CompanyDashboardPage deconnexion={() => null} user={company}/>
+                    <CompanyDashboardPage deconnexion={deconnexion} user={company}/>
                 </BrowserRouter>
             );
         }
@@ -175,12 +175,12 @@ describe("CompanyDashboardPage test", () => {
         act(() => {
             render(<MockPage/>)
         })
-        const deconnexionButton = await screen.findByRole("button", {name: /deconnexion/i});
+        const deconnexionButton = await screen.findByRole("button", {name: /déconnexion/i});
 
         act(() => {
             fireEvent.click(deconnexionButton);
         });
-        expect
+        expect(deconnexion).toBeCalledTimes(1)
     })
 })
 
@@ -188,7 +188,11 @@ describe("ConfirmationPage test", () => {
     beforeEach(() => {
         jest.mock('react-router-dom', () => ({
             ...jest.requireActual('react-router-dom'),
-            useParams: jest.fn().mockReturnValue({ id:1}),
+            useParams:jest.fn(()=>
+            {
+                return {id: 1}
+            }),
+            useLocation: jest.fn().mockReturnValue({search:"userType=student"}),
         }))
         global.fetch = jest.fn((url) => {
                 if (url === "http://localhost:8080/confirmEmail/student/1") {
@@ -218,14 +222,14 @@ describe("ConfirmationPage test", () => {
 const MockCompanyDashboardPage = () => {
     return (
         <BrowserRouter>
-            <CompanyDashboardPage  deconnexion={()=>null} user={company}/>
+            <CompanyDashboardPage deconnexion={() => null} user={company}/>
         </BrowserRouter>
     );
 }
 const MockConfirmationPage = () => {
     return (
         <BrowserRouter>
-            <ConfirmationPage />
+            <ConfirmationPage/>
         </BrowserRouter>
     );
 }
