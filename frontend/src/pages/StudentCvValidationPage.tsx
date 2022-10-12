@@ -53,7 +53,7 @@ const StudentCvValidationPage = ({ connectedUser, deconnexion }:
                 body: JSON.stringify({ "token": connectedUser.token })
             });
             if (response.ok) {
-                setStudents(students.filter(student => student.id != studentId));
+                setStudents(students.filter(student => student.id !== studentId));
             }
             else if (response.status === 403) {
                 alert("Session expiré");

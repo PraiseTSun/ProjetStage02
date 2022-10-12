@@ -40,7 +40,7 @@ const ValiderNouvelleOffreStagePage = ({ connectedUser, deconnexion }:
             }
         }
         fetchOffresAttendreValide()
-    }, [connectedUser]);
+    }, [connectedUser, deconnexion]);
 
     async function valideOffre(offerId: number, valid: boolean): Promise<void> {
         try {
@@ -62,7 +62,7 @@ const ValiderNouvelleOffreStagePage = ({ connectedUser, deconnexion }:
             });
 
             if (response.ok) {
-                setOffers(offers.filter(offer => offer.id != offerId));
+                setOffers(offers.filter(offer => offer.id !== offerId));
             }
             else if (response.status === 403) {
                 alert("Session expiré");
@@ -143,7 +143,7 @@ const ValiderNouvelleOffreStagePage = ({ connectedUser, deconnexion }:
                                 <th>Non Valide</th>
                             </tr>
                         </thead>
-                        <tbody role="tbody" className="bg-light" data-testid="offre-container">
+                        <tbody className="bg-light" data-testid="offre-container">
                             {offers.map((offer, index) => {
                                 return (
                                     <tr key={index} data-testid="offre-container">
