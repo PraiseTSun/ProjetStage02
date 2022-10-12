@@ -390,4 +390,9 @@ public class StudentServiceTest {
 
         fail("NonExistingEntityException not thrown");
     }
+
+    @Test
+    void testGetApplysIdSuccess(){
+
+    }
 }

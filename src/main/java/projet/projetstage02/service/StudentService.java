@@ -137,4 +137,17 @@ public class StudentService {
                 .company(offer.getNomDeCompagnie())
                 .build();
     }
+
+    public StudentApplyDTO getPostulsOfferId (long id){
+        List<Long> offersId = new ArrayList<>();
+        postulationRepository.findByStudentId(id)
+            .forEach(
+                postulation -> offersId.add(postulation.getOfferId())
+            );
+
+        return StudentApplyDTO.builder()
+                .studentId(id)
+                .offersId(offersId)
+                .build();
+    }
 }
