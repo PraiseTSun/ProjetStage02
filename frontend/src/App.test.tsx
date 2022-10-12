@@ -85,6 +85,7 @@ describe('App', () => {
                     position: "position",
                     heureParSemaine: 40,
                     adresse: "addresse",
+                    pdf:new File([], "test.pdf", {type: "application/pdf"})
                 },
                 {
                     nomDeCompagnie: "Pirate",
@@ -92,6 +93,7 @@ describe('App', () => {
                     position: "position1",
                     heureParSemaine: 40,
                     adresse: "addresse1",
+                    pdf:new File([], "test1.pdf", {type: "application/pdf"})
                 }]
             ),
         }),
