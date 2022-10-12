@@ -10,22 +10,18 @@ const etudiant: IUser = {
     userType: "student"
 }
 
-const uploaderCV = (cv : File) => {
-    const inputUploaderMonCV = screen.getByTestId("uploaderMonCV")
-    fireEvent.change(inputUploaderMonCV , {target:{value:cv.name}})
-}
 describe('App', () => {
 
     it('test page uploader mon cv ', async () => {
 
             render(<UploaderMonCV user={etudiant}/>);
-            const cv = new File([""],"test.pdf");
-            uploaderCV(cv);
+            const inputUploaderMonCV = screen.getByTestId("uploaderMonCV")
             const h4Element = screen.getByRole("heading", {name: /Document CV/i});
             const buttonElement = screen.getByRole("button", {name: /Envoyer/i});
-
+            fireEvent.change(inputUploaderMonCV , {target: new File([], "test.pdf", {type: "application/pdf"})})
             expect(h4Element).toBeInTheDocument();
             expect(buttonElement).toBeInTheDocument();
-
+            fireEvent.click(buttonElement);
+            expect(screen.getByText("Choix votre CV")).toBeInTheDocument()
     });
 });
