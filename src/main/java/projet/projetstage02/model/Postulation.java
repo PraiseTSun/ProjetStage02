@@ -24,4 +24,9 @@ public class Postulation {
 
     @NotBlank
     private Long studentId;
+
+    public Postulation(Long offerId, Long studentId) {
+        this.offerId = offerId;
+        this.studentId = studentId;
+    }
 }

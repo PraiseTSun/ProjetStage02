@@ -8,8 +8,10 @@ import projet.projetstage02.DTO.PdfOutDTO;
 import projet.projetstage02.DTO.StudentDTO;
 import projet.projetstage02.exception.NonExistentEntityException;
 import projet.projetstage02.model.Offre;
+import projet.projetstage02.model.Postulation;
 import projet.projetstage02.model.Student;
 import projet.projetstage02.repository.OffreRepository;
+import projet.projetstage02.repository.PostulationRepository;
 import projet.projetstage02.repository.StudentRepository;
 
 import java.sql.Timestamp;
@@ -28,6 +30,7 @@ import static projet.projetstage02.utils.TimeUtil.currentTimestamp;
 public class StudentService {
     private final StudentRepository studentRepository;
     private final OffreRepository offreRepository;
+    private final PostulationRepository postulationRepository;
     public void saveStudent(String firstName,
                             String lastName,
                             String email,
