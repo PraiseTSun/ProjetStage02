@@ -836,14 +836,17 @@ paths:
       summary: Upload un cv (Doit avoir un token gestionnaire)
       parameters:
         - in: body
-          name: token
+          name: pdf
           description: Token valide du gestionnaire
           schema:
             type: object
             properties:
+              studentId:
+                type: number
+              pdf:
+                type: array
               token:
                 type: string
-
 
       produces:
         - application/json
