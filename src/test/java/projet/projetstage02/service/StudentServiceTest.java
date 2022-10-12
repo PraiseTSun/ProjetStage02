@@ -7,11 +7,14 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import projet.projetstage02.DTO.*;
+import projet.projetstage02.exception.AlreadyExistingPostulation;
 import projet.projetstage02.exception.NonExistentEntityException;
 import projet.projetstage02.model.AbstractUser.Department;
 import projet.projetstage02.model.Offre;
+import projet.projetstage02.model.Postulation;
 import projet.projetstage02.model.Student;
 import projet.projetstage02.repository.OffreRepository;
+import projet.projetstage02.repository.PostulationRepository;
 import projet.projetstage02.repository.StudentRepository;
 
 import java.util.ArrayList;
@@ -35,11 +38,13 @@ public class StudentServiceTest {
     StudentRepository studentRepository;
     @Mock
     OffreRepository offreRepository;
+    @Mock
+    PostulationRepository postulationRepository;
 
     Student bart;
     PdfDTO bartCv;
-
     Offre duffOffer;
+    Postulation bartPostulation;
 
     @BeforeEach
     void setup() {
@@ -63,6 +68,12 @@ public class StudentServiceTest {
                 .adresse("Somewhere")
                 .valide(true)
                 .pdf(new byte[]{1, 2, 3, 4, 5, 6, 7, 8, 9})
+                .build();
+
+        bartPostulation = Postulation.builder()
+                .id(3L)
+                .studentId(2L)
+                .offerId(1L)
                 .build();
     }
 
@@ -311,5 +322,69 @@ public class StudentServiceTest {
         }
 
         fail("NonExistentEntityException not thrown");
+    }
+
+    @Test
+    void testCreatePostulationSuccess() throws Exception {
+        // Arrange
+        when(studentRepository.findById(anyLong())).thenReturn(Optional.of(bart));
+        when(offreRepository.findById(anyLong())).thenReturn(Optional.of(duffOffer));
+        when(postulationRepository.findByStudentIdAndOfferId(anyLong(), anyLong()))
+                .thenReturn(Optional.empty());
+
+        // Act
+        studentService.createPostulation(2L, 1L);
+
+        // Assert
+        verify(postulationRepository, times(1)).save(any());
+    }
+
+    @Test
+    void testCreatePostulationAlreadyExist() {
+        // Arrange
+        when(studentRepository.findById(anyLong())).thenReturn(Optional.of(bart));
+        when(offreRepository.findById(anyLong())).thenReturn(Optional.of(duffOffer));
+        when(postulationRepository.findByStudentIdAndOfferId(anyLong(), anyLong()))
+                .thenReturn(Optional.of(bartPostulation));
+
+        // Act
+        try {
+            studentService.createPostulation(2L,1L);
+        } catch (AlreadyExistingPostulation e) {
+            return;
+        } catch (Exception e) {}
+
+        fail("AlreadyExistingPostulation not thrown");
+    }
+
+    @Test
+    void testCreatePostulationOfferNotFound() {
+        // Arrange
+        when(studentRepository.findById(anyLong())).thenReturn(Optional.of(bart));
+        when(offreRepository.findById(anyLong())).thenReturn(Optional.empty());
+
+        // Act
+        try {
+            studentService.createPostulation(2L,1L);
+        } catch (NonExistentEntityException e) {
+            return;
+        } catch (Exception e) {}
+
+        fail("NonExistingEntityException not thrown");
+    }
+
+    @Test
+    void testCreatePostulationStudentNotFound() {
+        // Arrange
+        when(studentRepository.findById(anyLong())).thenReturn(Optional.empty());
+
+        // Act
+        try {
+            studentService.createPostulation(2L,1L);
+        } catch (NonExistentEntityException e) {
+            return;
+        } catch (Exception e) {}
+
+        fail("NonExistingEntityException not thrown");
     }
 }
