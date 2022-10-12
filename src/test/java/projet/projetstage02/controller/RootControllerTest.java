@@ -24,9 +24,9 @@ import projet.projetstage02.service.CompanyService;
 import projet.projetstage02.service.GestionnaireService;
 import projet.projetstage02.service.StudentService;
 
-import java.io.IOException;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
+import java.util.Arrays;
 import java.util.List;
 
 import static org.hamcrest.core.Is.is;
@@ -74,6 +74,7 @@ public class RootControllerTest {
     PdfOutDTO duffOfferOut;
     PdfDTO bartCV;
     PostulOutDTO bartPostulation;
+    StudentApplysDTO bartApplys;
 
     // https://thepracticaldeveloper.com/guide-spring-boot-controller-tests/
     @BeforeEach
@@ -134,6 +135,11 @@ public class RootControllerTest {
         bartPostulation = PostulOutDTO.builder()
                 .fullName(bart.getFirstName() + " " + bart.getLastName())
                 .company(duffOffre.getNomDeCompagnie())
+                .build();
+
+        bartApplys = StudentApplysDTO.builder()
+                .studentId(bart.getId())
+                .offersId(Arrays.asList(duffOffre.getId()))
                 .build();
     }
 
@@ -1138,6 +1144,37 @@ public class RootControllerTest {
         when(authService.getToken(any(), any())).thenThrow(new InvalidTokenException());
 
         mockMvc.perform(put("/applyToOffer/{studentId}_{offerId}", 2, 1)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(jsonTokenDTO.write(token).getJson()))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    void testGetPostulsOfferIdSuccess() throws Exception {
+        when(studentService.getPostulsOfferId(anyLong())).thenReturn(bartApplys);
+
+        mockMvc.perform(put("/studentApplys/{studentId}", 1)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(jsonTokenDTO.write(token).getJson()))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.offersId.size()", is(1)));
+    }
+
+    @Test
+    void testGetPostulsOfferIdNotFound() throws Exception {
+        when(studentService.getPostulsOfferId(anyLong())).thenThrow(new NonExistentEntityException());
+
+        mockMvc.perform(put("/studentApplys/{studentId}", 1)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(jsonTokenDTO.write(token).getJson()))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    void testGetPostulsOfferIdTokenInvalid() throws Exception {
+        when(authService.getToken(any(),any())).thenThrow(new InvalidTokenException());
+
+        mockMvc.perform(put("/studentApplys/{studentId}", 1)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(jsonTokenDTO.write(token).getJson()))
                 .andExpect(status().isForbidden());
