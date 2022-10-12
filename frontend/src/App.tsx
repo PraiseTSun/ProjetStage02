@@ -15,6 +15,7 @@ import OffersListPage from './pages/OffersListPage';
 
 export const LOCAL_STORAGE_KEY = "MASSI_BEST_PROGRAMMER_PROJET_STAGE_02_CURRENT_CONNECTED_USER"
 export const emptyUser: IUser = {
+  id: "",
   firstName: "",
   lastName: "",
   userType: "",
@@ -24,38 +25,39 @@ export const emptyUser: IUser = {
 function App() {
   const [user, setUser] = useState(emptyUser)
   const [verifiedLoginFromLocalStorage, setVerifiedLoginFromLocalStorage] = useState(false)
-  const [currentlyVerifyingToken, setCurrentlyVerifyingToken] = useState(false)
-  const [isValidToken, setValidToken] = useState(true)
   const [count, setCount] = useState(0)
 
   useEffect(() => {
     const timer = setTimeout(() => setCount(count + 1), 10000)
+
+    const verifyToken = async () => {
+      if (user === emptyUser) {
+        return
+      }
+      const getTokenHeaders = {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ "token": user.token })
+      };
+      const userRes = await fetch("http://localhost:8080/" + user.userType, getTokenHeaders)
+      if (!userRes.ok) {
+        alert("Votre session est expiré.")
+        deconnexion()
+      }
+    }
+
+    const validateToken = async () => {
+      await verifyToken()
+    }
     validateToken()
     return () => clearTimeout(timer)
-  }, [count])
+  }, [count, user])
 
   const deconnexion = () => {
     setUser(emptyUser)
     localStorage.removeItem(LOCAL_STORAGE_KEY)
     window.location.href = "/"
 
-  }
-
-  const verifyToken = async () => {
-    if (user === emptyUser) {
-      return
-    }
-    const getTokenHeaders = {
-      method: "PUT",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ "token": user.token })
-    };
-    const userRes = await fetch("http://localhost:8080/" + user.userType, getTokenHeaders)
-    if (!userRes.ok) {
-      alert("Votre session est expiré.")
-      setValidToken(false)
-      deconnexion()
-    }
   }
 
   const loginFromLocalStorage = async () => {
@@ -71,8 +73,6 @@ function App() {
         deconnexion()
       } else {
         setUser(JSON.parse(localStorage.getItem(LOCAL_STORAGE_KEY)!))
-        setValidToken(true)
-
       }
     }
 
@@ -81,14 +81,6 @@ function App() {
     if (!verifiedLoginFromLocalStorage) {
       setVerifiedLoginFromLocalStorage(true)
       await loginFromLocalStorage()
-    }
-  }
-
-  const validateToken = async () => {
-    if (!currentlyVerifyingToken) {
-      setCurrentlyVerifyingToken(true)
-      await verifyToken()
-      setCurrentlyVerifyingToken(false)
     }
   }
 
@@ -110,12 +102,12 @@ function App() {
 
   if (user.userType === "student") {
     return (
-      <Container className="vh-100">
+      <Container>
         <BrowserRouter>
           <Routes>
             <Route path="/" element={<StudentDashboard deconnexion={deconnexion} user={user} />} />
             <Route path="/offres" element={<OffersListPage connectedUser={user} deconnexion={deconnexion} />} />
-            <Route path="*" element={<h1 className="text-center text-white display-1">404 - Page pas trouvé</h1>} />
+            <Route path="*" element={<h1 className="text-center text-white display-1 vh-100">404 - Page pas trouvé</h1>} />
           </Routes>
         </BrowserRouter>
       </Container>
