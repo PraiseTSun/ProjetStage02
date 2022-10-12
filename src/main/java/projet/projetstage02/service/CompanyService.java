@@ -36,6 +36,7 @@ public class CompanyService {
 
         return offreRepository.save(offre).getId();
     }
+
     public void saveCompany(String firstName, String lastName, String name, String email, String password,
             Department department) {
         CompanyDTO dto = CompanyDTO.builder()
@@ -56,30 +57,38 @@ public class CompanyService {
         return companyRepository.save(dto.toModel()).getId();
     }
 
-    public boolean isEmailUnique(String email) {
+    private boolean isEmailUnique(String email) {
         return companyRepository.findByEmail(email).isEmpty();
     }
 
     public CompanyDTO getCompanyById(Long id) throws NonExistentEntityException {
         var companyOpt = companyRepository.findById(id);
-        if (companyOpt.isEmpty()) throw new NonExistentEntityException();
+        if (companyOpt.isEmpty())
+            throw new NonExistentEntityException();
         return new CompanyDTO(companyOpt.get());
     }
 
     public CompanyDTO getCompanyByEmailPassword(String email, String password) throws NonExistentEntityException {
         var companyOpt = companyRepository.findByEmailAndPassword(email.toLowerCase(), password);
-        if (companyOpt.isEmpty()) throw new NonExistentEntityException();
+        if (companyOpt.isEmpty())
+            throw new NonExistentEntityException();
         return new CompanyDTO(companyOpt.get());
     }
-    public boolean deleteUnconfirmedCompany(CompanyDTO dto) throws NonExistentEntityException {
-        Optional<Company> companyOpt = companyRepository.findByEmail(dto.getEmail());
-        if(companyOpt.isEmpty())
+
+    private boolean deleteUnconfirmedCompany(String email) throws NonExistentEntityException {
+        Optional<Company> companyOpt = companyRepository.findByEmail(email);
+        if (companyOpt.isEmpty())
             throw new NonExistentEntityException();
         Company company = companyOpt.get();
-        if(!company.isEmailConfirmed() && currentTimestamp() - company.getInscriptionTimestamp() > MILLI_SECOND_DAY){
+        if (!company.isEmailConfirmed() && currentTimestamp() - company.getInscriptionTimestamp() > MILLI_SECOND_DAY) {
             companyRepository.delete(company);
             return true;
         }
         return false;
+    }
+
+    public boolean isCompanyInvalid(String email) throws NonExistentEntityException {
+        return !isEmailUnique(email)
+                && !deleteUnconfirmedCompany(email);
     }
 }

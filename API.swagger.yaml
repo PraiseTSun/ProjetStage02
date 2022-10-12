@@ -844,7 +844,6 @@ paths:
               token:
                 type: string
 
-
       produces:
         - application/json
       responses:
@@ -907,3 +906,109 @@ paths:
           description: Token invalide ou expiré
         404:
           description: L'étudiant avec ce cv n'existe pas
+  /unvalidatedCV:
+    put:
+      summary: Recevoir la listes des CVs à valider
+      parameters:
+        - in: body
+          name: token
+          description: Token valide du gestionnaire
+          schema:
+            type: object
+            properties:
+              token:
+                type: string
+      produces:
+        - application/json
+      responses:
+        200:
+          description: Liste des CVs non validés
+          schema:
+            type: array
+            items:
+              type: object
+              properties:
+                id:
+                  type: number
+                firstName:
+                  type: string
+                lastName:
+                  type: string
+                department:
+                  type: string
+        403:
+          description: Token invalide
+  /stageOffers/{studentId}:
+    put:
+      summary: Recevoir la listes des offres de stage du dapartement de l'etudiant (Doit avoir le token student)
+
+      parameters:
+        - in: path
+          name: studentId
+          description: id de l'étudiant
+          type: string
+          required: true
+        - in: body
+          name: token
+          description: Token valide de l'étudiant
+          schema:
+            type: object
+            properties:
+              token:
+                type: string
+      produces:
+        - application/json
+      responses:
+        200:
+          description: Liste des offres de stage du département
+          schema:
+            type: array
+            items:
+              type: object
+              properties:
+                id:
+                  type: number
+                nomDeCompagnie:
+                  type: string
+                position:
+                  type: string
+                heureParSemaine:
+                  type: string
+                adresse:
+                  type: string
+        403:
+          description: Token invalide
+        404:
+          description: L'étudiant avec ce cv n'existe pas
+  /getOfferForStudent/{id}:
+    put:
+      summary: Retourne une offre (Doit avoir un token Student)
+      parameters:
+        - in: path
+          name: id
+          description: id de l'offre
+          type: string
+          required: true
+        - in: body
+          name: token
+          description: Token valide du gestionnaire
+          schema:
+            type: object
+            properties:
+              token:
+                type: string
+      produces:
+        - application/json
+      responses:
+        200:
+          description: L'offre a été envoyé
+          schema:
+            properties:
+              id:
+                type: string
+              pdf:
+                type: string
+        403:
+          description: Token invalide ou expiré
+        404:
+          description: L'offre avec cette id n'existe pas

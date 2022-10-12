@@ -1,6 +1,6 @@
-import React, { useState } from "react";
-import { Button, Col, Form, Row } from "react-bootstrap";
-import { BeatLoader } from "react-spinners";
+import React, {useState} from "react";
+import {Button, Col, Form, Row} from "react-bootstrap";
+import {BeatLoader} from "react-spinners";
 import IUser from "../models/IUser";
 
 const ValidationGestionnaire = ({user}:{user:IUser}) => {
