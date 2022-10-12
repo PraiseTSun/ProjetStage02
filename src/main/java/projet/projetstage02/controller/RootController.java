@@ -14,7 +14,6 @@ import projet.projetstage02.exception.InvalidTokenException;
 import projet.projetstage02.exception.NonExistentEntityException;
 import projet.projetstage02.exception.NonExistentOfferExeption;
 
-import projet.projetstage02.model.AbstractUser.Department;
 import projet.projetstage02.model.Token;
 import projet.projetstage02.service.AuthService;
 import projet.projetstage02.service.CompanyService;
@@ -513,7 +512,7 @@ public class RootController {
     }
 
     @PutMapping("/studentCv/{studentId}")
-    public ResponseEntity<PdfOutDTO> getStudentCv(@PathVariable String studentId,@RequestBody TokenDTO tokenId){
+    public ResponseEntity<PdfOutDTO> getStudentCv(@PathVariable String studentId, @RequestBody TokenDTO tokenId) {
         logger.log(Level.INFO, "Put /studentCv entered with id : ");
         try {
             authService.getToken(tokenId.getToken(), GESTIONNAIRE);
@@ -564,7 +563,8 @@ public class RootController {
     }
 
     @PutMapping("/getOffers/{studentId}")
-    public ResponseEntity<List<OffreDTO>> getOffersByStudentDepartment(@PathVariable String studentId, @RequestBody TokenDTO tokenId){
+    public ResponseEntity<List<OffreDTO>> getOffersByStudentDepartment(@PathVariable String studentId,
+            @RequestBody TokenDTO tokenId) {
         logger.log(Level.INFO, "Put /getOffersByStudentDepartment entered with student id : " + studentId);
 
         try {
@@ -582,12 +582,12 @@ public class RootController {
     }
 
     @PutMapping("/getOfferStudent/{id}")
-    public ResponseEntity<PdfOutDTO> getOfferStudent (@PathVariable String id, @RequestBody TokenDTO tokenId){
+    public ResponseEntity<PdfOutDTO> getOfferStudent(@PathVariable String id, @RequestBody TokenDTO tokenId) {
         logger.log(Level.INFO, "Put /getOfferStudent entered with id : " + id);
 
         try {
             authService.getToken(tokenId.getToken(), STUDENT);
-            PdfOutDTO dto = studentService.getOfferById(Long.parseLong(id));
+            PdfOutDTO dto = studentService.getOfferPdfById(Long.parseLong(id));
             logger.log(Level.INFO, "Put /getOfferStudent sent 200 response");
             return ResponseEntity.ok(dto);
         } catch (NonExistentEntityException e) {

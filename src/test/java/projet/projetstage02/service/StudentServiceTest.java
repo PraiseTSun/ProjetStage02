@@ -62,7 +62,7 @@ public class StudentServiceTest {
                 .heureParSemaine(69)
                 .adresse("Somewhere")
                 .valide(true)
-                .pdf(new byte[]{1, 2, 3, 4, 5, 6, 7, 8, 9})
+                .pdf(new byte[] { 1, 2, 3, 4, 5, 6, 7, 8, 9 })
                 .build();
     }
 
@@ -219,6 +219,7 @@ public class StudentServiceTest {
 
         fail("NonExistentUserException not caught");
     }
+
     @Test
     void testDeleteUncofirmedStudentHappyDay() throws NonExistentEntityException {
         // Arrange
@@ -231,16 +232,17 @@ public class StudentServiceTest {
         // Assert
         verify(studentRepository, times(1)).delete(any());
     }
+
     @Test
-    void testDeleteUncofirmedStudentThrowsException()  {
+    void testDeleteUncofirmedStudentThrowsException() {
         // Arrange
         bart.setInscriptionTimestamp(0);
         when(studentRepository.findByEmail(any())).thenReturn(Optional.empty());
 
         // Act
-        try{
+        try {
             studentService.deleteUnconfirmedStudent(new StudentDTO(bart));
-        }catch (NonExistentEntityException e){
+        } catch (NonExistentEntityException e) {
             return;
         }
         // Assert
@@ -252,13 +254,15 @@ public class StudentServiceTest {
         // Arrange
         Department department = Department.Informatique;
         Offre successOffer = Offre.builder().valide(true).department(Department.Informatique).build();
-        Offre failOffer1   = Offre.builder().valide(false).department(Department.Informatique).build();
-        Offre failOffer2   = Offre.builder().valide(true).department(Department.Transport).build();
-        List<Offre> offres = new ArrayList<>(){{
-            add(successOffer);
-            add(failOffer1);
-            add(failOffer2);
-        }};
+        Offre failOffer1 = Offre.builder().valide(false).department(Department.Informatique).build();
+        Offre failOffer2 = Offre.builder().valide(true).department(Department.Transport).build();
+        List<Offre> offres = new ArrayList<>() {
+            {
+                add(successOffer);
+                add(failOffer1);
+                add(failOffer2);
+            }
+        };
         when(studentRepository.findById(anyLong())).thenReturn(Optional.of(bart));
         when(offreRepository.findAll()).thenReturn(offres);
 
@@ -291,7 +295,7 @@ public class StudentServiceTest {
         when(offreRepository.findById(anyLong())).thenReturn(Optional.of(duffOffer));
 
         // Act
-        PdfOutDTO dto = studentService.getOfferById(1L);
+        PdfOutDTO dto = studentService.getOfferPdfById(1L);
 
         // Assert
         assertThat(dto.getId()).isEqualTo(1L);
@@ -305,7 +309,7 @@ public class StudentServiceTest {
 
         // Act
         try {
-            studentService.getOfferById(1L);
+            studentService.getOfferPdfById(1L);
         } catch (NonExistentEntityException e) {
             return;
         }
