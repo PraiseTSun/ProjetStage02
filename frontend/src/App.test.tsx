@@ -182,6 +182,37 @@ describe("CompanyDashboardPage test", () => {
     })
 })
 
+describe("ConfirmationPage test", () => {
+    beforeEach(() => {
+        jest.mock('react-router-dom', () => ({
+            ...jest.requireActual('react-router-dom'),
+            useParams: jest.fn().mockReturnValue({ id:1}),
+        }))
+        global.fetch = jest.fn((url) => {
+                if (url === "http://localhost:8080/confirmEmail/student/1") {
+                    return Promise.resolve({
+                        created: true,
+                    });
+                } else throw new Error("Bad url call")
+            }
+        ) as jest.Mock;
+
+        window.alert = jest.fn(() => null) as jest.Mock;
+    })
+    it("ConfirmationPageLayoutTest", async () => {
+        const MockPage = () => {
+            return (
+                <BrowserRouter>
+                    <ConfirmationPage/>
+                </BrowserRouter>
+            );
+        }
+        act(() => {
+            render(<MockPage/>)
+        })
+        expect(await screen.findByText(/Succès! Vous pouvez fermez cette page/i)).toBeInTheDocument()
+    })
+});
 const MockCompanyDashboardPage = () => {
     return (
         <BrowserRouter>
