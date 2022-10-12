@@ -140,6 +140,7 @@ const StudentCvValidationPage = ({ connectedUser, deconnexion }:
                                         <td>{student.firstName}</td>
                                         <td>{student.lastName}</td>
                                         <td>{student.department}</td>
+                                        <td><Button className="btn btn-warning" onClick={async () => await getPDF(student.id)}>CV</Button></td>
                                         <td>
                                             <Button className="btn btn-success mx-2" onClick={
                                                 () => validateCV(student.id, true)}>
