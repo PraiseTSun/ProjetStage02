@@ -14,7 +14,7 @@ const UploaderMonCV = ({user}: { user: IUser }) => {
         if (form.checkValidity()) {
             setWaiting(true)
             const obj = {
-                id: user.id,
+                studentId: user.id,
                 pdf: cv,
                 token: user.token
             }
@@ -26,6 +26,9 @@ const UploaderMonCV = ({user}: { user: IUser }) => {
             const res = await fetch("http://localhost:8080/uploadStudentCV", headers)
             if (res.ok) {
                 alert("CV envoyé")
+            }
+            else {
+                alert("Une erreur est survenue")
             }
             setWaiting(false);
             window.location.href = "/"
