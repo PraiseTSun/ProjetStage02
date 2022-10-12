@@ -1,6 +1,6 @@
-import { act, fireEvent, render, screen, waitForElementToBeRemoved } from "@testing-library/react";
-import { BrowserRouter } from "react-router-dom";
-import { emptyUser } from "./App";
+import {act, fireEvent, render, screen, waitForElementToBeRemoved} from "@testing-library/react";
+import {BrowserRouter, useParams} from "react-router-dom";
+import {emptyUser} from "./App";
 import StudentCvValidationPage from "./pages/StudentCvValidationPage";
 import IUser from "./models/IUser";
 import CompanyDashboardPage from "./pages/CompanyDashboardPage";
@@ -230,45 +230,71 @@ const MockConfirmationPage = () => {
 const MockFormulaireSoumissionPage = () => {
     return (
         <BrowserRouter>
-            <FormulaireSoumissionPage user={gestionnaire}  />
+            <FormulaireSoumissionPage user={gestionnaire}/>
         </BrowserRouter>
     );
 }
 const MockGestionnaireDashboardPage = () => {
     return (
         <BrowserRouter>
-            <GestionnaireDashboardPage user={gestionnaire} deconnexion={()=>null}/>
+            <GestionnaireDashboardPage user={gestionnaire} deconnexion={() => null}/>
         </BrowserRouter>
     );
 }
 const MockStudentDashboardPage = () => {
     return (
         <BrowserRouter>
-            <StudentDashboardPage user={student} deconnexion={()=>null}/>
+            <StudentDashboardPage user={student} deconnexion={() => null}/>
         </BrowserRouter>
     );
 }
 const MockLoginPage = () => {
     return (
         <BrowserRouter>
-            <LoginPage setUser={()=>null}/>
+            <LoginPage setUser={() => null}/>
         </BrowserRouter>
     );
 }
 const MockStudentCvValidationPage = () => {
     return (
         <BrowserRouter>
-            <StudentCvValidationPage connectedUser={gestionnaire} deconnexion={()=>null}/>
+            <StudentCvValidationPage connectedUser={gestionnaire} deconnexion={() => null}/>
         </BrowserRouter>
     );
 }
-const MockUserValidationPage = () => {
-    return (
-        <BrowserRouter>
-            <UserValidation connectedUser={gestionnaire} />
-        </BrowserRouter>
-    );
-}
+describe("test UserValidationPage", () => {
+
+    const MockPage = () => {
+        return (
+            <BrowserRouter>
+                <UserValidation connectedUser={gestionnaire}/>
+            </BrowserRouter>
+        );
+    }
+    beforeEach(() => {
+        global.fetch = jest.fn((url) => {
+                if (url === "http://localhost:8080/unvalidatedStudents") {
+                    return Promise.resolve({
+                        ok: true,
+                        json: () => Promise.resolve([student])
+                    });
+                } else if (url === "http://localhost:8080/unvalidatedCompanies") {
+                    console.log("validate")
+                    return Promise.resolve({
+                        ok: true,
+                        json: () => Promise.resolve([company])
+                    });
+                } else if (url === "http://localhost:8080/createGestionnaire") {
+                    return Promise.resolve({
+                        created: true
+                    });
+                } else throw new Error("Bad url call")
+            }
+        ) as jest.Mock;
+
+        window.alert = jest.fn(() => null) as jest.Mock;
+    })
+})
 const gestionnaire: IUser = {
     firstName: "Yan",
     lastName: "Zhou",
@@ -289,7 +315,7 @@ const student: IUser = {
     token: "324324332"
 }
 
-const offres : object = [{
+const offres: object = [{
     nomDeCompagnie: "Desjardins",
     department: "Techniques de linformatique",
     position: "position",
