@@ -1,7 +1,6 @@
-import React, { useEffect } from 'react';
-import { useState } from 'react';
-import { Container } from 'react-bootstrap';
-import { BrowserRouter, Route, Routes } from 'react-router-dom';
+import React, {useEffect, useState} from 'react';
+import {Container} from 'react-bootstrap';
+import {BrowserRouter, Route, Routes} from 'react-router-dom';
 import ConfirmationPage from './pages/ConfirmationPage';
 import LoginPage from './pages/LoginPage';
 import IUser from './models/IUser';

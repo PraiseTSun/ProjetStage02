@@ -1,8 +1,7 @@
-import React from "react";
-import { useState } from "react";
-import { Form, Row, Col, ToggleButton, ToggleButtonGroup, Button } from "react-bootstrap";
-import { BeatLoader } from "react-spinners";
-import { LOCAL_STORAGE_KEY } from '../App';
+import React, {useState} from "react";
+import {Button, Col, Form, Row, ToggleButton, ToggleButtonGroup} from "react-bootstrap";
+import {BeatLoader} from "react-spinners";
+import {LOCAL_STORAGE_KEY} from '../App';
 import IUser from '../models/IUser';
 
 const LoginForm = (props: { setUser: Function }): JSX.Element => {

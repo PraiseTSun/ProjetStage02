@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from "react";
-import { Button, Col, Row } from "react-bootstrap";
+import React, {useEffect, useState} from "react";
+import {Button, Col, Row} from "react-bootstrap";
 import IUser from "../models/IUser";
 
 const ValidationCompany = ({ connectedUser, onValidation, onRemove }: { connectedUser: IUser, onValidation: Function, onRemove: Function }) => {

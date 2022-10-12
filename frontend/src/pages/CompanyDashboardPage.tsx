@@ -1,7 +1,7 @@
 import React from "react";
-import {  Button, Row } from "react-bootstrap";
+import {Button, Row} from "react-bootstrap";
 import IUser from "../models/IUser";
-import { Link } from 'react-router-dom';
+import {Link} from 'react-router-dom';
 
 const CompanyDashboard = ({ user, deconnexion }: { user: IUser, deconnexion: Function }): JSX.Element => {
 

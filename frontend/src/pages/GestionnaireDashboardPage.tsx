@@ -1,6 +1,6 @@
 import React from "react";
-import { Row, Button } from "react-bootstrap";
-import { Link } from "react-router-dom";
+import {Button, Row} from "react-bootstrap";
+import {Link} from "react-router-dom";
 import IUser from "../models/IUser";
 
 const GestionnaireDashboard = ({ user, deconnexion }: { user: IUser, deconnexion: Function }): JSX.Element => {

@@ -21,9 +21,8 @@ import java.util.Optional;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.assertj.core.api.Fail.fail;
 import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
-import static org.mockito.Mockito.times;
+import static projet.projetstage02.utils.TimeUtil.currentTimestamp;
 
 @ExtendWith(MockitoExtension.class)
 public class StudentServiceTest {
@@ -134,34 +133,6 @@ public class StudentServiceTest {
     }
 
     @Test
-    void isEmailUniqueExistsTest() {
-        // Arrange
-        when(studentRepository.findByEmail(anyString()))
-                .thenReturn(Optional.of(bart));
-
-        // Act
-        boolean isEmailUnique = studentService
-                .isEmailUnique("bart.simpson@springfield.com");
-
-        // Assert
-        assertThat(isEmailUnique).isFalse();
-    }
-
-    @Test
-    void isEmailUniqueNotExistsTest() {
-        // Arrange
-        when(studentRepository.findByEmail(anyString()))
-                .thenReturn(Optional.empty());
-
-        // Act
-        boolean isEmailUnique = studentService
-                .isEmailUnique("el.barto@springfield.com");
-
-        // Assert
-        assertThat(isEmailUnique).isTrue();
-    }
-
-    @Test
     void saveStudentMultipleParametersTest() {
         // Arrange
         bart.setId(1L);
@@ -221,27 +192,27 @@ public class StudentServiceTest {
     }
 
     @Test
-    void testDeleteUncofirmedStudentHappyDay() throws NonExistentEntityException {
+    void testInvalidStudentHappyDay() throws NonExistentEntityException {
         // Arrange
         bart.setInscriptionTimestamp(0);
         when(studentRepository.findByEmail(any())).thenReturn(Optional.of(bart));
 
         // Act
-        studentService.deleteUnconfirmedStudent(new StudentDTO(bart));
+        studentService.isStudentInvalid(bart.getEmail());
 
         // Assert
         verify(studentRepository, times(1)).delete(any());
     }
 
     @Test
-    void testDeleteUncofirmedStudentThrowsException() {
+    void testInvalidStudentThrowsException() {
         // Arrange
         bart.setInscriptionTimestamp(0);
-        when(studentRepository.findByEmail(any())).thenReturn(Optional.empty());
+        when(studentRepository.findByEmail(any())).thenReturn(Optional.of(bart), Optional.empty());
 
         // Act
         try {
-            studentService.deleteUnconfirmedStudent(new StudentDTO(bart));
+            studentService.isStudentInvalid(bart.getEmail());
         } catch (NonExistentEntityException e) {
             return;
         }
@@ -315,5 +286,15 @@ public class StudentServiceTest {
         }
 
         fail("NonExistentEntityException not thrown");
+    }
+
+    @Test
+    void testInvalidStudentReturnsFalse() throws NonExistentEntityException {
+        // Arrange
+        bart.setInscriptionTimestamp(currentTimestamp());
+        when(studentRepository.findByEmail(any())).thenReturn(Optional.empty());
+
+        // Act
+        assertThat(studentService.isStudentInvalid(bart.getEmail())).isFalse();
     }
 }

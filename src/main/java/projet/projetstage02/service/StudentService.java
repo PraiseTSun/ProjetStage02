@@ -51,7 +51,7 @@ public class StudentService {
         return studentRepository.save(dto.toModel()).getId();
     }
 
-    public boolean isEmailUnique(String email) {
+    private boolean isEmailUnique(String email) {
         return studentRepository.findByEmail(email).isEmpty();
     }
 
@@ -76,8 +76,8 @@ public class StudentService {
         return new StudentDTO(student);
     }
 
-    public boolean deleteUnconfirmedStudent(StudentDTO dto) throws NonExistentEntityException {
-        Optional<Student> studentOpt = studentRepository.findByEmail(dto.getEmail());
+    private boolean deleteUnconfirmedStudent(String email) throws NonExistentEntityException {
+        Optional<Student> studentOpt = studentRepository.findByEmail(email);
         if (studentOpt.isEmpty())
             throw new NonExistentEntityException();
         Student student = studentOpt.get();
@@ -113,5 +113,10 @@ public class StudentService {
         Offre offre = offerOpt.get();
         String cv = Arrays.toString(offre.getPdf()).replaceAll("\\s+", "");
         return new PdfOutDTO(offre.getId(), cv);
+    }
+
+    public boolean isStudentInvalid(String email) throws NonExistentEntityException {
+        return !isEmailUnique(email)
+                && !deleteUnconfirmedStudent(email);
     }
 }

@@ -8,12 +8,17 @@ import org.apache.logging.log4j.Logger;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import projet.projetstage02.DTO.*;
+import projet.projetstage02.DTO.PdfOutDTO;
+import projet.projetstage02.DTO.TokenDTO;
+import projet.projetstage02.DTO.CompanyDTO;
+import projet.projetstage02.DTO.OffreDTO;
+import projet.projetstage02.DTO.GestionnaireDTO;
+import projet.projetstage02.DTO.PdfDTO;
+import projet.projetstage02.DTO.StudentDTO;
+import projet.projetstage02.DTO.LoginDTO;
 import projet.projetstage02.exception.InvalidTokenException;
 import projet.projetstage02.exception.NonExistentEntityException;
 import projet.projetstage02.exception.NonExistentOfferExeption;
-
 import projet.projetstage02.model.Token;
 import projet.projetstage02.service.AuthService;
 import projet.projetstage02.service.CompanyService;
@@ -47,8 +52,7 @@ public class RootController {
     public ResponseEntity<Map<String, String>> createStudent(@Valid @RequestBody StudentDTO studentDTO) {
         try {
             logger.log(Level.INFO, "PostMapping: /createStudent entered with body : " + studentDTO.toString());
-            if (!studentService.isEmailUnique(studentDTO.getEmail())
-                    && !studentService.deleteUnconfirmedStudent(studentDTO)) {
+            if (studentService.isStudentInvalid(studentDTO.getEmail())) {
                 logger.log(Level.INFO, "PostMapping: /createStudent sent 409 response");
                 return ResponseEntity.status(CONFLICT)
                         .body(getError("Cette adresse email est déjà utilisée."));
@@ -74,8 +78,7 @@ public class RootController {
     public ResponseEntity<Map<String, String>> createCompany(@Valid @RequestBody CompanyDTO companyDTO) {
         try {
             logger.log(Level.INFO, "Post /createCompany entered with body : " + companyDTO.toString());
-            if (!companyService.isEmailUnique(companyDTO.getEmail())
-                    && !companyService.deleteUnconfirmedCompany(companyDTO)) {
+            if (companyService.isCompanyInvalid(companyDTO.getEmail())) {
                 logger.log(Level.INFO, "PostMapping: /createCompany sent 409 response");
                 return ResponseEntity.status(CONFLICT)
                         .body(getError("Cette adresse email est déjà utilisée."));
@@ -103,8 +106,7 @@ public class RootController {
         try {
             logger.log(Level.INFO, "Post /createGestionaire entered with body : " + gestionnaireDTO.toString());
             authService.getToken(gestionnaireDTO.getToken(), GESTIONNAIRE);
-            if (!gestionnaireService.isEmailUnique(gestionnaireDTO.getEmail())
-                    && !gestionnaireService.deleteUnconfirmedGestionnaire(gestionnaireDTO)) {
+            if (gestionnaireService.isGestionnaireInvalid(gestionnaireDTO.getEmail())) {
                 logger.log(Level.INFO, "PostMapping: /createGestionaire sent 409 response");
                 return ResponseEntity.status(CONFLICT).body(getError("Cette adresse email est déjà utilisée."));
             }

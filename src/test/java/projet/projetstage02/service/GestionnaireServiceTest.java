@@ -25,6 +25,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.*;
+import static projet.projetstage02.utils.TimeUtil.currentTimestamp;
 
 @ExtendWith(MockitoExtension.class)
 public class GestionnaireServiceTest {
@@ -47,30 +48,27 @@ public class GestionnaireServiceTest {
     private Offre offreTest;
 
     @BeforeEach
-    void beforeEach(){
+    void beforeEach() {
         gestionnaireTest = new Gestionnaire(
                 "prenom",
                 "nom",
-                "email",
-                "password"
-        );
+                "email@email.com",
+                "password");
 
         companyTest = new Company(
                 "prenom",
                 "nom",
-                "email",
+                "email@email.com",
                 "password",
                 AbstractUser.Department.Transport,
-                "Company Test"
-        );
+                "Company Test");
 
         studentTest = new Student(
                 "prenom",
                 "nom",
-                "email",
+                "email@email.com",
                 "password",
-                AbstractUser.Department.Informatique
-        );
+                AbstractUser.Department.Informatique);
 
         offreTest = new Offre(
                 1L,
@@ -80,8 +78,7 @@ public class GestionnaireServiceTest {
                 40,
                 "69 shitty street",
                 false,
-                new byte[0]
-        );
+                new byte[0]);
     }
 
     @Test
@@ -106,19 +103,6 @@ public class GestionnaireServiceTest {
 
         // Assert
         verify(gestionnaireRepository, times(1)).save(any());
-    }
-
-    @Test
-    public void testIsEmailUnique(){
-        // Arrange
-        String email = "test@email.ca";
-        when(gestionnaireRepository.findByEmail(anyString())).thenReturn(Optional.empty());
-
-        // Act
-        boolean isUnique = service.isEmailUnique(email);
-
-        // Assert
-        assertThat(isUnique).isTrue();
     }
 
     @Test
@@ -286,9 +270,8 @@ public class GestionnaireServiceTest {
         fail("NonExistentUserException not caught");
     }
 
-
     @Test
-    public void testOffreNotValidated(){
+    public void testOffreNotValidated() {
         // Arrange
         List<Offre> offres = new ArrayList<>();
         Offre offre = new Offre();
@@ -370,7 +353,7 @@ public class GestionnaireServiceTest {
     }
 
     @Test
-    public void testGetUnvalidatedStudents(){
+    public void testGetUnvalidatedStudents() {
         // Arrange
         List<Student> students = new ArrayList<>();
 
@@ -404,7 +387,7 @@ public class GestionnaireServiceTest {
     }
 
     @Test
-    public void testGetUnvalidatedCompanies(){
+    public void testGetUnvalidatedCompanies() {
         // Arrange
         List<Company> companies = new ArrayList<>();
 
@@ -462,28 +445,46 @@ public class GestionnaireServiceTest {
         }
         fail("NonExistentOfferException not caught");
     }
+
     @Test
-    void testDeleteUncofirmedStudentHappyDay() throws NonExistentEntityException {
+    void testInvalidGestionnaireHappyDay() throws NonExistentEntityException {
         // Arrange
         gestionnaireTest.setInscriptionTimestamp(0);
         when(gestionnaireRepository.findByEmail(any())).thenReturn(Optional.of(gestionnaireTest));
 
         // Act
-        service.deleteUnconfirmedGestionnaire(new GestionnaireDTO(gestionnaireTest));
+        service.isGestionnaireInvalid(gestionnaireTest.getEmail());
 
         // Assert
         verify(gestionnaireRepository, times(1)).delete(any());
     }
+
     @Test
-    void testDeleteUncofirmedStudentThrowsException()  {
+    void testInvalidGestionnaireThrowsException() {
         // Arrange
         gestionnaireTest.setInscriptionTimestamp(0);
-        when(gestionnaireRepository.findByEmail(any())).thenReturn(Optional.empty());
+        when(gestionnaireRepository.findByEmail(any())).thenReturn(Optional.of(gestionnaireTest), Optional.empty());
 
         // Act
-        try{
-            service.deleteUnconfirmedGestionnaire(new GestionnaireDTO(gestionnaireTest));
-        }catch (NonExistentEntityException e){
+        try {
+            service.isGestionnaireInvalid(gestionnaireTest.getEmail());
+        } catch (NonExistentEntityException e) {
+            return;
+        }
+        // Assert
+        fail("NonExistentEntityException not thrown");
+    }
+
+    @Test
+    void testInvalidGestionnaireReturnFalse() {
+        // Arrange
+        gestionnaireTest.setInscriptionTimestamp(currentTimestamp());
+        when(gestionnaireRepository.findByEmail(any())).thenReturn(Optional.of(gestionnaireTest), Optional.empty());
+
+        // Act
+        try {
+            service.isGestionnaireInvalid(gestionnaireTest.getEmail());
+        } catch (NonExistentEntityException e) {
             return;
         }
         // Assert
@@ -495,7 +496,7 @@ public class GestionnaireServiceTest {
         // Arrange
         List<Student> students = new ArrayList<>();
         students.add(studentTest);
-        studentTest.setCvToValidate(new byte[]{1, 2, 3});
+        studentTest.setCvToValidate(new byte[] { 1, 2, 3 });
         studentTest.setConfirm(true);
 
         Student studentCvValidated = new Student();
@@ -543,7 +544,7 @@ public class GestionnaireServiceTest {
     }
 
     @Test
-    void testRemoveStudentCvValidationSuccess () throws NonExistentEntityException {
+    void testRemoveStudentCvValidationSuccess() throws NonExistentEntityException {
         // Arrange
         studentTest.setCvToValidate(new byte[0]);
         when(studentRepository.findById(anyLong())).thenReturn(Optional.of(studentTest));
