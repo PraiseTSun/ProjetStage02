@@ -63,7 +63,6 @@ const StudentCvValidationPage = ({ connectedUser, deconnexion }:
                 throw new Error("Error code not handled");
             }
         } catch (exception) {
-            console.log(exception)
             alert("Une erreur est survenue, ressayez.");
         }
     }
