@@ -2,10 +2,12 @@ package projet.projetstage02.service;
 
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.test.context.jdbc.Sql;
 import projet.projetstage02.DTO.OffreDTO;
 import projet.projetstage02.DTO.PdfDTO;
 import projet.projetstage02.DTO.PdfOutDTO;
 import projet.projetstage02.DTO.StudentDTO;
+import projet.projetstage02.exception.AlreadyExistingPostulation;
 import projet.projetstage02.exception.NonExistentEntityException;
 import projet.projetstage02.model.Offre;
 import projet.projetstage02.model.Postulation;
@@ -113,5 +115,19 @@ public class StudentService {
         Offre offre = offerOpt.get();
         String cv = Arrays.toString(offre.getPdf()).replaceAll("\\s+","");
         return new PdfOutDTO(offre.getId(), cv);
+    }
+
+    public void createPostulation(long studentId, long offerID) throws Exception {
+        Optional<Student> studentOpt = studentRepository.findById(studentId);
+        if (studentOpt.isEmpty()) throw new NonExistentEntityException();
+
+        Optional<Offre> offerOpt = offreRepository.findById(offerID);
+        if (offerOpt.isEmpty()) throw new NonExistentEntityException();
+
+        Optional<Postulation> postulationOpt = postulationRepository.findByStudentIdAndOfferId(studentId, offerID);
+        if(!postulationOpt.isEmpty()) throw new AlreadyExistingPostulation();
+
+        Postulation postulation = new Postulation(offerID, studentId);
+        postulationRepository.save(postulation);
     }
 }
