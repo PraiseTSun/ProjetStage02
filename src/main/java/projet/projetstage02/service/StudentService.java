@@ -117,7 +117,7 @@ public class StudentService {
         return new PdfOutDTO(offre.getId(), cv);
     }
 
-    public void createPostulation(long studentId, long offerID) throws Exception {
+    public void createPostulation(long studentId, long offerID) throws NonExistentEntityException, AlreadyExistingPostulation {
         Optional<Student> studentOpt = studentRepository.findById(studentId);
         if (studentOpt.isEmpty()) throw new NonExistentEntityException();
 

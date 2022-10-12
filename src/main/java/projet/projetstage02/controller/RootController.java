@@ -10,6 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import projet.projetstage02.DTO.*;
+import projet.projetstage02.exception.AlreadyExistingPostulation;
 import projet.projetstage02.exception.InvalidTokenException;
 import projet.projetstage02.exception.NonExistentEntityException;
 import projet.projetstage02.exception.NonExistentOfferExeption;
@@ -596,6 +597,29 @@ public class RootController {
         } catch (InvalidTokenException e) {
             logger.log(Level.INFO, "Put /getOfferStudent sent 403 response");
             return ResponseEntity.status(FORBIDDEN).build();
+        }
+    }
+
+    @PutMapping("/applyToOffer/{studentId}_{offerId}")
+    public ResponseEntity<Map<String, String>> createPostulation
+            (@PathVariable String studentId, @PathVariable String offerId, @RequestBody TokenDTO tokenId){
+        logger.log(Level.INFO, "Put /createPostulation entered with id: " + studentId
+                + " and offer id: " + offerId);
+
+        try {
+            authService.getToken(tokenId.getToken(), STUDENT);
+            studentService.createPostulation(Long.parseLong(studentId), Long.parseLong(offerId));
+            logger.log(Level.INFO, "Put /getOfferStudent sent 200 response");
+            return ResponseEntity.ok().build();
+        } catch (NonExistentEntityException e) {
+            logger.log(Level.INFO, "Put /getOfferStudent sent 404 response");
+            return ResponseEntity.notFound().build();
+        } catch (InvalidTokenException e) {
+            logger.log(Level.INFO, "Put /getOfferStudent sent 403 response");
+            return ResponseEntity.status(FORBIDDEN).build();
+        } catch (AlreadyExistingPostulation e) {
+            logger.log(Level.INFO, "Put /getOfferStudent sent 409 response");
+            return ResponseEntity.status(CONFLICT).build();
         }
     }
 }
