@@ -18,6 +18,7 @@ import projet.projetstage02.repository.PostulationRepository;
 import projet.projetstage02.repository.StudentRepository;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
@@ -392,7 +393,31 @@ public class StudentServiceTest {
     }
 
     @Test
-    void testGetApplysIdSuccess(){
+    void testGetPostulsOfferIdSuccess() throws NonExistentEntityException {
+        // Arrange
+        when(studentRepository.findById(anyLong())).thenReturn(Optional.of(bart));
+        when(postulationRepository.findByStudentId(anyLong())).thenReturn(Arrays.asList(bartPostulation));
 
+        // Act
+        StudentApplyDTO dto = studentService.getPostulsOfferId(1L);
+
+        // Assert
+        assertThat(dto.getStudentId()).isEqualTo(bart.getId());
+        assertThat(dto.getOffersId().get(0)).isEqualTo(bartPostulation.getOfferId());
+    }
+
+    @Test
+    void testGetPostulsOfferIdNotFound() {
+        // Arrange
+        when(studentRepository.findById(anyLong())).thenReturn(Optional.empty());
+
+        // Act
+        try {
+            studentService.getPostulsOfferId(1L);
+        } catch (NonExistentEntityException e) {
+            return;
+        }
+
+        fail("NonExistingEntityException not thrown");
     }
 }

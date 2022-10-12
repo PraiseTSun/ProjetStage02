@@ -138,15 +138,18 @@ public class StudentService {
                 .build();
     }
 
-    public StudentApplyDTO getPostulsOfferId (long id){
+    public StudentApplyDTO getPostulsOfferId (long studentId) throws NonExistentEntityException {
+        Optional<Student> studentOpt = studentRepository.findById(studentId);
+        if(studentOpt.isEmpty()) throw new NonExistentEntityException();
+
         List<Long> offersId = new ArrayList<>();
-        postulationRepository.findByStudentId(id)
+        postulationRepository.findByStudentId(studentId)
             .forEach(
                 postulation -> offersId.add(postulation.getOfferId())
             );
 
         return StudentApplyDTO.builder()
-                .studentId(id)
+                .studentId(studentOpt.get().getId())
                 .offersId(offersId)
                 .build();
     }
