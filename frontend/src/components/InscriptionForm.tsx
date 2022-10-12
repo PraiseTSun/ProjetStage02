@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import { Container, ListGroup, Tab } from "react-bootstrap";
 import FormulaireEtudiant from "./FormulaireEtudiant";
 import FormulaireEntreprise from "./FormulaireEntreprise";
@@ -18,7 +18,7 @@ const InscriptionForm = ({ setIsLogginPage }: { setIsLogginPage: Function }): JS
             const data = await res.json();
             alert(data.error);
             setIsLogginPage(true);
-        }else{
+        } else {
             alert("Courriel de confirmation envoyé");
             setIsLogginPage(true);
         }

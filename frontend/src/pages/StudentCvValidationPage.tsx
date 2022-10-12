@@ -7,7 +7,7 @@ import { Viewer } from '@react-pdf-viewer/core';
 const StudentCvValidationPage = ({ connectedUser, deconnexion }:
     { connectedUser: IUser, deconnexion: Function }): JSX.Element => {
     const [students, setStudents] = useState<any[]>([]);
-    const [pdf, setpdf] = useState<Uint8Array>(new Uint8Array([]))
+    const [pdf, setPDF] = useState<Uint8Array>(new Uint8Array([]))
     const [showPDF, setShowPDF] = useState<boolean>(false)
 
     useEffect(() => {
@@ -79,7 +79,7 @@ const StudentCvValidationPage = ({ connectedUser, deconnexion }:
             });
             if (response.ok) {
                 const data = await response.json();
-                setpdf(new Uint8Array(JSON.parse(data.pdf)));
+                setPDF(new Uint8Array(JSON.parse(data.pdf)));
                 setShowPDF(true);
             }
             else if (response.status === 403) {

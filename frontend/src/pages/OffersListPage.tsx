@@ -7,8 +7,8 @@ import IOffer from "../models/Offer";
 
 const OffersListPage = ({ connectedUser, deconnexion }: { connectedUser: IUser, deconnexion: Function }): JSX.Element => {
     const [offers, setOffers] = useState<IOffer[]>([]);
-    const [pdf, setpdf] = useState<Uint8Array>(new Uint8Array([]))
-    const [showPdf, setShowPdf] = useState<boolean>(false)
+    const [pdf, setPDF] = useState<Uint8Array>(new Uint8Array([]))
+    const [showPdf, setShowPDF] = useState<boolean>(false)
 
     useEffect(() => {
         const fetchOffers = async () => {
@@ -39,10 +39,9 @@ const OffersListPage = ({ connectedUser, deconnexion }: { connectedUser: IUser, 
             }
         }
         fetchOffers()
-        setShowPdf(pdf.length > 0)
-    }, [connectedUser, pdf, deconnexion]);
+    }, [connectedUser, deconnexion]);
 
-    async function getPDF(offerID: number): Promise<void> {
+    async function getPDF(offerID: string): Promise<void> {
         try {
             const response = await fetch("http://localhost:8080/getOfferStudent/" + offerID, {
                 method: "PUT",
@@ -55,7 +54,8 @@ const OffersListPage = ({ connectedUser, deconnexion }: { connectedUser: IUser, 
 
             if (response.ok) {
                 const data = await response.json();
-                setpdf(new Uint8Array(JSON.parse(data.pdf)));
+                setPDF(new Uint8Array(JSON.parse(data.pdf)));
+                setShowPDF(true);
             }
             else if (response.status === 403) {
                 alert("Session expiré");
@@ -73,7 +73,7 @@ const OffersListPage = ({ connectedUser, deconnexion }: { connectedUser: IUser, 
         return (
             <Container>
                 <div className="bg-dark p-2">
-                    <Button className="Btn btn-primary" onClick={() => setShowPdf(false)}>
+                    <Button className="Btn btn-primary" onClick={() => setShowPDF(false)}>
                         Fermer
                     </Button>
                 </div>
@@ -115,7 +115,7 @@ const OffersListPage = ({ connectedUser, deconnexion }: { connectedUser: IUser, 
                                         <td>{offer.position}</td>
                                         <td>{offer.heureParSemaine}</td>
                                         <td>{offer.adresse}</td>
-                                        <td><Button className="btn btn-warning" onClick={() => getPDF(parseInt(offer.id))}>PDF</Button></td>
+                                        <td><Button className="btn btn-warning" onClick={async () => await getPDF(offer.id)}>PDF</Button></td>
                                     </tr>
                                 );
                             })}
