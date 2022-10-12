@@ -36,6 +36,7 @@ const LoginForm = (props: { setUser: Function }): JSX.Element => {
                 if (res.ok) {
                     const data = await res.json()
                     const user: IUser = {
+                        id : data.id,
                         firstName: data.firstName,
                         lastName: data.lastName,
                         userType: userType,

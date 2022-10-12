@@ -3,50 +3,48 @@ import React, { useEffect, useState } from "react";
 import { Button, Col, Container, Row, Table } from "react-bootstrap";
 import { Link } from "react-router-dom";
 import IUser from "../models/IUser";
+import IOffer from "../models/Offer";
 
 const OffersListPage = ({ connectedUser, deconnexion }: { connectedUser: IUser, deconnexion: Function }): JSX.Element => {
-    const [offers, setOffers] = useState<any[]>([]);
+    const [offers, setOffers] = useState<IOffer[]>([]);
     const [pdf, setpdf] = useState<Uint8Array>(new Uint8Array([]))
     const [showPdf, setShowPdf] = useState<boolean>(false)
 
-    // useEffect(() => {
-    //     const fetchOffers = async () => {
-    //         try {
-    //             //TODO
-    //             const response = await fetch("http://localhost:8080/TODO", {
-    //                 method: "PUT",
-    //                 headers: {
-    //                     'Accept': 'application/json',
-    //                     'Content-Type': 'application/json',
-    //                 },
-    //                 body: JSON.stringify({ "token": connectedUser.token })
-    //             });
-    //             if (response.ok) {
-    //                 const data = await response.json();
-    //                 setOffers(data);
-    //             }
-    //             else if (response.status === 403) {
-    //                 alert("Session expiré");
-    //                 deconnexion();
-    //             }
-    //             else {
-    //                 console.log(response.status)
-    //                 throw new Error("Error code not handled");
-    //             }
-    //         }
-    //         catch {
-    //             alert("Une erreur est survenue, ressayez.");
-    //             window.location.href = "/"
-    //         }
-    //     }
-    //     fetchOffers()
-    //     setShowPdf(pdf.length > 0)
-    // }, [connectedUser, pdf]);
+    useEffect(() => {
+        const fetchOffers = async () => {
+            try {
+                const response = await fetch("http://localhost:8080/getOffers/" + connectedUser.id, {
+                    method: "PUT",
+                    headers: {
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ "token": connectedUser.token })
+                });
+                if (response.ok) {
+                    const data = await response.json();
+                    setOffers(data);
+                }
+                else if (response.status === 403) {
+                    alert("Session expiré");
+                    deconnexion();
+                }
+                else {
+                    throw new Error("Error code not handled");
+                }
+            }
+            catch {
+                alert("Une erreur est survenue, ressayez.");
+                window.location.href = "/"
+            }
+        }
+        fetchOffers()
+        setShowPdf(pdf.length > 0)
+    }, [connectedUser, pdf, deconnexion]);
 
     async function getPDF(offerID: number): Promise<void> {
         try {
-            //TODO
-            const response = await fetch("http://localhost:8080/offerPdf/" + offerID.toString(), {
+            const response = await fetch("http://localhost:8080/getOfferStudent/" + offerID, {
                 method: "PUT",
                 headers: {
                     'Accept': 'application/json',
@@ -103,24 +101,21 @@ const OffersListPage = ({ connectedUser, deconnexion }: { connectedUser: IUser, 
                         <thead className="bg-primary text-white">
                             <tr>
                                 <th>Compagnie</th>
-                                <th>Departement</th>
                                 <th>Position</th>
                                 <th>Heures par semaine</th>
                                 <th>Adresse</th>
                                 <th>Offre</th>
                             </tr>
-
                         </thead>
                         <tbody className="bg-light">
                             {offers.map((offer, index) => {
                                 return (
                                     <tr key={index}>
                                         <td>{offer.nomDeCompagnie}</td>
-                                        <td>{offer.department}</td>
                                         <td>{offer.position}</td>
                                         <td>{offer.heureParSemaine}</td>
                                         <td>{offer.adresse}</td>
-                                        <td><Button className="btn btn-warning" onClick={() => getPDF(offer.id)}>CV</Button></td>
+                                        <td><Button className="btn btn-warning" onClick={() => getPDF(parseInt(offer.id))}>PDF</Button></td>
                                     </tr>
                                 );
                             })}
