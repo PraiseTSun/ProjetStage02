@@ -2,7 +2,6 @@ package projet.projetstage02.service;
 
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
-import org.springframework.test.context.jdbc.Sql;
 import projet.projetstage02.DTO.*;
 import projet.projetstage02.exception.AlreadyExistingPostulation;
 import projet.projetstage02.exception.NonExistentEntityException;
@@ -138,7 +137,7 @@ public class StudentService {
                 .build();
     }
 
-    public StudentApplyDTO getPostulsOfferId (long studentId) throws NonExistentEntityException {
+    public StudentApplysDTO getPostulsOfferId (long studentId) throws NonExistentEntityException {
         Optional<Student> studentOpt = studentRepository.findById(studentId);
         if(studentOpt.isEmpty()) throw new NonExistentEntityException();
 
@@ -148,7 +147,7 @@ public class StudentService {
                 postulation -> offersId.add(postulation.getOfferId())
             );
 
-        return StudentApplyDTO.builder()
+        return StudentApplysDTO.builder()
                 .studentId(studentOpt.get().getId())
                 .offersId(offersId)
                 .build();

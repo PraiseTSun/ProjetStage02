@@ -399,7 +399,7 @@ public class StudentServiceTest {
         when(postulationRepository.findByStudentId(anyLong())).thenReturn(Arrays.asList(bartPostulation));
 
         // Act
-        StudentApplyDTO dto = studentService.getPostulsOfferId(1L);
+        StudentApplysDTO dto = studentService.getPostulsOfferId(1L);
 
         // Assert
         assertThat(dto.getStudentId()).isEqualTo(bart.getId());
