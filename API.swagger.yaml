@@ -1008,3 +1008,29 @@ paths:
           description: Token invalide ou expiré
         404:
           description: L'offre avec cette id n'existe pas
+  /applyToOffer/{studentId}_{offerId}:
+    put:
+      summary: Permet à l’étudiant d’appliquer à une offre de stage (Doit avoir un token Student)
+      parameters:
+        - in: path
+          name: id
+          description: id de l'étudiant
+          type: string
+          required: true
+        - in: body
+          name: token
+          description: Token valide de l'étudiant
+          schema:
+            type: object
+            properties:
+              token:
+                type: string
+      produces:
+        - application/json
+      responses:
+        200:
+          description: L'application a été réussi
+        403:
+          description: Token invalide ou expiré
+        404:
+          description: L'étudiant avec cette id n'existe pas ou l'offre avec cette id n'existe pas.
