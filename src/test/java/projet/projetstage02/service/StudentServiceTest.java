@@ -8,7 +8,6 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import projet.projetstage02.DTO.*;
 import projet.projetstage02.exception.NonExistentEntityException;
-import projet.projetstage02.model.AbstractUser;
 import projet.projetstage02.model.AbstractUser.Department;
 import projet.projetstage02.model.Offre;
 import projet.projetstage02.model.Student;
@@ -249,7 +248,7 @@ public class StudentServiceTest {
     }
 
     @Test
-    void testGetOffersByDepartment(){
+    void testGetOffersByStudentDepartmentSuccess() throws NonExistentEntityException {
         // Arrange
         Department department = Department.Informatique;
         Offre successOffer = Offre.builder().valide(true).department(Department.Informatique).build();
@@ -260,15 +259,30 @@ public class StudentServiceTest {
             add(failOffer1);
             add(failOffer2);
         }};
+        when(studentRepository.findById(anyLong())).thenReturn(Optional.of(bart));
         when(offreRepository.findAll()).thenReturn(offres);
 
         // Act
-        List<OffreDTO> offerDTOs = studentService.getOffersByDepartment(department);
+        List<OffreDTO> offerDTOs = studentService.getOffersByStudentDepartment(1L);
 
         // Assert
         assertThat(offerDTOs.size()).isEqualTo(1);
         assertThat(offerDTOs.get(0).isValide()).isEqualTo(true);
         assertThat(offerDTOs.get(0).getDepartment()).isEqualTo(department.departement);
+    }
+
+    @Test
+    void testGetOffersByStudentDepartmentNotFound() {
+        // Arrange
+        when(studentRepository.findById(anyLong())).thenReturn(Optional.empty());
+
+        // Act
+        try {
+            studentService.getOffersByStudentDepartment(1L);
+        } catch (NonExistentEntityException e) {
+            return;
+        }
+        fail("NonExistentEntityException not thrown");
     }
 
     @Test

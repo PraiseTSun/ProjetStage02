@@ -6,8 +6,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.MockedStatic;
-import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.boot.test.json.JacksonTester;
 import org.springframework.http.MediaType;
@@ -24,8 +22,6 @@ import projet.projetstage02.service.AuthService;
 import projet.projetstage02.service.CompanyService;
 import projet.projetstage02.service.GestionnaireService;
 import projet.projetstage02.service.StudentService;
-import projet.projetstage02.utils.EmailUtil;
-import projet.projetstage02.utils.TimeUtil;
 
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
@@ -1033,11 +1029,11 @@ public class RootControllerTest {
     }
 
     @Test
-    void testGetOffersByDepartmentSuccess() throws Exception{
+    void testGetOffersByStudentDepartmentSuccess() throws Exception{
         when(authService.getToken(any(),any())).thenReturn(Token.builder().userId(1).build());
-        when(studentService.getOffersByDepartment(any())).thenReturn(List.of(duffOffre));
+        when(studentService.getOffersByStudentDepartment(anyLong())).thenReturn(List.of(duffOffre));
 
-        mockMvc.perform(put("/getOffers/{department}", Department.Transport.toString())
+        mockMvc.perform(put("/getOffers/{studentId}", 1)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(jsonTokenDTO.write(token).getJson()))
 
@@ -1045,11 +1041,21 @@ public class RootControllerTest {
                 .andExpect(jsonPath("$[0].nomDeCompagnie", is(duffOffre.getNomDeCompagnie())));
     }
 
+    @Test
+    void testGetOffersByStudentDepartmentNotFound() throws Exception {
+        when(authService.getToken(any(),any())).thenReturn(Token.builder().userId(1).build());
+        when(studentService.getOffersByStudentDepartment(anyLong())).thenThrow(new NonExistentEntityException());
+
+        mockMvc.perform(put("/getOffers/{studentId}", 1)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(jsonTokenDTO.write(token).getJson()))
+                .andExpect(status().isNotFound());
+    }
 
     @Test
-    void testGetOffersByDepartmentInvalidToken() throws Exception{
+    void testGetOffersByStudentDepartmentInvalidToken() throws Exception {
         when(authService.getToken(any(),any())).thenThrow(new InvalidTokenException());
-        mockMvc.perform(put("/getOffers/{department}", Department.Transport.toString())
+        mockMvc.perform(put("/getOffers/{studentId}", 1)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(jsonTokenDTO.write(token).getJson()))
                 .andExpect(status().isForbidden());

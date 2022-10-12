@@ -14,9 +14,7 @@ import projet.projetstage02.exception.InvalidTokenException;
 import projet.projetstage02.exception.NonExistentEntityException;
 import projet.projetstage02.exception.NonExistentOfferExeption;
 
-import projet.projetstage02.model.AbstractUser;
 import projet.projetstage02.model.AbstractUser.Department;
-import projet.projetstage02.model.Student;
 import projet.projetstage02.model.Token;
 import projet.projetstage02.service.AuthService;
 import projet.projetstage02.service.CompanyService;
@@ -565,17 +563,20 @@ public class RootController {
         }
     }
 
-    @PutMapping("/getOffers/{department}")
-    public ResponseEntity<List<OffreDTO>> getOffersByDepartment(@PathVariable String department, @RequestBody TokenDTO tokenId){
-        logger.log(Level.INFO, "Put /getOffersByDepartment entered with Department : " + department);
+    @PutMapping("/getOffers/{studentId}")
+    public ResponseEntity<List<OffreDTO>> getOffersByStudentDepartment(@PathVariable String studentId, @RequestBody TokenDTO tokenId){
+        logger.log(Level.INFO, "Put /getOffersByStudentDepartment entered with student id : " + studentId);
 
         try {
             authService.getToken(tokenId.getToken(), STUDENT);
-            List<OffreDTO> offers = studentService.getOffersByDepartment(Department.valueOf(department));
-            logger.log(Level.INFO, "PutMapping: /getOffersByDepartment sent 200 response");
+            List<OffreDTO> offers = studentService.getOffersByStudentDepartment(Long.parseLong(studentId));
+            logger.log(Level.INFO, "PutMapping: /getOffersByStudentDepartment sent 200 response");
             return ResponseEntity.ok(offers);
+        } catch (NonExistentEntityException e) {
+            logger.log(Level.INFO, "PutMapping: /getOffersByStudentDepartment sent 404 response");
+            return ResponseEntity.notFound().build();
         } catch (InvalidTokenException e) {
-            logger.log(Level.INFO, "PutMapping: /getOffersByDepartment sent 403 response");
+            logger.log(Level.INFO, "PutMapping: /getOffersByStudentDepartment sent 403 response");
             return ResponseEntity.status(FORBIDDEN).build();
         }
     }
