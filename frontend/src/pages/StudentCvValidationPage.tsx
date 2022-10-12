@@ -116,7 +116,7 @@ const StudentCvValidationPage = ({ connectedUser, deconnexion }:
                     <Link to="/" className="btn btn-primary my-3">Home</Link>
                 </Col>
                 <Col sm={8} className="text-center pt-2">
-                    <h1 className="fw-bold text-white display-3 pb-2">Liste de stages</h1>
+                    <h1 className="fw-bold text-white display-3 pb-2">Liste des CVs non validés</h1>
                 </Col>
                 <Col sm={2}></Col>
             </Row>
