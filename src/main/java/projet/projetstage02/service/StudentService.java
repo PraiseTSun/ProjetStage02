@@ -3,10 +3,7 @@ package projet.projetstage02.service;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.test.context.jdbc.Sql;
-import projet.projetstage02.DTO.OffreDTO;
-import projet.projetstage02.DTO.PdfDTO;
-import projet.projetstage02.DTO.PdfOutDTO;
-import projet.projetstage02.DTO.StudentDTO;
+import projet.projetstage02.DTO.*;
 import projet.projetstage02.exception.AlreadyExistingPostulation;
 import projet.projetstage02.exception.NonExistentEntityException;
 import projet.projetstage02.model.Offre;
@@ -117,7 +114,7 @@ public class StudentService {
         return new PdfOutDTO(offre.getId(), cv);
     }
 
-    public void createPostulation(long studentId, long offerID) throws NonExistentEntityException, AlreadyExistingPostulation {
+    public PostulOutDTO createPostulation(long studentId, long offerID) throws NonExistentEntityException, AlreadyExistingPostulation {
         Optional<Student> studentOpt = studentRepository.findById(studentId);
         if (studentOpt.isEmpty()) throw new NonExistentEntityException();
 
@@ -127,7 +124,17 @@ public class StudentService {
         Optional<Postulation> postulationOpt = postulationRepository.findByStudentIdAndOfferId(studentId, offerID);
         if(!postulationOpt.isEmpty()) throw new AlreadyExistingPostulation();
 
-        Postulation postulation = new Postulation(offerID, studentId);
+        Student student = studentOpt.get();
+        Offre offer = offerOpt.get();
+
+        Postulation postulation = new Postulation(offer.getId(), student.getId());
         postulationRepository.save(postulation);
+
+        return PostulOutDTO.builder()
+                .studentId(student.getId())
+                .fullName(student.getFirstName() + " " + student.getLastName())
+                .offerId(offer.getId())
+                .company(offer.getNomDeCompagnie())
+                .build();
     }
 }

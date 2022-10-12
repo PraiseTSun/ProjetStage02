@@ -56,6 +56,7 @@ public class StudentServiceTest {
                 Department.Informatique);
 
         bart.setCv(new byte[0]);
+        bart.setId(2L);
 
         bartCv = PdfDTO.builder().studentId(1).pdf(new byte[0]).build();
 
@@ -333,10 +334,12 @@ public class StudentServiceTest {
                 .thenReturn(Optional.empty());
 
         // Act
-        studentService.createPostulation(2L, 1L);
+        PostulOutDTO dto = studentService.createPostulation(2L, 1L);
 
         // Assert
         verify(postulationRepository, times(1)).save(any());
+        assertThat(dto.getOfferId()).isEqualTo(duffOffer.getId());
+        assertThat(dto.getStudentId()).isEqualTo(bart.getId());
     }
 
     @Test

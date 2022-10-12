@@ -601,16 +601,16 @@ public class RootController {
     }
 
     @PutMapping("/applyToOffer/{studentId}_{offerId}")
-    public ResponseEntity<Map<String, String>> createPostulation
+    public ResponseEntity<PostulOutDTO> createPostulation
             (@PathVariable String studentId, @PathVariable String offerId, @RequestBody TokenDTO tokenId){
         logger.log(Level.INFO, "Put /createPostulation entered with id: " + studentId
                 + " and offer id: " + offerId);
 
         try {
             authService.getToken(tokenId.getToken(), STUDENT);
-            studentService.createPostulation(Long.parseLong(studentId), Long.parseLong(offerId));
+            PostulOutDTO dto = studentService.createPostulation(Long.parseLong(studentId), Long.parseLong(offerId));
             logger.log(Level.INFO, "Put /getOfferStudent sent 200 response");
-            return ResponseEntity.ok().build();
+            return ResponseEntity.ok(dto);
         } catch (NonExistentEntityException e) {
             logger.log(Level.INFO, "Put /getOfferStudent sent 404 response");
             return ResponseEntity.notFound().build();

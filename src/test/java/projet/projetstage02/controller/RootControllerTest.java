@@ -13,6 +13,7 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import projet.projetstage02.DTO.*;
+import projet.projetstage02.exception.AlreadyExistingPostulation;
 import projet.projetstage02.exception.InvalidTokenException;
 import projet.projetstage02.exception.NonExistentEntityException;
 import projet.projetstage02.exception.NonExistentOfferExeption;
@@ -23,6 +24,7 @@ import projet.projetstage02.service.CompanyService;
 import projet.projetstage02.service.GestionnaireService;
 import projet.projetstage02.service.StudentService;
 
+import java.io.IOException;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -71,6 +73,7 @@ public class RootControllerTest {
     OffreDTO duffOffre;
     PdfOutDTO duffOfferOut;
     PdfDTO bartCV;
+    PostulOutDTO bartPostulation;
 
     // https://thepracticaldeveloper.com/guide-spring-boot-controller-tests/
     @BeforeEach
@@ -126,6 +129,11 @@ public class RootControllerTest {
         duffOfferOut = PdfOutDTO.builder()
                 .id(1L)
                 .pdf("[1,2,3,4,5,6,7,8,9]")
+                .build();
+
+        bartPostulation = PostulOutDTO.builder()
+                .fullName(bart.getFirstName() + " " + bart.getLastName())
+                .company(duffOffre.getNomDeCompagnie())
                 .build();
     }
 
@@ -1089,6 +1097,47 @@ public class RootControllerTest {
         when(authService.getToken(any(),any())).thenThrow(new InvalidTokenException());
 
         mockMvc.perform(put("/getOfferStudent/{id}", 1)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(jsonTokenDTO.write(token).getJson()))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    void testCreatePostulationSuccess() throws Exception {
+        when(studentService.createPostulation(anyLong(), anyLong())).thenReturn(bartPostulation);
+        mockMvc.perform(put("/applyToOffer/{studentId}_{offerId}", 2, 1)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(jsonTokenDTO.write(token).getJson()))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.fullName", is(bartPostulation.getFullName())))
+                .andExpect(jsonPath("$.company", is(bartPostulation.getCompany())));
+    }
+
+    @Test
+    void testCreatePostulationNotFound() throws Exception {
+        when(studentService.createPostulation(anyLong(), anyLong())).thenThrow(new NonExistentEntityException());
+
+        mockMvc.perform(put("/applyToOffer/{studentId}_{offerId}", 2, 1)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(jsonTokenDTO.write(token).getJson()))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    void testCreatePostulationConflict() throws Exception {
+        when(studentService.createPostulation(anyLong(), anyLong())).thenThrow(new AlreadyExistingPostulation());
+
+        mockMvc.perform(put("/applyToOffer/{studentId}_{offerId}", 2, 1)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(jsonTokenDTO.write(token).getJson()))
+                .andExpect(status().isConflict());
+    }
+
+    @Test
+    void testCreatePostulationInvalidToken() throws Exception {
+        when(authService.getToken(any(), any())).thenThrow(new InvalidTokenException());
+
+        mockMvc.perform(put("/applyToOffer/{studentId}_{offerId}", 2, 1)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(jsonTokenDTO.write(token).getJson()))
                 .andExpect(status().isForbidden());
