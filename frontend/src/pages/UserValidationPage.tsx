@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import { Container, Row, ToggleButton, ToggleButtonGroup } from "react-bootstrap";
+import React, {useState} from "react";
+import {Container, Row, ToggleButton, ToggleButtonGroup} from "react-bootstrap";
 import ValidationStudent from "../components/ValidationStudent";
 import ValidationCompany from "../components/ValidationCompany";
 import ValidationGestionnaire from "../components/CreateGestionnaireForm";

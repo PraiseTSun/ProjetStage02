@@ -1,5 +1,4 @@
-import React from "react";
-import { useState } from "react";
+import React, { useState } from "react";
 import { Col, Row } from "react-bootstrap";
 import InscriptionForm from "../components/InscriptionForm";
 import LoginForm from "../components/LoginForm";

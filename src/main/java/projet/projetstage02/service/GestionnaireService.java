@@ -14,7 +14,7 @@ import projet.projetstage02.repository.GestionnaireRepository;
 import projet.projetstage02.repository.OffreRepository;
 import projet.projetstage02.repository.StudentRepository;
 
-import java.nio.charset.StandardCharsets;
+import javax.validation.constraints.NotNull;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -22,11 +22,12 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
+import static projet.projetstage02.utils.TimeUtil.MILLI_SECOND_DAY;
+import static projet.projetstage02.utils.TimeUtil.currentTimestamp;
+
 @Service
 @AllArgsConstructor
 public class GestionnaireService {
-    //TODO when merging with token branch, user TimeUtil stuff
-    private final long MILLI_SECOND_DAY = 864000000;
     private final GestionnaireRepository gestionnaireRepository;
     private final CompanyRepository companyRepository;
     private final StudentRepository studentRepository;
@@ -49,8 +50,7 @@ public class GestionnaireService {
         return gestionnaireRepository.save(dto.toModel()).getId();
     }
 
-
-    public boolean isEmailUnique(String email) {
+    private boolean isEmailUnique(String email) {
         return gestionnaireRepository.findByEmail(email).isEmpty();
     }
 
@@ -67,14 +67,14 @@ public class GestionnaireService {
     }
 
     public void validateCompany(Long id) throws NonExistentEntityException {
-        //Throws NonExistentUserException
+        // Throws NonExistentUserException
         Company company = getCompany(id);
         company.setConfirm(true);
         companyRepository.save(company);
     }
 
     public void validateStudent(Long id) throws NonExistentEntityException {
-        //Throws NonExistentUserException
+        // Throws NonExistentUserException
         Student student = getStudent(id);
         student.setConfirm(true);
         studentRepository.save(student);
@@ -117,6 +117,7 @@ public class GestionnaireService {
                         !offre.isValide())
                 .forEach(offre ->
                         offres.add(new OffreDTO(offre)));
+        offres.forEach(offre -> offre.setPdf(new byte[0]));
         return offres;
     }
 
@@ -154,8 +155,10 @@ public class GestionnaireService {
         return unvalidatedCompaniesDTOs;
     }
 
-    public byte[] getOffrePdfById(long id) throws NonExistentOfferExeption {
-        return getOffer(id).getPdf();
+    public PdfOutDTO getOffrePdfById(long id) throws NonExistentOfferExeption {
+        @NotNull byte[] offer = getOffer(id).getPdf();
+        String offreString = Arrays.toString(offer).replaceAll("\\s+", "");
+        return PdfOutDTO.builder().pdf(offreString).build();
     }
 
     public List<StudentDTO> getUnvalidatedCVStudents() {
@@ -205,14 +208,20 @@ public class GestionnaireService {
         return new PdfOutDTO(studentOpt.get().getId(), cvConvert);
     }
 
-    public boolean deleteUnconfirmedGestionnaire(GestionnaireDTO dto) throws NonExistentEntityException {
-        Optional<Gestionnaire> studentOpt = gestionnaireRepository.findByEmail(dto.getEmail());
-        if(studentOpt.isEmpty()) throw new NonExistentEntityException();
+    private boolean deleteUnconfirmedGestionnaire(String email) throws NonExistentEntityException {
+        Optional<Gestionnaire> studentOpt = gestionnaireRepository.findByEmail(email);
+        if (studentOpt.isEmpty())
+            throw new NonExistentEntityException();
         Gestionnaire gestionnaire = studentOpt.get();
-        if(!gestionnaire.isEmailConfirmed() && Timestamp.valueOf(LocalDateTime.now()).getTime() - gestionnaire.getInscriptionTimestamp() > MILLI_SECOND_DAY){
+        if (currentTimestamp() - gestionnaire.getInscriptionTimestamp() > MILLI_SECOND_DAY) {
             gestionnaireRepository.delete(gestionnaire);
             return true;
         }
         return false;
+    }
+
+    public boolean isGestionnaireInvalid(String email) throws NonExistentEntityException {
+        return !isEmailUnique(email)
+                && !deleteUnconfirmedGestionnaire(email);
     }
 }

@@ -1,7 +1,6 @@
-import React from "react";
-import { Button, Container, Form, FormGroup, Row } from "react-bootstrap";
-import { useState } from "react";
-import { BeatLoader } from "react-spinners";
+import React, {useState} from "react";
+import {Button, Container, Form, FormGroup, Row} from "react-bootstrap";
+import {BeatLoader} from "react-spinners";
 
 const FormulaireEtudiant = ({ onInscrire }: { onInscrire: Function }) => {
     const [waiting, setWaiting] = useState(false);

@@ -4,16 +4,16 @@ import { Link } from "react-router-dom";
 import IUser from "../models/IUser";
 import { Viewer } from '@react-pdf-viewer/core';
 
-const StudentCvValidationPage = ({ connectedUser, deconnexion }:
+const ValiderNouvelleOffreStagePage = ({ connectedUser, deconnexion }:
     { connectedUser: IUser, deconnexion: Function }): JSX.Element => {
-    const [students, setStudents] = useState<any[]>([]);
-    const [pdf, setPDF] = useState<Uint8Array>(new Uint8Array([]))
+    const [offers, setOffers] = useState<any[]>([]);
+    const [pdf, setpdf] = useState<Uint8Array>(new Uint8Array([]))
     const [showPDF, setShowPDF] = useState<boolean>(false)
 
     useEffect(() => {
-        const fetchUnvalidatedCvStudents = async () => {
+        const fetchOffresAttendreValide = async () => {
             try {
-                const response = await fetch("http://localhost:8080/unvalidatedCvStudents", {
+                const response = await fetch("http://localhost:8080/unvalidatedOffers", {
                     method: "PUT",
                     headers: {
                         'Accept': 'application/json',
@@ -23,13 +23,14 @@ const StudentCvValidationPage = ({ connectedUser, deconnexion }:
                 });
                 if (response.ok) {
                     const data = await response.json();
-                    setStudents(data);
+                    setOffers(data);
                 }
                 else if (response.status === 403) {
                     alert("Session expiré");
                     deconnexion();
                 }
                 else {
+                    console.log(response.status)
                     throw new Error("Error code not handled");
                 }
             }
@@ -38,22 +39,30 @@ const StudentCvValidationPage = ({ connectedUser, deconnexion }:
                 window.location.href = "/"
             }
         }
-        fetchUnvalidatedCvStudents();
+        fetchOffresAttendreValide()
     }, [connectedUser, deconnexion]);
 
-    async function validateCV(studentId: number, valid: boolean): Promise<void> {
+    async function valideOffre(offerId: number, valid: boolean): Promise<void> {
         try {
-            const url: String = valid ? "http://localhost:8080/validateCv/" : "http://localhost:8080/refuseCv/";
-            const response: Response = await fetch(url + studentId.toString(), {
+            const url: String = valid ? "http://localhost:8080/validateOffer/" : "http://localhost:8080/removeOffer/";
+            const response: Response = valid ? await fetch(url + offerId.toString(), {
                 method: "PUT",
                 headers: {
                     'Accept': 'application/json',
                     'Content-Type': 'application/json',
                 },
                 body: JSON.stringify({ "token": connectedUser.token })
+            }) : await fetch(url + offerId.toString(), {
+                method: "DELETE",
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ "token": connectedUser.token })
             });
+
             if (response.ok) {
-                setStudents(students.filter(student => student.id !== studentId));
+                setOffers(offers.filter(offer => offer.id !== offerId));
             }
             else if (response.status === 403) {
                 alert("Session expiré");
@@ -67,9 +76,9 @@ const StudentCvValidationPage = ({ connectedUser, deconnexion }:
         }
     }
 
-    async function getPDF(studentID: number): Promise<void> {
+    async function getPDF(offerId: number): Promise<void> {
         try {
-            const response = await fetch("http://localhost:8080/studentCv/" + studentID.toString(), {
+            const response = await fetch("http://localhost:8080/offerPdf/" + offerId.toString(), {
                 method: "PUT",
                 headers: {
                     'Accept': 'application/json',
@@ -77,9 +86,10 @@ const StudentCvValidationPage = ({ connectedUser, deconnexion }:
                 },
                 body: JSON.stringify({ "token": connectedUser.token })
             });
+
             if (response.ok) {
                 const data = await response.json();
-                setPDF(new Uint8Array(JSON.parse(data.pdf)));
+                setpdf(new Uint8Array(JSON.parse(data.pdf)))
                 setShowPDF(true);
             }
             else if (response.status === 403) {
@@ -116,40 +126,36 @@ const StudentCvValidationPage = ({ connectedUser, deconnexion }:
                     <Link to="/" className="btn btn-primary my-3">Home</Link>
                 </Col>
                 <Col sm={8} className="text-center pt-2">
-                    <h1 className="fw-bold text-white display-3 pb-2">Liste des CVs non validés</h1>
+                    <h1 className="fw-bold">Validation des offres</h1>
                 </Col>
                 <Col sm={2}></Col>
             </Row>
             <Row>
                 <Col>
-                    <Table className="text-center" hover>
-                        <thead className="bg-primary text-white">
+                    <Table data-testid="tableValiderNouvelleOffreStage" className="text-center" hover>
+                        <thead className="bg-primary">
                             <tr>
-                                <th>Prénom</th>
-                                <th>Nom</th>
-                                <th>Departement</th>
-                                <th>CV</th>
-                                <th>CV Valide</th>
+                                <th>Nom De Compagnie</th>
+                                <th>Départment / Position</th>
+                                <th>Heure Par Semaine / Adresse</th>
+                                <th>Pdf</th>
+                                <th>Valide</th>
+                                <th>Non Valide</th>
                             </tr>
-
                         </thead>
-                        <tbody className="bg-light">
-                            {students.map((student, index) => {
+                        <tbody className="bg-light" data-testid="offre-container">
+                            {offers.map((offer, index) => {
                                 return (
-                                    <tr key={index}>
-                                        <td>{student.firstName}</td>
-                                        <td>{student.lastName}</td>
-                                        <td>{student.department}</td>
-                                        <td><Button className="btn btn-warning" onClick={async () => await getPDF(student.id)}>CV</Button></td>
+                                    <tr key={index} data-testid="offre-container">
+                                        <td>{offer.nomDeCompagnie}</td>
+                                        <td>{offer.department} <br /> {offer.position}</td>
+                                        <td>{offer.heureParSemaine} <br /> {offer.adresse}</td>
+                                        <td><Button className="btn btn-warning" onClick={async () => await getPDF(offer.id)}>pdf</Button></td>
                                         <td>
-                                            <Button className="btn btn-success mx-2" onClick={
-                                                () => validateCV(student.id, true)}>
-                                                O
-                                            </Button>
-                                            <Button className="btn btn-danger" onClick={
-                                                () => validateCV(student.id, false)}>
-                                                X
-                                            </Button>
+                                            <Button className="btn btn-success mx-5" onClick={async () => await valideOffre(offer.id, true)}>O</Button>
+                                        </td>
+                                        <td>
+                                            <Button className="btn btn-danger" onClick={async () => await valideOffre(offer.id, false)}>X</Button>
                                         </td>
                                     </tr>
                                 );
@@ -158,8 +164,9 @@ const StudentCvValidationPage = ({ connectedUser, deconnexion }:
                     </Table>
                 </Col>
             </Row>
-        </Container >
+        </Container>
     );
 }
 
-export default StudentCvValidationPage;
+export default ValiderNouvelleOffreStagePage;
+
