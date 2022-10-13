@@ -1,6 +1,3 @@
-import {act, fireEvent, render, screen, waitForElementToBeRemoved} from "@testing-library/react";
-import {BrowserRouter} from "react-router-dom";
-import {emptyUser} from "./App";
 import { render, screen, fireEvent, waitForElementToBeRemoved, act } from "@testing-library/react";
 import { BrowserRouter } from "react-router-dom";
 import { emptyUser } from "./App";
@@ -318,6 +315,7 @@ describe("test UserValidationPage", () => {
     })
 })
 const gestionnaire: IUser = {
+    id : "1",
     firstName: "Yan",
     lastName: "Zhou",
     userType: "gestionnaire",
@@ -325,19 +323,21 @@ const gestionnaire: IUser = {
 }
 
 const company: IUser = {
+    id : "2",
     firstName: "Bob",
     lastName: "Marley",
     userType: "company",
     token: "324324332"
 }
 const student: IUser = {
+    id : "",
     firstName: "Bartholomew",
     lastName: "Kuma",
     userType: "student",
     token: "324324332"
 }
 
-const offres: object = [{
+const offres: object[] = [{
     nomDeCompagnie: "Desjardins",
     department: "Techniques de linformatique",
     position: "position",
