@@ -17,7 +17,8 @@ const ValidationStudent = ({ connectedUser, onValidation, onRemove }: { connecte
     }
 
     useEffect(() => {
-        fetch(`http://localhost:8080/unvalidatedStudents`,
+        const fetchAndSet = async ()=>{
+            const req = await fetch(`http://localhost:8080/unvalidatedStudents`,
             {
                 method: "PUT",
                 headers: {
@@ -27,10 +28,15 @@ const ValidationStudent = ({ connectedUser, onValidation, onRemove }: { connecte
                 body: JSON.stringify({ token: connectedUser.token })
 
             })
-            .then(response => response.json())
-            .then(data => {
+            if(req.ok){
+                const data = await req.json()
                 setStudents(data)
-            });
+                return;
+            }
+            alert("Une erreur est survenue")
+        }
+        fetchAndSet()
+        
     }, [connectedUser]);
 
     return (

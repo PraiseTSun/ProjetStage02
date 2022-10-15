@@ -2,7 +2,7 @@ import React, {useState} from "react";
 import {Container, Row, ToggleButton, ToggleButtonGroup} from "react-bootstrap";
 import ValidationStudent from "../components/ValidationStudent";
 import ValidationCompany from "../components/ValidationCompany";
-import ValidationGestionnaire from "../components/CreateGestionnaireForm";
+import CreateGestionnaireForm from "../components/CreateGestionnaireForm";
 import { Link } from "react-router-dom";
 import IUser from "../models/IUser";
 
@@ -60,7 +60,7 @@ const UserValidation = ({ connectedUser }: { connectedUser: IUser }) => {
             <Row>
                 {user === "Student" ? <ValidationStudent connectedUser={connectedUser} onRemove={onRemove} onValidation={onValidation} /> :
                     user === "Company" ? <ValidationCompany connectedUser={connectedUser} onRemove={onRemove} onValidation={onValidation} /> :
-                        <ValidationGestionnaire user={connectedUser} />
+                        <CreateGestionnaireForm user={connectedUser} />
                 }
             </Row>
         </Container>
