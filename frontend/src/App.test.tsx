@@ -12,6 +12,7 @@ import GestionnaireDashboardPage from "./pages/GestionnaireDashboardPage";
 import StudentDashboardPage from "./pages/StudentDashboardPage";
 import LoginPage from "./pages/LoginPage";
 import UserValidation from "./pages/UserValidationPage";
+import exp from "constants";
 
 describe("StudentCvValidationPageTests", () => {
 
@@ -131,18 +132,16 @@ describe("StudentCvValidationPageTests", () => {
     });
 });
 describe("CompanyDashboardPage test", () => {
-
+    const deconnexion = jest.fn()
+    const MockPage = () => {
+        return (
+            <BrowserRouter>
+                <CompanyDashboardPage deconnexion={deconnexion} user={company}/>
+            </BrowserRouter>
+        );
+    }
 
     it("CompanyDashboardLayoutTest", async () => {
-
-        const MockPage = () => {
-
-            return (
-                <BrowserRouter>
-                    <CompanyDashboardPage deconnexion={() => null} user={company}/>
-                </BrowserRouter>
-            );
-        }
 
         act(() => {
             render(<MockPage/>)
@@ -155,14 +154,6 @@ describe("CompanyDashboardPage test", () => {
     })
     it("CompanyDashboardSoumettreOffreButtonTest", async () => {
 
-        const MockPage = () => {
-
-            return (
-                <BrowserRouter>
-                    <CompanyDashboardPage deconnexion={() => null} user={company}/>
-                </BrowserRouter>
-            );
-        }
 
         act(() => {
             render(<MockPage/>)
@@ -176,14 +167,7 @@ describe("CompanyDashboardPage test", () => {
         //expect(await screen.findByText(/Formulaire de soumission de stage/i)).toBeInTheDocument();
     })
     it("CompanyDashboardDeconnexionButtonTest", async () => {
-        const deconnexion = jest.fn()
-        const MockPage = () => {
-            return (
-                <BrowserRouter>
-                    <CompanyDashboardPage deconnexion={deconnexion} user={company}/>
-                </BrowserRouter>
-            );
-        }
+
 
         act(() => {
             render(<MockPage/>)
@@ -199,60 +183,65 @@ describe("CompanyDashboardPage test", () => {
 
 describe("ConfirmationPage test", () => {
     beforeEach(() => {
-        jest.mock('react-router-dom', () => ({
-            ...jest.requireActual('react-router-dom'),
-            useParams:jest.fn(()=>
-            {
-                return {id: 1}
-            }),
-            useLocation: jest.fn().mockReturnValue({search:"userType=student"}),
-        }))
-        global.fetch = jest.fn((url) => {
-                if (url === "http://localhost:8080/confirmEmail/student/1") {
+        global.fetch = jest.fn(() => {
                     return Promise.resolve({
-                        created: true,
+                        ok: true,
                     });
-                } else throw new Error("Bad url call")
             }
         ) as jest.Mock;
 
         window.alert = jest.fn(() => null) as jest.Mock;
     })
+    const MockPage = () => {
+        return (
+            <BrowserRouter>
+                <ConfirmationPage/>
+            </BrowserRouter>
+        );
+    }
     it("ConfirmationPageLayoutTest", async () => {
-        const MockPage = () => {
-            return (
-                <BrowserRouter>
-                    <ConfirmationPage/>
-                </BrowserRouter>
-            );
-        }
         act(() => {
             render(<MockPage/>)
         })
         expect(await screen.findByText(/Succès! Vous pouvez fermez cette page/i)).toBeInTheDocument()
     })
 });
-const MockCompanyDashboardPage = () => {
-    return (
-        <BrowserRouter>
-            <CompanyDashboardPage deconnexion={() => null} user={company}/>
-        </BrowserRouter>
-    );
-}
-const MockConfirmationPage = () => {
-    return (
-        <BrowserRouter>
-            <ConfirmationPage/>
-        </BrowserRouter>
-    );
-}
-const MockFormulaireSoumissionPage = () => {
-    return (
-        <BrowserRouter>
-            <FormulaireSoumissionPage user={gestionnaire}/>
-        </BrowserRouter>
-    );
-}
+describe("FormulaireSoumissionPageTest",()=>{
+    const MockPage = () => {
+        return (
+            <BrowserRouter>
+                <FormulaireSoumissionPage user={gestionnaire}/>
+            </BrowserRouter>
+        );
+    }
+    it("FormulaireSoumissionInvalidFormTest",async ()=>{
+        act(()=>{
+            render(<MockPage/>)
+        })
+        const array = [
+            /Nom de la compagnie/i,
+            /Département/i,
+            /Poste/i,
+            /Heures par semaine/i,
+            /Adresse/i,
+            /Document PDF/i,
+        ]
+        for (const item of array) {
+            const element = await screen.findAllByText(item)
+            expect(element.length).not.toBe(0)
+        }
+        const bouton = await screen.findByRole("button", {name: /Envoyer/i})
+        expect(bouton).toBeInTheDocument()
+        act(() => {
+            fireEvent.click(bouton)
+        })
+        const champRequis = await screen.findAllByText(/champ requis/i)
+        expect(champRequis.length).toBe(5)
+        const heures = await screen.findByText(/Nombre d'heures entre 0 et 40/i)
+        expect(heures).toBeInTheDocument()
+    })
+})
+
 const MockGestionnaireDashboardPage = () => {
     return (
         <BrowserRouter>
@@ -310,7 +299,6 @@ describe("test UserValidationPage", () => {
                 } else throw new Error("Bad url call")
             }
         ) as jest.Mock;
-
         window.alert = jest.fn(() => null) as jest.Mock;
     })
 })

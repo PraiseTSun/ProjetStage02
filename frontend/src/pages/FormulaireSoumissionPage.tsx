@@ -121,7 +121,7 @@ const FormulaireSoumissionPage = ({ user }: { user: IUser }): JSX.Element => {
                     </Form.Group>
                     <Form.Group>
                         <Form.Label className="fw-bold h5">Heures par semaine</Form.Label>
-                        <Form.Control data-testid="hoursFormulaireSoumission"  type="number" min="1" max="40" required value={hoursPerWeek}
+                        <Form.Control data-testid="hoursFormulaireSoumission" id={"number"} type="number" min="1" max="40" required value={hoursPerWeek}
                             onChange={field => setHoursPerWeekFromField(field)}></Form.Control>
                         <Form.Control.Feedback type="invalid">Nombre d'heures entre 0 et 40</Form.Control.Feedback>
                     </Form.Group>
@@ -133,7 +133,7 @@ const FormulaireSoumissionPage = ({ user }: { user: IUser }): JSX.Element => {
                     </Form.Group>
                     <Form.Group>
                         <Form.Label className="fw-bold h5">Document PDF</Form.Label>
-                        <input data-testid="pdfFormulaireSoumission" className="form-control" accept=".pdf"
+                        <input data-testid="pdfFormulaireSoumission" id={"file"} className="form-control" accept=".pdf"
                             required type="file" onChange={(e) => {
                                 uploadFile(e.target.files![0]);
                             }} />
