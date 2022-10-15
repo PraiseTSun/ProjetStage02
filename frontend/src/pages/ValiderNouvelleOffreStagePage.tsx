@@ -30,7 +30,6 @@ const ValiderNouvelleOffreStagePage = ({ connectedUser, deconnexion }:
                     deconnexion();
                 }
                 else {
-                    console.log(response.status)
                     throw new Error("Error code not handled");
                 }
             }

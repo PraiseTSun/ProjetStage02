@@ -1,5 +1,5 @@
-import React, {useEffect, useState} from "react";
-import {Button, Col, Row} from "react-bootstrap";
+import React, { useEffect, useState } from "react";
+import { Button, Col, Row } from "react-bootstrap";
 import IUser from "../models/IUser";
 
 const ValidationCompany = ({ connectedUser, onValidation, onRemove }: { connectedUser: IUser, onValidation: Function, onRemove: Function }) => {
@@ -17,7 +17,7 @@ const ValidationCompany = ({ connectedUser, onValidation, onRemove }: { connecte
     }
 
     useEffect(() => {
-        fetch(`http://localhost:8080/unvalidatedCompanies`,
+        fetch('http://localhost:8080/unvalidatedCompanies',
             {
                 method: "PUT",
                 headers: {
@@ -29,21 +29,22 @@ const ValidationCompany = ({ connectedUser, onValidation, onRemove }: { connecte
             .then(response => response.json())
             .then(data => {
                 setCompanies(data)
+                console.log(data)
             });
     }, [connectedUser]);
 
     return (
         <Col className="mx-3">
-            {companies.map((data, idx) => {
+            {companies.map((company: any, idx: number) => {
                 return (
-                    <div key={data.id}>
+                    <div key={company.id}>
                         <Row className="square border-bottom bg-light py-3">
                             <div className="d-flex justify-content-between">
-                                <div className="my-auto">{data.companyName}</div>
-                                <div className="my-auto">{data.department}</div>
+                                <div className="my-auto">{company.companyName}</div>
+                                <div className="my-auto">{company.department}</div>
                                 <div>
-                                    <Button className="me-2" variant="success" onClick={() => approve(data.id, idx)}>O</Button>
-                                    <Button variant="danger" onClick={() => remove(data.id, idx)}>X</Button>
+                                    <Button className="me-2" variant="success" onClick={() => approve(company.id, idx)}>O</Button>
+                                    <Button variant="danger" onClick={() => remove(company.id, idx)}>X</Button>
                                 </div>
                             </div>
                         </Row>

@@ -1,5 +1,5 @@
-import React, {useState} from "react";
-import {Container, Row, ToggleButton, ToggleButtonGroup} from "react-bootstrap";
+import React, { useState } from "react";
+import { Container, Row, ToggleButton, ToggleButtonGroup } from "react-bootstrap";
 import ValidationStudent from "../components/ValidationStudent";
 import ValidationCompany from "../components/ValidationCompany";
 import CreateGestionnaireForm from "../components/CreateGestionnaireForm";
@@ -46,13 +46,16 @@ const UserValidation = ({ connectedUser }: { connectedUser: IUser }) => {
             <Link to="/" className="btn btn-primary my-3">Home</Link>
             <Row>
                 <ToggleButtonGroup className="" type="radio" name="options" defaultValue="Student">
-                    <ToggleButton id="StudentValid" value="Student" onClick={() => setUser("Student")}>
+                    <ToggleButton data-testid="studentInput" id="StudentValid" value="Student" onClick={() => setUser("Student")}>
                         Étudiants
                     </ToggleButton>
-                    <ToggleButton id="CompanyValid" value="Company" onClick={() => setUser("Company")}>
+                    <ToggleButton id="CompanyValid" data-testid="companyInput" value="Company" onClick={() => setUser("Company")}>
                         Compagnies
                     </ToggleButton>
-                    <ToggleButton id="GestionnairValid" value="Gestionnaire" onClick={() => setUser("Gestionnaire")}>
+                    <ToggleButton id="GestionnairValid" value="Gestionnaire" onClick={() => {
+                        console.log("amogus")
+                        setUser("Gestionnaire")
+                    }}>
                         Gestionnaires
                     </ToggleButton>
                 </ToggleButtonGroup>
