@@ -3,7 +3,7 @@ import {Button, Col, Form, Row} from "react-bootstrap";
 import {BeatLoader} from "react-spinners";
 import IUser from "../models/IUser";
 
-const ValidationGestionnaire = ({user}:{user:IUser}) => {
+const CreateGestionnaireForm = ({user}:{user:IUser}) => {
     const [waiting, setWaiting] = useState(false);
     const [validated, setValidated] = useState(false);
     const [firstName, setFirstName] = useState("");
@@ -134,4 +134,4 @@ const ValidationGestionnaire = ({user}:{user:IUser}) => {
     );
 }
 
-export default ValidationGestionnaire;
+export default CreateGestionnaireForm;
