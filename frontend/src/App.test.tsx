@@ -13,6 +13,7 @@ import StudentDashboardPage from "./pages/StudentDashboardPage";
 import LoginPage from "./pages/LoginPage";
 import UserValidation from "./pages/UserValidationPage";
 import * as React from "react";
+import exp from "constants";
 
 describe("StudentCvValidationPageTests", () => {
 
@@ -245,13 +246,7 @@ const MockGestionnaireDashboardPage = () => {
         </BrowserRouter>
     );
 }
-const MockStudentDashboardPage = () => {
-    return (
-        <BrowserRouter>
-            <StudentDashboardPage user={student} deconnexion={() => null} />
-        </BrowserRouter>
-    );
-}
+
 const MockLoginPage = () => {
     return (
         <BrowserRouter>
@@ -772,3 +767,49 @@ describe("OffresValidationPageTests", () => {
         expect(tableElement).toBeInTheDocument();
     });
 });
+
+describe( "test la page StudentDashboard",()=>{
+    const MockStudentDashboardPage = () => {
+        return (
+            <BrowserRouter>
+                <StudentDashboardPage user={student} deconnexion={() => null} />
+            </BrowserRouter>
+        );
+    }
+
+    it('test button déconnexion ', async () => {
+        act(() => {
+            render(<MockStudentDashboardPage />);
+        });
+        const button = await screen.findByRole("button", { name: /Déconnexion/i });
+
+        act(() => {
+            fireEvent.click(button);
+        });
+        expect(window.location.href).toEqual("http://localhost/");
+
+    });
+    it('test title ', async () => {
+        act(() => {
+            render(<MockStudentDashboardPage />);
+        });
+
+        const h1 = await screen.findByTestId("titleStudentDashboard")
+        expect(h1).toBeInTheDocument()
+
+    });
+
+    it('test link ', async () => {
+        act(() => {
+            render(<MockStudentDashboardPage />);
+        });
+        const linkListe = await screen.findByRole("link", { name: /Liste de stages/i });
+
+        act(() => {
+            fireEvent.click(linkListe);
+        });
+        expect(window.location.href).toEqual('http://localhost/offres');
+    });
+
+
+})

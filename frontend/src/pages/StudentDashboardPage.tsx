@@ -9,7 +9,7 @@ const StudentDashboard = ({ user, deconnexion }: { user: IUser, deconnexion: Fun
             <Button className="btn btn-danger my-2" onClick={() => deconnexion()}>
                 Déconnexion
             </Button>
-            <h1 className="p-5 text-center fw-bold text-white display-4">Bienvenue {user.firstName} {user.lastName}</h1>
+            <h1 data-testid="titleStudentDashboard" className="p-5 text-center fw-bold text-white display-4">Bienvenue {user.firstName} {user.lastName}</h1>
             <Row className="d-flex justify-content-center">
                 <Link to="/offres" className="btn btn-primary">Liste de stages</Link>
             </Row>
