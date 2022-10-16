@@ -1,5 +1,5 @@
 import { act, fireEvent, render, screen, waitForElementToBeRemoved } from "@testing-library/react";
-import { BrowserRouter } from "react-router-dom";
+import {BrowserRouter, Link} from "react-router-dom";
 import { emptyUser } from "./App";
 import OffersListPage from "./pages/OffersListPage";
 import StudentCvValidationPage from "./pages/StudentCvValidationPage";
@@ -239,13 +239,7 @@ describe("FormulaireSoumissionPageTest", () => {
     })
 })
 
-const MockGestionnaireDashboardPage = () => {
-    return (
-        <BrowserRouter>
-            <GestionnaireDashboardPage user={gestionnaire} deconnexion={() => null} />
-        </BrowserRouter>
-    );
-}
+
 
 const MockLoginPage = () => {
     return (
@@ -810,6 +804,57 @@ describe( "test la page StudentDashboard",()=>{
         });
         expect(window.location.href).toEqual('http://localhost/offres');
     });
+})
 
+describe("test la page gestionnaireDashboard",()=>{
+    const MockGestionnaireDashboardPage = () => {
+        return (
+            <BrowserRouter>
+                <GestionnaireDashboardPage user={gestionnaire} deconnexion={() => null} />
+            </BrowserRouter>
+        );
+    }
 
+    it('test button déconnexion ', async () => {
+        act(() => {
+            render(<MockGestionnaireDashboardPage />);
+        });
+        const button = await screen.findByRole("button", { name: /Déconnexion/i });
+
+        act(() => {
+            fireEvent.click(button);
+        });
+        expect(window.location.href).toEqual("http://localhost/");
+
+    });
+    it('test title ', async () => {
+        act(() => {
+            render(<MockGestionnaireDashboardPage />);
+        });
+
+        const h1 = await screen.findByTestId("titleGestionnaireDashboard")
+        expect(h1).toBeInTheDocument()
+
+    });
+
+    it('test link ', async () => {
+        act(() => {
+            render(<MockGestionnaireDashboardPage />);
+        });
+        const linkUserValidation = await screen.findByRole("link", { name: /Validation des utilisateurs/i });
+        const linkCvValidation = await screen.findByRole("link", {name :/Validation des curriculums vitae des étudiants/i  })
+        const linkValiderNouvelleOffre = await screen.findByRole("link", {name : /Validation nouvelle offre stage/i })
+        act(() => {
+            fireEvent.click(linkUserValidation);
+        });
+        expect(window.location.href).toEqual('http://localhost/userValidation');
+        act(() => {
+            fireEvent.click(linkCvValidation);
+        });
+        expect(window.location.href).toEqual('http://localhost/cvValidation');
+        act(() => {
+            fireEvent.click(linkValiderNouvelleOffre);
+        });
+        expect(window.location.href).toEqual('http://localhost/validerNouvelleOffre');
+    });
 })
