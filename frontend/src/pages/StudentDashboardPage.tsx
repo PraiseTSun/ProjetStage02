@@ -5,7 +5,7 @@ import IUser from "../models/IUser";
 const StudentDashboard = ({ user, deconnexion }: { user: IUser, deconnexion: Function }): JSX.Element => {
 
     return (
-        <div className="vh-100">
+        <div className="min-vh-100">
             <Button className="btn btn-danger my-2" onClick={() => deconnexion()}>
                 Déconnexion
             </Button>

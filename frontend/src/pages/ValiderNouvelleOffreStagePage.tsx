@@ -107,26 +107,28 @@ const ValiderNouvelleOffreStagePage = ({ connectedUser, deconnexion }:
     if (showPDF) {
         return (
             <Container>
-                <div className="bg-dark p-2">
-                    <Button className="Btn btn-primary" onClick={() => setShowPDF(false)}>
-                        Fermer
-                    </Button>
-                </div>
-                <div>
-                    <Viewer fileUrl={pdf} />
-                </div>
+                <Container className="min-vh-100 bg-white p-0">
+                    <div className="bg-dark p-2">
+                        <Button className="Btn btn-primary" onClick={() => setShowPDF(false)}>
+                            Fermer
+                        </Button>
+                    </div>
+                    <div>
+                        <Viewer fileUrl={pdf} />
+                    </div>
+                </Container>
             </Container>
         );
     }
 
     return (
-        <Container className="vh-100">
+        <Container className="min-vh-100">
             <Row>
                 <Col sm={2}>
                     <Link to="/" className="btn btn-primary my-3">Home</Link>
                 </Col>
                 <Col sm={8} className="text-center pt-2">
-                    <h1 className="fw-bold">Validation des offres</h1>
+                    <h1 className="fw-bold text-white display-3 pb-2">Validation des offres</h1>
                 </Col>
                 <Col sm={2}></Col>
             </Row>

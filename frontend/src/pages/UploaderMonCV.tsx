@@ -2,6 +2,7 @@ import { Button, Col, Container, Form, Row } from "react-bootstrap";
 import React, { useState } from "react";
 import { BeatLoader } from "react-spinners";
 import IUser from "../models/IUser";
+import { Link } from "react-router-dom";
 
 const UploaderMonCV = ({ user }: { user: IUser }) => {
     const [waiting, setWaiting] = useState<boolean>(false);
@@ -64,16 +65,24 @@ const UploaderMonCV = ({ user }: { user: IUser }) => {
 
     if (waiting) {
         return (
-            <div className="d-flex justify-content-center py-5 bg-light vh-100">
+            <div className="d-flex justify-content-center py-5 bg-light min-vh-100">
                 <BeatLoader className="text-center" color="#292b2c" size={100} />
             </div>
         );
     }
 
     return (
-        <Container className="justify-content-center vh-100">
+        <Container className="justify-content-center min-vh-100">
             <Col className="col-12 ">
-                <h4 className="fw-bold  mb-4 text-center">Document CV</h4>
+                <Row>
+                    <Col sm={2}>
+                        <Link to="/" className="btn btn-primary my-3">Home</Link>
+                    </Col>
+                    <Col sm={8} className="text-center pt-2">
+                        <h1 className="fw-bold text-white display-3 pb-2">Téléverser CV</h1>
+                    </Col>
+                    <Col sm={2}></Col>
+                </Row>
                 <Form onSubmit={onSubmit} validated={validated} noValidate className="">
                     <Row>
                         <Form.Group className="">

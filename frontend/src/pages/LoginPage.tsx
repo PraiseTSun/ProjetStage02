@@ -7,7 +7,7 @@ const LoginPage = (props: { setUser: Function }): JSX.Element => {
     const [isLogginPage, setIsLogginPage] = useState(true)
 
     return (
-        <Row className="vh-100">
+        <Row className="min-vh-100">
             <Col className="m-auto col-lg-4 col-md-6">
                 {isLogginPage ? <h1 className="text-warning fw-bold text-center display-3">OSE KILLER</h1> : <></>}
                 <Row>

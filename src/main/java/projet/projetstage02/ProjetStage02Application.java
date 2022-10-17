@@ -203,6 +203,7 @@ public class ProjetStage02Application implements CommandLineRunner {
                 },
                 "notoken",
                 false));
+                gestionnaireService.validateStudent(1L);
                 System.out.println(studentService.getStudentById(1L));
                 System.out.println(companyService.getCompanyById(2L));
                 System.out.println(gestionnaireService.getGestionnaireById(3L));

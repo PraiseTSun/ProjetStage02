@@ -1,6 +1,6 @@
-import React, {useEffect, useState} from 'react';
-import {Container} from 'react-bootstrap';
-import {BrowserRouter, Route, Routes} from 'react-router-dom';
+import React, { useEffect, useState } from 'react';
+import { Container } from 'react-bootstrap';
+import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import ConfirmationPage from './pages/ConfirmationPage';
 import LoginPage from './pages/LoginPage';
 import IUser from './models/IUser';
@@ -89,7 +89,7 @@ function App() {
   if (user === emptyUser) {
     checkIfUserExistsInLocalStorage()
     return (
-      <Container className="vh-100">
+      <Container className="min-vh-100">
         <BrowserRouter>
           <Routes>
             <Route path="/" element={<LoginPage setUser={setUser} />} />
@@ -107,9 +107,9 @@ function App() {
         <BrowserRouter>
           <Routes>
             <Route path="/" element={<StudentDashboard deconnexion={deconnexion} user={user} />} />
-            <Route path="/uploaderCV" element={<UploaderMonCV user={user}/>}/>
+            <Route path="/uploaderCV" element={<UploaderMonCV user={user} />} />
             <Route path="/offres" element={<OffersListPage connectedUser={user} deconnexion={deconnexion} />} />
-            <Route path="*" element={<h1 className="text-center text-white display-1 vh-100">404 - Page pas trouvé</h1>} />
+            <Route path="*" element={<h1 className="text-center text-white display-1 min-vh-100">404 - Page pas trouvé</h1>} />
           </Routes>
         </BrowserRouter>
       </Container>
@@ -118,7 +118,7 @@ function App() {
 
   else if (user.userType === "company") {
     return (
-      <Container className="vh-100">
+      <Container className="min-vh-100">
         <BrowserRouter>
           <Routes>
             <Route path="/" element={<CompanyDashboard deconnexion={deconnexion} user={user} />} />
@@ -139,14 +139,14 @@ function App() {
             <Route path="/userValidation" element={<UserValidation connectedUser={user} />} />
             <Route path="/cvValidation" element={<StudentCvValidationPage connectedUser={user} deconnexion={deconnexion} />} />
             <Route path="*" element={<h1 className="text-center text-white display-1">404 - Page pas trouvé</h1>} />
-            <Route path="/validerNouvelleOffre" element={<ValiderNouvelleOffreStagePage connectedUser={user} deconnexion={deconnexion}/>} />
+            <Route path="/validerNouvelleOffre" element={<ValiderNouvelleOffreStagePage connectedUser={user} deconnexion={deconnexion} />} />
           </Routes>
         </BrowserRouter>
       </Container>
     );
   }
 
-  return <h1 className="vh-100">Oops</h1>
+  return <h1 className="min-vh-100">Oops</h1>
 }
 
 export default App;
