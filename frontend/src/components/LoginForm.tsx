@@ -1,6 +1,5 @@
-import React from "react";
-import { useState } from "react";
-import { Form, Row, Col, ToggleButton, ToggleButtonGroup, Button } from "react-bootstrap";
+import React, { useState } from "react";
+import { Button, Col, Form, Row, ToggleButton, ToggleButtonGroup } from "react-bootstrap";
 import { BeatLoader } from "react-spinners";
 import { LOCAL_STORAGE_KEY } from '../App';
 import IUser from '../models/IUser';
@@ -30,13 +29,13 @@ const LoginForm = (props: { setUser: Function }): JSX.Element => {
                 const getUserHeaders = {
                     method: "PUT",
                     headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({"token":tokenData.token})
+                    body: JSON.stringify({ "token": tokenData.token })
                 };
                 const res = await fetch("http://localhost:8080/" + userType, getUserHeaders)
                 if (res.ok) {
                     const data = await res.json()
                     const user: IUser = {
-                        id:data.id,
+                        id: data.id,
                         firstName: data.firstName,
                         lastName: data.lastName,
                         userType: userType,

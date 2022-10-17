@@ -64,14 +64,14 @@ const UploaderMonCV = ({ user }: { user: IUser }) => {
 
     if (waiting) {
         return (
-            <div className="d-flex justify-content-center py-5 bg-light">
+            <div className="d-flex justify-content-center py-5 bg-light vh-100">
                 <BeatLoader className="text-center" color="#292b2c" size={100} />
             </div>
         );
     }
 
     return (
-        <Container className="justify-content-center">
+        <Container className="justify-content-center vh-100">
             <Col className="col-12 ">
                 <h4 className="fw-bold  mb-4 text-center">Document CV</h4>
                 <Form onSubmit={onSubmit} validated={validated} noValidate className="">
