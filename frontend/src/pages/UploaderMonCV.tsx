@@ -1,27 +1,27 @@
-import {Button, Col, Container, Form, Row} from "react-bootstrap";
-import React, {useState} from "react";
-import {BeatLoader} from "react-spinners";
+import { Button, Col, Container, Form, Row } from "react-bootstrap";
+import React, { useState } from "react";
+import { BeatLoader } from "react-spinners";
 import IUser from "../models/IUser";
 
-const UploaderMonCV = ({user}: { user: IUser }) => {
-    const [waiting, setWaiting] = useState(false);
-    const [isSelected, setIsSelected] = useState(false);
-    const [validated, setValidated] = useState(false);
-    const [cv, setCv] = useState([0])
+const UploaderMonCV = ({ user }: { user: IUser }) => {
+    const [waiting, setWaiting] = useState<boolean>(false);
+    const [isSelected, setIsSelected] = useState<boolean>(false);
+    const [validated, setValidated] = useState<boolean>(false);
+    const [cv, setCv] = useState<Array<number>>([0])
+
     const onSubmit = async (event: React.SyntheticEvent) => {
         const form: any = event.currentTarget;
         event.preventDefault();
         if (form.checkValidity()) {
             setWaiting(true)
-            const obj = {
-                studentId: user.id,
-                pdf: cv,
-                token: user.token
-            }
             const headers = {
                 method: "PUT",
-                headers: {"Content-Type": "application/json"},
-                body: JSON.stringify(obj)
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    studentId: user.id,
+                    pdf: cv,
+                    token: user.token
+                })
             };
             const res = await fetch("http://localhost:8080/uploadStudentCV", headers)
             if (res.ok) {
@@ -54,8 +54,7 @@ const UploaderMonCV = ({user}: { user: IUser }) => {
         return bytes;
     };
 
-    const uploadFile = async (file: File) => {
-
+    const uploadFile = async (file: File): Promise<void> => {
         const fileText = await file.arrayBuffer()
         const view = new Uint8Array(fileText)
         const array = intToByteArray(view)
@@ -66,7 +65,7 @@ const UploaderMonCV = ({user}: { user: IUser }) => {
     if (waiting) {
         return (
             <div className="d-flex justify-content-center py-5 bg-light">
-                <BeatLoader className="text-center" color="#292b2c" size={100}/>
+                <BeatLoader className="text-center" color="#292b2c" size={100} />
             </div>
         );
     }
@@ -79,10 +78,10 @@ const UploaderMonCV = ({user}: { user: IUser }) => {
                     <Row>
                         <Form.Group className="">
                             <input data-testid="uploaderMonCV" className="form-control" accept="application/pdf"
-                                   name="file"
-                                   required type="file" onChange={async (e) => {
-                                await uploadFile(e.target.files![0]);
-                            }}/>
+                                name="file"
+                                required type="file" onChange={async (e) => {
+                                    await uploadFile(e.target.files![0]);
+                                }} />
                             <Form.Control.Feedback type="invalid">Champ requis</Form.Control.Feedback>
                         </Form.Group>
                         {isSelected ?
@@ -92,7 +91,7 @@ const UploaderMonCV = ({user}: { user: IUser }) => {
                     </Row>
                     <Row className="m-4">
                         <Button data-testid="buttonid" type="submit"
-                                className="btn btn-success mx-auto w-75">Envoyer</Button>
+                            className="btn btn-success mx-auto w-75">Envoyer</Button>
                     </Row>
                 </Form>
             </Col>
