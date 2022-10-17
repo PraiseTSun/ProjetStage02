@@ -18,25 +18,25 @@ const etudiant: IUser = {
 describe('test page uploader mon cv', () => {
 
     it('devrait rendre element input', async () => {
-        render(<UploaderMonCV user={etudiant} />);
+        render(<UploaderMonCV user={etudiant} />, { wrapper: BrowserRouter });
         const inputUploaderMonCV = screen.getByTestId("uploaderMonCV")
         expect(inputUploaderMonCV).toBeInTheDocument()
     });
 
     it('devrait rendre  element header est la ', async () => {
-        render(<UploaderMonCV user={etudiant} />);
-        const h4Element = screen.getByRole("heading", { name: /Document CV/i });
+        render(<UploaderMonCV user={etudiant} />, { wrapper: BrowserRouter });
+        const h4Element = screen.getByRole("heading", { name: /Téléverser CV/i });
         expect(h4Element).toBeInTheDocument();
     });
 
     it('devrait rendre  element button est la ', async () => {
-        render(<UploaderMonCV user={etudiant} />);
+        render(<UploaderMonCV user={etudiant} />, { wrapper: BrowserRouter });
         const buttonElement = screen.getByRole("button", { name: /Envoyer/i });
         expect(buttonElement).toBeInTheDocument();
     });
 
-    it('devrait rendre  element erreur est la ', async () => {
-        render(<UploaderMonCV user={etudiant} />);
+    it('devrait rendre element erreur est la ', async () => {
+        render(<UploaderMonCV user={etudiant} />, { wrapper: BrowserRouter });
         const erreurElemeent = screen.getByText("Choix votre CV")
         expect(erreurElemeent).toBeInTheDocument();
     });
