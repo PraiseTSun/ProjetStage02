@@ -510,7 +510,7 @@ public class RootController {
 
     @PutMapping("/studentCv/{studentId}")
     public ResponseEntity<PdfOutDTO> getStudentCv(@PathVariable String studentId, @RequestBody TokenDTO tokenId) {
-        logger.log(Level.INFO, "Put /studentCv entered with id : ");
+        logger.log(Level.INFO, "Put /studentCv entered with id : " + studentId);
         try {
             authService.getToken(tokenId.getToken(), GESTIONNAIRE);
             PdfOutDTO cv = gestionnaireService.getStudentCvToValidate(Long.parseLong(studentId));
