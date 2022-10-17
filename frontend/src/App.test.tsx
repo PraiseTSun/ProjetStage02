@@ -326,8 +326,8 @@ describe("test UserValidationPage", () => {
 
 
     it("UserValidationPageCreateGestTest", async () => {
-        act(() => {
-            render(<MockPage />)
+        await act(async () => {
+           await render(<MockPage />)
         })
     });
 
@@ -665,8 +665,8 @@ describe("OffresValidationPageTests", () => {
     })
 
     it("fetchUnvalidatedOffersTest", async () => {
-        act(() => {
-            render(<MockPage />);
+        await act(async () => {
+           await render(<MockPage />);
         });
 
         expect(await screen.findByText(/Compagnie de Yan/i)).toBeInTheDocument();
@@ -679,12 +679,12 @@ describe("OffresValidationPageTests", () => {
     });
 
     it("validateOfferTest", async () => {
-        act(() => {
-            render(<MockPage />);
+        await act(async () => {
+           await render(<MockPage />);
         });
         const validateButton = await screen.findByRole("button", { name: /O/i });
 
-        act(() => {
+         act( () => {
             fireEvent.click(validateButton);
         });
 
@@ -694,13 +694,13 @@ describe("OffresValidationPageTests", () => {
     });
 
     it("refuseOfferTest", async () => {
-        act(() => {
-            render(<MockPage />);
+       await act(async () => {
+           await render(<MockPage />);
         });
         const validateButton = await screen.findByRole("button", { name: /X/i });
 
-        act(() => {
-            fireEvent.click(validateButton);
+         act( () => {
+             fireEvent.click(validateButton);
         });
 
         await waitForElementToBeRemoved(() => screen.queryByText(/Compagnie de Yan/i));
@@ -709,14 +709,14 @@ describe("OffresValidationPageTests", () => {
     });
 
     it("getPDFTest", async () => {
-        act(() => {
-            render(<MockPage />);
+        await act(async () => {
+           await render(<MockPage />);
         });
 
         const cvButton = await screen.findByRole("button", { name: /pdf/i });
 
-        act(() => {
-            fireEvent.click(cvButton);
+         act( () => {
+             fireEvent.click(cvButton);
         });
 
         expect(await screen.findByRole("button", { name: /Fermer/i })).toBeInTheDocument();
@@ -725,8 +725,8 @@ describe("OffresValidationPageTests", () => {
     });
 
     it('test il y a le champs header ', async () => {
-        act(() => {
-            render(<MockPage />);
+       await act(async () => {
+           await render(<MockPage />);
         });
 
         const h1Element = screen.getByRole("heading", { name: /Validation des offres/i });
@@ -734,8 +734,8 @@ describe("OffresValidationPageTests", () => {
     });
 
     it('test il y a le champs Link ', async () => {
-        act(() => {
-            render(<MockPage />);
+        await act(async () => {
+            await render(<MockPage />);
         });
 
         const LinkElement = screen.getByRole("link", { name: /Home/i });
@@ -744,17 +744,17 @@ describe("OffresValidationPageTests", () => {
     });
 
     it('test il y a le champs tr ', async () => {
-        act(() => {
-            render(<MockPage />);
+        await act(async () => {
+            await render(<MockPage />);
         });
 
         const trElement = screen.getAllByTestId("offre-container");
-        expect(trElement.length).toBe(1);
+        expect(trElement.length).toBe(2);
     });
 
     it('test il y a le champs table ', async () => {
-        act(() => {
-            render(<MockPage />);
+        await act(async () => {
+            await render(<MockPage />);
         });
 
         const tableElement = screen.getByTestId("tableValiderNouvelleOffreStage");
