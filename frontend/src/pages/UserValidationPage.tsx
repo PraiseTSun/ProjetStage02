@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Container, Row, ToggleButton, ToggleButtonGroup } from "react-bootstrap";
+import { Col, Container, Row, ToggleButton, ToggleButtonGroup } from "react-bootstrap";
 import ValidationStudent from "../components/ValidationStudent";
 import ValidationCompany from "../components/ValidationCompany";
 import CreateGestionnaireForm from "../components/CreateGestionnaireForm";
@@ -43,7 +43,15 @@ const UserValidation = ({ connectedUser }: { connectedUser: IUser }) => {
 
     return (
         <Container className="vh-100">
-            <Link to="/" className="btn btn-primary my-3">Home</Link>
+            <Row>
+                <Col sm={2}>
+                    <Link to="/" className="btn btn-primary my-3">Home</Link>
+                </Col>
+                <Col sm={8} className="text-center pt-2">
+                    <h1 className="fw-bold text-white display-3 pb-2">Validation d'utilisateurs</h1>
+                </Col>
+                <Col sm={2}></Col>
+            </Row>
             <Row>
                 <ToggleButtonGroup className="" type="radio" name="options" defaultValue="Student">
                     <ToggleButton data-testid="studentInput" id="StudentValid" value="Student" onClick={() => setUser("Student")}>

@@ -120,12 +120,12 @@ const ValiderNouvelleOffreStagePage = ({ connectedUser, deconnexion }:
 
     return (
         <Container className="vh-100">
-            <Row>
+             <Row>
                 <Col sm={2}>
                     <Link to="/" className="btn btn-primary my-3">Home</Link>
                 </Col>
                 <Col sm={8} className="text-center pt-2">
-                    <h1 className="fw-bold">Validation des offres</h1>
+                    <h1 className="fw-bold text-white display-3 pb-2">Validation des offres</h1>
                 </Col>
                 <Col sm={2}></Col>
             </Row>
@@ -145,7 +145,7 @@ const ValiderNouvelleOffreStagePage = ({ connectedUser, deconnexion }:
                         <tbody className="bg-light" data-testid="offre-container">
                             {offers.map((offer, index) => {
                                 return (
-                                    <tr key={index} data-testid="offre-container">
+                                    <tr key={index}>
                                         <td>{offer.nomDeCompagnie}</td>
                                         <td>{offer.department} <br /> {offer.position}</td>
                                         <td>{offer.heureParSemaine} <br /> {offer.adresse}</td>

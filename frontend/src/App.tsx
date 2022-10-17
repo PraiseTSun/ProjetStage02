@@ -12,6 +12,7 @@ import FormulaireSoumissionPage from './pages/FormulaireSoumissionPage';
 import StudentCvValidationPage from './pages/StudentCvValidationPage';
 import ValiderNouvelleOffreStagePage from "./pages/ValiderNouvelleOffreStagePage";
 import OffersListPage from './pages/OffersListPage';
+import UploaderMonCV from './pages/UploaderMonCV';
 
 export const LOCAL_STORAGE_KEY = "MASSI_BEST_PROGRAMMER_PROJET_STAGE_02_CURRENT_CONNECTED_USER"
 export const emptyUser: IUser = {
@@ -106,6 +107,7 @@ function App() {
         <BrowserRouter>
           <Routes>
             <Route path="/" element={<StudentDashboard deconnexion={deconnexion} user={user} />} />
+            <Route path="/uploaderCV" element={<UploaderMonCV user={user}/>}/>
             <Route path="/offres" element={<OffersListPage connectedUser={user} deconnexion={deconnexion} />} />
             <Route path="*" element={<h1 className="text-center text-white display-1 vh-100">404 - Page pas trouvé</h1>} />
           </Routes>

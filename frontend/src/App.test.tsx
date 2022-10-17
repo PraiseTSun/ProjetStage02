@@ -5,6 +5,7 @@ import OffersListPage from "./pages/OffersListPage";
 import StudentCvValidationPage from "./pages/StudentCvValidationPage";
 import ValiderNouvelleOffreStagePage from "./pages/ValiderNouvelleOffreStagePage";
 import IUser from "./models/IUser";
+import UploaderMonCV from "./pages/UploaderMonCV";
 import CompanyDashboardPage from "./pages/CompanyDashboardPage";
 import ConfirmationPage from "./pages/ConfirmationPage";
 import FormulaireSoumissionPage from "./pages/FormulaireSoumissionPage";
@@ -13,6 +14,41 @@ import StudentDashboardPage from "./pages/StudentDashboardPage";
 import LoginPage from "./pages/LoginPage";
 import UserValidation from "./pages/UserValidationPage";
 import * as React from "react";
+const etudiant: IUser = {
+    id: "1",
+    token: "34245",
+    firstName: "Yan",
+    lastName: "Zhou",
+    userType: "student"
+}
+
+describe('test page uploader mon cv', () => {
+
+    it('devrait rendre element input', async () => {
+        render(<UploaderMonCV user={etudiant} />, { wrapper: BrowserRouter });
+        const inputUploaderMonCV = screen.getByTestId("uploaderMonCV")
+        expect(inputUploaderMonCV).toBeInTheDocument()
+    });
+
+    it('devrait rendre  element header est la ', async () => {
+        render(<UploaderMonCV user={etudiant} />, { wrapper: BrowserRouter });
+        const h4Element = screen.getByRole("heading", { name: /Téléverser CV/i });
+        expect(h4Element).toBeInTheDocument();
+    });
+
+    it('devrait rendre  element button est la ', async () => {
+        render(<UploaderMonCV user={etudiant} />, { wrapper: BrowserRouter });
+        const buttonElement = screen.getByRole("button", { name: /Envoyer/i });
+        expect(buttonElement).toBeInTheDocument();
+    });
+
+    it('devrait rendre element erreur est la ', async () => {
+        render(<UploaderMonCV user={etudiant} />, { wrapper: BrowserRouter });
+        const erreurElemeent = screen.getByText("Choix votre CV")
+        expect(erreurElemeent).toBeInTheDocument();
+    });
+});
+
 
 describe("StudentCvValidationPageTests", () => {
 
@@ -66,8 +102,8 @@ describe("StudentCvValidationPageTests", () => {
     })
 
     it("fetchUnvalidatedCvStudentsTest", async () => {
-        act(() => {
-            render(<MockPage/>);
+        await act(async () => {
+            render(<MockPage />);
         });
 
         expect(await screen.findByText(/Bart/i)).toBeInTheDocument();
@@ -78,43 +114,47 @@ describe("StudentCvValidationPageTests", () => {
     });
 
     it("validateCvTest", async () => {
-        act(() => {
-            render(<MockPage/>);
+        await act(async () => {
+            render(<MockPage />);
         });
-        const validateButton = await screen.findByRole("button", {name: /O/i});
 
-        act(() => {
+        const studentName = await screen.findByText(/Bart/i);
+        const validateButton = await screen.findByRole("button", { name: /O/i });
+
+        await act(async () => {
             fireEvent.click(validateButton);
         });
 
-        await waitForElementToBeRemoved(() => screen.queryByText(/Bart/i));
+        expect(studentName).not.toBeInTheDocument();
         expect(fetch).toBeCalledWith("http://localhost:8080/validateCv/1", expect.anything());
         expect(fetch).toBeCalledTimes(2);
     });
 
     it("refuseCvTest", async () => {
-        act(() => {
-            render(<MockPage/>);
+        await act(async () => {
+            render(<MockPage />);
         });
-        const validateButton = await screen.findByRole("button", {name: /X/i});
 
-        act(() => {
+        const studentName = await screen.findByText(/Bart/i);
+        const validateButton = await screen.findByRole("button", { name: /X/i });
+
+        await act(async () => {
             fireEvent.click(validateButton);
         });
 
-        await waitForElementToBeRemoved(() => screen.queryByText(/Bart/i));
+        expect(studentName).not.toBeInTheDocument();
         expect(fetch).toBeCalledWith("http://localhost:8080/refuseCv/1", expect.anything());
         expect(fetch).toBeCalledTimes(2);
     });
 
     it("getPDFTest", async () => {
-        act(() => {
-            render(<MockPage/>);
+        await act(async () => {
+            render(<MockPage />);
         });
 
         const cvButton = await screen.findByRole("button", {name: /CV/i});
 
-        act(() => {
+        await act(async () => {
             fireEvent.click(cvButton);
         });
 
@@ -564,13 +604,13 @@ describe("OffersListPageTests", () => {
     });
 
     it("getOfferPDFTest", async () => {
-        act(() => {
-            render(<MockPage/>);
+        await act(async () => {
+            render(<MockPage />);
         });
 
         const pdfButton = await screen.findByRole("button", {name: /PDF/i});
 
-        act(() => {
+        await act(async () => {
             fireEvent.click(pdfButton);
         });
 
@@ -581,8 +621,8 @@ describe("OffersListPageTests", () => {
     });
 
     it("fetchOffersTest", async () => {
-        act(() => {
-            render(<MockPage/>);
+        await act(async () => {
+            render(<MockPage />);
         });
 
         expect(await screen.findByText(/Duff Beer/i)).toBeInTheDocument();
@@ -649,7 +689,7 @@ describe("OffresValidationPageTests", () => {
 
     it("fetchUnvalidatedOffersTest", async () => {
         await act(async () => {
-            await render(<MockPage/>);
+            render(<MockPage />);
         });
 
         expect(await screen.findByText(/Compagnie de Yan/i)).toBeInTheDocument();
@@ -663,15 +703,17 @@ describe("OffresValidationPageTests", () => {
 
     it("validateOfferTest", async () => {
         await act(async () => {
-            await render(<MockPage/>);
+            render(<MockPage />);
         });
-        const validateButton = await screen.findByRole("button", {name: /O/i});
 
-        act(() => {
+        const companyName = await screen.findByText(/Compagnie de Yan/i);
+        const validateButton = await screen.findByRole("button", { name: /O/i });
+
+        await act(async () => {
             fireEvent.click(validateButton);
         });
 
-        await waitForElementToBeRemoved(() => screen.queryByText(/Compagnie de yan/i));
+        expect(companyName).not.toBeInTheDocument();
         expect(fetch).toBeCalledWith("http://localhost:8080/validateOffer/1", expect.anything());
         expect(fetch).toBeCalledTimes(2);
     });
@@ -680,13 +722,14 @@ describe("OffresValidationPageTests", () => {
         await act(async () => {
             await render(<MockPage/>);
         });
-        const validateButton = await screen.findByRole("button", {name: /X/i});
+        const companyName = await screen.findByText(/Compagnie de Yan/i);
+        const validateButton = await screen.findByRole("button", { name: /X/i });
 
-        act(() => {
+        await act(async () => {
             fireEvent.click(validateButton);
         });
 
-        await waitForElementToBeRemoved(() => screen.queryByText(/Compagnie de Yan/i));
+        expect(companyName).not.toBeInTheDocument();
         expect(fetch).toBeCalledWith("http://localhost:8080/removeOffer/1", expect.anything());
         expect(fetch).toBeCalledTimes(2);
     });
@@ -698,7 +741,7 @@ describe("OffresValidationPageTests", () => {
 
         const cvButton = await screen.findByRole("button", {name: /pdf/i});
 
-        act(() => {
+        await act(async () => {
             fireEvent.click(cvButton);
         });
 
