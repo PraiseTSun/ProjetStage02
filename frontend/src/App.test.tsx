@@ -1,4 +1,4 @@
-import {act, fireEvent, render, screen, waitForElementToBeRemoved} from "@testing-library/react";
+import {act, fireEvent, render, screen} from "@testing-library/react";
 import {BrowserRouter} from "react-router-dom";
 import {emptyUser} from "./App";
 import OffersListPage from "./pages/OffersListPage";
@@ -14,6 +14,7 @@ import StudentDashboardPage from "./pages/StudentDashboardPage";
 import LoginPage from "./pages/LoginPage";
 import UserValidation from "./pages/UserValidationPage";
 import * as React from "react";
+
 const etudiant: IUser = {
     id: "1",
     token: "34245",
@@ -25,25 +26,25 @@ const etudiant: IUser = {
 describe('test page uploader mon cv', () => {
 
     it('devrait rendre element input', async () => {
-        render(<UploaderMonCV user={etudiant} />, { wrapper: BrowserRouter });
+        render(<UploaderMonCV user={etudiant}/>, {wrapper: BrowserRouter});
         const inputUploaderMonCV = screen.getByTestId("uploaderMonCV")
         expect(inputUploaderMonCV).toBeInTheDocument()
     });
 
     it('devrait rendre  element header est la ', async () => {
-        render(<UploaderMonCV user={etudiant} />, { wrapper: BrowserRouter });
-        const h4Element = screen.getByRole("heading", { name: /Téléverser CV/i });
+        render(<UploaderMonCV user={etudiant}/>, {wrapper: BrowserRouter});
+        const h4Element = screen.getByRole("heading", {name: /Téléverser CV/i});
         expect(h4Element).toBeInTheDocument();
     });
 
     it('devrait rendre  element button est la ', async () => {
-        render(<UploaderMonCV user={etudiant} />, { wrapper: BrowserRouter });
-        const buttonElement = screen.getByRole("button", { name: /Envoyer/i });
+        render(<UploaderMonCV user={etudiant}/>, {wrapper: BrowserRouter});
+        const buttonElement = screen.getByRole("button", {name: /Envoyer/i});
         expect(buttonElement).toBeInTheDocument();
     });
 
     it('devrait rendre element erreur est la ', async () => {
-        render(<UploaderMonCV user={etudiant} />, { wrapper: BrowserRouter });
+        render(<UploaderMonCV user={etudiant}/>, {wrapper: BrowserRouter});
         const erreurElemeent = screen.getByText("Choix votre CV")
         expect(erreurElemeent).toBeInTheDocument();
     });
@@ -103,7 +104,7 @@ describe("StudentCvValidationPageTests", () => {
 
     it("fetchUnvalidatedCvStudentsTest", async () => {
         await act(async () => {
-            render(<MockPage />);
+            render(<MockPage/>);
         });
 
         expect(await screen.findByText(/Bart/i)).toBeInTheDocument();
@@ -115,11 +116,11 @@ describe("StudentCvValidationPageTests", () => {
 
     it("validateCvTest", async () => {
         await act(async () => {
-            render(<MockPage />);
+            render(<MockPage/>);
         });
 
         const studentName = await screen.findByText(/Bart/i);
-        const validateButton = await screen.findByRole("button", { name: /O/i });
+        const validateButton = await screen.findByRole("button", {name: /O/i});
 
         await act(async () => {
             fireEvent.click(validateButton);
@@ -132,11 +133,11 @@ describe("StudentCvValidationPageTests", () => {
 
     it("refuseCvTest", async () => {
         await act(async () => {
-            render(<MockPage />);
+            render(<MockPage/>);
         });
 
         const studentName = await screen.findByText(/Bart/i);
-        const validateButton = await screen.findByRole("button", { name: /X/i });
+        const validateButton = await screen.findByRole("button", {name: /X/i});
 
         await act(async () => {
             fireEvent.click(validateButton);
@@ -149,7 +150,7 @@ describe("StudentCvValidationPageTests", () => {
 
     it("getPDFTest", async () => {
         await act(async () => {
-            render(<MockPage />);
+            render(<MockPage/>);
         });
 
         const cvButton = await screen.findByRole("button", {name: /CV/i});
@@ -605,7 +606,7 @@ describe("OffersListPageTests", () => {
 
     it("getOfferPDFTest", async () => {
         await act(async () => {
-            render(<MockPage />);
+            render(<MockPage/>);
         });
 
         const pdfButton = await screen.findByRole("button", {name: /PDF/i});
@@ -622,7 +623,7 @@ describe("OffersListPageTests", () => {
 
     it("fetchOffersTest", async () => {
         await act(async () => {
-            render(<MockPage />);
+            render(<MockPage/>);
         });
 
         expect(await screen.findByText(/Duff Beer/i)).toBeInTheDocument();
@@ -689,7 +690,7 @@ describe("OffresValidationPageTests", () => {
 
     it("fetchUnvalidatedOffersTest", async () => {
         await act(async () => {
-            render(<MockPage />);
+            render(<MockPage/>);
         });
 
         expect(await screen.findByText(/Compagnie de Yan/i)).toBeInTheDocument();
@@ -703,11 +704,11 @@ describe("OffresValidationPageTests", () => {
 
     it("validateOfferTest", async () => {
         await act(async () => {
-            render(<MockPage />);
+            render(<MockPage/>);
         });
 
         const companyName = await screen.findByText(/Compagnie de Yan/i);
-        const validateButton = await screen.findByRole("button", { name: /O/i });
+        const validateButton = await screen.findByRole("button", {name: /O/i});
 
         await act(async () => {
             fireEvent.click(validateButton);
@@ -723,7 +724,7 @@ describe("OffresValidationPageTests", () => {
             await render(<MockPage/>);
         });
         const companyName = await screen.findByText(/Compagnie de Yan/i);
-        const validateButton = await screen.findByRole("button", { name: /X/i });
+        const validateButton = await screen.findByRole("button", {name: /X/i});
 
         await act(async () => {
             fireEvent.click(validateButton);
@@ -774,8 +775,8 @@ describe("OffresValidationPageTests", () => {
             await render(<MockPage/>);
         });
 
-        const trElement = screen.getAllByTestId("offre-container");
-        expect(trElement.length).toBe(2);
+        const trElement = await screen.getAllByTestId("offre-container");
+        expect(trElement.length).toBe(1);
     });
 
     it('test il y a le champs table ', async () => {

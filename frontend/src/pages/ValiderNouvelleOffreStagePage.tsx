@@ -88,6 +88,7 @@ const ValiderNouvelleOffreStagePage = ({ connectedUser, deconnexion }:
 
             if (response.ok) {
                 const data = await response.json();
+                console.log(data.pdf)
                 setpdf(new Uint8Array(JSON.parse(data.pdf)))
                 setShowPDF(true);
             }
