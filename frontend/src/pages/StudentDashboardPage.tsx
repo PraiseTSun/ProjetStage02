@@ -10,7 +10,8 @@ const StudentDashboard = ({ user, deconnexion }: { user: IUser, deconnexion: Fun
                 Déconnexion
             </Button>
             <h1 className="p-5 text-center fw-bold text-white display-4">Bienvenue {user.firstName} {user.lastName}</h1>
-            <Row className="d-flex justify-content-center">
+            <Row>
+                <Link to="/uploaderCV" className="btn btn-primary mb-3">Uploader Mon CV</Link>
                 <Link to="/offres" className="btn btn-primary">Liste de stages</Link>
             </Row>
         </div>

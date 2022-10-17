@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Col, Row } from "react-bootstrap";
+import { Button, Col, Row } from "react-bootstrap";
 import InscriptionForm from "../components/InscriptionForm";
 import LoginForm from "../components/LoginForm";
 
@@ -15,9 +15,9 @@ const LoginPage = (props: { setUser: Function }): JSX.Element => {
                         {isLogginPage ? <LoginForm setUser={props.setUser} /> : <InscriptionForm setIsLogginPage={setIsLogginPage} />}
                         <Row>
                             <Col className="text-center mb-2">
-                                <a href="#" className="link-warning" onClick={() => setIsLogginPage(!isLogginPage)}>
+                                <Button variant="link" className="text-warning" onClick={() => setIsLogginPage(!isLogginPage)}>
                                     {isLogginPage ? "Nouveau utilisateur? Inscrivez vous ici." : "Retour à la page de connexion"}
-                                </a>
+                                </Button>
                             </Col>
                         </Row>
                     </Col>

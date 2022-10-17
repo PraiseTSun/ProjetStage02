@@ -146,7 +146,7 @@ const ValiderNouvelleOffreStagePage = ({ connectedUser, deconnexion }:
                         <tbody className="bg-light" data-testid="offre-container">
                             {offers.map((offer, index) => {
                                 return (
-                                    <tr key={index} data-testid="offre-container">
+                                    <tr key={index}>
                                         <td>{offer.nomDeCompagnie}</td>
                                         <td>{offer.department} <br /> {offer.position}</td>
                                         <td>{offer.heureParSemaine} <br /> {offer.adresse}</td>
