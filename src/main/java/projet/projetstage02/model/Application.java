@@ -6,7 +6,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
-import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.Min;
 
 @Entity
 @Data
@@ -19,13 +19,13 @@ public class Application {
     @Column(name = "id", nullable = false)
     private Long id;
 
-    @NotBlank
+    @Min(0)
     private Long offerId;
 
-    @NotBlank
+    @Min(0)
     private Long studentId;
 
-    public Application(Long offerId, Long studentId) {
+    public Application(long offerId, long studentId) {
         this.offerId = offerId;
         this.studentId = studentId;
     }

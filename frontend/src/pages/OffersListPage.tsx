@@ -164,7 +164,7 @@ const OffersListPage = ({ connectedUser }:
                                         <td>{offer.nomDeCompagnie}</td>
                                         <td>{offer.position}</td>
                                         <td>{offer.heureParSemaine}</td>
-                                        <td>{offer.salaire}$</td>
+                                        <td>{offer.salaire}$/h</td>
                                         <td>{offer.adresse}</td>
                                         <td><Button className="btn btn-warning" onClick={
                                             async () => await getPDF(offer.id)
