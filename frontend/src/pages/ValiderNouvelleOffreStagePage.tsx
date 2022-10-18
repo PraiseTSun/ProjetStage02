@@ -1,11 +1,11 @@
-import React, { useEffect, useState } from "react";
-import { Container, Row, Col, Table, Button } from "react-bootstrap";
-import { Link } from "react-router-dom";
+import React, {useEffect, useState} from "react";
+import {Button, Col, Container, Row, Table} from "react-bootstrap";
+import {Link} from "react-router-dom";
 import IUser from "../models/IUser";
-import { Viewer } from '@react-pdf-viewer/core';
+import {Viewer} from '@react-pdf-viewer/core';
 
-const ValiderNouvelleOffreStagePage = ({ connectedUser, deconnexion }:
-    { connectedUser: IUser, deconnexion: Function }): JSX.Element => {
+const ValiderNouvelleOffreStagePage = ({connectedUser, deconnexion}:
+                                           { connectedUser: IUser, deconnexion: Function }): JSX.Element => {
     const [offers, setOffers] = useState<any[]>([]);
     const [pdf, setpdf] = useState<Uint8Array>(new Uint8Array([]))
     const [showPDF, setShowPDF] = useState<boolean>(false)
@@ -19,22 +19,18 @@ const ValiderNouvelleOffreStagePage = ({ connectedUser, deconnexion }:
                         'Accept': 'application/json',
                         'Content-Type': 'application/json',
                     },
-                    body: JSON.stringify({ "token": connectedUser.token })
+                    body: JSON.stringify({"token": connectedUser.token})
                 });
                 if (response.ok) {
                     const data = await response.json();
                     setOffers(data);
-                }
-                else if (response.status === 403) {
+                } else if (response.status === 403) {
                     alert("Session expiré");
                     deconnexion();
-                }
-                else {
-                    console.log(response.status)
+                } else {
                     throw new Error("Error code not handled");
                 }
-            }
-            catch {
+            } catch {
                 alert("Une erreur est survenue, ressayez.");
                 window.location.href = "/"
             }
@@ -51,24 +47,22 @@ const ValiderNouvelleOffreStagePage = ({ connectedUser, deconnexion }:
                     'Accept': 'application/json',
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({ "token": connectedUser.token })
+                body: JSON.stringify({"token": connectedUser.token})
             }) : await fetch(url + offerId.toString(), {
                 method: "DELETE",
                 headers: {
                     'Accept': 'application/json',
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({ "token": connectedUser.token })
+                body: JSON.stringify({"token": connectedUser.token})
             });
 
             if (response.ok) {
                 setOffers(offers.filter(offer => offer.id !== offerId));
-            }
-            else if (response.status === 403) {
+            } else if (response.status === 403) {
                 alert("Session expiré");
                 deconnexion();
-            }
-            else {
+            } else {
                 throw new Error("Error code not handled");
             }
         } catch (exception) {
@@ -84,19 +78,17 @@ const ValiderNouvelleOffreStagePage = ({ connectedUser, deconnexion }:
                     'Accept': 'application/json',
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({ "token": connectedUser.token })
+                body: JSON.stringify({"token": connectedUser.token})
             });
 
             if (response.ok) {
                 const data = await response.json();
                 setpdf(new Uint8Array(JSON.parse(data.pdf)))
                 setShowPDF(true);
-            }
-            else if (response.status === 403) {
+            } else if (response.status === 403) {
                 alert("Session expiré");
                 deconnexion();
-            }
-            else {
+            } else {
                 throw new Error("Error code not handled");
             }
         } catch (exception) {
@@ -136,32 +128,35 @@ const ValiderNouvelleOffreStagePage = ({ connectedUser, deconnexion }:
                 <Col>
                     <Table data-testid="tableValiderNouvelleOffreStage" className="text-center" hover>
                         <thead className="bg-primary">
-                            <tr>
-                                <th>Nom De Compagnie</th>
-                                <th>Départment / Position</th>
-                                <th>Heure Par Semaine / Adresse</th>
-                                <th>Pdf</th>
-                                <th>Valide</th>
-                                <th>Non Valide</th>
-                            </tr>
+                        <tr>
+                            <th>Nom De Compagnie</th>
+                            <th>Départment / Position</th>
+                            <th>Heure Par Semaine / Adresse</th>
+                            <th>Pdf</th>
+                            <th>Valide</th>
+                            <th>Non Valide</th>
+                        </tr>
                         </thead>
                         <tbody className="bg-light" data-testid="offre-container">
-                            {offers.map((offer, index) => {
-                                return (
-                                    <tr key={index}>
-                                        <td>{offer.nomDeCompagnie}</td>
-                                        <td>{offer.department} <br /> {offer.position}</td>
-                                        <td>{offer.heureParSemaine} <br /> {offer.adresse}</td>
-                                        <td><Button className="btn btn-warning" onClick={async () => await getPDF(offer.id)}>pdf</Button></td>
-                                        <td>
-                                            <Button className="btn btn-success mx-5" onClick={async () => await valideOffre(offer.id, true)}>O</Button>
-                                        </td>
-                                        <td>
-                                            <Button className="btn btn-danger" onClick={async () => await valideOffre(offer.id, false)}>X</Button>
-                                        </td>
-                                    </tr>
-                                );
-                            })}
+                        {offers.map((offer, index) => {
+                            return (
+                                <tr key={index}>
+                                    <td>{offer.nomDeCompagnie}</td>
+                                    <td>{offer.department} <br/> {offer.position}</td>
+                                    <td>{offer.heureParSemaine} <br/> {offer.adresse}</td>
+                                    <td><Button className="btn btn-warning"
+                                                onClick={async () => await getPDF(offer.id)}>pdf</Button></td>
+                                    <td>
+                                        <Button className="btn btn-success mx-5"
+                                                onClick={async () => await valideOffre(offer.id, true)}>O</Button>
+                                    </td>
+                                    <td>
+                                        <Button className="btn btn-danger"
+                                                onClick={async () => await valideOffre(offer.id, false)}>X</Button>
+                                    </td>
+                                </tr>
+                            );
+                        })}
                         </tbody>
                     </Table>
                 </Col>

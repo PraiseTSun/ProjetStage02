@@ -8,14 +8,7 @@ import org.apache.logging.log4j.Logger;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import projet.projetstage02.DTO.PdfOutDTO;
-import projet.projetstage02.DTO.TokenDTO;
-import projet.projetstage02.DTO.CompanyDTO;
-import projet.projetstage02.DTO.OffreDTO;
-import projet.projetstage02.DTO.GestionnaireDTO;
-import projet.projetstage02.DTO.PdfDTO;
-import projet.projetstage02.DTO.StudentDTO;
-import projet.projetstage02.DTO.LoginDTO;
+import projet.projetstage02.DTO.*;
 import projet.projetstage02.exception.InvalidTokenException;
 import projet.projetstage02.exception.NonExistentEntityException;
 import projet.projetstage02.exception.NonExistentOfferExeption;
@@ -27,6 +20,7 @@ import projet.projetstage02.service.StudentService;
 import projet.projetstage02.utils.EmailUtil;
 
 import javax.validation.Valid;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -135,6 +129,7 @@ public class RootController {
     @PostMapping("/createOffre")
     public ResponseEntity<Map<String, String>> createOffre(@Valid @RequestBody OffreDTO offreDTO) {
         try {
+            System.out.println(Arrays.toString(offreDTO.getPdf()));
             logger.log(Level.INFO, "Post /createOffre entered with body : " + offreDTO.toString());
             authService.getToken(offreDTO.getToken(), COMPANY);
             companyService.createOffre(offreDTO);
@@ -340,7 +335,7 @@ public class RootController {
 
     @PutMapping("/validateStudent/{id}")
     public ResponseEntity<Map<String, String>> validateStudent(@PathVariable String id,
-            @Valid @RequestBody TokenDTO tokenId) {
+                                                               @Valid @RequestBody TokenDTO tokenId) {
         logger.log(Level.INFO, "Put /validateStudent/{id} entered with id : " + id);
         try {
             Token token = authService.getToken(tokenId.getToken(), GESTIONNAIRE);
@@ -360,7 +355,7 @@ public class RootController {
 
     @PutMapping("/validateCompany/{id}")
     public ResponseEntity<Map<String, String>> validateCompany(@PathVariable String id,
-            @Valid @RequestBody TokenDTO tokenId) {
+                                                               @Valid @RequestBody TokenDTO tokenId) {
         logger.log(Level.INFO, "Put /validateCompany/{id} entered with id : " + id);
         try {
             Token token = authService.getToken(tokenId.getToken(), GESTIONNAIRE);
@@ -379,7 +374,7 @@ public class RootController {
 
     @DeleteMapping("/removeStudent/{id}")
     public ResponseEntity<Map<String, String>> removeStudent(@PathVariable String id,
-            @Valid @RequestBody TokenDTO tokenId) {
+                                                             @Valid @RequestBody TokenDTO tokenId) {
         logger.log(Level.INFO, "Delete /removeStudent/{id} entered with id : " + id);
         try {
             Token token = authService.getToken(tokenId.getToken(), GESTIONNAIRE);
@@ -398,7 +393,7 @@ public class RootController {
 
     @DeleteMapping("/removeCompany/{id}")
     public ResponseEntity<Map<String, String>> removeCompany(@PathVariable String id,
-            @Valid @RequestBody TokenDTO tokenId) {
+                                                             @Valid @RequestBody TokenDTO tokenId) {
         logger.log(Level.INFO, "Delete /removeCompany/{id} entered with id : " + id);
         try {
             Token token = authService.getToken(tokenId.getToken(), GESTIONNAIRE);
@@ -482,7 +477,7 @@ public class RootController {
     }
 
     @PutMapping("/offerPdf/{id}")
-    public ResponseEntity<PdfOutDTO> getOfferPdf(@PathVariable String id,@RequestBody TokenDTO tokenId) {
+    public ResponseEntity<PdfOutDTO> getOfferPdf(@PathVariable String id, @RequestBody TokenDTO tokenId) {
         logger.log(Level.INFO, "Put /offerPdf/{id} entered with id : " + id);
         try {
             authService.getToken(tokenId.getToken(), GESTIONNAIRE);
@@ -501,7 +496,7 @@ public class RootController {
 
     @PutMapping("/unvalidatedCvStudents")
     public ResponseEntity<List<StudentDTO>> getUnvalidatedCvStudent(@RequestBody TokenDTO tokenId) {
-        logger.log(Level.INFO, "Put /unvalidatedCvStudents entered with id : ");
+        logger.log(Level.INFO, "Put /unvalidatedCvStudents entered with id : " + tokenId);
         try {
             authService.getToken(tokenId.getToken(), GESTIONNAIRE);
             List<StudentDTO> students = gestionnaireService.getUnvalidatedCVStudents();
@@ -515,7 +510,7 @@ public class RootController {
 
     @PutMapping("/studentCv/{studentId}")
     public ResponseEntity<PdfOutDTO> getStudentCv(@PathVariable String studentId, @RequestBody TokenDTO tokenId) {
-        logger.log(Level.INFO, "Put /studentCv entered with id : ");
+        logger.log(Level.INFO, "Put /studentCv entered with id : " + studentId);
         try {
             authService.getToken(tokenId.getToken(), GESTIONNAIRE);
             PdfOutDTO cv = gestionnaireService.getStudentCvToValidate(Long.parseLong(studentId));
@@ -566,7 +561,7 @@ public class RootController {
 
     @PutMapping("/getOffers/{studentId}")
     public ResponseEntity<List<OffreDTO>> getOffersByStudentDepartment(@PathVariable String studentId,
-            @RequestBody TokenDTO tokenId) {
+                                                                       @RequestBody TokenDTO tokenId) {
         logger.log(Level.INFO, "Put /getOffersByStudentDepartment entered with student id : " + studentId);
 
         try {

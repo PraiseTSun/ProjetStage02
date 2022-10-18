@@ -15,7 +15,7 @@ const LoginPage = (props: { setUser: Function }): JSX.Element => {
                         {isLogginPage ? <LoginForm setUser={props.setUser} /> : <InscriptionForm setIsLogginPage={setIsLogginPage} />}
                         <Row>
                             <Col className="text-center mb-2">
-                                <Button variant="link" className="text-warning" onClick={() => setIsLogginPage(!isLogginPage)}>
+                                <Button variant="link" className="text-warning" onClick={() => setIsLogginPage(!isLogginPage)} >
                                     {isLogginPage ? "Nouveau utilisateur? Inscrivez vous ici." : "Retour à la page de connexion"}
                                 </Button>
                             </Col>

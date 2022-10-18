@@ -32,7 +32,7 @@ const InscriptionForm = ({ setIsLogginPage }: { setIsLogginPage: Function }): JS
                     <ListGroup.Item action href="#etudiant" variant="secondary">
                         Etudiant
                     </ListGroup.Item>
-                    <ListGroup.Item action href="#entreprise" variant="secondary">
+                    <ListGroup.Item data-testid="entrepriseInscriptionForm" action href="#entreprise" variant="secondary">
                         Entreprise
                     </ListGroup.Item>
                 </ListGroup>

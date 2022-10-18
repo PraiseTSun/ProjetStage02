@@ -1,14 +1,14 @@
-import { Button, Col, Container, Form, Row } from "react-bootstrap";
-import React, { useState } from "react";
-import { BeatLoader } from "react-spinners";
+import {Button, Col, Container, Form, Row} from "react-bootstrap";
+import React, {useState} from "react";
+import {BeatLoader} from "react-spinners";
 import IUser from "../models/IUser";
-import { Link } from "react-router-dom";
+import {Link} from "react-router-dom";
 
-const UploaderMonCV = ({ user }: { user: IUser }) => {
+const UploaderMonCV = ({user}: { user: IUser }) => {
     const [waiting, setWaiting] = useState<boolean>(false);
     const [isSelected, setIsSelected] = useState<boolean>(false);
     const [validated, setValidated] = useState<boolean>(false);
-    const [cv, setCv] = useState<Array<number>>([0])
+    const [cv, setCv] = useState<number[]>([0])
 
     const onSubmit = async (event: React.SyntheticEvent) => {
         const form: any = event.currentTarget;
@@ -17,7 +17,7 @@ const UploaderMonCV = ({ user }: { user: IUser }) => {
             setWaiting(true)
             const headers = {
                 method: "PUT",
-                headers: { "Content-Type": "application/json" },
+                headers: {"Content-Type": "application/json"},
                 body: JSON.stringify({
                     studentId: user.id,
                     pdf: cv,
@@ -27,8 +27,7 @@ const UploaderMonCV = ({ user }: { user: IUser }) => {
             const res = await fetch("http://localhost:8080/uploadStudentCV", headers)
             if (res.ok) {
                 alert("CV envoyé")
-            }
-            else {
+            } else {
                 alert("Une erreur est survenue")
             }
             setWaiting(false);
@@ -37,32 +36,20 @@ const UploaderMonCV = ({ user }: { user: IUser }) => {
         setValidated(true);
     }
 
-    //source: https://stackoverflow.com/questions/8482309/converting-javascript-integer-to-byte-array-and-back
-    const intToByteArray = (array: Uint8Array) => {
+    const intToByteArray = (array: Uint8Array): number[] => {
         let bytes: number[] = []
-        for (let i = 0; i < array.length; i++) {
-
-            let long = array[i]
-            let byteArray = [0, 0, 0, 0];
-            // we want to represent the input as a 4-bytes array
-            for (let index = 0; index < byteArray.length; index++) {
-                let byte = long & 0xff;
-                byteArray[index] = byte;
-                long = (long - byte) / 256;
-            }
-            bytes.push(...byteArray)
-        }
+        array.forEach(value => {
+            bytes.push(value)
+        })
         return bytes;
     };
 
-    const uploadFile = async (file: File): Promise<void> => {
+    const uploadFile = async (file: File) => {
         const fileText = await file.arrayBuffer()
         const view = new Uint8Array(fileText)
         const array = intToByteArray(view)
         setCv(array)
-        setIsSelected(true)
     }
-
     if (waiting) {
         return (
             <div className="d-flex justify-content-center py-5 bg-light min-vh-100">
@@ -87,10 +74,10 @@ const UploaderMonCV = ({ user }: { user: IUser }) => {
                     <Row>
                         <Form.Group className="">
                             <input data-testid="uploaderMonCV" className="form-control" accept="application/pdf"
-                                name="file"
-                                required type="file" onChange={async (e) => {
-                                    await uploadFile(e.target.files![0]);
-                                }} />
+                                   name="file"
+                                   required type="file" onChange={async (e) => {
+                                await uploadFile(e.target.files![0]);
+                            }}/>
                             <Form.Control.Feedback type="invalid">Champ requis</Form.Control.Feedback>
                         </Form.Group>
                         {isSelected ?
@@ -100,7 +87,7 @@ const UploaderMonCV = ({ user }: { user: IUser }) => {
                     </Row>
                     <Row className="m-4">
                         <Button data-testid="buttonid" type="submit"
-                            className="btn btn-success mx-auto w-75">Envoyer</Button>
+                                className="btn btn-success mx-auto w-75">Envoyer</Button>
                     </Row>
                 </Form>
             </Col>
