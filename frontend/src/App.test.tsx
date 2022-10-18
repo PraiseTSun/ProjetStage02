@@ -260,6 +260,7 @@ describe("FormulaireSoumissionPageTest", () => {
             /Département/i,
             /Poste/i,
             /Heures par semaine/i,
+            /Salaire horaire/i,
             /Adresse/i,
             /Document PDF/i,
         ]
@@ -276,6 +277,8 @@ describe("FormulaireSoumissionPageTest", () => {
         expect(champRequis.length).toBe(5)
         const heures = await screen.findByText(/Nombre d'heures entre 0 et 40/i)
         expect(heures).toBeInTheDocument()
+        const salaire = await screen.findByText(/Salaire doit etre plus haut que 15/i)
+        expect(salaire).toBeInTheDocument()
     })
 })
 
@@ -581,7 +584,8 @@ describe("OffersListPageTests", () => {
                         "id": 2,
                         "nomDeCompagnie": "Duff Beer",
                         "position": "Delivery Man",
-                        "heureParSemaine": "40",
+                        "heureParSemaine": "30",
+                        "salaire": "440",
                         "adresse": "123 Joe street"
                     }])
                 });
@@ -627,9 +631,9 @@ describe("OffersListPageTests", () => {
         });
 
         expect(await screen.findByText(/Duff Beer/i)).toBeInTheDocument();
-        expect(await screen.findByText(/40/i)).toBeInTheDocument();
+        expect(await screen.findByText(/30/i)).toBeInTheDocument();
         expect(await screen.findByText(/Delivery Man/i)).toBeInTheDocument();
-        expect(await screen.findByText(/40/i)).toBeInTheDocument();
+        expect(await screen.findByText(/440\$\/h/i)).toBeInTheDocument();
         expect(await screen.findByText(/123 joe street/i)).toBeInTheDocument();
         expect(fetch).toBeCalledWith("http://localhost:8080/getOffers/1", expect.anything());
         expect(fetch).toBeCalledTimes(1);
@@ -657,6 +661,7 @@ describe("OffresValidationPageTests", () => {
                         department: "Informatique",
                         position: "Developpeur",
                         heureParSemaine: "40",
+                        salaire: "30",
                         adresse: "123 Rue Pomme",
                     }])
                 });
@@ -696,6 +701,7 @@ describe("OffresValidationPageTests", () => {
         expect(await screen.findByText(/Compagnie de Yan/i)).toBeInTheDocument();
         expect(await screen.findByText(/Informatique/i)).toBeInTheDocument();
         expect(await screen.findByText(/Developpeur/i)).toBeInTheDocument();
+        expect(await screen.findByText(/30\$\/h/i)).toBeInTheDocument();
         expect(await screen.findByText(/40/i)).toBeInTheDocument();
         expect(await screen.findByText(/123 rue pomme/i)).toBeInTheDocument();
         expect(fetch).toBeCalledWith("http://localhost:8080/unvalidatedOffers", expect.anything());
