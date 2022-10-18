@@ -12,6 +12,7 @@ const FormulaireSoumissionPage = ({user}: { user: IUser }): JSX.Element => {
     const [department, setDepartment] = useState("")
     const [poste, setPoste] = useState("")
     const [hoursPerWeek, setHoursPerWeek] = useState(40)
+    const [salary, setSalary] = useState(20)
     const [address, setAddress] = useState("")
     const [pdf, setPdf] = useState<number[]>([])
 
@@ -26,6 +27,7 @@ const FormulaireSoumissionPage = ({user}: { user: IUser }): JSX.Element => {
                 position: poste,
                 heureParSemaine: hoursPerWeek,
                 adresse: address,
+                salaire: salary,
                 pdf: pdf,
                 token: user.token
             }
@@ -45,14 +47,21 @@ const FormulaireSoumissionPage = ({user}: { user: IUser }): JSX.Element => {
         setValidated(true);
     }
 
-    const hoursRegEx = new RegExp(
+    const numbersRegEx = new RegExp(
         '^[0-9]{0,3}$'
     );
     const setHoursPerWeekFromField = (event: React.ChangeEvent<FormControlElement>) => {
-        if (hoursRegEx.test(event.target.value)) {
+        if (numbersRegEx.test(event.target.value)) {
             setHoursPerWeek(Number.parseInt(event.target.value))
         } else {
             setHoursPerWeek(hoursPerWeek)
+        }
+    }
+    const setSalaryFromField = (event: React.ChangeEvent<FormControlElement>) => {
+        if (numbersRegEx.test(event.target.value)) {
+            setSalary(Number.parseInt(event.target.value))
+        } else {
+            setSalary(hoursPerWeek)
         }
     }
 
@@ -115,6 +124,13 @@ const FormulaireSoumissionPage = ({user}: { user: IUser }): JSX.Element => {
                                       max="40" required value={hoursPerWeek}
                                       onChange={field => setHoursPerWeekFromField(field)}></Form.Control>
                         <Form.Control.Feedback type="invalid">Nombre d'heures entre 0 et 40</Form.Control.Feedback>
+                    </Form.Group>
+                    <Form.Group>
+                        <Form.Label className="fw-bold h5">Salaire horaire</Form.Label>
+                        <Form.Control data-testid="salaryFormulaireSoumission" id={"number"} type="number" min="15"
+                                      max="1000" required value={salary}
+                                      onChange={field => setSalaryFromField(field)}></Form.Control>
+                        <Form.Control.Feedback type="invalid">Salaire doit etre plus haut que 15</Form.Control.Feedback>
                     </Form.Group>
                     <Form.Group>
                         <Form.Label className="fw-bold h5">Adresse</Form.Label>
