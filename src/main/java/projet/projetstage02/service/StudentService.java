@@ -7,11 +7,9 @@ import projet.projetstage02.exception.AlreadyExistingPostulation;
 import projet.projetstage02.exception.NonExistentEntityException;
 import projet.projetstage02.model.Application;
 import projet.projetstage02.model.Offre;
-import projet.projetstage02.model.Postulation;
 import projet.projetstage02.model.Student;
 import projet.projetstage02.repository.ApplicationRepository;
 import projet.projetstage02.repository.OffreRepository;
-import projet.projetstage02.repository.PostulationRepository;
 import projet.projetstage02.repository.StudentRepository;
 
 import java.sql.Timestamp;
@@ -33,10 +31,10 @@ public class StudentService {
     private final ApplicationRepository applicationRepository;
 
     public void saveStudent(String firstName,
-            String lastName,
-            String email,
-            String password,
-            Department department) {
+                            String lastName,
+                            String email,
+                            String password,
+                            Department department) {
         StudentDTO dto = StudentDTO.builder()
                 .firstName(firstName)
                 .lastName(lastName)
@@ -150,4 +148,19 @@ public class StudentService {
                 && !deleteUnconfirmedStudent(email);
     }
 
+    public ApplicationListDTO getPostulsOfferId(long studentId) throws NonExistentEntityException {
+        Optional<Student> studentOpt = studentRepository.findById(studentId);
+        if (studentOpt.isEmpty()) throw new NonExistentEntityException();
+
+        List<Long> offersId = new ArrayList<>();
+        applicationRepository.findByStudentId(studentId)
+                .forEach(
+                        application -> offersId.add(application.getOfferId())
+                );
+
+        return ApplicationListDTO.builder()
+                .studentId(studentOpt.get().getId())
+                .offersId(offersId)
+                .build();
+    }
 }
