@@ -833,11 +833,11 @@ paths:
           description: L'offre avec cet id n'existe pas
   /uploadStudentCV:
     put:
-      summary: Upload un cv (Doit avoir un token gestionnaire)
+      summary: Upload un cv (Doit avoir un token student)
       parameters:
         - in: body
           name: pdf
-          description: Token valide du gestionnaire
+          description: Token valide de l'étudiant
           schema:
             type: object
             properties:
@@ -856,26 +856,14 @@ paths:
           schema:
             type: object
             properties:
-              id:
+              studentId:
                 type: number
-              firstName:
-                type: string
-              lastName:
-                type: string
-              email:
-                type: string
-              isConfirmed:
-                type: boolean
-              department:
-                type: string
-              inscriptionTimestamp:
-                type: number
-              emailConfirmed:
-                type: boolean
-              cv:
+              pdf:
                 type: array
                 items:
                   type: number
+              token:
+                type: string
         403:
           description: Token invalide ou expiré
         404:
