@@ -3,5 +3,6 @@ export default interface IOffer {
     nomDeCompagnie: string,
     position: string,
     heureParSemaine: string,
+    salaire: string,
     adresse: string
 }
