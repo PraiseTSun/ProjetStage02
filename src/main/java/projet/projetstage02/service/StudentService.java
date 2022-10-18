@@ -7,9 +7,11 @@ import projet.projetstage02.exception.AlreadyExistingPostulation;
 import projet.projetstage02.exception.NonExistentEntityException;
 import projet.projetstage02.model.Application;
 import projet.projetstage02.model.Offre;
+import projet.projetstage02.model.Postulation;
 import projet.projetstage02.model.Student;
 import projet.projetstage02.repository.ApplicationRepository;
 import projet.projetstage02.repository.OffreRepository;
+import projet.projetstage02.repository.PostulationRepository;
 import projet.projetstage02.repository.StudentRepository;
 
 import java.sql.Timestamp;
@@ -31,10 +33,10 @@ public class StudentService {
     private final ApplicationRepository applicationRepository;
 
     public void saveStudent(String firstName,
-                            String lastName,
-                            String email,
-                            String password,
-                            Department department) {
+            String lastName,
+            String email,
+            String password,
+            Department department) {
         StudentDTO dto = StudentDTO.builder()
                 .firstName(firstName)
                 .lastName(lastName)
@@ -52,19 +54,21 @@ public class StudentService {
         return studentRepository.save(dto.toModel()).getId();
     }
 
-    public boolean isEmailUnique(String email) {
+    private boolean isEmailUnique(String email) {
         return studentRepository.findByEmail(email).isEmpty();
     }
 
     public StudentDTO getStudentById(Long id) throws NonExistentEntityException {
         var studentOpt = studentRepository.findById(id);
-        if (studentOpt.isEmpty()) throw new NonExistentEntityException();
+        if (studentOpt.isEmpty())
+            throw new NonExistentEntityException();
         return new StudentDTO(studentOpt.get());
     }
 
     public StudentDTO getStudentByEmailPassword(String email, String password) throws NonExistentEntityException {
         var studentOpt = studentRepository.findByEmailAndPassword(email.toLowerCase(), password);
-        if (studentOpt.isEmpty()) throw new NonExistentEntityException();
+        if (studentOpt.isEmpty())
+            throw new NonExistentEntityException();
         return new StudentDTO(studentOpt.get());
     }
 
@@ -75,9 +79,10 @@ public class StudentService {
         return new StudentDTO(student);
     }
 
-    public boolean deleteUnconfirmedStudent(StudentDTO dto) throws NonExistentEntityException {
-        Optional<Student> studentOpt = studentRepository.findByEmail(dto.getEmail());
-        if (studentOpt.isEmpty()) throw new NonExistentEntityException();
+    private boolean deleteUnconfirmedStudent(String email) throws NonExistentEntityException {
+        Optional<Student> studentOpt = studentRepository.findByEmail(email);
+        if (studentOpt.isEmpty())
+            throw new NonExistentEntityException();
         Student student = studentOpt.get();
         if (currentTimestamp() - student.getInscriptionTimestamp() > MILLI_SECOND_DAY) {
             studentRepository.delete(student);
@@ -88,7 +93,8 @@ public class StudentService {
 
     public List<OffreDTO> getOffersByStudentDepartment(long id) throws NonExistentEntityException {
         Optional<Student> studentOpt = studentRepository.findById(id);
-        if (studentOpt.isEmpty()) throw new NonExistentEntityException();
+        if (studentOpt.isEmpty())
+            throw new NonExistentEntityException();
         Department department = studentOpt.get().getDepartment();
 
         List<OffreDTO> offers = new ArrayList<>();
@@ -106,9 +112,10 @@ public class StudentService {
         return offers;
     }
 
-    public PdfOutDTO getOfferById(long id) throws NonExistentEntityException {
+    public PdfOutDTO getOfferPdfById(long id) throws NonExistentEntityException {
         Optional<Offre> offerOpt = offreRepository.findById(id);
-        if (offerOpt.isEmpty()) throw new NonExistentEntityException();
+        if (offerOpt.isEmpty())
+            throw new NonExistentEntityException();
         Offre offre = offerOpt.get();
         String cv = Arrays.toString(offre.getPdf()).replaceAll("\\s+", "");
         return new PdfOutDTO(offre.getId(), cv);
@@ -138,19 +145,9 @@ public class StudentService {
                 .build();
     }
 
-    public ApplicationListDTO getPostulsOfferId(long studentId) throws NonExistentEntityException {
-        Optional<Student> studentOpt = studentRepository.findById(studentId);
-        if (studentOpt.isEmpty()) throw new NonExistentEntityException();
-
-        List<Long> offersId = new ArrayList<>();
-        applicationRepository.findByStudentId(studentId)
-                .forEach(
-                        application -> offersId.add(application.getOfferId())
-                );
-
-        return ApplicationListDTO.builder()
-                .studentId(studentOpt.get().getId())
-                .offersId(offersId)
-                .build();
+    public boolean isStudentInvalid(String email) throws NonExistentEntityException {
+        return !isEmailUnique(email)
+                && !deleteUnconfirmedStudent(email);
     }
+
 }

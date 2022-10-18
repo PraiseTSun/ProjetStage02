@@ -4,10 +4,11 @@ import { Link } from "react-router-dom";
 import IUser from "../models/IUser";
 import { Viewer } from '@react-pdf-viewer/core';
 
-const StudentCvValidationPage = ({ connectedUser, deconnexion }: { connectedUser: IUser, deconnexion: Function }): JSX.Element => {
+const StudentCvValidationPage = ({ connectedUser, deconnexion }:
+    { connectedUser: IUser, deconnexion: Function }): JSX.Element => {
     const [students, setStudents] = useState<any[]>([]);
-    const [pdf, setpdf] = useState<Uint8Array>(new Uint8Array([]))
-    const [showCV, setShowCV] = useState<boolean>(false)
+    const [pdf, setPDF] = useState<Uint8Array>(new Uint8Array([]))
+    const [showPDF, setShowPDF] = useState<boolean>(false)
 
     useEffect(() => {
         const fetchUnvalidatedCvStudents = async () => {
@@ -29,7 +30,6 @@ const StudentCvValidationPage = ({ connectedUser, deconnexion }: { connectedUser
                     deconnexion();
                 }
                 else {
-                    console.log(response.status)
                     throw new Error("Error code not handled");
                 }
             }
@@ -38,11 +38,10 @@ const StudentCvValidationPage = ({ connectedUser, deconnexion }: { connectedUser
                 window.location.href = "/"
             }
         }
-        fetchUnvalidatedCvStudents()
-        setShowCV(pdf.length > 0)
-    }, [connectedUser, pdf]);
+        fetchUnvalidatedCvStudents();
+    }, [connectedUser, deconnexion]);
 
-    async function validateCV(studentId: number, index: number, valid: boolean): Promise<void> {
+    async function validateCV(studentId: number, valid: boolean): Promise<void> {
         try {
             const url: String = valid ? "http://localhost:8080/validateCv/" : "http://localhost:8080/refuseCv/";
             const response: Response = await fetch(url + studentId.toString(), {
@@ -53,9 +52,8 @@ const StudentCvValidationPage = ({ connectedUser, deconnexion }: { connectedUser
                 },
                 body: JSON.stringify({ "token": connectedUser.token })
             });
-
             if (response.ok) {
-                setStudents(students.splice(index + 1, 1));
+                setStudents(students.filter(student => student.id !== studentId));
             }
             else if (response.status === 403) {
                 alert("Session expiré");
@@ -79,10 +77,10 @@ const StudentCvValidationPage = ({ connectedUser, deconnexion }: { connectedUser
                 },
                 body: JSON.stringify({ "token": connectedUser.token })
             });
-
             if (response.ok) {
                 const data = await response.json();
-                setpdf(new Uint8Array(JSON.parse(data.pdf)));
+                setPDF(new Uint8Array(JSON.parse(data.pdf)));
+                setShowPDF(true);
             }
             else if (response.status === 403) {
                 alert("Session expiré");
@@ -96,11 +94,11 @@ const StudentCvValidationPage = ({ connectedUser, deconnexion }: { connectedUser
         }
     }
 
-    if (showCV) {
+    if (showPDF) {
         return (
-            <Container>
+            <Container className="min-vh-100 bg-white p-0">
                 <div className="bg-dark p-2">
-                    <Button className="Btn btn-primary" onClick={() => setShowCV(false)}>
+                    <Button className="Btn btn-primary" onClick={() => setShowPDF(false)}>
                         Fermer
                     </Button>
                 </div>
@@ -112,20 +110,20 @@ const StudentCvValidationPage = ({ connectedUser, deconnexion }: { connectedUser
     }
 
     return (
-        <Container className="vh-100">
+        <Container className="min-vh-100">
             <Row>
                 <Col sm={2}>
                     <Link to="/" className="btn btn-primary my-3">Home</Link>
                 </Col>
                 <Col sm={8} className="text-center pt-2">
-                    <h1 className="fw-bold">Validation de CV</h1>
+                    <h1 className="fw-bold text-white display-3 pb-2">Liste des CVs non validés</h1>
                 </Col>
                 <Col sm={2}></Col>
             </Row>
             <Row>
                 <Col>
                     <Table className="text-center" hover>
-                        <thead className="bg-primary">
+                        <thead className="bg-primary text-white">
                             <tr>
                                 <th>Prénom</th>
                                 <th>Nom</th>
@@ -142,10 +140,16 @@ const StudentCvValidationPage = ({ connectedUser, deconnexion }: { connectedUser
                                         <td>{student.firstName}</td>
                                         <td>{student.lastName}</td>
                                         <td>{student.department}</td>
-                                        <td><Button className="btn btn-warning" onClick={() => getPDF(student.id)}>CV</Button></td>
+                                        <td><Button className="btn btn-warning" onClick={async () => await getPDF(student.id)}>CV</Button></td>
                                         <td>
-                                            <Button className="btn btn-success mx-2" onClick={() => validateCV(student.id, index, true)}>O</Button>
-                                            <Button className="btn btn-danger" onClick={() => validateCV(student.id, index, false)}>X</Button>
+                                            <Button className="btn btn-success mx-2" onClick={
+                                                () => validateCV(student.id, true)}>
+                                                O
+                                            </Button>
+                                            <Button className="btn btn-danger" onClick={
+                                                () => validateCV(student.id, false)}>
+                                                X
+                                            </Button>
                                         </td>
                                     </tr>
                                 );
@@ -154,7 +158,7 @@ const StudentCvValidationPage = ({ connectedUser, deconnexion }: { connectedUser
                     </Table>
                 </Col>
             </Row>
-        </Container>
+        </Container >
     );
 }
 

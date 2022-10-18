@@ -1,6 +1,5 @@
-import React from 'react';
-import { useState } from 'react'
-import { Row, Col } from 'react-bootstrap';
+import React, { useState } from 'react';
+import { Col, Row } from 'react-bootstrap';
 import { useLocation, useParams } from 'react-router-dom';
 import BeatLoader from 'react-spinners/BeatLoader';
 
@@ -30,7 +29,7 @@ const ConfirmationPage = (): JSX.Element => {
         });
 
     return (
-        <Row className="vh-100">
+        <Row className="min-vh-100">
             <Col className="m-auto">
                 <h1 className="text-white text-center display-1">{message}</h1>
                 <BeatLoader className="text-center" color="#ffffff" loading={loading} size={100} />

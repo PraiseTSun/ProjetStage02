@@ -1,8 +1,8 @@
 import React, { useState } from "react";
-import { Container, Row, ToggleButton, ToggleButtonGroup } from "react-bootstrap";
+import { Col, Container, Row, ToggleButton, ToggleButtonGroup } from "react-bootstrap";
 import ValidationStudent from "../components/ValidationStudent";
 import ValidationCompany from "../components/ValidationCompany";
-import ValidationGestionnaire from "../components/CreateGestionnaireForm";
+import CreateGestionnaireForm from "../components/CreateGestionnaireForm";
 import { Link } from "react-router-dom";
 import IUser from "../models/IUser";
 
@@ -42,17 +42,27 @@ const UserValidation = ({ connectedUser }: { connectedUser: IUser }) => {
     }
 
     return (
-        <Container className="vh-100">
-            <Link to="/" className="btn btn-primary my-3">Home</Link>
+        <Container className="min-vh-100">
+            <Row>
+                <Col sm={2}>
+                    <Link to="/" className="btn btn-primary my-3">Home</Link>
+                </Col>
+                <Col sm={8} className="text-center pt-2">
+                    <h1 className="fw-bold text-white display-3 pb-2">Validation d'utilisateurs</h1>
+                </Col>
+                <Col sm={2}></Col>
+            </Row>
             <Row>
                 <ToggleButtonGroup className="" type="radio" name="options" defaultValue="Student">
-                    <ToggleButton id="StudentValid" value="Student" onClick={() => setUser("Student")}>
+                    <ToggleButton data-testid="studentInput" id="StudentValid" value="Student" onClick={() => setUser("Student")}>
                         Étudiants
                     </ToggleButton>
-                    <ToggleButton id="CompanyValid" value="Company" onClick={() => setUser("Company")}>
+                    <ToggleButton id="CompanyValid" data-testid="companyInput" value="Company" onClick={() => setUser("Company")}>
                         Compagnies
                     </ToggleButton>
-                    <ToggleButton id="GestionnairValid" value="Gestionnaire" onClick={() => setUser("Gestionnaire")}>
+                    <ToggleButton id="GestionnairValid" value="Gestionnaire" onClick={() => {
+                        setUser("Gestionnaire")
+                    }}>
                         Gestionnaires
                     </ToggleButton>
                 </ToggleButtonGroup>
@@ -60,7 +70,7 @@ const UserValidation = ({ connectedUser }: { connectedUser: IUser }) => {
             <Row>
                 {user === "Student" ? <ValidationStudent connectedUser={connectedUser} onRemove={onRemove} onValidation={onValidation} /> :
                     user === "Company" ? <ValidationCompany connectedUser={connectedUser} onRemove={onRemove} onValidation={onValidation} /> :
-                        <ValidationGestionnaire user={connectedUser} />
+                        <CreateGestionnaireForm user={connectedUser} />
                 }
             </Row>
         </Container>

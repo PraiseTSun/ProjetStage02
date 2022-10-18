@@ -4,13 +4,9 @@ import lombok.AllArgsConstructor;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-
-import projet.projetstage02.DTO.CompanyDTO;
-import projet.projetstage02.DTO.GestionnaireDTO;
-import projet.projetstage02.DTO.OffreDTO;
-import projet.projetstage02.DTO.PdfDTO;
-import projet.projetstage02.DTO.StudentDTO;
+import projet.projetstage02.DTO.*;
 import projet.projetstage02.model.AbstractUser;
+import projet.projetstage02.model.AbstractUser.Department;
 import projet.projetstage02.service.CompanyService;
 import projet.projetstage02.service.GestionnaireService;
 import projet.projetstage02.service.StudentService;
@@ -19,37 +15,13 @@ import projet.projetstage02.service.StudentService;
 @AllArgsConstructor
 public class ProjetStage02Application implements CommandLineRunner {
 
-    private StudentService studentService;
+        private StudentService studentService;
 
-    private CompanyService companyService;
+        private CompanyService companyService;
 
-    private GestionnaireService gestionnaireService;
+        private GestionnaireService gestionnaireService;
 
-    public static void main(String[] args) {
-        SpringApplication.run(ProjetStage02Application.class, args);
-    }
-
-    @Override
-    public void run(String... args) throws Exception {
-        studentService.saveStudent("Samir", "Badi", "Samir@gmail.com", "cooldude",
-                AbstractUser.Department.Informatique);
-        StudentDTO student = studentService.getStudentById(1L);
-        student.setEmailConfirmed(true);
-        studentService.saveStudent(student);
-
-        companyService.saveCompany("Bob", "Marley", "Bell", "Bob@bell.com", "bestcompany",
-                AbstractUser.Department.Informatique);
-        CompanyDTO company = companyService.getCompanyById(2L);
-        company.setEmailConfirmed(true);
-        companyService.saveCompany(company);
-
-        gestionnaireService.saveGestionnaire("Dave", "Douch", "dave@gmail.ca", "cooldude");
-        GestionnaireDTO gestionnaire = gestionnaireService.getGestionnaireById(3L);
-        gestionnaire.setEmailConfirmed(true);
-        gestionnaireService.saveGestionnaire(gestionnaire);
-        studentService.uploadCurriculumVitae(PdfDTO.builder()
-            .studentId(1L)
-            .pdf(new byte[]{
+        private final byte[] TESTPDF = new byte[]{
                 37, 80, 68, 70, 45, 49, 46, 55, 10, 10, 49, 32, 48, 32, 111, 98, 106, 32, 32, 37, 32, 101, 110, 116,
                 114, 121, 32, 112, 111, 105, 110, 116, 10, 60, 60, 10, 32, 32, 47, 84, 121, 112, 101, 32, 47, 67,
                 97, 116, 97, 108, 111, 103, 10, 32, 32, 47, 80, 97, 103, 101, 115, 32, 50, 32, 48, 32, 82, 10, 62,
@@ -80,20 +52,80 @@ public class ProjetStage02Application implements CommandLineRunner {
                 101, 114, 10, 60, 60, 10, 32, 32, 47, 83, 105, 122, 101, 32, 54, 10, 32, 32, 47, 82, 111, 111, 116,
                 32, 49, 32, 48, 32, 82, 10, 62, 62, 10, 115, 116, 97, 114, 116, 120, 114, 101, 102, 10, 52, 57, 50,
                 10, 37, 37, 69, 79, 70
-            })    
-        .build());
+        };
 
-        
-        companyService.createOffre(new OffreDTO(0L,
-        "Bell",
-                "Techniques de linformatique",
-                "Support TI",
-                35,
-                "My Home",
-                new byte[0],
-                "notoken",
-                false));
-                
+        public static void main(String[] args) {
+                SpringApplication.run(ProjetStage02Application.class, args);
+        }
+
+        @Override
+        public void run(String... args) throws Exception {
+                studentService.saveStudent("Samir", "Badi", "Samir@gmail.com", "cooldude",
+                                AbstractUser.Department.Informatique);
+                StudentDTO student = studentService.getStudentById(1L);
+                student.setEmailConfirmed(true);
+                studentService.saveStudent(student);
+
+                companyService.saveCompany("Bob", "Marley", "Bell", "Bob@bell.com", "bestcompany",
+                                AbstractUser.Department.Informatique);
+                CompanyDTO company = companyService.getCompanyById(2L);
+                company.setEmailConfirmed(true);
+                companyService.saveCompany(company);
+
+                gestionnaireService.saveGestionnaire("Dave", "Douch", "dave@gmail.ca", "cooldude");
+                GestionnaireDTO gestionnaire = gestionnaireService.getGestionnaireById(3L);
+                gestionnaire.setEmailConfirmed(true);
+                gestionnaireService.saveGestionnaire(gestionnaire);
+
+                studentService.saveStudent("Peter", "Griffin", "peter.griffin@quahog.com", "lois",
+                                AbstractUser.Department.Informatique);
+                StudentDTO student2 = studentService.getStudentByEmailPassword("peter.griffin@quahog.com", "lois");
+                student2.setEmailConfirmed(true);
+                studentService.saveStudent(student2);
+
+                long offreId = companyService.createOffre(OffreDTO.builder()
+                                .adresse("123 Joe Road")
+                                .department(Department.Informatique.departement)
+                                .heureParSemaine(40)
+                                .salaire(40)
+                                .nomDeCompagnie("Duff Beer")
+                                .position("Delivery Man")
+                                .pdf(TESTPDF)
+                                .build());
+                gestionnaireService.validateOfferById(offreId);
+
+                studentService.uploadCurriculumVitae(PdfDTO.builder()
+                                .studentId(1L)
+                                .pdf(TESTPDF)
+                                .build());
+
+                studentService.uploadCurriculumVitae(PdfDTO.builder()
+                                .studentId(student2.getId())
+                                .pdf(TESTPDF)
+                                .build());
+
+                companyService.createOffre(new OffreDTO(0L,
+                                "Bell",
+                                "Techniques de linformatique",
+                                "Support TI",
+                                35,
+                                35,
+                                "My Home",
+                                TESTPDF,
+                                "notoken",
+                                false));
+                companyService.createOffre(new OffreDTO(0L,
+                                "Bell BB",
+                                "Techniques de linformatique",
+                                "Support TI",
+                                36,
+                                15,
+                                "33 My Home",
+                                TESTPDF,
+                                "notoken",
+                                false));
+                gestionnaireService.validateStudent(student.getId());
+                gestionnaireService.validateStudent(student2.getId());
                 System.out.println(studentService.getStudentById(1L));
                 System.out.println(companyService.getCompanyById(2L));
                 System.out.println(gestionnaireService.getGestionnaireById(3L));
@@ -101,8 +133,7 @@ public class ProjetStage02Application implements CommandLineRunner {
                 System.out.println(studentService.getStudentByEmailPassword("Samir@gmail.com", "cooldude"));
                 System.out.println(companyService.getCompanyByEmailPassword("Bob@bell.com", "bestcompany"));
                 System.out.println(gestionnaireService.getGestionnaireByEmailPassword("dave@gmail.ca", "cooldude"));
-                System.out.println(gestionnaireService.getNoneValidateOffers());
-                System.out.println(gestionnaireService.getUnvalidatedCVStudents());                
-            }
+                System.out.println(gestionnaireService.getUnvalidatedOffers());
+                System.out.println(gestionnaireService.getUnvalidatedCVStudents());
         }
-        
+}

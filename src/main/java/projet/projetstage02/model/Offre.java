@@ -14,7 +14,7 @@ import javax.validation.constraints.*;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-@Table(name="Offre")
+@Table(name = "Offre")
 public class Offre {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -31,6 +31,11 @@ public class Offre {
     @Min(1)
     @Max(40)
     private int heureParSemaine;
+
+    @Min(15)
+    @Max(999)
+    private int salaire;
+
     @NotBlank
     @Size(min = 2)
     private String adresse;

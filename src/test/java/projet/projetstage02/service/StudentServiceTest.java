@@ -12,9 +12,11 @@ import projet.projetstage02.exception.NonExistentEntityException;
 import projet.projetstage02.model.AbstractUser.Department;
 import projet.projetstage02.model.Application;
 import projet.projetstage02.model.Offre;
+import projet.projetstage02.model.Postulation;
 import projet.projetstage02.model.Student;
 import projet.projetstage02.repository.ApplicationRepository;
 import projet.projetstage02.repository.OffreRepository;
+import projet.projetstage02.repository.PostulationRepository;
 import projet.projetstage02.repository.StudentRepository;
 
 import java.util.ArrayList;
@@ -26,6 +28,7 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.assertj.core.api.Fail.fail;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
+import static projet.projetstage02.utils.TimeUtil.currentTimestamp;
 
 @ExtendWith(MockitoExtension.class)
 public class StudentServiceTest {
@@ -67,7 +70,7 @@ public class StudentServiceTest {
                 .heureParSemaine(69)
                 .adresse("Somewhere")
                 .valide(true)
-                .pdf(new byte[]{1, 2, 3, 4, 5, 6, 7, 8, 9})
+                .pdf(new byte[] { 1, 2, 3, 4, 5, 6, 7, 8, 9 })
                 .build();
 
         bartApplication = Application.builder()
@@ -145,34 +148,6 @@ public class StudentServiceTest {
     }
 
     @Test
-    void isEmailUniqueExistsTest() {
-        // Arrange
-        when(studentRepository.findByEmail(anyString()))
-                .thenReturn(Optional.of(bart));
-
-        // Act
-        boolean isEmailUnique = studentService
-                .isEmailUnique("bart.simpson@springfield.com");
-
-        // Assert
-        assertThat(isEmailUnique).isFalse();
-    }
-
-    @Test
-    void isEmailUniqueNotExistsTest() {
-        // Arrange
-        when(studentRepository.findByEmail(anyString()))
-                .thenReturn(Optional.empty());
-
-        // Act
-        boolean isEmailUnique = studentService
-                .isEmailUnique("el.barto@springfield.com");
-
-        // Assert
-        assertThat(isEmailUnique).isTrue();
-    }
-
-    @Test
     void saveStudentMultipleParametersTest() {
         // Arrange
         bart.setId(1L);
@@ -232,27 +207,27 @@ public class StudentServiceTest {
     }
 
     @Test
-    void testDeleteUncofirmedStudentHappyDay() throws NonExistentEntityException {
+    void testInvalidStudentHappyDay() throws NonExistentEntityException {
         // Arrange
         bart.setInscriptionTimestamp(0);
         when(studentRepository.findByEmail(any())).thenReturn(Optional.of(bart));
 
         // Act
-        studentService.deleteUnconfirmedStudent(new StudentDTO(bart));
+        studentService.isStudentInvalid(bart.getEmail());
 
         // Assert
         verify(studentRepository, times(1)).delete(any());
     }
 
     @Test
-    void testDeleteUncofirmedStudentThrowsException() {
+    void testInvalidStudentThrowsException() {
         // Arrange
         bart.setInscriptionTimestamp(0);
-        when(studentRepository.findByEmail(any())).thenReturn(Optional.empty());
+        when(studentRepository.findByEmail(any())).thenReturn(Optional.of(bart), Optional.empty());
 
         // Act
         try {
-            studentService.deleteUnconfirmedStudent(new StudentDTO(bart));
+            studentService.isStudentInvalid(bart.getEmail());
         } catch (NonExistentEntityException e) {
             return;
         }
@@ -267,11 +242,13 @@ public class StudentServiceTest {
         Offre successOffer = Offre.builder().valide(true).department(Department.Informatique).build();
         Offre failOffer1 = Offre.builder().valide(false).department(Department.Informatique).build();
         Offre failOffer2 = Offre.builder().valide(true).department(Department.Transport).build();
-        List<Offre> offres = new ArrayList<>() {{
-            add(successOffer);
-            add(failOffer1);
-            add(failOffer2);
-        }};
+        List<Offre> offres = new ArrayList<>() {
+            {
+                add(successOffer);
+                add(failOffer1);
+                add(failOffer2);
+            }
+        };
         when(studentRepository.findById(anyLong())).thenReturn(Optional.of(bart));
         when(offreRepository.findAll()).thenReturn(offres);
 
@@ -304,7 +281,7 @@ public class StudentServiceTest {
         when(offreRepository.findById(anyLong())).thenReturn(Optional.of(duffOffer));
 
         // Act
-        PdfOutDTO dto = studentService.getOfferById(1L);
+        PdfOutDTO dto = studentService.getOfferPdfById(1L);
 
         // Assert
         assertThat(dto.getId()).isEqualTo(1L);
@@ -318,12 +295,21 @@ public class StudentServiceTest {
 
         // Act
         try {
-            studentService.getOfferById(1L);
+            studentService.getOfferPdfById(1L);
         } catch (NonExistentEntityException e) {
             return;
         }
 
         fail("NonExistentEntityException not thrown");
+    }
+    @Test
+    void testInvalidStudentReturnsFalse() throws NonExistentEntityException {
+        // Arrange
+        bart.setInscriptionTimestamp(currentTimestamp());
+        when(studentRepository.findByEmail(any())).thenReturn(Optional.empty());
+
+        // Act
+        assertThat(studentService.isStudentInvalid(bart.getEmail())).isFalse();
     }
 
     @Test
