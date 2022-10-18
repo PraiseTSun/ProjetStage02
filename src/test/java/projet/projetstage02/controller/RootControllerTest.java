@@ -72,8 +72,8 @@ public class RootControllerTest {
     OffreDTO duffOffre;
     PdfOutDTO duffOfferOut;
     PdfDTO bartCV;
-    ApplicationOutDTO bartPostulation;
-    ApplicationInDTO bartApplys;
+    ApplicationDTO bartPostulation;
+    ApplicationListDTO bartApplys;
 
     // https://thepracticaldeveloper.com/guide-spring-boot-controller-tests/
     @BeforeEach
@@ -131,12 +131,12 @@ public class RootControllerTest {
                 .pdf("[1,2,3,4,5,6,7,8,9]")
                 .build();
 
-        bartPostulation = ApplicationOutDTO.builder()
+        bartPostulation = ApplicationDTO.builder()
                 .fullName(bart.getFirstName() + " " + bart.getLastName())
                 .company(duffOffre.getNomDeCompagnie())
                 .build();
 
-        bartApplys = ApplicationInDTO.builder()
+        bartApplys = ApplicationListDTO.builder()
                 .studentId(bart.getId())
                 .offersId(Arrays.asList(duffOffre.getId()))
                 .build();

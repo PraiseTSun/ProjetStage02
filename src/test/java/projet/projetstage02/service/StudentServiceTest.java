@@ -335,7 +335,7 @@ public class StudentServiceTest {
                 .thenReturn(Optional.empty());
 
         // Act
-        ApplicationOutDTO dto = studentService.createPostulation(2L, 1L);
+        ApplicationDTO dto = studentService.createPostulation(2L, 1L);
 
         // Assert
         verify(applicationRepository, times(1)).save(any());
@@ -402,7 +402,7 @@ public class StudentServiceTest {
         when(applicationRepository.findByStudentId(anyLong())).thenReturn(Arrays.asList(bartApplication));
 
         // Act
-        ApplicationInDTO dto = studentService.getPostulsOfferId(1L);
+        ApplicationListDTO dto = studentService.getPostulsOfferId(1L);
 
         // Assert
         assertThat(dto.getStudentId()).isEqualTo(bart.getId());

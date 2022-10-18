@@ -598,14 +598,14 @@ public class RootController {
     }
 
     @PutMapping("/applyToOffer/{studentId}_{offerId}")
-    public ResponseEntity<ApplicationOutDTO> createPostulation
+    public ResponseEntity<ApplicationDTO> createPostulation
             (@PathVariable String studentId, @PathVariable String offerId, @RequestBody TokenDTO tokenId) {
         logger.log(Level.INFO, "Put /createPostulation entered with id: " + studentId
                 + " and offer id: " + offerId);
 
         try {
             authService.getToken(tokenId.getToken(), STUDENT);
-            ApplicationOutDTO dto = studentService.createPostulation(Long.parseLong(studentId), Long.parseLong(offerId));
+            ApplicationDTO dto = studentService.createPostulation(Long.parseLong(studentId), Long.parseLong(offerId));
             logger.log(Level.INFO, "Put /getOfferStudent sent 200 response");
             return ResponseEntity.ok(dto);
         } catch (NonExistentEntityException e) {
@@ -621,12 +621,12 @@ public class RootController {
     }
 
     @PutMapping("/studentApplys/{studentId}")
-    public ResponseEntity<ApplicationInDTO> getPostulsOfferId(@PathVariable String studentId, @RequestBody TokenDTO tokenId) {
+    public ResponseEntity<ApplicationListDTO> getPostulsOfferId(@PathVariable String studentId, @RequestBody TokenDTO tokenId) {
         logger.log(Level.INFO, "Put /getPostulsOfferId entered with id: " + studentId);
 
         try {
             authService.getToken(tokenId.getToken(), STUDENT);
-            ApplicationInDTO dto = studentService.getPostulsOfferId(Long.parseLong(studentId));
+            ApplicationListDTO dto = studentService.getPostulsOfferId(Long.parseLong(studentId));
             logger.log(Level.INFO, "Put /getPostulsOfferId sent 200 response");
             return ResponseEntity.ok(dto);
         } catch (InvalidTokenException e) {

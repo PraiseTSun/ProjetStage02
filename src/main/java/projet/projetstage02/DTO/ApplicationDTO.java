@@ -7,7 +7,7 @@ import lombok.Data;
 @Data
 @AllArgsConstructor
 @Builder
-public class ApplicationOutDTO {
+public class ApplicationDTO {
     public long studentId;
     public String fullName;
     public long offerId;

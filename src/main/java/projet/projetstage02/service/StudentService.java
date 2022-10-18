@@ -114,7 +114,7 @@ public class StudentService {
         return new PdfOutDTO(offre.getId(), cv);
     }
 
-    public ApplicationOutDTO createPostulation(long studentId, long offerID) throws NonExistentEntityException, AlreadyExistingPostulation {
+    public ApplicationDTO createPostulation(long studentId, long offerID) throws NonExistentEntityException, AlreadyExistingPostulation {
         Optional<Student> studentOpt = studentRepository.findById(studentId);
         if (studentOpt.isEmpty()) throw new NonExistentEntityException();
 
@@ -130,7 +130,7 @@ public class StudentService {
         Application application = new Application(offer.getId(), student.getId());
         applicationRepository.save(application);
 
-        return ApplicationOutDTO.builder()
+        return ApplicationDTO.builder()
                 .studentId(student.getId())
                 .fullName(student.getFirstName() + " " + student.getLastName())
                 .offerId(offer.getId())
@@ -138,7 +138,7 @@ public class StudentService {
                 .build();
     }
 
-    public ApplicationInDTO getPostulsOfferId(long studentId) throws NonExistentEntityException {
+    public ApplicationListDTO getPostulsOfferId(long studentId) throws NonExistentEntityException {
         Optional<Student> studentOpt = studentRepository.findById(studentId);
         if (studentOpt.isEmpty()) throw new NonExistentEntityException();
 
@@ -148,7 +148,7 @@ public class StudentService {
                         application -> offersId.add(application.getOfferId())
                 );
 
-        return ApplicationInDTO.builder()
+        return ApplicationListDTO.builder()
                 .studentId(studentOpt.get().getId())
                 .offersId(offersId)
                 .build();
