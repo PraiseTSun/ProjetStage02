@@ -930,11 +930,16 @@ paths:
                   type: string
         403:
           description: Token invalide
-  /stageOffers/{department}:
+  /stageOffers/{studentId}:
     put:
-      summary: Recevoir la listes des offres de stage d'un département (Doit avoir le token student)
+      summary: Recevoir la listes des offres de stage du dapartement de l'etudiant (Doit avoir le token student)
 
       parameters:
+        - in: path
+          name: studentId
+          description: id de l'étudiant
+          type: string
+          required: true
         - in: body
           name: token
           description: Token valide de l'étudiant

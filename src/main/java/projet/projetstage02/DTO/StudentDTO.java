@@ -49,6 +49,8 @@ public class StudentDTO extends AbstractUserDTO<Student> {
                 inscriptionTimestamp,
                 emailConfirmed
         );
+        student.setConfirm(isConfirmed);
+        student.setEmailConfirmed(emailConfirmed);
         student.setId(id);
         student.setCv(cv);
         student.setCvToValidate(cvToValidate);

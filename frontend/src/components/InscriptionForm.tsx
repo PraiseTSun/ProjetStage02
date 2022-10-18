@@ -1,7 +1,8 @@
-import React, { useState } from "react";
+import React from "react";
 import { Container, ListGroup, Tab } from "react-bootstrap";
 import FormulaireEtudiant from "./FormulaireEtudiant";
 import FormulaireEntreprise from "./FormulaireEntreprise";
+
 const InscriptionForm = ({ setIsLogginPage }: { setIsLogginPage: Function }): JSX.Element => {
 
     const onInscrire = async (compte: object, type: string) => {
@@ -18,7 +19,7 @@ const InscriptionForm = ({ setIsLogginPage }: { setIsLogginPage: Function }): JS
             const data = await res.json();
             alert(data.error);
             setIsLogginPage(true);
-        }else{
+        } else {
             alert("Courriel de confirmation envoyé");
             setIsLogginPage(true);
         }
@@ -31,7 +32,7 @@ const InscriptionForm = ({ setIsLogginPage }: { setIsLogginPage: Function }): JS
                     <ListGroup.Item action href="#etudiant" variant="secondary">
                         Etudiant
                     </ListGroup.Item>
-                    <ListGroup.Item action href="#entreprise" variant="secondary">
+                    <ListGroup.Item data-testid="entrepriseInscriptionForm" action href="#entreprise" variant="secondary">
                         Entreprise
                     </ListGroup.Item>
                 </ListGroup>

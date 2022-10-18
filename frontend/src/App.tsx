@@ -1,5 +1,4 @@
-import React, { useEffect } from 'react';
-import { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Container } from 'react-bootstrap';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import ConfirmationPage from './pages/ConfirmationPage';
@@ -11,9 +10,13 @@ import GestionnaireDashboard from './pages/GestionnaireDashboardPage';
 import UserValidation from './pages/UserValidationPage';
 import FormulaireSoumissionPage from './pages/FormulaireSoumissionPage';
 import StudentCvValidationPage from './pages/StudentCvValidationPage';
+import ValiderNouvelleOffreStagePage from "./pages/ValiderNouvelleOffreStagePage";
+import OffersListPage from './pages/OffersListPage';
+import UploaderMonCV from './pages/UploaderMonCV';
 
 export const LOCAL_STORAGE_KEY = "MASSI_BEST_PROGRAMMER_PROJET_STAGE_02_CURRENT_CONNECTED_USER"
-const emptyUser: IUser = {
+export const emptyUser: IUser = {
+  id: "",
   firstName: "",
   lastName: "",
   userType: "",
@@ -23,15 +26,33 @@ const emptyUser: IUser = {
 function App() {
   const [user, setUser] = useState(emptyUser)
   const [verifiedLoginFromLocalStorage, setVerifiedLoginFromLocalStorage] = useState(false)
-  const [currentlyVerifyingToken, setCurrentlyVerifyingToken] = useState(false)
-  const [isValidToken, setValidToken] = useState(true)
   const [count, setCount] = useState(0)
 
   useEffect(() => {
     const timer = setTimeout(() => setCount(count + 1), 10000)
+
+    const verifyToken = async () => {
+      if (user === emptyUser) {
+        return
+      }
+      const getTokenHeaders = {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ "token": user.token })
+      };
+      const userRes = await fetch("http://localhost:8080/" + user.userType, getTokenHeaders)
+      if (!userRes.ok) {
+        alert("Votre session est expiré.")
+        deconnexion()
+      }
+    }
+
+    const validateToken = async () => {
+      await verifyToken()
+    }
     validateToken()
     return () => clearTimeout(timer)
-  }, [count])
+  }, [count, user])
 
   const deconnexion = () => {
     setUser(emptyUser)
@@ -40,25 +61,8 @@ function App() {
 
   }
 
-  const verifyToken = async () => {
-    if (user == emptyUser) {
-      return
-    }
-    const getTokenHeaders = {
-      method: "PUT",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ "token": user.token })
-    };
-    const userRes = await fetch("http://localhost:8080/" + user.userType, getTokenHeaders)
-    if (!userRes.ok) {
-      alert("Votre session est expiré.")
-      setValidToken(false)
-      deconnexion()
-    }
-  }
-
   const loginFromLocalStorage = async () => {
-    if (localStorage.getItem(LOCAL_STORAGE_KEY) != null && user == emptyUser) {
+    if (localStorage.getItem(LOCAL_STORAGE_KEY) != null && user === emptyUser) {
       let user: IUser = JSON.parse(localStorage.getItem(LOCAL_STORAGE_KEY)!);
       const getTokenHeaders = {
         method: "PUT",
@@ -70,8 +74,6 @@ function App() {
         deconnexion()
       } else {
         setUser(JSON.parse(localStorage.getItem(LOCAL_STORAGE_KEY)!))
-        setValidToken(true)
-
       }
     }
 
@@ -83,19 +85,11 @@ function App() {
     }
   }
 
-  const validateToken = async () => {
-    if (!currentlyVerifyingToken) {
-      setCurrentlyVerifyingToken(true)
-      await verifyToken()
-      setCurrentlyVerifyingToken(false)
-    }
-  }
 
-
-  if (user == emptyUser) {
+  if (user === emptyUser) {
     checkIfUserExistsInLocalStorage()
     return (
-      <Container className="vh-100">
+      <Container className="min-vh-100">
         <BrowserRouter>
           <Routes>
             <Route path="/" element={<LoginPage setUser={setUser} />} />
@@ -107,22 +101,24 @@ function App() {
     );
   }
 
-  if (user.userType == "student") {
+  if (user.userType === "student") {
     return (
-      <Container className="vh-100">
+      <Container>
         <BrowserRouter>
           <Routes>
             <Route path="/" element={<StudentDashboard deconnexion={deconnexion} user={user} />} />
-            <Route path="*" element={<h1 className="text-center text-white display-1">404 - Page pas trouvé</h1>} />
+            <Route path="/uploaderCV" element={<UploaderMonCV user={user} />} />
+            <Route path="/offres" element={<OffersListPage connectedUser={user} deconnexion={deconnexion} />} />
+            <Route path="*" element={<h1 className="text-center text-white display-1 min-vh-100">404 - Page pas trouvé</h1>} />
           </Routes>
         </BrowserRouter>
       </Container>
     );
   }
 
-  else if (user.userType == "company") {
+  else if (user.userType === "company") {
     return (
-      <Container className="vh-100">
+      <Container className="min-vh-100">
         <BrowserRouter>
           <Routes>
             <Route path="/" element={<CompanyDashboard deconnexion={deconnexion} user={user} />} />
@@ -134,7 +130,7 @@ function App() {
     );
   }
 
-  else if (user.userType == "gestionnaire") {
+  else if (user.userType === "gestionnaire") {
     return (
       <Container>
         <BrowserRouter>
@@ -143,13 +139,14 @@ function App() {
             <Route path="/userValidation" element={<UserValidation connectedUser={user} />} />
             <Route path="/cvValidation" element={<StudentCvValidationPage connectedUser={user} deconnexion={deconnexion} />} />
             <Route path="*" element={<h1 className="text-center text-white display-1">404 - Page pas trouvé</h1>} />
+            <Route path="/validerNouvelleOffre" element={<ValiderNouvelleOffreStagePage connectedUser={user} deconnexion={deconnexion} />} />
           </Routes>
         </BrowserRouter>
       </Container>
     );
   }
 
-  return <h1 className="vh-100">Oops</h1>
+  return <h1 className="min-vh-100">Oops</h1>
 }
 
 export default App;
