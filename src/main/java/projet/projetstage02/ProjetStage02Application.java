@@ -47,6 +47,7 @@ public class ProjetStage02Application implements CommandLineRunner {
                 .adresse("123 Joe Road")
                 .department(Department.Informatique.departement)
                 .heureParSemaine(40)
+                .salaire(40)
                 .nomDeCompagnie("Duff Beer")
                 .position("Delivery Man")
                 .pdf(new byte[]{

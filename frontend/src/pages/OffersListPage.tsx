@@ -1,11 +1,11 @@
-import { Viewer } from "@react-pdf-viewer/core";
-import React, { useEffect, useState } from "react";
-import { Button, Col, Container, Row, Table } from "react-bootstrap";
-import { Link } from "react-router-dom";
+import {Viewer} from "@react-pdf-viewer/core";
+import React, {useEffect, useState} from "react";
+import {Button, Col, Container, Row, Table} from "react-bootstrap";
+import {Link} from "react-router-dom";
 import IUser from "../models/IUser";
 import IOffer from "../models/IOffer";
 
-const OffersListPage = ({ connectedUser, deconnexion }: { connectedUser: IUser, deconnexion: Function }): JSX.Element => {
+const OffersListPage = ({connectedUser, deconnexion}: { connectedUser: IUser, deconnexion: Function }): JSX.Element => {
     const [offers, setOffers] = useState<IOffer[]>([]);
     const [pdf, setPDF] = useState<Uint8Array>(new Uint8Array([]))
     const [showPdf, setShowPDF] = useState<boolean>(false)
@@ -19,21 +19,18 @@ const OffersListPage = ({ connectedUser, deconnexion }: { connectedUser: IUser, 
                         'Accept': 'application/json',
                         'Content-Type': 'application/json',
                     },
-                    body: JSON.stringify({ "token": connectedUser.token })
+                    body: JSON.stringify({"token": connectedUser.token})
                 });
                 if (response.ok) {
                     const data = await response.json();
                     setOffers(data);
-                }
-                else if (response.status === 403) {
+                } else if (response.status === 403) {
                     alert("Session expiré");
                     deconnexion();
-                }
-                else {
+                } else {
                     throw new Error("Error code not handled");
                 }
-            }
-            catch {
+            } catch {
                 alert("Une erreur est survenue, ressayez.");
                 window.location.href = "/"
             }
@@ -49,19 +46,17 @@ const OffersListPage = ({ connectedUser, deconnexion }: { connectedUser: IUser, 
                     'Accept': 'application/json',
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({ "token": connectedUser.token })
+                body: JSON.stringify({"token": connectedUser.token})
             });
 
             if (response.ok) {
                 const data = await response.json();
                 setPDF(new Uint8Array(JSON.parse(data.pdf)));
                 setShowPDF(true);
-            }
-            else if (response.status === 403) {
+            } else if (response.status === 403) {
                 alert("Session expiré");
                 deconnexion();
-            }
-            else {
+            } else {
                 throw new Error("Error code not handled");
             }
         } catch (exception) {
@@ -78,7 +73,7 @@ const OffersListPage = ({ connectedUser, deconnexion }: { connectedUser: IUser, 
                     </Button>
                 </div>
                 <div>
-                    <Viewer fileUrl={pdf} />
+                    <Viewer fileUrl={pdf}/>
                 </div>
             </Container>
         );
@@ -99,26 +94,29 @@ const OffersListPage = ({ connectedUser, deconnexion }: { connectedUser: IUser, 
                 <Col>
                     <Table className="text-center" hover>
                         <thead className="bg-primary text-white">
-                            <tr>
-                                <th>Compagnie</th>
-                                <th>Position</th>
-                                <th>Heures par semaine</th>
-                                <th>Adresse</th>
-                                <th>Offre</th>
-                            </tr>
+                        <tr>
+                            <th>Compagnie</th>
+                            <th>Position</th>
+                            <th>Heures par semaine</th>
+                            <th>Salaire horaire</th>
+                            <th>Adresse</th>
+                            <th>Offre</th>
+                        </tr>
                         </thead>
                         <tbody className="bg-light">
-                            {offers.map((offer, index) => {
-                                return (
-                                    <tr key={index}>
-                                        <td>{offer.nomDeCompagnie}</td>
-                                        <td>{offer.position}</td>
-                                        <td>{offer.heureParSemaine}</td>
-                                        <td>{offer.adresse}</td>
-                                        <td><Button className="btn btn-warning" onClick={async () => await getPDF(offer.id)}>PDF</Button></td>
-                                    </tr>
-                                );
-                            })}
+                        {offers.map((offer, index) => {
+                            return (
+                                <tr key={index}>
+                                    <td>{offer.nomDeCompagnie}</td>
+                                    <td>{offer.position}</td>
+                                    <td>{offer.heureParSemaine}</td>
+                                    <td>{offer.salaire}$/h</td>
+                                    <td>{offer.adresse}</td>
+                                    <td><Button className="btn btn-warning"
+                                                onClick={async () => await getPDF(offer.id)}>PDF</Button></td>
+                                </tr>
+                            );
+                        })}
                         </tbody>
                     </Table>
                 </Col>
