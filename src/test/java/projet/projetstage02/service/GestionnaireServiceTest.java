@@ -73,13 +73,14 @@ public class GestionnaireServiceTest {
                 AbstractUser.Department.Informatique,
                 "Stagiaire test backend",
                 40,
+                40,
                 "69 shitty street",
                 false,
                 new byte[0]);
     }
 
     @Test
-    public void testSaveGestionnaireByParams(){
+    public void testSaveGestionnaireByParams() {
         // Arrange
         when(gestionnaireRepository.save(any())).thenReturn(gestionnaireTest);
 
@@ -91,7 +92,7 @@ public class GestionnaireServiceTest {
     }
 
     @Test
-    public void testSaveGestionnaireByDTO(){
+    public void testSaveGestionnaireByDTO() {
         // Arrange
         when(gestionnaireRepository.save(any())).thenReturn(gestionnaireTest);
 
@@ -160,7 +161,7 @@ public class GestionnaireServiceTest {
     }
 
     @Test
-    public void testValidateCompanySuccess() throws NonExistentEntityException{
+    public void testValidateCompanySuccess() throws NonExistentEntityException {
         // Arrange
         when(companyRepository.findById(anyLong())).thenReturn(Optional.of(companyTest));
 
@@ -186,7 +187,7 @@ public class GestionnaireServiceTest {
     }
 
     @Test
-    public void testValidateStudentSuccess() throws NonExistentEntityException{
+    public void testValidateStudentSuccess() throws NonExistentEntityException {
         // Arrange
         when(studentRepository.findById(anyLong())).thenReturn(Optional.of(studentTest));
 
@@ -198,7 +199,7 @@ public class GestionnaireServiceTest {
     }
 
     @Test
-    public void testValidateStudentNotFound(){
+    public void testValidateStudentNotFound() {
         // Arrange
         when(studentRepository.findById(anyLong())).thenReturn(Optional.empty());
 
@@ -226,7 +227,7 @@ public class GestionnaireServiceTest {
     }
 
     @Test
-    public void testRemoveCompanyNotFound(){
+    public void testRemoveCompanyNotFound() {
         // Arrange
         when(companyRepository.findById(anyLong())).thenReturn(Optional.empty());
 
@@ -289,7 +290,7 @@ public class GestionnaireServiceTest {
         when(offreRepository.findAll()).thenReturn(offres);
 
         // Act
-        final List<OffreDTO> noneValidateOffers = service.getNoneValidateOffers();
+        final List<OffreDTO> noneValidateOffers = service.getUnvalidatedOffers();
 
         // Assert
         assertThat(noneValidateOffers.size()).isEqualTo(3);
@@ -308,7 +309,7 @@ public class GestionnaireServiceTest {
     }
 
     @Test
-    public void testValidateOfferByIdNotFound(){
+    public void testValidateOfferByIdNotFound() {
         // Arrange
         when(offreRepository.findById(anyLong())).thenReturn(Optional.empty());
 
@@ -493,7 +494,7 @@ public class GestionnaireServiceTest {
         // Arrange
         List<Student> students = new ArrayList<>();
         students.add(studentTest);
-        studentTest.setCvToValidate(new byte[] { 1, 2, 3 });
+        studentTest.setCvToValidate(new byte[]{1, 2, 3});
         studentTest.setConfirm(true);
 
         Student studentCvValidated = new Student();
@@ -527,7 +528,7 @@ public class GestionnaireServiceTest {
     }
 
     @Test
-    void testValidateStudentCVNotFound(){
+    void testValidateStudentCVNotFound() {
         // Arrange
         when(studentRepository.findById(anyLong())).thenReturn(Optional.empty());
 
@@ -555,7 +556,7 @@ public class GestionnaireServiceTest {
     }
 
     @Test
-    void testRemoveStudentCvValidationNotFound (){
+    void testRemoveStudentCvValidationNotFound() {
         // Arrange
         when(studentRepository.findById(anyLong())).thenReturn(Optional.empty());
 

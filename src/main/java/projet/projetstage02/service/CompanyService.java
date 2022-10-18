@@ -30,6 +30,7 @@ public class CompanyService {
                 .department(Department.getDepartment(offreDTO.getDepartment()))
                 .position(offreDTO.getPosition())
                 .heureParSemaine(offreDTO.getHeureParSemaine())
+                .salaire(offreDTO.getSalaire())
                 .adresse(offreDTO.getAdresse())
                 .pdf(offreDTO.getPdf())
                 .build();
@@ -38,7 +39,7 @@ public class CompanyService {
     }
 
     public void saveCompany(String firstName, String lastName, String name, String email, String password,
-            Department department) {
+                            Department department) {
         CompanyDTO dto = CompanyDTO.builder()
                 .firstName(firstName)
                 .lastName(lastName)
