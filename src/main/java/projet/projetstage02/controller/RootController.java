@@ -415,7 +415,7 @@ public class RootController {
         try {
             authService.getToken(tokenDTO.getToken(), GESTIONNAIRE);
             logger.log(Level.INFO, "put /unvalidatedOffers entered");
-            List<OffreDTO> unvalidatedOffers = gestionnaireService.getNoneValidateOffers();
+            List<OffreDTO> unvalidatedOffers = gestionnaireService.getUnvalidatedOffers();
             logger.log(Level.INFO, "PutMapping: /unvalidatedOffers sent 200 response");
             return ResponseEntity.ok(unvalidatedOffers);
         } catch (InvalidTokenException e) {

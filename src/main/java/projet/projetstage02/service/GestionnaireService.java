@@ -110,7 +110,7 @@ public class GestionnaireService {
         return offreOpt.get();
     }
 
-    public List<OffreDTO> getNoneValidateOffers() {
+    public List<OffreDTO> getUnvalidatedOffers() {
         List<OffreDTO> offres = new ArrayList<>();
         offreRepository.findAll().stream().
                 filter(offre ->
@@ -183,7 +183,7 @@ public class GestionnaireService {
 
     public StudentDTO validateStudentCV(long id) throws NonExistentEntityException {
         Optional<Student> studentOpt = studentRepository.findById(id);
-        if(studentOpt.isEmpty()) throw new NonExistentEntityException();
+        if (studentOpt.isEmpty()) throw new NonExistentEntityException();
         Student student = studentOpt.get();
         student.setCv(student.getCvToValidate());
         student.setCvToValidate(new byte[0]);
@@ -193,7 +193,7 @@ public class GestionnaireService {
 
     public StudentDTO removeStudentCvValidation(long id) throws NonExistentEntityException {
         Optional<Student> studentOpt = studentRepository.findById(id);
-        if(studentOpt.isEmpty()) throw new NonExistentEntityException();
+        if (studentOpt.isEmpty()) throw new NonExistentEntityException();
         Student student = studentOpt.get();
         student.setCvToValidate(new byte[0]);
         studentRepository.save(student);
@@ -204,7 +204,7 @@ public class GestionnaireService {
         Optional<Student> studentOpt = studentRepository.findById(studentId);
         if (studentOpt.isEmpty()) throw new NonExistentEntityException();
         byte[] cv = studentOpt.get().getCvToValidate();
-        String cvConvert = Arrays.toString(cv).replaceAll("\\s+","");
+        String cvConvert = Arrays.toString(cv).replaceAll("\\s+", "");
         return new PdfOutDTO(studentOpt.get().getId(), cvConvert);
     }
 
