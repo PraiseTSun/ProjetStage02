@@ -27,6 +27,11 @@ public class OffreDTO {
     @Min(0)
     @Max(40)
     private int heureParSemaine;
+
+    @NotNull
+    @Min(15)
+    @Max(999)
+    private int salaire;
     @NotBlank
     @Size(min = 2)
     private String adresse;
@@ -43,18 +48,20 @@ public class OffreDTO {
                 .department(AbstractUser.Department.getDepartment(department))
                 .position(position)
                 .heureParSemaine(heureParSemaine)
+                .salaire(salaire)
                 .adresse(adresse)
                 .pdf(pdf)
                 .valide(valide).build();
     }
 
-    public OffreDTO(Offre offre){
+    public OffreDTO(Offre offre) {
         id = offre.getId();
         nomDeCompagnie = offre.getNomDeCompagnie();
         department = offre.getDepartment().departement;
         position = offre.getPosition();
         heureParSemaine = offre.getHeureParSemaine();
         adresse = offre.getAdresse();
+        salaire = offre.getSalaire();
         pdf = offre.getPdf();
         valide = offre.isValide();
     }
