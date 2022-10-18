@@ -8,13 +8,11 @@ import org.apache.logging.log4j.Logger;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
 import projet.projetstage02.DTO.*;
 import projet.projetstage02.exception.AlreadyExistingPostulation;
 import projet.projetstage02.exception.InvalidTokenException;
 import projet.projetstage02.exception.NonExistentEntityException;
 import projet.projetstage02.exception.NonExistentOfferExeption;
-
 import projet.projetstage02.model.Token;
 import projet.projetstage02.service.AuthService;
 import projet.projetstage02.service.CompanyService;
@@ -339,7 +337,7 @@ public class RootController {
 
     @PutMapping("/validateStudent/{id}")
     public ResponseEntity<Map<String, String>> validateStudent(@PathVariable String id,
-            @Valid @RequestBody TokenDTO tokenId) {
+                                                               @Valid @RequestBody TokenDTO tokenId) {
         logger.log(Level.INFO, "Put /validateStudent/{id} entered with id : " + id);
         try {
             Token token = authService.getToken(tokenId.getToken(), GESTIONNAIRE);
@@ -359,7 +357,7 @@ public class RootController {
 
     @PutMapping("/validateCompany/{id}")
     public ResponseEntity<Map<String, String>> validateCompany(@PathVariable String id,
-            @Valid @RequestBody TokenDTO tokenId) {
+                                                               @Valid @RequestBody TokenDTO tokenId) {
         logger.log(Level.INFO, "Put /validateCompany/{id} entered with id : " + id);
         try {
             Token token = authService.getToken(tokenId.getToken(), GESTIONNAIRE);
@@ -378,7 +376,7 @@ public class RootController {
 
     @DeleteMapping("/removeStudent/{id}")
     public ResponseEntity<Map<String, String>> removeStudent(@PathVariable String id,
-            @Valid @RequestBody TokenDTO tokenId) {
+                                                             @Valid @RequestBody TokenDTO tokenId) {
         logger.log(Level.INFO, "Delete /removeStudent/{id} entered with id : " + id);
         try {
             Token token = authService.getToken(tokenId.getToken(), GESTIONNAIRE);
@@ -397,7 +395,7 @@ public class RootController {
 
     @DeleteMapping("/removeCompany/{id}")
     public ResponseEntity<Map<String, String>> removeCompany(@PathVariable String id,
-            @Valid @RequestBody TokenDTO tokenId) {
+                                                             @Valid @RequestBody TokenDTO tokenId) {
         logger.log(Level.INFO, "Delete /removeCompany/{id} entered with id : " + id);
         try {
             Token token = authService.getToken(tokenId.getToken(), GESTIONNAIRE);
@@ -513,7 +511,7 @@ public class RootController {
     }
 
     @PutMapping("/studentCv/{studentId}")
-    public ResponseEntity<PdfOutDTO> getStudentCv(@PathVariable String studentId,@RequestBody TokenDTO tokenId){
+    public ResponseEntity<PdfOutDTO> getStudentCv(@PathVariable String studentId, @RequestBody TokenDTO tokenId) {
         logger.log(Level.INFO, "Put /studentCv entered with id : ");
         try {
             authService.getToken(tokenId.getToken(), GESTIONNAIRE);
@@ -564,7 +562,7 @@ public class RootController {
     }
 
     @PutMapping("/getOffers/{studentId}")
-    public ResponseEntity<List<OffreDTO>> getOffersByStudentDepartment(@PathVariable String studentId, @RequestBody TokenDTO tokenId){
+    public ResponseEntity<List<OffreDTO>> getOffersByStudentDepartment(@PathVariable String studentId, @RequestBody TokenDTO tokenId) {
         logger.log(Level.INFO, "Put /getOffersByStudentDepartment entered with student id : " + studentId);
 
         try {
@@ -582,7 +580,7 @@ public class RootController {
     }
 
     @PutMapping("/getOfferStudent/{id}")
-    public ResponseEntity<PdfOutDTO> getOfferStudent (@PathVariable String id, @RequestBody TokenDTO tokenId){
+    public ResponseEntity<PdfOutDTO> getOfferStudent(@PathVariable String id, @RequestBody TokenDTO tokenId) {
         logger.log(Level.INFO, "Put /getOfferStudent entered with id : " + id);
 
         try {
@@ -600,14 +598,14 @@ public class RootController {
     }
 
     @PutMapping("/applyToOffer/{studentId}_{offerId}")
-    public ResponseEntity<PostulOutDTO> createPostulation
-            (@PathVariable String studentId, @PathVariable String offerId, @RequestBody TokenDTO tokenId){
+    public ResponseEntity<ApplicationOutDTO> createPostulation
+            (@PathVariable String studentId, @PathVariable String offerId, @RequestBody TokenDTO tokenId) {
         logger.log(Level.INFO, "Put /createPostulation entered with id: " + studentId
                 + " and offer id: " + offerId);
 
         try {
             authService.getToken(tokenId.getToken(), STUDENT);
-            PostulOutDTO dto = studentService.createPostulation(Long.parseLong(studentId), Long.parseLong(offerId));
+            ApplicationOutDTO dto = studentService.createPostulation(Long.parseLong(studentId), Long.parseLong(offerId));
             logger.log(Level.INFO, "Put /getOfferStudent sent 200 response");
             return ResponseEntity.ok(dto);
         } catch (NonExistentEntityException e) {
@@ -623,12 +621,12 @@ public class RootController {
     }
 
     @PutMapping("/studentApplys/{studentId}")
-    public ResponseEntity<StudentApplysDTO> getPostulsOfferId(@PathVariable String studentId, @RequestBody TokenDTO tokenId){
+    public ResponseEntity<ApplicationInDTO> getPostulsOfferId(@PathVariable String studentId, @RequestBody TokenDTO tokenId) {
         logger.log(Level.INFO, "Put /getPostulsOfferId entered with id: " + studentId);
 
         try {
             authService.getToken(tokenId.getToken(), STUDENT);
-            StudentApplysDTO dto = studentService.getPostulsOfferId(Long.parseLong(studentId));
+            ApplicationInDTO dto = studentService.getPostulsOfferId(Long.parseLong(studentId));
             logger.log(Level.INFO, "Put /getPostulsOfferId sent 200 response");
             return ResponseEntity.ok(dto);
         } catch (InvalidTokenException e) {

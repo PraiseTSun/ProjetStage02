@@ -9,7 +9,7 @@ import java.util.List;
 @Data
 @AllArgsConstructor
 @Builder
-public class StudentApplysDTO {
+public class ApplicationInDTO {
     long studentId;
     List<Long> offersId;
 }

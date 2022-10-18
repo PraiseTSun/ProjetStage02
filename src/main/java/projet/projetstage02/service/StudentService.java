@@ -5,11 +5,11 @@ import org.springframework.stereotype.Service;
 import projet.projetstage02.DTO.*;
 import projet.projetstage02.exception.AlreadyExistingPostulation;
 import projet.projetstage02.exception.NonExistentEntityException;
+import projet.projetstage02.model.Application;
 import projet.projetstage02.model.Offre;
-import projet.projetstage02.model.Postulation;
 import projet.projetstage02.model.Student;
+import projet.projetstage02.repository.ApplicationRepository;
 import projet.projetstage02.repository.OffreRepository;
-import projet.projetstage02.repository.PostulationRepository;
 import projet.projetstage02.repository.StudentRepository;
 
 import java.sql.Timestamp;
@@ -19,7 +19,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
-import static projet.projetstage02.model.AbstractUser.*;
+import static projet.projetstage02.model.AbstractUser.Department;
 import static projet.projetstage02.utils.TimeUtil.MILLI_SECOND_DAY;
 import static projet.projetstage02.utils.TimeUtil.currentTimestamp;
 
@@ -28,7 +28,8 @@ import static projet.projetstage02.utils.TimeUtil.currentTimestamp;
 public class StudentService {
     private final StudentRepository studentRepository;
     private final OffreRepository offreRepository;
-    private final PostulationRepository postulationRepository;
+    private final ApplicationRepository applicationRepository;
+
     public void saveStudent(String firstName,
                             String lastName,
                             String email,
@@ -76,11 +77,11 @@ public class StudentService {
 
     public boolean deleteUnconfirmedStudent(StudentDTO dto) throws NonExistentEntityException {
         Optional<Student> studentOpt = studentRepository.findByEmail(dto.getEmail());
-        if(studentOpt.isEmpty()) throw new NonExistentEntityException();
+        if (studentOpt.isEmpty()) throw new NonExistentEntityException();
         Student student = studentOpt.get();
-        if(currentTimestamp() - student.getInscriptionTimestamp() > MILLI_SECOND_DAY){
-             studentRepository.delete(student);
-             return true;
+        if (currentTimestamp() - student.getInscriptionTimestamp() > MILLI_SECOND_DAY) {
+            studentRepository.delete(student);
+            return true;
         }
         return false;
     }
@@ -93,8 +94,8 @@ public class StudentService {
         List<OffreDTO> offers = new ArrayList<>();
         offreRepository.findAll().stream().
                 filter(offre ->
-                    offre.isValide()
-                    && offre.getDepartment().equals(department)
+                        offre.isValide()
+                                && offre.getDepartment().equals(department)
                 )
                 .forEach(offre -> {
                     OffreDTO dto = new OffreDTO(offre);
@@ -107,29 +108,29 @@ public class StudentService {
 
     public PdfOutDTO getOfferById(long id) throws NonExistentEntityException {
         Optional<Offre> offerOpt = offreRepository.findById(id);
-        if(offerOpt.isEmpty()) throw new NonExistentEntityException();
+        if (offerOpt.isEmpty()) throw new NonExistentEntityException();
         Offre offre = offerOpt.get();
-        String cv = Arrays.toString(offre.getPdf()).replaceAll("\\s+","");
+        String cv = Arrays.toString(offre.getPdf()).replaceAll("\\s+", "");
         return new PdfOutDTO(offre.getId(), cv);
     }
 
-    public PostulOutDTO createPostulation(long studentId, long offerID) throws NonExistentEntityException, AlreadyExistingPostulation {
+    public ApplicationOutDTO createPostulation(long studentId, long offerID) throws NonExistentEntityException, AlreadyExistingPostulation {
         Optional<Student> studentOpt = studentRepository.findById(studentId);
         if (studentOpt.isEmpty()) throw new NonExistentEntityException();
 
         Optional<Offre> offerOpt = offreRepository.findById(offerID);
         if (offerOpt.isEmpty()) throw new NonExistentEntityException();
 
-        Optional<Postulation> postulationOpt = postulationRepository.findByStudentIdAndOfferId(studentId, offerID);
-        if(!postulationOpt.isEmpty()) throw new AlreadyExistingPostulation();
+        Optional<Application> postulationOpt = applicationRepository.findByStudentIdAndOfferId(studentId, offerID);
+        if (!postulationOpt.isEmpty()) throw new AlreadyExistingPostulation();
 
         Student student = studentOpt.get();
         Offre offer = offerOpt.get();
 
-        Postulation postulation = new Postulation(offer.getId(), student.getId());
-        postulationRepository.save(postulation);
+        Application application = new Application(offer.getId(), student.getId());
+        applicationRepository.save(application);
 
-        return PostulOutDTO.builder()
+        return ApplicationOutDTO.builder()
                 .studentId(student.getId())
                 .fullName(student.getFirstName() + " " + student.getLastName())
                 .offerId(offer.getId())
@@ -137,17 +138,17 @@ public class StudentService {
                 .build();
     }
 
-    public StudentApplysDTO getPostulsOfferId (long studentId) throws NonExistentEntityException {
+    public ApplicationInDTO getPostulsOfferId(long studentId) throws NonExistentEntityException {
         Optional<Student> studentOpt = studentRepository.findById(studentId);
-        if(studentOpt.isEmpty()) throw new NonExistentEntityException();
+        if (studentOpt.isEmpty()) throw new NonExistentEntityException();
 
         List<Long> offersId = new ArrayList<>();
-        postulationRepository.findByStudentId(studentId)
-            .forEach(
-                postulation -> offersId.add(postulation.getOfferId())
-            );
+        applicationRepository.findByStudentId(studentId)
+                .forEach(
+                        application -> offersId.add(application.getOfferId())
+                );
 
-        return StudentApplysDTO.builder()
+        return ApplicationInDTO.builder()
                 .studentId(studentOpt.get().getId())
                 .offersId(offersId)
                 .build();

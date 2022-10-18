@@ -13,7 +13,7 @@ import javax.validation.constraints.NotBlank;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class Postulation {
+public class Application {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "id", nullable = false)
@@ -25,7 +25,7 @@ public class Postulation {
     @NotBlank
     private Long studentId;
 
-    public Postulation(Long offerId, Long studentId) {
+    public Application(Long offerId, Long studentId) {
         this.offerId = offerId;
         this.studentId = studentId;
     }
