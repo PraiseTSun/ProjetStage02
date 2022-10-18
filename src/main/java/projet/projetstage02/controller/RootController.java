@@ -12,6 +12,9 @@ import projet.projetstage02.DTO.*;
 import projet.projetstage02.exception.InvalidTokenException;
 import projet.projetstage02.exception.NonExistentEntityException;
 import projet.projetstage02.exception.NonExistentOfferExeption;
+
+import projet.projetstage02.exception.AlreadyExistingPostulation;
+
 import projet.projetstage02.model.Token;
 import projet.projetstage02.service.AuthService;
 import projet.projetstage02.service.CompanyService;
@@ -593,6 +596,48 @@ public class RootController {
         } catch (InvalidTokenException e) {
             logger.log(Level.INFO, "Put /getOfferStudent sent 403 response");
             return ResponseEntity.status(FORBIDDEN).build();
+        }
+    }
+
+    @PutMapping("/applyToOffer/{studentId}_{offerId}")
+    public ResponseEntity<PostulOutDTO> createPostulation(@PathVariable String studentId, @PathVariable String offerId,
+            @RequestBody TokenDTO tokenId) {
+        logger.log(Level.INFO, "Put /createPostulation entered with id: " + studentId
+                + " and offer id: " + offerId);
+
+        try {
+            authService.getToken(tokenId.getToken(), STUDENT);
+            PostulOutDTO dto = studentService.createPostulation(Long.parseLong(studentId), Long.parseLong(offerId));
+            logger.log(Level.INFO, "Put /getOfferStudent sent 200 response");
+            return ResponseEntity.ok(dto);
+        } catch (NonExistentEntityException e) {
+            logger.log(Level.INFO, "Put /getOfferStudent sent 404 response");
+            return ResponseEntity.notFound().build();
+        } catch (InvalidTokenException e) {
+            logger.log(Level.INFO, "Put /getOfferStudent sent 403 response");
+            return ResponseEntity.status(FORBIDDEN).build();
+        } catch (AlreadyExistingPostulation e) {
+            logger.log(Level.INFO, "Put /getOfferStudent sent 409 response");
+            return ResponseEntity.status(CONFLICT).build();
+        }
+    }
+
+    @PutMapping("/studentApplys/{studentId}")
+    public ResponseEntity<StudentApplysDTO> getPostulsOfferId(@PathVariable String studentId,
+            @RequestBody TokenDTO tokenId) {
+        logger.log(Level.INFO, "Put /getPostulsOfferId entered with id: " + studentId);
+
+        try {
+            authService.getToken(tokenId.getToken(), STUDENT);
+            StudentApplysDTO dto = studentService.getPostulsOfferId(Long.parseLong(studentId));
+            logger.log(Level.INFO, "Put /getPostulsOfferId sent 200 response");
+            return ResponseEntity.ok(dto);
+        } catch (InvalidTokenException e) {
+            logger.log(Level.INFO, "Put /getPostulsOfferId sent 403 response");
+            return ResponseEntity.status(FORBIDDEN).build();
+        } catch (NonExistentEntityException e) {
+            logger.log(Level.INFO, "Put /getPostulsOfferId sent 404 response");
+            return ResponseEntity.notFound().build();
         }
     }
 }

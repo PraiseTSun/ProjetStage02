@@ -3,5 +3,6 @@ export default interface IUser {
     token: string,
     firstName: string,
     lastName: string,
+    cv: string | null,
     userType: string
 }

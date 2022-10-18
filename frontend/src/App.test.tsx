@@ -1,6 +1,6 @@
-import {act, fireEvent, render, screen} from "@testing-library/react";
-import {BrowserRouter} from "react-router-dom";
-import {emptyUser} from "./App";
+import { act, fireEvent, render, screen } from "@testing-library/react";
+import { BrowserRouter } from "react-router-dom";
+import { emptyUser } from "./App";
 import OffersListPage from "./pages/OffersListPage";
 import StudentCvValidationPage from "./pages/StudentCvValidationPage";
 import ValiderNouvelleOffreStagePage from "./pages/ValiderNouvelleOffreStagePage";
@@ -20,31 +20,32 @@ const etudiant: IUser = {
     token: "34245",
     firstName: "Yan",
     lastName: "Zhou",
-    userType: "student"
+    userType: "student",
+    cv: ""
 }
 
 describe('test page uploader mon cv', () => {
 
     it('devrait rendre element input', async () => {
-        render(<UploaderMonCV user={etudiant}/>, {wrapper: BrowserRouter});
+        render(<UploaderMonCV user={etudiant} />, { wrapper: BrowserRouter });
         const inputUploaderMonCV = screen.getByTestId("uploaderMonCV")
         expect(inputUploaderMonCV).toBeInTheDocument()
     });
 
     it('devrait rendre  element header est la ', async () => {
-        render(<UploaderMonCV user={etudiant}/>, {wrapper: BrowserRouter});
-        const h4Element = screen.getByRole("heading", {name: /Téléverser CV/i});
+        render(<UploaderMonCV user={etudiant} />, { wrapper: BrowserRouter });
+        const h4Element = screen.getByRole("heading", { name: /Téléverser CV/i });
         expect(h4Element).toBeInTheDocument();
     });
 
     it('devrait rendre  element button est la ', async () => {
-        render(<UploaderMonCV user={etudiant}/>, {wrapper: BrowserRouter});
-        const buttonElement = screen.getByRole("button", {name: /Envoyer/i});
+        render(<UploaderMonCV user={etudiant} />, { wrapper: BrowserRouter });
+        const buttonElement = screen.getByRole("button", { name: /Envoyer/i });
         expect(buttonElement).toBeInTheDocument();
     });
 
     it('devrait rendre element erreur est la ', async () => {
-        render(<UploaderMonCV user={etudiant}/>, {wrapper: BrowserRouter});
+        render(<UploaderMonCV user={etudiant} />, { wrapper: BrowserRouter });
         const erreurElemeent = screen.getByText("Choix votre CV")
         expect(erreurElemeent).toBeInTheDocument();
     });
@@ -56,40 +57,40 @@ describe("StudentCvValidationPageTests", () => {
     const MockPage = () => {
         return (
             <BrowserRouter>
-                <StudentCvValidationPage connectedUser={emptyUser} deconnexion={() => null}/>
+                <StudentCvValidationPage connectedUser={emptyUser} deconnexion={() => null} />
             </BrowserRouter>
         );
     }
 
     beforeEach(() => {
         global.fetch = jest.fn((url) => {
-                if (url === "http://localhost:8080/unvalidatedCvStudents") {
-                    return Promise.resolve({
-                        ok: true,
-                        json: () => Promise.resolve([{
-                            "id": 1,
-                            "firstName": "Bart",
-                            "lastName": "Simpson",
-                            "department": "Informatique"
-                        }])
-                    });
-                } else if (url === "http://localhost:8080/validateCv/1") {
-                    return Promise.resolve({
-                        ok: true
-                    });
-                } else if (url === "http://localhost:8080/refuseCv/1") {
-                    return Promise.resolve({
-                        ok: true
-                    });
-                } else if (url === "http://localhost:8080/studentCv/1") {
-                    return Promise.resolve({
-                        ok: true,
-                        json: () => Promise.resolve({
-                            "pdf": "[10]"
-                        })
-                    });
-                } else throw new Error("Bad url call");
-            }
+            if (url === "http://localhost:8080/unvalidatedCvStudents") {
+                return Promise.resolve({
+                    ok: true,
+                    json: () => Promise.resolve([{
+                        "id": 1,
+                        "firstName": "Bart",
+                        "lastName": "Simpson",
+                        "department": "Informatique"
+                    }])
+                });
+            } else if (url === "http://localhost:8080/validateCv/1") {
+                return Promise.resolve({
+                    ok: true
+                });
+            } else if (url === "http://localhost:8080/refuseCv/1") {
+                return Promise.resolve({
+                    ok: true
+                });
+            } else if (url === "http://localhost:8080/studentCv/1") {
+                return Promise.resolve({
+                    ok: true,
+                    json: () => Promise.resolve({
+                        "pdf": "[10]"
+                    })
+                });
+            } else throw new Error("Bad url call");
+        }
         ) as jest.Mock;
 
         const intersectionObserverMock = () => ({
@@ -104,7 +105,7 @@ describe("StudentCvValidationPageTests", () => {
 
     it("fetchUnvalidatedCvStudentsTest", async () => {
         await act(async () => {
-            render(<MockPage/>);
+            render(<MockPage />);
         });
 
         expect(await screen.findByText(/Bart/i)).toBeInTheDocument();
@@ -116,11 +117,11 @@ describe("StudentCvValidationPageTests", () => {
 
     it("validateCvTest", async () => {
         await act(async () => {
-            render(<MockPage/>);
+            render(<MockPage />);
         });
 
+        const validateButton = await screen.findByRole("button", { name: /O/i });
         const studentName = await screen.findByText(/Bart/i);
-        const validateButton = await screen.findByRole("button", {name: /O/i});
 
         await act(async () => {
             fireEvent.click(validateButton);
@@ -133,11 +134,11 @@ describe("StudentCvValidationPageTests", () => {
 
     it("refuseCvTest", async () => {
         await act(async () => {
-            render(<MockPage/>);
+            render(<MockPage />);
         });
 
+        const validateButton = await screen.findByRole("button", { name: /X/i });
         const studentName = await screen.findByText(/Bart/i);
-        const validateButton = await screen.findByRole("button", {name: /X/i});
 
         await act(async () => {
             fireEvent.click(validateButton);
@@ -150,16 +151,16 @@ describe("StudentCvValidationPageTests", () => {
 
     it("getPDFTest", async () => {
         await act(async () => {
-            render(<MockPage/>);
+            render(<MockPage />);
         });
 
-        const cvButton = await screen.findByRole("button", {name: /CV/i});
+        const cvButton = await screen.findByRole("button", { name: /CV/i });
 
         await act(async () => {
             fireEvent.click(cvButton);
         });
 
-        expect(await screen.findByRole("button", {name: /Fermer/i})).toBeInTheDocument();
+        expect(await screen.findByRole("button", { name: /Fermer/i })).toBeInTheDocument();
         expect(fetch).toBeCalledWith("http://localhost:8080/studentCv/1", expect.anything());
         expect(fetch).toBeCalledTimes(2);
     });
@@ -168,36 +169,37 @@ describe("StudentCvValidationPageTests", () => {
         expect(fetch).toBeCalledWith("http://localhost:8080/unvalidatedCvStudents", expect.anything());
     });
 });
+
 describe("CompanyDashboardPage test", () => {
     const deconnexion = jest.fn()
     const MockPage = () => {
         return (
             <BrowserRouter>
-                <CompanyDashboardPage deconnexion={deconnexion} user={company}/>
+                <CompanyDashboardPage deconnexion={deconnexion} user={company} />
             </BrowserRouter>
         );
     }
 
     it("CompanyDashboardLayoutTest", async () => {
 
-        act(() => {
-            render(<MockPage/>)
+        await act(async () => {
+            render(<MockPage />)
 
         })
 
         expect(await screen.findByText(/Bienvenue Bob Marley/i)).toBeInTheDocument()
-        expect(await screen.findByRole("link", {name: /Soumettre une offre de stage/i})).toBeInTheDocument()
-        expect(await screen.findByRole("button", {name: /déconnexion/i})).toBeInTheDocument()
+        expect(await screen.findByRole("link", { name: /Soumettre une offre de stage/i })).toBeInTheDocument()
+        expect(await screen.findByRole("button", { name: /déconnexion/i })).toBeInTheDocument()
     })
     it("CompanyDashboardSoumettreOffreButtonTest", async () => {
 
 
-        act(() => {
-            render(<MockPage/>)
+        await act(async () => {
+            render(<MockPage />)
         })
-        const offreStageButton = await screen.findByRole("link", {name: /soumettre une offre de stage/i});
+        const offreStageButton = await screen.findByRole("link", { name: /soumettre une offre de stage/i });
 
-        act(() => {
+        await act(async () => {
             fireEvent.click(offreStageButton);
         });
         expect(window.location.href).toBe("http://localhost/soumettreOffre")
@@ -206,12 +208,12 @@ describe("CompanyDashboardPage test", () => {
     it("CompanyDashboardDeconnexionButtonTest", async () => {
 
 
-        act(() => {
-            render(<MockPage/>)
+        await act(async () => {
+            render(<MockPage />)
         })
-        const deconnexionButton = await screen.findByRole("button", {name: /déconnexion/i});
+        const deconnexionButton = await screen.findByRole("button", { name: /déconnexion/i });
 
-        act(() => {
+        await act(async () => {
             fireEvent.click(deconnexionButton);
         });
         expect(deconnexion).toBeCalledTimes(1)
@@ -221,10 +223,10 @@ describe("CompanyDashboardPage test", () => {
 describe("ConfirmationPage test", () => {
     beforeEach(() => {
         global.fetch = jest.fn(() => {
-                return Promise.resolve({
-                    ok: true,
-                });
-            }
+            return Promise.resolve({
+                ok: true,
+            });
+        }
         ) as jest.Mock;
 
         window.alert = jest.fn(() => null) as jest.Mock;
@@ -232,28 +234,29 @@ describe("ConfirmationPage test", () => {
     const MockPage = () => {
         return (
             <BrowserRouter>
-                <ConfirmationPage/>
+                <ConfirmationPage />
             </BrowserRouter>
         );
     }
     it("ConfirmationPageLayoutTest", async () => {
-        act(() => {
-            render(<MockPage/>)
+        await act(async () => {
+            render(<MockPage />)
         })
         expect(await screen.findByText(/Succès! Vous pouvez fermez cette page/i)).toBeInTheDocument()
     })
 });
+
 describe("FormulaireSoumissionPageTest", () => {
     const MockPage = () => {
         return (
             <BrowserRouter>
-                <FormulaireSoumissionPage user={gestionnaire}/>
+                <FormulaireSoumissionPage user={gestionnaire} />
             </BrowserRouter>
         );
     }
     it("FormulaireSoumissionInvalidFormTest", async () => {
-        act(() => {
-            render(<MockPage/>)
+        await act(async () => {
+            render(<MockPage />)
         })
         const array = [
             /Nom de la compagnie/i,
@@ -268,9 +271,9 @@ describe("FormulaireSoumissionPageTest", () => {
             const element = await screen.findAllByText(item)
             expect(element.length).not.toBe(0)
         }
-        const bouton = await screen.findByRole("button", {name: /Envoyer/i})
+        const bouton = await screen.findByRole("button", { name: /Envoyer/i })
         expect(bouton).toBeInTheDocument()
-        act(() => {
+        await act(async () => {
             fireEvent.click(bouton)
         })
         const champRequis = await screen.findAllByText(/champ requis/i)
@@ -287,29 +290,29 @@ describe("test UserValidationPage", () => {
     const MockPage = () => {
         return (
             <BrowserRouter>
-                <UserValidation connectedUser={gestionnaire}/>
+                <UserValidation connectedUser={gestionnaire} />
             </BrowserRouter>
         );
     }
     beforeEach(() => {
 
         global.fetch = jest.fn((url) => {
-                if (url === "http://localhost:8080/unvalidatedStudents") {
-                    return Promise.resolve({
-                        ok: true,
-                        json: () => Promise.resolve([student])
-                    });
-                } else if (url === "http://localhost:8080/unvalidatedCompanies") {
-                    return Promise.resolve({
-                        ok: true,
-                        json: () => Promise.resolve([company])
-                    });
-                } else if (url === "http://localhost:8080/createGestionnaire") {
-                    return Promise.resolve({
-                        created: true
-                    });
-                } else throw new Error("Bad url call")
-            }
+            if (url === "http://localhost:8080/unvalidatedStudents") {
+                return Promise.resolve({
+                    ok: true,
+                    json: () => Promise.resolve([student])
+                });
+            } else if (url === "http://localhost:8080/unvalidatedCompanies") {
+                return Promise.resolve({
+                    ok: true,
+                    json: () => Promise.resolve([company])
+                });
+            } else if (url === "http://localhost:8080/createGestionnaire") {
+                return Promise.resolve({
+                    created: true
+                });
+            } else throw new Error("Bad url call")
+        }
         ) as jest.Mock;
         window.alert = jest.fn(() => null) as jest.Mock;
     })
@@ -317,16 +320,16 @@ describe("test UserValidationPage", () => {
     it("UserValidationPageStudentList", async () => {
 
         await act(async () => {
-            await render(<MockPage/>)
+            await render(<MockPage />)
         })
         const etudiantButton = await screen.findByDisplayValue(/Student/i)
         expect(etudiantButton).toBeInTheDocument()
-        act(() => {
+        await act(async () => {
             fireEvent.click(etudiantButton)
         })
 
         expect(fetch).toBeCalledTimes(1)
-        const acceptButton = await screen.findByRole("button", {name: /O/i})
+        const acceptButton = await screen.findByRole("button", { name: /O/i })
         const name = await screen.findByText(/Bartholomew/i)
         expect(acceptButton).toBeInTheDocument()
         expect(name).toBeInTheDocument()
@@ -334,18 +337,18 @@ describe("test UserValidationPage", () => {
 
     it("UserValidationPageCompanyTest", async () => {
         await act(async () => {
-            await render(<MockPage/>)
+            await render(<MockPage />)
         })
 
         const companyButton = await screen.findByTestId("companyInput");
         expect(companyButton).toBeInTheDocument();
 
-        act(() => {
-            fireEvent.click(companyButton)
+        await act(async () => {
+            fireEvent.click(companyButton);
         })
         expect(fetch).toBeCalledTimes(2);
 
-        const acceptButton = await screen.findByRole("button", {name: /O/i})
+        const acceptButton = await screen.findByRole("button", { name: /O/i })
         const name = await screen.findByText(/Duff/i)
         expect(acceptButton).toBeInTheDocument()
         expect(name).toBeInTheDocument()
@@ -354,7 +357,7 @@ describe("test UserValidationPage", () => {
 
     it("UserValidationPageCreateGestTest", async () => {
         await act(async () => {
-            await render(<MockPage/>)
+            render(<MockPage />)
         })
     });
 
@@ -364,7 +367,8 @@ const gestionnaire: IUser = {
     firstName: "Yan",
     lastName: "Zhou",
     userType: "gestionnaire",
-    token: "32432"
+    token: "32432",
+    cv: ""
 }
 
 const company: any = {
@@ -380,7 +384,8 @@ const student: IUser = {
     firstName: "Bartholomew",
     lastName: "Kuma",
     userType: "student",
-    token: "324324332"
+    token: "324324332",
+    cv: ""
 }
 
 const offres: object[] = [{
@@ -392,28 +397,28 @@ const offres: object[] = [{
     pdf: new FileReader(),
     token: gestionnaire.token
 },
-    {
-        nomDeCompagnie: "Pirate",
-        department: "Techniques de linformatique",
-        position: "position1",
-        heureParSemaine: 40,
-        adresse: "addresse1",
-        pdf: new FileReader(),
-        token: gestionnaire.token
-    }]
+{
+    nomDeCompagnie: "Pirate",
+    department: "Techniques de linformatique",
+    position: "position1",
+    heureParSemaine: 40,
+    adresse: "addresse1",
+    pdf: new FileReader(),
+    token: gestionnaire.token
+}]
 
 describe("test LoginPage", () => {
     const setUser = jest.fn()
 
     it("test text header", () => {
-        render(<LoginPage setUser={setUser}/>)
+        render(<LoginPage setUser={setUser} />)
         const headerElement = screen.getByText(/OSE KILLER/i)
         expect(headerElement).toBeInTheDocument()
     })
 
     it("test text inscriptionForm", async () => {
-        act(() => {
-            render(<LoginPage setUser={setUser}/>)
+        await act(async () => {
+            render(<LoginPage setUser={setUser} />)
         })
         const linkElement = await screen.findByText(/Nouveau utilisateur\? Inscrivez vous ici./i)
         fireEvent.click(linkElement)
@@ -425,8 +430,8 @@ describe("test LoginPage", () => {
     })
 
     it("test text formulaireEntreprise avec les infos erreurs", async () => {
-        act(() => {
-            render(<LoginPage setUser={setUser}/>)
+        await act(async () => {
+            render(<LoginPage setUser={setUser} />)
         })
 
         const linkElement = await screen.findByText(/Nouveau utilisateur\? Inscrivez vous ici./i)
@@ -452,13 +457,13 @@ describe("test LoginPage", () => {
         const optionsDepartementElement = await screen.getAllByTestId("selelct-option-FormulaireEntreprise")
         const buttonElement = await screen.getByTestId("button_inscrire")
 
-        act(() => {
-            fireEvent.change(inputNomElement, {target: {value: "n"}})
-            fireEvent.change(inputPrenomElement, {target: {value: "n"}})
-            fireEvent.change(inputEntrepriseElement, {target: {value: "e"}})
-            fireEvent.change(inputCourrielElement, {target: {value: "cour"}})
-            fireEvent.change(inputMotDePasseElement, {target: {value: 12345}})
-            fireEvent.change(inputVerifierMotDePasseElement, {target: {value: 12345678}})
+        await act(async () => {
+            fireEvent.change(inputNomElement, { target: { value: "n" } })
+            fireEvent.change(inputPrenomElement, { target: { value: "n" } })
+            fireEvent.change(inputEntrepriseElement, { target: { value: "e" } })
+            fireEvent.change(inputCourrielElement, { target: { value: "cour" } })
+            fireEvent.change(inputMotDePasseElement, { target: { value: 12345 } })
+            fireEvent.change(inputVerifierMotDePasseElement, { target: { value: 12345678 } })
         })
 
         const erreurPourNomElement = await screen.findByTestId("errorNomFormulaireEntreprise")
@@ -485,8 +490,8 @@ describe("test LoginPage", () => {
     })
 
     it("test text formulaireEtudiant avec les infos erreurs", async () => {
-        act(() => {
-            render(<LoginPage setUser={setUser}/>)
+        await act(async () => {
+            render(<LoginPage setUser={setUser} />)
         })
 
         const linkElement = await screen.findByText(/Nouveau utilisateur\? Inscrivez vous ici./i)
@@ -510,12 +515,12 @@ describe("test LoginPage", () => {
         const optionsDepartementElement = await screen.getAllByTestId("select-option-DePartementFormulaireEtudiant")
         const buttonElement = await screen.getByTestId("button_inscrire_etudiant")
 
-        act(() => {
-            fireEvent.change(inputNomElement, {target: {value: "e"}})
-            fireEvent.change(inputPrenomElement, {target: {value: "e"}})
-            fireEvent.change(inputCourrielElement, {target: {value: "cour"}})
-            fireEvent.change(inputMotDePasseElement, {target: {value: 12345}})
-            fireEvent.change(inputVerifierMotDePasseElement, {target: {value: 12345678}})
+        await act(async () => {
+            fireEvent.change(inputNomElement, { target: { value: "e" } })
+            fireEvent.change(inputPrenomElement, { target: { value: "e" } })
+            fireEvent.change(inputCourrielElement, { target: { value: "cour" } })
+            fireEvent.change(inputMotDePasseElement, { target: { value: 12345 } })
+            fireEvent.change(inputVerifierMotDePasseElement, { target: { value: 12345678 } })
         })
 
         const errorPourNomFormulaireEtudiant = await screen.findByTestId("errorNomFormulaireEtudiant")
@@ -539,7 +544,7 @@ describe("test LoginPage", () => {
     })
 
     it("test text LoginForm", async () => {
-        render(<LoginPage setUser={setUser}/>)
+        render(<LoginPage setUser={setUser} />)
         const tiggkeElementEtudiant = await screen.getByText(/Étudiant/i)
         const tiggkeElementEntreprise = await screen.getByText(/Entreprise/i)
         const tiggkeElementEtudiantGestionnaire = await screen.getByText(/Gestionnaire/i)
@@ -547,7 +552,7 @@ describe("test LoginPage", () => {
         const inputElementCourriel = await screen.getByTestId("courreielLoginForm")
         const labelElementMotDePasse = await screen.getByTestId("labelmotDePasseLoginForm")
         const inputElementMotDePasse = await screen.getByTestId("motDePasseLoginForm")
-        const buttonElement = await screen.getByRole("button", {name: /Connecter/i})
+        const buttonElement = await screen.getByRole("button", { name: /Connecter/i })
 
         expect(tiggkeElementEtudiant).toBeInTheDocument()
         expect(tiggkeElementEntreprise).toBeInTheDocument()
@@ -564,13 +569,14 @@ describe("test LoginPage", () => {
 
 describe("OffersListPageTests", () => {
 
-    const MockPage = () => {
-        const user = emptyUser;
-        user.id = "1";
+    const user = emptyUser;
+    user.id = "1";
+    user.cv = null
 
+    const MockPage = ({ user }: { user: IUser }) => {
         return (
             <BrowserRouter>
-                <OffersListPage connectedUser={user} deconnexion={() => null}/>
+                <OffersListPage connectedUser={user} />
             </BrowserRouter>
         );
     }
@@ -584,12 +590,27 @@ describe("OffersListPageTests", () => {
                         "id": 2,
                         "nomDeCompagnie": "Duff Beer",
                         "position": "Delivery Man",
-                        "heureParSemaine": "30",
-                        "salaire": "440",
-                        "adresse": "123 Joe street"
+                        "heureParSemaine": "40",
+                        "adresse": "123 Joe street",
+                        "salaire": "16"
                     }])
                 });
-            } else if (url === "http://localhost:8080/getOfferStudent/2") {
+            }
+            else if (url === "http://localhost:8080/studentApplys/1") {
+                return Promise.resolve({
+                    ok: true,
+                    json: () => Promise.resolve({
+                        studentId: "1",
+                        offersId: []
+                    })
+                });
+            }
+            else if (url === "http://localhost:8080/applyToOffer/1_2") {
+                return Promise.resolve({
+                    ok: true
+                });
+            }
+            else if (url === "http://localhost:8080/getOfferStudent/2") {
                 return Promise.resolve({
                     ok: true,
                     json: () => Promise.resolve({
@@ -598,7 +619,6 @@ describe("OffersListPageTests", () => {
                 });
             } else throw new Error("Bad url call");
         }) as jest.Mock;
-
 
         const intersectionObserverMock = () => ({
             observe: () => null,
@@ -610,33 +630,55 @@ describe("OffersListPageTests", () => {
 
     it("getOfferPDFTest", async () => {
         await act(async () => {
-            render(<MockPage/>);
+            render(<MockPage user={user} />);
         });
 
-        const pdfButton = await screen.findByRole("button", {name: /PDF/i});
+        const pdfButton = await screen.findByRole("button", { name: /PDF/i });
 
         await act(async () => {
             fireEvent.click(pdfButton);
         });
 
-        expect(await screen.findByRole("button", {name: /Fermer/i})).toBeInTheDocument();
+        expect(await screen.findByRole("button", { name: /Fermer/i })).toBeInTheDocument();
         expect(fetch).toBeCalledWith("http://localhost:8080/getOffers/1", expect.anything());
+        expect(fetch).toBeCalledWith("http://localhost:8080/studentApplys/1", expect.anything());
         expect(fetch).toBeCalledWith("http://localhost:8080/getOfferStudent/2", expect.anything());
-        expect(fetch).toBeCalledTimes(2);
+        expect(fetch).toBeCalledTimes(3);
     });
 
     it("fetchOffersTest", async () => {
         await act(async () => {
-            render(<MockPage/>);
+            render(<MockPage user={user} />);
         });
 
         expect(await screen.findByText(/Duff Beer/i)).toBeInTheDocument();
-        expect(await screen.findByText(/30/i)).toBeInTheDocument();
         expect(await screen.findByText(/Delivery Man/i)).toBeInTheDocument();
-        expect(await screen.findByText(/440\$\/h/i)).toBeInTheDocument();
+        expect(await screen.findByText(/16/i)).toBeInTheDocument();
+        expect(await screen.findByText(/40/i)).toBeInTheDocument();
         expect(await screen.findByText(/123 joe street/i)).toBeInTheDocument();
+        expect(await screen.findByText(/vous n'avez pas de cv/i)).toBeInTheDocument();
         expect(fetch).toBeCalledWith("http://localhost:8080/getOffers/1", expect.anything());
-        expect(fetch).toBeCalledTimes(1);
+        expect(fetch).toBeCalledWith("http://localhost:8080/studentApplys/1", expect.anything());
+        expect(fetch).toBeCalledTimes(2);
+    });
+
+    it("ApplyOfferTest", async () => {
+        user.cv = ""
+        await act(async () => {
+            render(<MockPage user={user} />);
+        });
+
+        const pdfButton = await screen.findByRole("button", { name: /Postuler/i });
+
+        await act(async () => {
+            fireEvent.click(pdfButton);
+        });
+
+        expect(await screen.findByText(/Déjà postulé/i)).toBeInTheDocument();
+        expect(fetch).toBeCalledWith("http://localhost:8080/getOffers/1", expect.anything());
+        expect(fetch).toBeCalledWith("http://localhost:8080/studentApplys/1", expect.anything());
+        expect(fetch).toBeCalledWith("http://localhost:8080/applyToOffer/1_2", expect.anything());
+        expect(fetch).toBeCalledTimes(3);
     });
 });
 
@@ -645,7 +687,7 @@ describe("OffresValidationPageTests", () => {
     const MockPage = () => {
         return (
             <BrowserRouter>
-                <ValiderNouvelleOffreStagePage connectedUser={emptyUser} deconnexion={() => null}/>
+                <ValiderNouvelleOffreStagePage connectedUser={emptyUser} deconnexion={() => null} />
             </BrowserRouter>
         );
     }
@@ -695,7 +737,7 @@ describe("OffresValidationPageTests", () => {
 
     it("fetchUnvalidatedOffersTest", async () => {
         await act(async () => {
-            render(<MockPage/>);
+            render(<MockPage />);
         });
 
         expect(await screen.findByText(/Compagnie de Yan/i)).toBeInTheDocument();
@@ -710,11 +752,11 @@ describe("OffresValidationPageTests", () => {
 
     it("validateOfferTest", async () => {
         await act(async () => {
-            render(<MockPage/>);
+            render(<MockPage />);
         });
 
-        const companyName = await screen.findByText(/Compagnie de Yan/i);
-        const validateButton = await screen.findByRole("button", {name: /O/i});
+        const companyName = await screen.findByText(/Compagnie de yan/i)
+        const validateButton = await screen.findByRole("button", { name: /O/i });
 
         await act(async () => {
             fireEvent.click(validateButton);
@@ -727,10 +769,11 @@ describe("OffresValidationPageTests", () => {
 
     it("refuseOfferTest", async () => {
         await act(async () => {
-            await render(<MockPage/>);
+            render(<MockPage />);
         });
+
         const companyName = await screen.findByText(/Compagnie de Yan/i);
-        const validateButton = await screen.findByRole("button", {name: /X/i});
+        const validateButton = await screen.findByRole("button", { name: /X/i });
 
         await act(async () => {
             fireEvent.click(validateButton);
@@ -743,42 +786,42 @@ describe("OffresValidationPageTests", () => {
 
     it("getPDFTest", async () => {
         await act(async () => {
-            await render(<MockPage/>);
+            render(<MockPage />);
         });
 
-        const cvButton = await screen.findByRole("button", {name: /pdf/i});
+        const cvButton = await screen.findByRole("button", { name: /pdf/i });
 
         await act(async () => {
             fireEvent.click(cvButton);
         });
 
-        expect(await screen.findByRole("button", {name: /Fermer/i})).toBeInTheDocument();
+        expect(await screen.findByRole("button", { name: /Fermer/i })).toBeInTheDocument();
         expect(fetch).toBeCalledWith("http://localhost:8080/offerPdf/1", expect.anything());
         expect(fetch).toBeCalledTimes(2);
     });
 
     it('test il y a le champs header ', async () => {
         await act(async () => {
-            await render(<MockPage/>);
+            render(<MockPage />);
         });
 
-        const h1Element = screen.getByRole("heading", {name: /Validation des offres/i});
+        const h1Element = screen.getByRole("heading", { name: /Validation des offres/i });
         expect(h1Element).toBeInTheDocument();
     });
 
     it('test il y a le champs Link ', async () => {
         await act(async () => {
-            await render(<MockPage/>);
+            render(<MockPage />);
         });
 
-        const LinkElement = screen.getByRole("link", {name: /Home/i});
+        const LinkElement = screen.getByRole("link", { name: /Home/i });
         expect(LinkElement).toBeInTheDocument();
 
     });
 
     it('test il y a le champs tr ', async () => {
         await act(async () => {
-            await render(<MockPage/>);
+            render(<MockPage />);
         });
 
         const trElement = await screen.getAllByTestId("offre-container");
@@ -787,7 +830,7 @@ describe("OffresValidationPageTests", () => {
 
     it('test il y a le champs table ', async () => {
         await act(async () => {
-            await render(<MockPage/>);
+            render(<MockPage />);
         });
 
         const tableElement = screen.getByTestId("tableValiderNouvelleOffreStage");
@@ -799,16 +842,16 @@ describe("test la page StudentDashboard", () => {
     const MockStudentDashboardPage = () => {
         return (
             <BrowserRouter>
-                <StudentDashboardPage user={student} deconnexion={deconnexion}/>
+                <StudentDashboardPage user={student} deconnexion={deconnexion} />
             </BrowserRouter>
         );
     }
 
     it('test button déconnexion ', async () => {
         act(() => {
-            render(<MockStudentDashboardPage/>);
+            render(<MockStudentDashboardPage />);
         });
-        const button = await screen.findByRole("button", {name: /Déconnexion/i});
+        const button = await screen.findByRole("button", { name: /Déconnexion/i });
 
         act(() => {
             fireEvent.click(button);
@@ -819,7 +862,7 @@ describe("test la page StudentDashboard", () => {
     });
     it('test title ', async () => {
         act(() => {
-            render(<MockStudentDashboardPage/>);
+            render(<MockStudentDashboardPage />);
         });
 
         const h1 = await screen.findByTestId("titleStudentDashboard")
@@ -829,9 +872,9 @@ describe("test la page StudentDashboard", () => {
 
     it('test link ', async () => {
         act(() => {
-            render(<MockStudentDashboardPage/>);
+            render(<MockStudentDashboardPage />);
         });
-        const linkListe = await screen.findByRole("link", {name: /Liste de stages/i});
+        const linkListe = await screen.findByRole("link", { name: /Liste de stages/i });
 
         act(() => {
             fireEvent.click(linkListe);
@@ -845,16 +888,16 @@ describe("test la page gestionnaireDashboard", () => {
     const MockGestionnaireDashboardPage = () => {
         return (
             <BrowserRouter>
-                <GestionnaireDashboardPage user={gestionnaire} deconnexion={deconnexion}/>
+                <GestionnaireDashboardPage user={gestionnaire} deconnexion={deconnexion} />
             </BrowserRouter>
         );
     }
 
     it('test button déconnexion ', async () => {
         act(() => {
-            render(<MockGestionnaireDashboardPage/>);
+            render(<MockGestionnaireDashboardPage />);
         });
-        const button = await screen.findByRole("button", {name: /Déconnexion/i});
+        const button = await screen.findByRole("button", { name: /Déconnexion/i });
 
         act(() => {
             fireEvent.click(button);
@@ -865,7 +908,7 @@ describe("test la page gestionnaireDashboard", () => {
     });
     it('test title ', async () => {
         act(() => {
-            render(<MockGestionnaireDashboardPage/>);
+            render(<MockGestionnaireDashboardPage />);
         });
 
         const h1 = await screen.findByTestId("titleGestionnaireDashboard")
@@ -875,11 +918,11 @@ describe("test la page gestionnaireDashboard", () => {
 
     it('test link ', async () => {
         act(() => {
-            render(<MockGestionnaireDashboardPage/>);
+            render(<MockGestionnaireDashboardPage />);
         });
-        const linkUserValidation = await screen.findByRole("link", {name: /Validation des utilisateurs/i});
-        const linkCvValidation = await screen.findByRole("link", {name: /Validation des curriculums vitae des étudiants/i})
-        const linkValiderNouvelleOffre = await screen.findByRole("link", {name: /Validation nouvelle offre stage/i})
+        const linkUserValidation = await screen.findByRole("link", { name: /Validation des utilisateurs/i });
+        const linkCvValidation = await screen.findByRole("link", { name: /Validation des curriculums vitae des étudiants/i })
+        const linkValiderNouvelleOffre = await screen.findByRole("link", { name: /Validation nouvelle offre stage/i })
         act(() => {
             fireEvent.click(linkUserValidation);
         });

@@ -20,6 +20,7 @@ export const emptyUser: IUser = {
   firstName: "",
   lastName: "",
   userType: "",
+  cv: "",
   token: ""
 }
 
@@ -107,8 +108,8 @@ function App() {
         <BrowserRouter>
           <Routes>
             <Route path="/" element={<StudentDashboard deconnexion={deconnexion} user={user} />} />
+            <Route path="/offres" element={<OffersListPage connectedUser={user} />} />
             <Route path="/uploaderCV" element={<UploaderMonCV user={user} />} />
-            <Route path="/offres" element={<OffersListPage connectedUser={user} deconnexion={deconnexion} />} />
             <Route path="*" element={<h1 className="text-center text-white display-1 min-vh-100">404 - Page pas trouvé</h1>} />
           </Routes>
         </BrowserRouter>

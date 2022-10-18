@@ -61,7 +61,6 @@ const UserValidation = ({ connectedUser }: { connectedUser: IUser }) => {
                         Compagnies
                     </ToggleButton>
                     <ToggleButton id="GestionnairValid" value="Gestionnaire" onClick={() => {
-                        console.log("amogus")
                         setUser("Gestionnaire")
                     }}>
                         Gestionnaires

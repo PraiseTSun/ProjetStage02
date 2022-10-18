@@ -39,7 +39,8 @@ const LoginForm = (props: { setUser: Function }): JSX.Element => {
                         firstName: data.firstName,
                         lastName: data.lastName,
                         userType: userType,
-                        token: tokenData.token
+                        token: tokenData.token,
+                        cv: data.cv
                     }
                     props.setUser(user)
                     localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(user))

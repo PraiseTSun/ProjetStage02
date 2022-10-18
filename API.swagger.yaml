@@ -1004,3 +1004,76 @@ paths:
           description: Token invalide ou expiré
         404:
           description: L'offre avec cette id n'existe pas
+  /applyToOffer/{studentId}_{offerId}:
+    put:
+      summary: Permet à l’étudiant d’appliquer à une offre de stage (Doit avoir un token Student)
+      parameters:
+        - in: path
+          name: id
+          description: id de l'étudiant
+          type: string
+          required: true
+        - in: body
+          name: token
+          description: Token valide de l'étudiant
+          schema:
+            type: object
+            properties:
+              token:
+                type: string
+      produces:
+        - application/json
+      responses:
+        200:
+          description: L'application a été réussi
+          schema:
+            properties:
+              studentId:
+                type: string
+              fullName:
+                type: string
+              offerId:
+                type: string
+              company:
+                type: string
+        403:
+          description: Token invalide ou expiré
+        404:
+          description: L'étudiant avec cette id n'existe pas ou l'offre avec cette id n'existe pas.
+  /studentApllys/{studentId}:
+    put:
+      summary: Revoie les id des offres que l'étudiant a postuler (Doit avoir un token Student)
+      parameters:
+        - in: path
+          name: id
+          description: id de l'étudiant
+          type: string
+          required: true
+        - in: body
+          name: token
+          description: Token valide de l'étudiant
+          schema:
+            type: object
+            properties:
+              token:
+                type: string
+      produces:
+        - application/json
+      responses:
+        200:
+          description: Revoie la liste des id des offres postulées
+          schema:
+            properties:
+              userId:
+                type: number
+              contactsId:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    contactId:
+                      type: number
+        403:
+          description: Token invalide ou expiré
+        404:
+          description: L'étudiant avec cette id n'existe pas.

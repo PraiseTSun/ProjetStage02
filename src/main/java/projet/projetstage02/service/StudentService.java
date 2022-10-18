@@ -2,14 +2,14 @@ package projet.projetstage02.service;
 
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
-import projet.projetstage02.DTO.OffreDTO;
-import projet.projetstage02.DTO.PdfDTO;
-import projet.projetstage02.DTO.PdfOutDTO;
-import projet.projetstage02.DTO.StudentDTO;
+import projet.projetstage02.DTO.*;
+import projet.projetstage02.exception.AlreadyExistingPostulation;
 import projet.projetstage02.exception.NonExistentEntityException;
 import projet.projetstage02.model.Offre;
+import projet.projetstage02.model.Postulation;
 import projet.projetstage02.model.Student;
 import projet.projetstage02.repository.OffreRepository;
+import projet.projetstage02.repository.PostulationRepository;
 import projet.projetstage02.repository.StudentRepository;
 
 import java.sql.Timestamp;
@@ -28,6 +28,8 @@ import static projet.projetstage02.utils.TimeUtil.currentTimestamp;
 public class StudentService {
     private final StudentRepository studentRepository;
     private final OffreRepository offreRepository;
+
+    private final PostulationRepository postulationRepository;
 
     public void saveStudent(String firstName,
             String lastName,
@@ -118,5 +120,49 @@ public class StudentService {
     public boolean isStudentInvalid(String email) throws NonExistentEntityException {
         return !isEmailUnique(email)
                 && !deleteUnconfirmedStudent(email);
+    }
+
+    public PostulOutDTO createPostulation(long studentId, long offerID)
+            throws NonExistentEntityException, AlreadyExistingPostulation {
+        Optional<Student> studentOpt = studentRepository.findById(studentId);
+        if (studentOpt.isEmpty())
+            throw new NonExistentEntityException();
+
+        Optional<Offre> offerOpt = offreRepository.findById(offerID);
+        if (offerOpt.isEmpty())
+            throw new NonExistentEntityException();
+
+        Optional<Postulation> postulationOpt = postulationRepository.findByStudentIdAndOfferId(studentId, offerID);
+        if (!postulationOpt.isEmpty())
+            throw new AlreadyExistingPostulation();
+
+        Student student = studentOpt.get();
+        Offre offer = offerOpt.get();
+
+        Postulation postulation = new Postulation(offer.getId(), student.getId());
+        postulationRepository.save(postulation);
+
+        return PostulOutDTO.builder()
+                .studentId(student.getId())
+                .fullName(student.getFirstName() + " " + student.getLastName())
+                .offerId(offer.getId())
+                .company(offer.getNomDeCompagnie())
+                .build();
+    }
+
+    public StudentApplysDTO getPostulsOfferId(long studentId) throws NonExistentEntityException {
+        Optional<Student> studentOpt = studentRepository.findById(studentId);
+        if (studentOpt.isEmpty())
+            throw new NonExistentEntityException();
+
+        List<Long> offersId = new ArrayList<>();
+        postulationRepository.findByStudentId(studentId)
+                .forEach(
+                        postulation -> offersId.add(postulation.getOfferId()));
+
+        return StudentApplysDTO.builder()
+                .studentId(studentOpt.get().getId())
+                .offersId(offersId)
+                .build();
     }
 }
