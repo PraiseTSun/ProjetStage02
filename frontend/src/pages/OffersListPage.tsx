@@ -71,7 +71,7 @@ const OffersListPage = ({ connectedUser, deconnexion }: { connectedUser: IUser, 
 
     if (showPdf) {
         return (
-            <Container>
+            <Container className="min-vh-100 bg-white p-0">
                 <div className="bg-dark p-2">
                     <Button className="Btn btn-primary" onClick={() => setShowPDF(false)}>
                         Fermer
@@ -85,7 +85,7 @@ const OffersListPage = ({ connectedUser, deconnexion }: { connectedUser: IUser, 
     }
 
     return (
-        <Container className="vh-100">
+        <Container className="min-vh-100">
             <Row>
                 <Col sm={2}>
                     <Link to="/" className="btn btn-primary my-3">Home</Link>

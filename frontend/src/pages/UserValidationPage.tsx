@@ -42,7 +42,7 @@ const UserValidation = ({ connectedUser }: { connectedUser: IUser }) => {
     }
 
     return (
-        <Container className="vh-100">
+        <Container className="min-vh-100">
             <Row>
                 <Col sm={2}>
                     <Link to="/" className="btn btn-primary my-3">Home</Link>

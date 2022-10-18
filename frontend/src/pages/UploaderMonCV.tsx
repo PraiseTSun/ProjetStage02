@@ -52,14 +52,14 @@ const UploaderMonCV = ({user}: { user: IUser }) => {
     }
     if (waiting) {
         return (
-            <div className="d-flex justify-content-center py-5 bg-light vh-100">
-                <BeatLoader className="text-center" color="#292b2c" size={100}/>
+            <div className="d-flex justify-content-center py-5 bg-light min-vh-100">
+                <BeatLoader className="text-center" color="#292b2c" size={100} />
             </div>
         );
     }
 
     return (
-        <Container className="justify-content-center vh-100">
+        <Container className="justify-content-center min-vh-100">
             <Col className="col-12 ">
                 <Row>
                     <Col sm={2}>
