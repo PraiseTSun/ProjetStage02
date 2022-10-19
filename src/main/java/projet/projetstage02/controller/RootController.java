@@ -9,21 +9,19 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import projet.projetstage02.DTO.*;
+import projet.projetstage02.exception.AlreadyExistingPostulation;
 import projet.projetstage02.exception.InvalidTokenException;
 import projet.projetstage02.exception.NonExistentEntityException;
 import projet.projetstage02.exception.NonExistentOfferExeption;
-
-import projet.projetstage02.exception.AlreadyExistingPostulation;
-
 import projet.projetstage02.model.Token;
 import projet.projetstage02.service.AuthService;
 import projet.projetstage02.service.CompanyService;
 import projet.projetstage02.service.GestionnaireService;
 import projet.projetstage02.service.StudentService;
 import projet.projetstage02.utils.EmailUtil;
+import projet.projetstage02.utils.TimeUtil;
 
 import javax.validation.Valid;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -132,9 +130,9 @@ public class RootController {
     @PostMapping("/createOffre")
     public ResponseEntity<Map<String, String>> createOffre(@Valid @RequestBody OffreDTO offreDTO) {
         try {
-            System.out.println(Arrays.toString(offreDTO.getPdf()));
-            logger.log(Level.INFO, "Post /createOffre entered with body : " + offreDTO.toString());
+            logger.log(Level.INFO, "Post /createOffre entered with body : " + offreDTO);
             authService.getToken(offreDTO.getToken(), COMPANY);
+            offreDTO.setSession("Hiver " + TimeUtil.getCurrentYear());
             companyService.createOffre(offreDTO);
             logger.log(Level.INFO, "PostMapping: /createOffre sent 201 response");
             return ResponseEntity.status(CREATED).build();
@@ -601,7 +599,7 @@ public class RootController {
 
     @PutMapping("/applyToOffer/{studentId}_{offerId}")
     public ResponseEntity<PostulOutDTO> createPostulation(@PathVariable String studentId, @PathVariable String offerId,
-            @RequestBody TokenDTO tokenId) {
+                                                          @RequestBody TokenDTO tokenId) {
         logger.log(Level.INFO, "Put /createPostulation entered with id: " + studentId
                 + " and offer id: " + offerId);
 
@@ -624,7 +622,7 @@ public class RootController {
 
     @PutMapping("/studentApplys/{studentId}")
     public ResponseEntity<StudentApplysDTO> getPostulsOfferId(@PathVariable String studentId,
-            @RequestBody TokenDTO tokenId) {
+                                                              @RequestBody TokenDTO tokenId) {
         logger.log(Level.INFO, "Put /getPostulsOfferId entered with id: " + studentId);
 
         try {
