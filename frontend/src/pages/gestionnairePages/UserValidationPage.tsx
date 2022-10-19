@@ -1,42 +1,46 @@
 import React, {useState} from "react";
 import {Col, Container, Row, ToggleButton, ToggleButtonGroup} from "react-bootstrap";
-import ValidationStudent from "../../components/ValidationStudent";
-import ValidationCompany from "../../components/ValidationCompany";
-import CreateGestionnaireForm from "../../components/CreateGestionnaireForm";
+import ValidationStudent from "../../components/gestionnaireComponents/ValidationStudent";
+import ValidationCompany from "../../components/gestionnaireComponents/ValidationCompany";
+import CreateGestionnaireForm from "../../components/gestionnaireComponents/CreateGestionnaireForm";
 import {Link} from "react-router-dom";
 import IUser from "../../models/IUser";
+import {
+    deleteRemoveCompany,
+    deleteRemoveStudent,
+    putValidateCompany,
+    putValidateStudent
+} from "../../services/gestionnaireServices/GestionnaireFetchService";
 
 const UserValidation = ({connectedUser}: { connectedUser: IUser }) => {
     const [user, setUser] = useState("Student");
 
     const onValidation = async (id: string, type: string) => {
-        const res = await fetch(`http://localhost:8080/validate${type}/${id}`,
-            {
-                method: 'PUT',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({token: connectedUser.token})
-            });
+        let res: Response
 
-        if (res.status === 409) {
-            const data = await res.json();
+        if (type === "Student") {
+            res = await putValidateStudent(id, connectedUser.token);
+        } else if (type === "Company") {
+            res = await putValidateCompany(id, connectedUser.token);
+        }
+
+        if (res!.status === 409) {
+            const data = await res!.json();
             alert(data.error);
         }
     }
 
     const onRemove = async (id: string, type: string) => {
-        const res = await fetch(`http://localhost:8080/remove${type}/${id}`,
-            {
-                method: 'DELETE',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({token: connectedUser.token})
-            });
+        let res: Response
 
-        if (res.status === 409) {
-            const data = await res.json();
+        if (type === "student") {
+            res = await deleteRemoveStudent(id, connectedUser.token);
+        } else if (type === "company") {
+            res = await deleteRemoveCompany(id, connectedUser.token);
+        }
+
+        if (res!.status === 409) {
+            const data = await res!.json();
             alert(data.error);
         }
     }
@@ -74,7 +78,7 @@ const UserValidation = ({connectedUser}: { connectedUser: IUser }) => {
                     <ValidationStudent connectedUser={connectedUser} onRemove={onRemove} onValidation={onValidation}/> :
                     user === "Company" ? <ValidationCompany connectedUser={connectedUser} onRemove={onRemove}
                                                             onValidation={onValidation}/> :
-                        <CreateGestionnaireForm user={connectedUser}/>
+                        <CreateGestionnaireForm connectedUser={connectedUser}/>
                 }
             </Row>
         </Container>

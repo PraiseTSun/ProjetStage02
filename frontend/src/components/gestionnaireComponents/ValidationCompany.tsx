@@ -1,6 +1,7 @@
 import React, {useEffect, useState} from "react";
 import {Button, Col, Row} from "react-bootstrap";
-import IUser from "../models/IUser";
+import IUser from "../../models/IUser";
+import {putUnvalidatedCompanies} from "../../services/gestionnaireServices/GestionnaireFetchService";
 
 const ValidationCompany = ({
                                connectedUser,
@@ -21,19 +22,19 @@ const ValidationCompany = ({
     }
 
     useEffect(() => {
-        fetch('http://localhost:8080/unvalidatedCompanies',
-            {
-                method: "PUT",
-                headers: {
-                    'Accept': 'application/json',
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({token: connectedUser.token})
-            })
-            .then(response => response.json())
-            .then(data => {
-                setCompanies(data)
-            });
+        const fetchUnvalidatedCompanies = async () => {
+            const response = await putUnvalidatedCompanies(connectedUser.token)
+
+            if (response.ok) {
+                const data = await response.json();
+                setCompanies(data);
+            } else {
+                alert("Une erreur est survenue! Ressayez!");
+                window.location.href = "/";
+            }
+        }
+        
+        fetchUnvalidatedCompanies()
     }, [connectedUser]);
 
     return (

@@ -1,6 +1,7 @@
 import React, {useEffect, useState} from "react";
 import {Button, Col, Row} from "react-bootstrap";
-import IUser from "../models/IUser";
+import IUser from "../../models/IUser";
+import {putUnvalidatedStudents} from "../../services/gestionnaireServices/GestionnaireFetchService";
 
 const ValidationStudent = ({
                                connectedUser,
@@ -21,26 +22,19 @@ const ValidationStudent = ({
     }
 
     useEffect(() => {
-        const fetchAndSet = async () => {
-            const req = await fetch("http://localhost:8080/unvalidatedStudents",
-                {
-                    method: "PUT",
-                    headers: {
-                        'Accept': 'application/json',
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({token: connectedUser.token})
+        const fetchUnvalidatedStudents = async () => {
+            const res = await putUnvalidatedStudents(connectedUser.token)
 
-                })
-            if (req.ok) {
-                const data = await req.json()
+            if (res.ok) {
+                const data = await res.json()
                 setStudents(data)
-                return;
+            } else {
+                alert("Une erreur est survenue! Ressayez!");
+                window.location.href = "/";
             }
-            alert("Une erreur est survenue")
         }
-        fetchAndSet()
-
+        
+        fetchUnvalidatedStudents()
     }, [connectedUser]);
 
     return (

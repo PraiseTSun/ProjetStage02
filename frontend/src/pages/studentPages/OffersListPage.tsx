@@ -5,6 +5,12 @@ import {Link} from "react-router-dom";
 import IUser from "../../models/IUser";
 import IOffer from "../../models/IOffer";
 import IStudentApplys from "../../models/IStudentApplys";
+import {
+    putApplyToOffer,
+    putGetOffers,
+    putGetOfferStudent,
+    putStudentApplys
+} from "../../services/studentServices/StudentFetchService";
 
 const OffersListPage = ({connectedUser}:
                             { connectedUser: IUser }): JSX.Element => {
@@ -17,14 +23,7 @@ const OffersListPage = ({connectedUser}:
     useEffect(() => {
         const fetchOffers = async () => {
             try {
-                const response = await fetch("http://localhost:8080/getOffers/" + connectedUser.id, {
-                    method: "PUT",
-                    headers: {
-                        'Accept': 'application/json',
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({"token": connectedUser.token})
-                });
+                const response = await putGetOffers(connectedUser.id, connectedUser.token);
                 if (response.ok) {
                     const data = await response.json();
                     setOffers(data);
@@ -38,14 +37,7 @@ const OffersListPage = ({connectedUser}:
         }
         const fetchStudentApplys = async () => {
             try {
-                const response = await fetch("http://localhost:8080/studentApplys/" + connectedUser.id, {
-                    method: "PUT",
-                    headers: {
-                        'Accept': 'application/json',
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({"token": connectedUser.token})
-                });
+                const response = await putStudentApplys(connectedUser.id, connectedUser.token);
                 if (response.ok) {
                     const data = await response.json();
                     setStudentApplys(data);
@@ -62,22 +54,15 @@ const OffersListPage = ({connectedUser}:
         fetchOffers();
     }, [connectedUser]);
 
-    async function applyToOffer(offerID: string): Promise<void> {
+    async function applyToOffer(offerId: string): Promise<void> {
         try {
-            const response = await fetch("http://localhost:8080/applyToOffer/" + connectedUser.id + "_" + offerID, {
-                method: "PUT",
-                headers: {
-                    'Accept': 'application/json',
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({"token": connectedUser.token})
-            });
+            const response = await putApplyToOffer(connectedUser.id, offerId, connectedUser.token)
 
             if (response.ok) {
                 setStudentApplys(
                     {
                         studentId: connectedUser.id,
-                        offersId: [...studentApplys.offersId, offerID]
+                        offersId: [...studentApplys.offersId, offerId]
                     });
             } else {
                 throw new Error("Error code not handled");
@@ -88,16 +73,9 @@ const OffersListPage = ({connectedUser}:
         }
     }
 
-    async function getPDF(offerID: string): Promise<void> {
+    async function getPDF(offerId: string): Promise<void> {
         try {
-            const response = await fetch("http://localhost:8080/getOfferStudent/" + offerID, {
-                method: "PUT",
-                headers: {
-                    'Accept': 'application/json',
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({"token": connectedUser.token})
-            });
+            const response = await putGetOfferStudent(offerId, connectedUser.token)
 
             if (response.ok) {
                 const data = await response.json();

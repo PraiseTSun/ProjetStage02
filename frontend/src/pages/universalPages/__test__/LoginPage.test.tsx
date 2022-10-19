@@ -52,7 +52,7 @@ describe("LoginPageTests", () => {
         const labelVerifierMotDePasseElement = await screen.findByTestId("labelCourrielFormulaireEntreprise")
         const labelDepartementElement = await screen.findByTestId("labelDepartementFormulaireEntreprise")
         const selectDepartementElement = await screen.findByTestId("selelctDepartementFormulaireEntreprise")
-        const optionsDepartementElement = await screen.getAllByTestId("selelct-option-FormulaireEntreprise")
+        const optionsDepartementElement = await screen.getAllByTestId("selelct-option-FormulaireInscriptionEntreprise")
         const buttonElement = await screen.getByTestId("button_inscrire")
 
         await act(async () => {
@@ -97,7 +97,7 @@ describe("LoginPageTests", () => {
         await act(async () => {
             fireEvent.click(elementEtudiant)
         });
-        
+
         //dans la page formulaireEtudiant
         const inputNomElement = await screen.findByTestId("intputNomFormulaireEtudiant")
         const labelNomElement = await screen.findByTestId("labelNomFormulaireEtudiant")

@@ -1,19 +1,13 @@
 import React from "react";
-import { Container, ListGroup, Tab } from "react-bootstrap";
-import FormulaireEtudiant from "./FormulaireEtudiant";
-import FormulaireEntreprise from "./FormulaireEntreprise";
+import {Container, ListGroup, Tab} from "react-bootstrap";
+import FormulaireInscriptionEtudiant from "./FormulaireInscriptionEtudiant";
+import FormulaireInscriptionEntreprise from "./FormulaireInscriptionEntreprise";
+import {postUserType} from "../../services/universalServices/UniversalFetchService";
 
-const InscriptionForm = ({ setIsLogginPage }: { setIsLogginPage: Function }): JSX.Element => {
+const InscriptionForm = ({setIsLogginPage}: { setIsLogginPage: Function }): JSX.Element => {
 
     const onInscrire = async (compte: object, type: string) => {
-        const res = await fetch(`http://localhost:8080/create${type}`,
-            {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(compte)
-            })
+        const res = await postUserType(type, compte);
 
         if (!res.ok) {
             const data = await res.json();
@@ -32,17 +26,18 @@ const InscriptionForm = ({ setIsLogginPage }: { setIsLogginPage: Function }): JS
                     <ListGroup.Item action href="#etudiant" variant="secondary">
                         Etudiant
                     </ListGroup.Item>
-                    <ListGroup.Item data-testid="entrepriseInscriptionForm" action href="#entreprise" variant="secondary">
+                    <ListGroup.Item data-testid="entrepriseInscriptionForm" action href="#entreprise"
+                                    variant="secondary">
                         Entreprise
                     </ListGroup.Item>
                 </ListGroup>
 
                 <Tab.Content className="mt-3 p-2">
-                    <Tab.Pane eventKey="#etudiant" >
-                        <FormulaireEtudiant onInscrire={onInscrire} />
+                    <Tab.Pane eventKey="#etudiant">
+                        <FormulaireInscriptionEtudiant onInscrire={onInscrire}/>
                     </Tab.Pane>
                     <Tab.Pane eventKey="#entreprise">
-                        <FormulaireEntreprise onInscrire={onInscrire} />
+                        <FormulaireInscriptionEntreprise onInscrire={onInscrire}/>
                     </Tab.Pane>
                 </Tab.Content>
             </Tab.Container>

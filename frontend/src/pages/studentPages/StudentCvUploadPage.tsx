@@ -3,8 +3,9 @@ import React, {useState} from "react";
 import {BeatLoader} from "react-spinners";
 import IUser from "../../models/IUser";
 import {Link} from "react-router-dom";
+import {putUploadStudentCV} from "../../services/studentServices/StudentFetchService";
 
-const StudentCvUploadPage = ({user}: { user: IUser }) => {
+const StudentCvUploadPage = ({connectedUser}: { connectedUser: IUser }) => {
     const [waiting, setWaiting] = useState<boolean>(false);
     const [validated, setValidated] = useState<boolean>(false);
     const [cv, setCv] = useState<number[]>([0])
@@ -14,16 +15,9 @@ const StudentCvUploadPage = ({user}: { user: IUser }) => {
         event.preventDefault();
         if (form.checkValidity()) {
             setWaiting(true)
-            const headers = {
-                method: "PUT",
-                headers: {"Content-Type": "application/json"},
-                body: JSON.stringify({
-                    studentId: user.id,
-                    pdf: cv,
-                    token: user.token
-                })
-            };
-            const res = await fetch("http://localhost:8080/uploadStudentCV", headers)
+
+            const res = await putUploadStudentCV(connectedUser.id, cv, connectedUser.token)
+
             if (res.ok) {
                 alert("CV envoyé")
             } else {

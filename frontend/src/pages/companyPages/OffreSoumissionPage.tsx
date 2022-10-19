@@ -2,13 +2,14 @@ import React, {useState} from "react";
 import {Button, Col, Container, Form, Row} from "react-bootstrap";
 import {BeatLoader} from "react-spinners";
 import IUser from "../../models/IUser";
+import {postCreateOffre} from "../../services/companyServices/CompanyFetchService";
 
 declare type FormControlElement = HTMLInputElement | HTMLTextAreaElement;
 
 const OffreSoumissionPage = ({user}: { user: IUser }): JSX.Element => {
     const [waiting, setWaiting] = useState(false);
     const [validated, setValidated] = useState(false);
-    const [company, setCompany] = useState("")
+    const [companyName, setCompanyName] = useState("")
     const [department, setDepartment] = useState("")
     const [poste, setPoste] = useState("")
     const [hoursPerWeek, setHoursPerWeek] = useState(40)
@@ -20,27 +21,24 @@ const OffreSoumissionPage = ({user}: { user: IUser }): JSX.Element => {
         const form: any = event.currentTarget;
         event.preventDefault();
         if (form.checkValidity()) {
-            setWaiting(true)
-            const obj = {
-                nomDeCompagnie: company,
-                department: department,
-                position: poste,
-                heureParSemaine: hoursPerWeek,
-                adresse: address,
-                salaire: salary,
-                pdf: pdf,
-                token: user.token
-            }
+            setWaiting(true);
 
-            const headers = {
-                method: "POST",
-                headers: {"Content-Type": "application/json"},
-                body: JSON.stringify(obj)
-            };
-            const res = await fetch("http://localhost:8080/createOffre", headers)
-            if (res.ok) {
+            const response = await postCreateOffre({
+                id: "",
+                adresse: address,
+                salaire: salary.toString(),
+                position: poste,
+                pdf: pdf,
+                department: department,
+                heureParSemaine: hoursPerWeek.toString(),
+                nomDeCompagnie: companyName,
+                token: user.token
+            })
+
+            if (response.ok) {
                 alert("Formulaire envoyé")
             }
+
             setWaiting(false);
             window.location.href = "/"
         }
@@ -94,8 +92,9 @@ const OffreSoumissionPage = ({user}: { user: IUser }): JSX.Element => {
                 <Form className="card-body p-3" onSubmit={onSubmit} validated={validated} noValidate>
                     <Form.Group>
                         <Form.Label className="fw-bold h5">Nom de la compagnie</Form.Label>
-                        <Form.Control data-testid="nomCompanyFormulaireSoumission" type="text" required value={company}
-                                      onChange={field => setCompany(field.target.value)}></Form.Control>
+                        <Form.Control data-testid="nomCompanyFormulaireSoumission" type="text" required
+                                      value={companyName}
+                                      onChange={field => setCompanyName(field.target.value)}></Form.Control>
                         <Form.Control.Feedback type="invalid">Champ requis</Form.Control.Feedback>
                     </Form.Group>
                     <Form.Group>

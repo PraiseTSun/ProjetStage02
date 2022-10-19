@@ -1,5 +1,5 @@
 import {BrowserRouter} from "react-router-dom";
-import StudentCvValidationPage from "../StudentCvValidationPage";
+import StudentCvValidationPage from "../../gestionnairePages/StudentCvValidationPage";
 import {emptyUser} from "../../../App";
 import {act, fireEvent, render, screen} from "@testing-library/react";
 import * as React from "react";

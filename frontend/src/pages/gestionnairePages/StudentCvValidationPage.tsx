@@ -3,24 +3,25 @@ import {Button, Col, Container, Row, Table} from "react-bootstrap";
 import {Link} from "react-router-dom";
 import IUser from "../../models/IUser";
 import {Viewer} from '@react-pdf-viewer/core';
+import {
+    putRefuseCv,
+    putStudentCv,
+    putUnvalidatedCvStudents,
+    putValidateCv
+} from "../../services/gestionnaireServices/GestionnaireFetchService";
 
 const StudentCvValidationPage = ({connectedUser, deconnexion}:
                                      { connectedUser: IUser, deconnexion: Function }): JSX.Element => {
     const [students, setStudents] = useState<any[]>([]);
+    //TODO REMOVE deconnexions AND WTF THIS IS
     const [pdf, setPDF] = useState<Uint8Array>(new Uint8Array([]))
     const [showPDF, setShowPDF] = useState<boolean>(false)
 
     useEffect(() => {
         const fetchUnvalidatedCvStudents = async () => {
             try {
-                const response = await fetch("http://localhost:8080/unvalidatedCvStudents", {
-                    method: "PUT",
-                    headers: {
-                        'Accept': 'application/json',
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({"token": connectedUser.token})
-                });
+                const response = await putUnvalidatedCvStudents(connectedUser.token)
+
                 if (response.ok) {
                     const data = await response.json();
                     setStudents(data);
@@ -40,15 +41,10 @@ const StudentCvValidationPage = ({connectedUser, deconnexion}:
 
     async function validateCV(studentId: number, valid: boolean): Promise<void> {
         try {
-            const url: String = valid ? "http://localhost:8080/validateCv/" : "http://localhost:8080/refuseCv/";
-            const response: Response = await fetch(url + studentId.toString(), {
-                method: "PUT",
-                headers: {
-                    'Accept': 'application/json',
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({"token": connectedUser.token})
-            });
+            const response = valid
+                ? await putValidateCv(studentId.toString(), connectedUser.token)
+                : await putRefuseCv(studentId.toString(), connectedUser.token);
+
             if (response.ok) {
                 setStudents(students.filter(student => student.id !== studentId));
             } else if (response.status === 403) {
@@ -62,16 +58,9 @@ const StudentCvValidationPage = ({connectedUser, deconnexion}:
         }
     }
 
-    async function getPDF(studentID: number): Promise<void> {
+    async function getPDF(studentId: number): Promise<void> {
         try {
-            const response = await fetch("http://localhost:8080/studentCv/" + studentID.toString(), {
-                method: "PUT",
-                headers: {
-                    'Accept': 'application/json',
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({"token": connectedUser.token})
-            });
+            const response = await putStudentCv(studentId.toString(), connectedUser.token)
             if (response.ok) {
                 const data = await response.json();
                 setPDF(new Uint8Array(JSON.parse(data.pdf)));

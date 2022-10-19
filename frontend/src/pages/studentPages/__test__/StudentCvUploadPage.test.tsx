@@ -6,7 +6,7 @@ import {emptyUser} from "../../../App";
 
 describe('StudentCvUploadPageTests', () => {
     beforeEach(() => {
-        render(<StudentCvUploadPage user={emptyUser}/>, {wrapper: BrowserRouter});
+        render(<StudentCvUploadPage connectedUser={emptyUser}/>, {wrapper: BrowserRouter});
     });
 
     it('InputIsPresentTest', async () => {

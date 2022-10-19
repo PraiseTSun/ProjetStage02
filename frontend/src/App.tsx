@@ -9,10 +9,11 @@ import CompanyDashboard from './pages/companyPages/CompanyDashboardPage';
 import GestionnaireDashboard from './pages/gestionnairePages/GestionnaireDashboardPage';
 import UserValidation from './pages/gestionnairePages/UserValidationPage';
 import OffreSoumissionPage from './pages/companyPages/OffreSoumissionPage';
-import StudentCvValidationPage from './pages/studentPages/StudentCvValidationPage';
+import StudentCvValidationPage from './pages/gestionnairePages/StudentCvValidationPage';
 import ValiderNouvelleOffreStagePage from "./pages/gestionnairePages/ValiderNouvelleOffreStagePage";
 import OffersListPage from './pages/studentPages/OffersListPage';
 import StudentCvUploadPage from './pages/studentPages/StudentCvUploadPage';
+import {putUserType} from "./services/universalServices/UniversalFetchService";
 
 export const LOCAL_STORAGE_KEY = "MASSI_BEST_PROGRAMMER_PROJET_STAGE_02_CURRENT_CONNECTED_USER"
 export const emptyUser: IUser = {
@@ -21,11 +22,12 @@ export const emptyUser: IUser = {
     lastName: "",
     userType: "",
     cv: "",
-    token: ""
+    token: "",
+    companyName: ""
 }
 
 function App() {
-    const [user, setUser] = useState(emptyUser)
+    const [connectedUser, setConnectedUser] = useState(emptyUser)
     const [verifiedLoginFromLocalStorage, setVerifiedLoginFromLocalStorage] = useState(false)
     const [count, setCount] = useState(0)
 
@@ -33,15 +35,10 @@ function App() {
         const timer = setTimeout(() => setCount(count + 1), 10000)
 
         const verifyToken = async () => {
-            if (user === emptyUser) {
+            if (connectedUser === emptyUser) {
                 return
             }
-            const getTokenHeaders = {
-                method: "PUT",
-                headers: {"Content-Type": "application/json"},
-                body: JSON.stringify({"token": user.token})
-            };
-            const userRes = await fetch("http://localhost:8080/" + user.userType, getTokenHeaders)
+            const userRes = await putUserType(connectedUser.userType, connectedUser.token)
             if (!userRes.ok) {
                 alert("Votre session est expiré.")
                 deconnexion()
@@ -53,28 +50,23 @@ function App() {
         }
         validateToken()
         return () => clearTimeout(timer)
-    }, [count, user])
+    }, [count, connectedUser])
 
     const deconnexion = () => {
-        setUser(emptyUser)
+        setConnectedUser(emptyUser)
         localStorage.removeItem(LOCAL_STORAGE_KEY)
         window.location.href = "/"
 
     }
 
     const loginFromLocalStorage = async () => {
-        if (localStorage.getItem(LOCAL_STORAGE_KEY) != null && user === emptyUser) {
+        if (localStorage.getItem(LOCAL_STORAGE_KEY) != null && connectedUser === emptyUser) {
             let user: IUser = JSON.parse(localStorage.getItem(LOCAL_STORAGE_KEY)!);
-            const getTokenHeaders = {
-                method: "PUT",
-                headers: {"Content-Type": "application/json"},
-                body: JSON.stringify({"token": user.token})
-            };
-            const userRes = await fetch("http://localhost:8080/" + user.userType, getTokenHeaders)
+            const userRes = await putUserType(user.userType, user.token)
             if (!userRes.ok) {
                 deconnexion()
             } else {
-                setUser(JSON.parse(localStorage.getItem(LOCAL_STORAGE_KEY)!))
+                setConnectedUser(JSON.parse(localStorage.getItem(LOCAL_STORAGE_KEY)!))
             }
         }
 
@@ -87,13 +79,13 @@ function App() {
     }
 
 
-    if (user === emptyUser) {
+    if (connectedUser === emptyUser) {
         checkIfUserExistsInLocalStorage()
         return (
             <Container className="min-vh-100">
                 <BrowserRouter>
                     <Routes>
-                        <Route path="/" element={<LoginPage setUser={setUser}/>}/>
+                        <Route path="/" element={<LoginPage setUser={setConnectedUser}/>}/>
                         <Route path="/confirmEmail/:id" element={<ConfirmationPage/>}/>
                         <Route path="*"
                                element={<h1 className="text-center text-white display-1">404 - Page pas trouvé</h1>}/>
@@ -103,14 +95,14 @@ function App() {
         );
     }
 
-    if (user.userType === "student") {
+    if (connectedUser.userType === "student") {
         return (
             <Container>
                 <BrowserRouter>
                     <Routes>
-                        <Route path="/" element={<StudentDashboard deconnexion={deconnexion} user={user}/>}/>
-                        <Route path="/offres" element={<OffersListPage connectedUser={user}/>}/>
-                        <Route path="/uploaderCV" element={<StudentCvUploadPage user={user}/>}/>
+                        <Route path="/" element={<StudentDashboard deconnexion={deconnexion} user={connectedUser}/>}/>
+                        <Route path="/offres" element={<OffersListPage connectedUser={connectedUser}/>}/>
+                        <Route path="/uploaderCV" element={<StudentCvUploadPage connectedUser={connectedUser}/>}/>
                         <Route path="*"
                                element={<h1 className="text-center text-white display-1 min-vh-100">404 - Page pas
                                    trouvé</h1>}/>
@@ -118,32 +110,35 @@ function App() {
                 </BrowserRouter>
             </Container>
         );
-    } else if (user.userType === "company") {
+    } else if (connectedUser.userType === "company") {
         return (
             <Container className="min-vh-100">
                 <BrowserRouter>
                     <Routes>
-                        <Route path="/" element={<CompanyDashboard deconnexion={deconnexion} user={user}/>}/>
-                        <Route path="/soumettreOffre" element={<OffreSoumissionPage user={user}/>}/>
+                        <Route path="/" element={<CompanyDashboard deconnexion={deconnexion} user={connectedUser}/>}/>
+                        <Route path="/soumettreOffre" element={<OffreSoumissionPage user={connectedUser}/>}/>
                         <Route path="*"
                                element={<h1 className="text-center text-white display-1">404 - Page pas trouvé</h1>}/>
                     </Routes>
                 </BrowserRouter>
             </Container>
         );
-    } else if (user.userType === "gestionnaire") {
+    } else if (connectedUser.userType === "gestionnaire") {
         return (
             <Container>
                 <BrowserRouter>
                     <Routes>
-                        <Route path="/" element={<GestionnaireDashboard deconnexion={deconnexion} user={user}/>}/>
-                        <Route path="/userValidation" element={<UserValidation connectedUser={user}/>}/>
+                        <Route path="/"
+                               element={<GestionnaireDashboard deconnexion={deconnexion} user={connectedUser}/>}/>
+                        <Route path="/userValidation" element={<UserValidation connectedUser={connectedUser}/>}/>
                         <Route path="/cvValidation"
-                               element={<StudentCvValidationPage connectedUser={user} deconnexion={deconnexion}/>}/>
+                               element={<StudentCvValidationPage connectedUser={connectedUser}
+                                                                 deconnexion={deconnexion}/>}/>
                         <Route path="*"
                                element={<h1 className="text-center text-white display-1">404 - Page pas trouvé</h1>}/>
-                        <Route path="/validerNouvelleOffre" element={<ValiderNouvelleOffreStagePage connectedUser={user}
-                                                                                                    deconnexion={deconnexion}/>}/>
+                        <Route path="/validerNouvelleOffre"
+                               element={<ValiderNouvelleOffreStagePage connectedUser={connectedUser}
+                                                                       deconnexion={deconnexion}/>}/>
                     </Routes>
                 </BrowserRouter>
             </Container>

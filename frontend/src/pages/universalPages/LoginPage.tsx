@@ -1,7 +1,7 @@
 import React, {useState} from "react";
 import {Button, Col, Row} from "react-bootstrap";
-import InscriptionForm from "../../components/InscriptionForm";
-import LoginForm from "../../components/LoginForm";
+import InscriptionForm from "../../components/universalComponents/InscriptionForm";
+import LoginForm from "../../components/universalComponents/LoginForm";
 
 const LoginPage = (props: { setUser: Function }): JSX.Element => {
     const [isLogginPage, setIsLogginPage] = useState(true)
