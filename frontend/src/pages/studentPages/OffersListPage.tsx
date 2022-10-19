@@ -2,17 +2,17 @@ import {Viewer} from "@react-pdf-viewer/core";
 import React, {useEffect, useState} from "react";
 import {Button, Col, Container, Row, Table} from "react-bootstrap";
 import {Link} from "react-router-dom";
-import IUser from "../models/IUser";
-import IOffer from "../models/IOffer";
-import IStudentApplys from "../models/IStudentApplys";
+import IUser from "../../models/IUser";
+import IOffer from "../../models/IOffer";
+import IStudentApplys from "../../models/IStudentApplys";
 
-const OffersListPage = ({ connectedUser }:
-    { connectedUser: IUser }): JSX.Element => {
+const OffersListPage = ({connectedUser}:
+                            { connectedUser: IUser }): JSX.Element => {
     const [offers, setOffers] = useState<IOffer[]>([]);
     const [pdf, setPDF] = useState<Uint8Array>(new Uint8Array([]))
     const [showPdf, setShowPDF] = useState<boolean>(false)
     const [studentApplys, setStudentApplys] =
-        useState<IStudentApplys>({ studentId: connectedUser.id, offersId: new Array<string>() });
+        useState<IStudentApplys>({studentId: connectedUser.id, offersId: new Array<string>()});
 
     useEffect(() => {
         const fetchOffers = async () => {
@@ -28,8 +28,7 @@ const OffersListPage = ({ connectedUser }:
                 if (response.ok) {
                     const data = await response.json();
                     setOffers(data);
-                }
-                else {
+                } else {
                     throw new Error("Error code not handled");
                 }
             } catch {
@@ -45,17 +44,15 @@ const OffersListPage = ({ connectedUser }:
                         'Accept': 'application/json',
                         'Content-Type': 'application/json',
                     },
-                    body: JSON.stringify({ "token": connectedUser.token })
+                    body: JSON.stringify({"token": connectedUser.token})
                 });
                 if (response.ok) {
                     const data = await response.json();
                     setStudentApplys(data);
-                }
-                else {
+                } else {
                     throw new Error("Error code not handled");
                 }
-            }
-            catch (exception) {
+            } catch (exception) {
                 alert("Une erreur est survenue, ressayez.");
                 window.location.href = "/"
             }
@@ -73,7 +70,7 @@ const OffersListPage = ({ connectedUser }:
                     'Accept': 'application/json',
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({ "token": connectedUser.token })
+                body: JSON.stringify({"token": connectedUser.token})
             });
 
             if (response.ok) {
@@ -82,12 +79,10 @@ const OffersListPage = ({ connectedUser }:
                         studentId: connectedUser.id,
                         offersId: [...studentApplys.offersId, offerID]
                     });
-            }
-            else {
+            } else {
                 throw new Error("Error code not handled");
             }
-        }
-        catch {
+        } catch {
             alert("Une erreur est survenue, ressayez.");
             window.location.href = "/"
         }
@@ -108,8 +103,7 @@ const OffersListPage = ({ connectedUser }:
                 const data = await response.json();
                 setPDF(new Uint8Array(JSON.parse(data.pdf)));
                 setShowPDF(true);
-            }
-            else {
+            } else {
                 throw new Error("Error code not handled");
             }
         } catch (exception) {
@@ -147,39 +141,42 @@ const OffersListPage = ({ connectedUser }:
                 <Col>
                     <Table className="text-center" hover>
                         <thead className="bg-primary text-white">
-                            <tr>
-                                <th>Compagnie</th>
-                                <th>Position</th>
-                                <th>Heures par semaine</th>
-                                <th>Salaire</th>
-                                <th>Adresse</th>
-                                <th>Offre</th>
-                                <th></th>
-                            </tr>
+                        <tr>
+                            <th>Compagnie</th>
+                            <th>Position</th>
+                            <th>Heures par semaine</th>
+                            <th>Salaire</th>
+                            <th>Adresse</th>
+                            <th>Offre</th>
+                            <th></th>
+                        </tr>
                         </thead>
                         <tbody className="bg-light">
-                            {offers.map((offer, index) => {
-                                return (
-                                    <tr key={index}>
-                                        <td>{offer.nomDeCompagnie}</td>
-                                        <td>{offer.position}</td>
-                                        <td>{offer.heureParSemaine}</td>
-                                        <td>{offer.salaire}$</td>
-                                        <td>{offer.adresse}</td>
-                                        <td><Button className="btn btn-warning" onClick={
-                                            async () => await getPDF(offer.id)
-                                        }>PDF</Button></td>
-                                        <td>
-                                            {connectedUser.cv === null && <p className="h4 text-danger">Vous n'avez pas de CV</p>}
-                                            {connectedUser.cv !== null && studentApplys.offersId.includes(offer.id) && <p className="h4 text-success">Déjà Postulé</p>}
-                                            {connectedUser.cv !== null && !studentApplys.offersId.includes(offer.id) && <Button
+                        {offers.map((offer, index) => {
+                            return (
+                                <tr key={index}>
+                                    <td>{offer.nomDeCompagnie}</td>
+                                    <td>{offer.position}</td>
+                                    <td>{offer.heureParSemaine}</td>
+                                    <td>{offer.salaire}$</td>
+                                    <td>{offer.adresse}</td>
+                                    <td><Button className="btn btn-warning" onClick={
+                                        async () => await getPDF(offer.id)
+                                    }>PDF</Button></td>
+                                    <td>
+                                        {connectedUser.cv === null &&
+                                            <p className="h4 text-danger">Vous n'avez pas de CV</p>}
+                                        {connectedUser.cv !== null && studentApplys.offersId.includes(offer.id) &&
+                                            <p className="h4 text-success">Déjà Postulé</p>}
+                                        {connectedUser.cv !== null && !studentApplys.offersId.includes(offer.id) &&
+                                            <Button
                                                 className="btn btn-success" onClick={async () => {
-                                                    await applyToOffer(offer.id)
-                                                }}>Postuler</Button>}
-                                        </td>
-                                    </tr>
-                                );
-                            })}
+                                                await applyToOffer(offer.id)
+                                            }}>Postuler</Button>}
+                                    </td>
+                                </tr>
+                            );
+                        })}
                         </tbody>
                     </Table>
                 </Col>

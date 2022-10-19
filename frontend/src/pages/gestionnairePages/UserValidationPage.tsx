@@ -1,12 +1,12 @@
-import React, { useState } from "react";
-import { Col, Container, Row, ToggleButton, ToggleButtonGroup } from "react-bootstrap";
-import ValidationStudent from "../components/ValidationStudent";
-import ValidationCompany from "../components/ValidationCompany";
-import CreateGestionnaireForm from "../components/CreateGestionnaireForm";
-import { Link } from "react-router-dom";
-import IUser from "../models/IUser";
+import React, {useState} from "react";
+import {Col, Container, Row, ToggleButton, ToggleButtonGroup} from "react-bootstrap";
+import ValidationStudent from "../../components/ValidationStudent";
+import ValidationCompany from "../../components/ValidationCompany";
+import CreateGestionnaireForm from "../../components/CreateGestionnaireForm";
+import {Link} from "react-router-dom";
+import IUser from "../../models/IUser";
 
-const UserValidation = ({ connectedUser }: { connectedUser: IUser }) => {
+const UserValidation = ({connectedUser}: { connectedUser: IUser }) => {
     const [user, setUser] = useState("Student");
 
     const onValidation = async (id: string, type: string) => {
@@ -16,7 +16,7 @@ const UserValidation = ({ connectedUser }: { connectedUser: IUser }) => {
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({ token: connectedUser.token })
+                body: JSON.stringify({token: connectedUser.token})
             });
 
         if (res.status === 409) {
@@ -32,7 +32,7 @@ const UserValidation = ({ connectedUser }: { connectedUser: IUser }) => {
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({ token: connectedUser.token })
+                body: JSON.stringify({token: connectedUser.token})
             });
 
         if (res.status === 409) {
@@ -54,10 +54,12 @@ const UserValidation = ({ connectedUser }: { connectedUser: IUser }) => {
             </Row>
             <Row>
                 <ToggleButtonGroup className="" type="radio" name="options" defaultValue="Student">
-                    <ToggleButton data-testid="studentInput" id="StudentValid" value="Student" onClick={() => setUser("Student")}>
+                    <ToggleButton data-testid="studentInput" id="StudentValid" value="Student"
+                                  onClick={() => setUser("Student")}>
                         Étudiants
                     </ToggleButton>
-                    <ToggleButton id="CompanyValid" data-testid="companyInput" value="Company" onClick={() => setUser("Company")}>
+                    <ToggleButton id="CompanyValid" data-testid="companyInput" value="Company"
+                                  onClick={() => setUser("Company")}>
                         Compagnies
                     </ToggleButton>
                     <ToggleButton id="GestionnairValid" value="Gestionnaire" onClick={() => {
@@ -68,9 +70,11 @@ const UserValidation = ({ connectedUser }: { connectedUser: IUser }) => {
                 </ToggleButtonGroup>
             </Row>
             <Row>
-                {user === "Student" ? <ValidationStudent connectedUser={connectedUser} onRemove={onRemove} onValidation={onValidation} /> :
-                    user === "Company" ? <ValidationCompany connectedUser={connectedUser} onRemove={onRemove} onValidation={onValidation} /> :
-                        <CreateGestionnaireForm user={connectedUser} />
+                {user === "Student" ?
+                    <ValidationStudent connectedUser={connectedUser} onRemove={onRemove} onValidation={onValidation}/> :
+                    user === "Company" ? <ValidationCompany connectedUser={connectedUser} onRemove={onRemove}
+                                                            onValidation={onValidation}/> :
+                        <CreateGestionnaireForm user={connectedUser}/>
                 }
             </Row>
         </Container>

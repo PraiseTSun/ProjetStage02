@@ -1,11 +1,11 @@
 import React, {useState} from "react";
 import {Button, Col, Container, Form, Row} from "react-bootstrap";
 import {BeatLoader} from "react-spinners";
-import IUser from "../models/IUser";
+import IUser from "../../models/IUser";
 
 declare type FormControlElement = HTMLInputElement | HTMLTextAreaElement;
 
-const FormulaireSoumissionPage = ({user}: { user: IUser }): JSX.Element => {
+const OffreSoumissionPage = ({user}: { user: IUser }): JSX.Element => {
     const [waiting, setWaiting] = useState(false);
     const [validated, setValidated] = useState(false);
     const [company, setCompany] = useState("")
@@ -159,6 +159,6 @@ const FormulaireSoumissionPage = ({user}: { user: IUser }): JSX.Element => {
 
 
 }
-export default FormulaireSoumissionPage
+export default OffreSoumissionPage
 
 

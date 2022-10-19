@@ -1,8 +1,12 @@
-import React, { useEffect, useState } from "react";
-import { Button, Col, Row } from "react-bootstrap";
+import React, {useEffect, useState} from "react";
+import {Button, Col, Row} from "react-bootstrap";
 import IUser from "../models/IUser";
 
-const ValidationStudent = ({ connectedUser, onValidation, onRemove }: { connectedUser: IUser, onValidation: Function, onRemove: Function }) => {
+const ValidationStudent = ({
+                               connectedUser,
+                               onValidation,
+                               onRemove
+                           }: { connectedUser: IUser, onValidation: Function, onRemove: Function }) => {
     const user = "Student";
     const [students, setStudents] = useState<any[]>([]);
 
@@ -17,18 +21,18 @@ const ValidationStudent = ({ connectedUser, onValidation, onRemove }: { connecte
     }
 
     useEffect(() => {
-        const fetchAndSet = async ()=>{
-            const req = await fetch(`http://localhost:8080/unvalidatedStudents`,
-            {
-                method: "PUT",
-                headers: {
-                    'Accept': 'application/json',
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ token: connectedUser.token })
+        const fetchAndSet = async () => {
+            const req = await fetch("http://localhost:8080/unvalidatedStudents",
+                {
+                    method: "PUT",
+                    headers: {
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({token: connectedUser.token})
 
-            })
-            if(req.ok){
+                })
+            if (req.ok) {
                 const data = await req.json()
                 setStudents(data)
                 return;
@@ -36,7 +40,7 @@ const ValidationStudent = ({ connectedUser, onValidation, onRemove }: { connecte
             alert("Une erreur est survenue")
         }
         fetchAndSet()
-        
+
     }, [connectedUser]);
 
     return (
@@ -49,7 +53,8 @@ const ValidationStudent = ({ connectedUser, onValidation, onRemove }: { connecte
                                 <div className="my-auto">{data.firstName} {data.lastName}</div>
                                 <div className="my-auto">{data.department}</div>
                                 <div>
-                                    <Button className="me-2" variant="success" onClick={() => approve(data.id, idx)}>O</Button>
+                                    <Button className="me-2" variant="success"
+                                            onClick={() => approve(data.id, idx)}>O</Button>
                                     <Button variant="danger" onClick={() => remove(data.id, idx)}>X</Button>
                                 </div>
                             </div>

@@ -1,7 +1,7 @@
 import React, {useEffect, useState} from "react";
 import {Button, Col, Container, Row, Table} from "react-bootstrap";
 import {Link} from "react-router-dom";
-import IUser from "../models/IUser";
+import IUser from "../../models/IUser";
 import {Viewer} from '@react-pdf-viewer/core';
 
 const ValiderNouvelleOffreStagePage = ({connectedUser, deconnexion}:
@@ -126,7 +126,7 @@ const ValiderNouvelleOffreStagePage = ({connectedUser, deconnexion}:
             </Row>
             <Row>
                 <Col>
-                    <Table data-testid="tableValiderNouvelleOffreStage" className="text-center" hover>
+                    <Table className="text-center" hover>
                         <thead className="bg-primary">
                         <tr>
                             <th>Nom De Compagnie / Adresse</th>
@@ -137,7 +137,7 @@ const ValiderNouvelleOffreStagePage = ({connectedUser, deconnexion}:
                             <th>Non Valide</th>
                         </tr>
                         </thead>
-                        <tbody className="bg-light" data-testid="offre-container">
+                        <tbody className="bg-light">
                         {offers.map((offer, index) => {
                             return (
                                 <tr key={index}>

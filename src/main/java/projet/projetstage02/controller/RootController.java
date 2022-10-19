@@ -9,12 +9,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import projet.projetstage02.DTO.*;
+import projet.projetstage02.exception.AlreadyExistingPostulation;
 import projet.projetstage02.exception.InvalidTokenException;
 import projet.projetstage02.exception.NonExistentEntityException;
 import projet.projetstage02.exception.NonExistentOfferExeption;
-
-import projet.projetstage02.exception.AlreadyExistingPostulation;
-
 import projet.projetstage02.model.Token;
 import projet.projetstage02.service.AuthService;
 import projet.projetstage02.service.CompanyService;
@@ -116,7 +114,6 @@ public class RootController {
                 return ResponseEntity.status(INTERNAL_SERVER_ERROR).body(
                         getError("Une erreur avec le service d'email est survenue"));
             }
-            ;
             logger.log(Level.INFO, "PostMapping: /createGestionaire sent 201 response");
             return ResponseEntity.status(CREATED).build();
         } catch (InvalidTokenException ex) {
@@ -601,7 +598,7 @@ public class RootController {
 
     @PutMapping("/applyToOffer/{studentId}_{offerId}")
     public ResponseEntity<PostulOutDTO> createPostulation(@PathVariable String studentId, @PathVariable String offerId,
-            @RequestBody TokenDTO tokenId) {
+                                                          @RequestBody TokenDTO tokenId) {
         logger.log(Level.INFO, "Put /createPostulation entered with id: " + studentId
                 + " and offer id: " + offerId);
 
@@ -624,7 +621,7 @@ public class RootController {
 
     @PutMapping("/studentApplys/{studentId}")
     public ResponseEntity<StudentApplysDTO> getPostulsOfferId(@PathVariable String studentId,
-            @RequestBody TokenDTO tokenId) {
+                                                              @RequestBody TokenDTO tokenId) {
         logger.log(Level.INFO, "Put /getPostulsOfferId entered with id: " + studentId);
 
         try {

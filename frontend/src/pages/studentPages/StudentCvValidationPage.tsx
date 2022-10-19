@@ -1,11 +1,11 @@
-import React, { useEffect, useState } from "react";
-import { Container, Row, Col, Table, Button } from "react-bootstrap";
-import { Link } from "react-router-dom";
-import IUser from "../models/IUser";
-import { Viewer } from '@react-pdf-viewer/core';
+import React, {useEffect, useState} from "react";
+import {Button, Col, Container, Row, Table} from "react-bootstrap";
+import {Link} from "react-router-dom";
+import IUser from "../../models/IUser";
+import {Viewer} from '@react-pdf-viewer/core';
 
-const StudentCvValidationPage = ({ connectedUser, deconnexion }:
-    { connectedUser: IUser, deconnexion: Function }): JSX.Element => {
+const StudentCvValidationPage = ({connectedUser, deconnexion}:
+                                     { connectedUser: IUser, deconnexion: Function }): JSX.Element => {
     const [students, setStudents] = useState<any[]>([]);
     const [pdf, setPDF] = useState<Uint8Array>(new Uint8Array([]))
     const [showPDF, setShowPDF] = useState<boolean>(false)
@@ -19,21 +19,18 @@ const StudentCvValidationPage = ({ connectedUser, deconnexion }:
                         'Accept': 'application/json',
                         'Content-Type': 'application/json',
                     },
-                    body: JSON.stringify({ "token": connectedUser.token })
+                    body: JSON.stringify({"token": connectedUser.token})
                 });
                 if (response.ok) {
                     const data = await response.json();
                     setStudents(data);
-                }
-                else if (response.status === 403) {
+                } else if (response.status === 403) {
                     alert("Session expiré");
                     deconnexion();
-                }
-                else {
+                } else {
                     throw new Error("Error code not handled");
                 }
-            }
-            catch {
+            } catch {
                 alert("Une erreur est survenue, ressayez.");
                 window.location.href = "/"
             }
@@ -50,16 +47,14 @@ const StudentCvValidationPage = ({ connectedUser, deconnexion }:
                     'Accept': 'application/json',
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({ "token": connectedUser.token })
+                body: JSON.stringify({"token": connectedUser.token})
             });
             if (response.ok) {
                 setStudents(students.filter(student => student.id !== studentId));
-            }
-            else if (response.status === 403) {
+            } else if (response.status === 403) {
                 alert("Session expiré");
                 deconnexion();
-            }
-            else {
+            } else {
                 throw new Error("Error code not handled");
             }
         } catch (exception) {
@@ -75,18 +70,16 @@ const StudentCvValidationPage = ({ connectedUser, deconnexion }:
                     'Accept': 'application/json',
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({ "token": connectedUser.token })
+                body: JSON.stringify({"token": connectedUser.token})
             });
             if (response.ok) {
                 const data = await response.json();
                 setPDF(new Uint8Array(JSON.parse(data.pdf)));
                 setShowPDF(true);
-            }
-            else if (response.status === 403) {
+            } else if (response.status === 403) {
                 alert("Session expiré");
                 deconnexion();
-            }
-            else {
+            } else {
                 throw new Error("Error code not handled");
             }
         } catch (exception) {
@@ -103,7 +96,7 @@ const StudentCvValidationPage = ({ connectedUser, deconnexion }:
                     </Button>
                 </div>
                 <div>
-                    <Viewer fileUrl={pdf} />
+                    <Viewer fileUrl={pdf}/>
                 </div>
             </Container>
         );
@@ -124,41 +117,42 @@ const StudentCvValidationPage = ({ connectedUser, deconnexion }:
                 <Col>
                     <Table className="text-center" hover>
                         <thead className="bg-primary text-white">
-                            <tr>
-                                <th>Prénom</th>
-                                <th>Nom</th>
-                                <th>Departement</th>
-                                <th>CV</th>
-                                <th>CV Valide</th>
-                            </tr>
+                        <tr>
+                            <th>Prénom</th>
+                            <th>Nom</th>
+                            <th>Departement</th>
+                            <th>CV</th>
+                            <th>CV Valide</th>
+                        </tr>
 
                         </thead>
                         <tbody className="bg-light">
-                            {students.map((student, index) => {
-                                return (
-                                    <tr key={index}>
-                                        <td>{student.firstName}</td>
-                                        <td>{student.lastName}</td>
-                                        <td>{student.department}</td>
-                                        <td><Button className="btn btn-warning" onClick={async () => await getPDF(student.id)}>CV</Button></td>
-                                        <td>
-                                            <Button className="btn btn-success mx-2" onClick={
-                                                () => validateCV(student.id, true)}>
-                                                O
-                                            </Button>
-                                            <Button className="btn btn-danger" onClick={
-                                                () => validateCV(student.id, false)}>
-                                                X
-                                            </Button>
-                                        </td>
-                                    </tr>
-                                );
-                            })}
+                        {students.map((student, index) => {
+                            return (
+                                <tr key={index}>
+                                    <td>{student.firstName}</td>
+                                    <td>{student.lastName}</td>
+                                    <td>{student.department}</td>
+                                    <td><Button className="btn btn-warning"
+                                                onClick={async () => await getPDF(student.id)}>CV</Button></td>
+                                    <td>
+                                        <Button className="btn btn-success mx-2" onClick={
+                                            () => validateCV(student.id, true)}>
+                                            O
+                                        </Button>
+                                        <Button className="btn btn-danger" onClick={
+                                            () => validateCV(student.id, false)}>
+                                            X
+                                        </Button>
+                                    </td>
+                                </tr>
+                            );
+                        })}
                         </tbody>
                     </Table>
                 </Col>
             </Row>
-        </Container >
+        </Container>
     );
 }
 
