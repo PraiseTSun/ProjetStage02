@@ -17,6 +17,7 @@ public class OffreDTO {
     @NotBlank
     @Size(min = 2)
     private String nomDeCompagnie;
+    private String session;
     @NotBlank
     @Pattern(regexp = ("Techniques de linformatique|Techniques de la logistique du transport"))
     private String department;
@@ -49,6 +50,7 @@ public class OffreDTO {
                 .position(position)
                 .heureParSemaine(heureParSemaine)
                 .salaire(salaire)
+                .session(session)
                 .adresse(adresse)
                 .pdf(pdf)
                 .valide(valide).build();
@@ -62,6 +64,7 @@ public class OffreDTO {
         heureParSemaine = offre.getHeureParSemaine();
         adresse = offre.getAdresse();
         salaire = offre.getSalaire();
+        session = offre.getSession();
         pdf = offre.getPdf();
         valide = offre.isValide();
     }

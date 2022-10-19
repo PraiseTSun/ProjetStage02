@@ -23,6 +23,9 @@ public class Offre {
     @NotBlank
     @Size(min = 2)
     private String nomDeCompagnie;
+    @Size(min = 10)
+    @Pattern(regexp = "^Hiver (\\d{4})$")
+    private String session;
     @NotNull
     private Department department;
     @NotBlank
