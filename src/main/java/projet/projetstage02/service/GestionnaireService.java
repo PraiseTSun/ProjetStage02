@@ -24,7 +24,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.regex.Pattern;
 
-import static projet.projetstage02.utils.TimeUtil.*;
+import static projet.projetstage02.utils.TimeUtil.MILLI_SECOND_DAY;
+import static projet.projetstage02.utils.TimeUtil.currentTimestamp;
 
 @Service
 @AllArgsConstructor
@@ -123,9 +124,12 @@ public class GestionnaireService {
     }
 
     private boolean isCurrentSession(String session) {
+        if (session == null) {
+            return false;
+        }
         Pattern regexp = Pattern.compile("^Hiver (\\d{4})$");
         return (regexp.matcher(session).matches())
-                && ("Hiver " + getCurrentYear()).equals(session);
+                && (Offre.currentSession()).equals(session);
     }
 
     public OffreDTO validateOfferById(Long id) throws NonExistentOfferExeption, ExpiredSessionException {

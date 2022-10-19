@@ -9,10 +9,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import projet.projetstage02.DTO.*;
-import projet.projetstage02.exception.AlreadyExistingPostulation;
-import projet.projetstage02.exception.InvalidTokenException;
-import projet.projetstage02.exception.NonExistentEntityException;
-import projet.projetstage02.exception.NonExistentOfferExeption;
+import projet.projetstage02.exception.*;
 import projet.projetstage02.model.Token;
 import projet.projetstage02.service.AuthService;
 import projet.projetstage02.service.CompanyService;
@@ -434,7 +431,7 @@ public class RootController {
             logger.log(Level.INFO, "PutMapping: /validateOffer sent 200 response");
             OffreDTO offreDTO = gestionnaireService.validateOfferById(Long.parseLong(id));
             return ResponseEntity.ok(offreDTO);
-        } catch (NonExistentOfferExeption exception) {
+        } catch (NonExistentOfferExeption | ExpiredSessionException exception) {
             logger.log(Level.INFO, "PutMapping: /validateOffer sent 404 response");
             return ResponseEntity.notFound().build();
         } catch (InvalidTokenException e) {
