@@ -3,6 +3,7 @@ import {Col, Row} from 'react-bootstrap';
 import {useLocation, useParams} from 'react-router-dom';
 import BeatLoader from 'react-spinners/BeatLoader';
 import {putConfirmEmail} from "../../services/universalServices/UniversalFetchService";
+import {generateAlert} from "../../services/universalServices/UniversalUtilService";
 
 const USER_PARAM = "userType=";
 
@@ -15,14 +16,19 @@ const ConfirmationPage = (): JSX.Element => {
 
     useEffect(() => {
         const confirmUserEmail = async () => {
-            const response = await putConfirmEmail(userType, pathId);
-            if (response.ok) {
-                setMessage("Succès! Vous pouvez fermez cette page");
-            } else {
-                alert("Lien invalide ou expiré");
-                window.location.href = "/";
+            try {
+
+                const response = await putConfirmEmail(userType, pathId);
+                if (response.ok) {
+                    setMessage("Succès! Vous pouvez fermez cette page");
+                } else {
+                    alert("Lien invalide ou expiré");
+                    window.location.href = "/";
+                }
+                setLoading(false);
+            } catch {
+                generateAlert()
             }
-            setLoading(false);
         }
 
         confirmUserEmail();

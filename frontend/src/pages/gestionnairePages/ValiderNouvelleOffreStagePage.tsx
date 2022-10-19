@@ -9,9 +9,10 @@ import {
     putUnvalidatedOffers,
     putValidateOffer
 } from "../../services/gestionnaireServices/GestionnaireFetchService";
+import {generateAlert} from "../../services/universalServices/UniversalUtilService";
 
-const ValiderNouvelleOffreStagePage = ({connectedUser, deconnexion}:
-                                           { connectedUser: IUser, deconnexion: Function }): JSX.Element => {
+const ValiderNouvelleOffreStagePage = ({connectedUser}:
+                                           { connectedUser: IUser }): JSX.Element => {
     const [offers, setOffers] = useState<any[]>([]);
     const [pdf, setpdf] = useState<Uint8Array>(new Uint8Array([]))
     const [showPDF, setShowPDF] = useState<boolean>(false)
@@ -23,19 +24,15 @@ const ValiderNouvelleOffreStagePage = ({connectedUser, deconnexion}:
                 if (response.ok) {
                     const data = await response.json();
                     setOffers(data);
-                } else if (response.status === 403) {
-                    alert("Session expiré");
-                    deconnexion();
                 } else {
-                    throw new Error("Error code not handled");
+                    generateAlert()
                 }
             } catch {
-                alert("Une erreur est survenue, ressayez.");
-                window.location.href = "/"
+                generateAlert()
             }
         }
         fetchOffresAttendreValide()
-    }, [connectedUser, deconnexion]);
+    }, [connectedUser]);
 
     async function valideOffre(offerId: number, valid: boolean): Promise<void> {
         try {
@@ -45,14 +42,11 @@ const ValiderNouvelleOffreStagePage = ({connectedUser, deconnexion}:
 
             if (response.ok) {
                 setOffers(offers.filter(offer => offer.id !== offerId));
-            } else if (response.status === 403) {
-                alert("Session expiré");
-                deconnexion();
             } else {
-                throw new Error("Error code not handled");
+                generateAlert()
             }
         } catch (exception) {
-            alert("Une erreur est survenue, ressayez.");
+            generateAlert()
         }
     }
 
@@ -63,14 +57,11 @@ const ValiderNouvelleOffreStagePage = ({connectedUser, deconnexion}:
                 const data = await response.json();
                 setpdf(new Uint8Array(JSON.parse(data.pdf)))
                 setShowPDF(true);
-            } else if (response.status === 403) {
-                alert("Session expiré");
-                deconnexion();
             } else {
-                throw new Error("Error code not handled");
+                generateAlert()
             }
         } catch (exception) {
-            alert("Une erreur est survenue, ressayez.");
+            generateAlert()
         }
     }
 

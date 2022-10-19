@@ -56,7 +56,6 @@ function App() {
         setConnectedUser(emptyUser)
         localStorage.removeItem(LOCAL_STORAGE_KEY)
         window.location.href = "/"
-
     }
 
     const loginFromLocalStorage = async () => {
@@ -88,7 +87,8 @@ function App() {
                         <Route path="/" element={<LoginPage setUser={setConnectedUser}/>}/>
                         <Route path="/confirmEmail/:id" element={<ConfirmationPage/>}/>
                         <Route path="*"
-                               element={<h1 className="text-center text-white display-1">404 - Page pas trouvé</h1>}/>
+                               element={<h1 className="min-vh-100 text-center text-white display-1">404 - Page pas
+                                   trouvé</h1>}/>
                     </Routes>
                 </BrowserRouter>
             </Container>
@@ -104,7 +104,8 @@ function App() {
                         <Route path="/offres" element={<OffersListPage connectedUser={connectedUser}/>}/>
                         <Route path="/uploaderCV" element={<StudentCvUploadPage connectedUser={connectedUser}/>}/>
                         <Route path="*"
-                               element={<h1 className="text-center text-white display-1 min-vh-100">404 - Page pas
+                               element={<h1 className="min-vh-100 text-center text-white display-1 min-vh-100">404 -
+                                   Page pas
                                    trouvé</h1>}/>
                     </Routes>
                 </BrowserRouter>
@@ -118,7 +119,8 @@ function App() {
                         <Route path="/" element={<CompanyDashboard deconnexion={deconnexion} user={connectedUser}/>}/>
                         <Route path="/soumettreOffre" element={<OffreSoumissionPage user={connectedUser}/>}/>
                         <Route path="*"
-                               element={<h1 className="text-center text-white display-1">404 - Page pas trouvé</h1>}/>
+                               element={<h1 className="min-vh-100 text-center text-white display-1">404 - Page pas
+                                   trouvé</h1>}/>
                     </Routes>
                 </BrowserRouter>
             </Container>
@@ -132,13 +134,12 @@ function App() {
                                element={<GestionnaireDashboard deconnexion={deconnexion} user={connectedUser}/>}/>
                         <Route path="/userValidation" element={<UserValidation connectedUser={connectedUser}/>}/>
                         <Route path="/cvValidation"
-                               element={<StudentCvValidationPage connectedUser={connectedUser}
-                                                                 deconnexion={deconnexion}/>}/>
+                               element={<StudentCvValidationPage connectedUser={connectedUser}/>}/>
                         <Route path="*"
-                               element={<h1 className="text-center text-white display-1">404 - Page pas trouvé</h1>}/>
+                               element={<h1 className="min-vh-100 text-center text-white display-1">404 - Page pas
+                                   trouvé</h1>}/>
                         <Route path="/validerNouvelleOffre"
-                               element={<ValiderNouvelleOffreStagePage connectedUser={connectedUser}
-                                                                       deconnexion={deconnexion}/>}/>
+                               element={<ValiderNouvelleOffreStagePage connectedUser={connectedUser}/>}/>
                     </Routes>
                 </BrowserRouter>
             </Container>

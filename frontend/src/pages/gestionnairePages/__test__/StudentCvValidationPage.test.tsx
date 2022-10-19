@@ -1,5 +1,5 @@
 import {BrowserRouter} from "react-router-dom";
-import StudentCvValidationPage from "../../gestionnairePages/StudentCvValidationPage";
+import StudentCvValidationPage from "../StudentCvValidationPage";
 import {emptyUser} from "../../../App";
 import {act, fireEvent, render, screen} from "@testing-library/react";
 import * as React from "react";
@@ -46,7 +46,7 @@ describe("StudentCvValidationPageTests", () => {
         window.alert = jest.fn(() => null) as jest.Mock;
 
         await act(async () => {
-            render(<StudentCvValidationPage connectedUser={emptyUser} deconnexion={() => null}/>,
+            render(<StudentCvValidationPage connectedUser={emptyUser}/>,
                 {wrapper: BrowserRouter});
         });
     })

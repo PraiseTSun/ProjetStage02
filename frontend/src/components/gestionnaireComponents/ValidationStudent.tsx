@@ -2,6 +2,7 @@ import React, {useEffect, useState} from "react";
 import {Button, Col, Row} from "react-bootstrap";
 import IUser from "../../models/IUser";
 import {putUnvalidatedStudents} from "../../services/gestionnaireServices/GestionnaireFetchService";
+import {generateAlert} from "../../services/universalServices/UniversalUtilService";
 
 const ValidationStudent = ({
                                connectedUser,
@@ -29,11 +30,10 @@ const ValidationStudent = ({
                 const data = await res.json()
                 setStudents(data)
             } else {
-                alert("Une erreur est survenue! Ressayez!");
-                window.location.href = "/";
+                generateAlert()
             }
         }
-        
+
         fetchUnvalidatedStudents()
     }, [connectedUser]);
 

@@ -11,37 +11,36 @@ import {
     putValidateCompany,
     putValidateStudent
 } from "../../services/gestionnaireServices/GestionnaireFetchService";
+import {generateAlert} from "../../services/universalServices/UniversalUtilService";
 
 const UserValidation = ({connectedUser}: { connectedUser: IUser }) => {
     const [user, setUser] = useState("Student");
 
     const onValidation = async (id: string, type: string) => {
-        let res: Response
+        let response: Response
 
         if (type === "Student") {
-            res = await putValidateStudent(id, connectedUser.token);
+            response = await putValidateStudent(id, connectedUser.token);
         } else if (type === "Company") {
-            res = await putValidateCompany(id, connectedUser.token);
+            response = await putValidateCompany(id, connectedUser.token);
         }
 
-        if (res!.status === 409) {
-            const data = await res!.json();
-            alert(data.error);
+        if (!response!.ok) {
+            generateAlert()
         }
     }
 
     const onRemove = async (id: string, type: string) => {
-        let res: Response
+        let response: Response
 
         if (type === "student") {
-            res = await deleteRemoveStudent(id, connectedUser.token);
+            response = await deleteRemoveStudent(id, connectedUser.token);
         } else if (type === "company") {
-            res = await deleteRemoveCompany(id, connectedUser.token);
+            response = await deleteRemoveCompany(id, connectedUser.token);
         }
 
-        if (res!.status === 409) {
-            const data = await res!.json();
-            alert(data.error);
+        if (!response!.ok) {
+            generateAlert()
         }
     }
 

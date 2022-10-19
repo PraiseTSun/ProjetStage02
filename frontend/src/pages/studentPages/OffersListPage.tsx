@@ -11,6 +11,7 @@ import {
     putGetOfferStudent,
     putStudentApplys
 } from "../../services/studentServices/StudentFetchService";
+import {generateAlert} from "../../services/universalServices/UniversalUtilService";
 
 const OffersListPage = ({connectedUser}:
                             { connectedUser: IUser }): JSX.Element => {
@@ -28,11 +29,10 @@ const OffersListPage = ({connectedUser}:
                     const data = await response.json();
                     setOffers(data);
                 } else {
-                    throw new Error("Error code not handled");
+                    generateAlert()
                 }
             } catch {
-                alert("Une erreur est survenue, ressayez.");
-                window.location.href = "/"
+                generateAlert()
             }
         }
         const fetchStudentApplys = async () => {
@@ -42,11 +42,10 @@ const OffersListPage = ({connectedUser}:
                     const data = await response.json();
                     setStudentApplys(data);
                 } else {
-                    throw new Error("Error code not handled");
+                    generateAlert()
                 }
             } catch (exception) {
-                alert("Une erreur est survenue, ressayez.");
-                window.location.href = "/"
+                generateAlert()
             }
         }
 
@@ -65,11 +64,10 @@ const OffersListPage = ({connectedUser}:
                         offersId: [...studentApplys.offersId, offerId]
                     });
             } else {
-                throw new Error("Error code not handled");
+                generateAlert()
             }
         } catch {
-            alert("Une erreur est survenue, ressayez.");
-            window.location.href = "/"
+            generateAlert()
         }
     }
 
@@ -82,10 +80,10 @@ const OffersListPage = ({connectedUser}:
                 setPDF(new Uint8Array(JSON.parse(data.pdf)));
                 setShowPDF(true);
             } else {
-                throw new Error("Error code not handled");
+                generateAlert()
             }
         } catch (exception) {
-            alert("Une erreur est survenue, ressayez.");
+            generateAlert()
         }
     }
 

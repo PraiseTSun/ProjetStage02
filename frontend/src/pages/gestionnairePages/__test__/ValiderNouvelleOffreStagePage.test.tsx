@@ -49,7 +49,7 @@ describe("OffresValidationPageTests", () => {
         window.alert = jest.fn(() => null) as jest.Mock;
 
         await act(async () => {
-            render(<ValiderNouvelleOffreStagePage connectedUser={emptyUser} deconnexion={() => null}/>,
+            render(<ValiderNouvelleOffreStagePage connectedUser={emptyUser}/>,
                 {wrapper: BrowserRouter});
         });
     })

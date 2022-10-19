@@ -2,6 +2,7 @@ import React, {useEffect, useState} from "react";
 import {Button, Col, Row} from "react-bootstrap";
 import IUser from "../../models/IUser";
 import {putUnvalidatedCompanies} from "../../services/gestionnaireServices/GestionnaireFetchService";
+import {generateAlert} from "../../services/universalServices/UniversalUtilService";
 
 const ValidationCompany = ({
                                connectedUser,
@@ -29,11 +30,10 @@ const ValidationCompany = ({
                 const data = await response.json();
                 setCompanies(data);
             } else {
-                alert("Une erreur est survenue! Ressayez!");
-                window.location.href = "/";
+                generateAlert()
             }
         }
-        
+
         fetchUnvalidatedCompanies()
     }, [connectedUser]);
 

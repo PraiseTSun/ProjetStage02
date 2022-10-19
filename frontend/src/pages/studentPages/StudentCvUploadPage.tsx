@@ -4,6 +4,7 @@ import {BeatLoader} from "react-spinners";
 import IUser from "../../models/IUser";
 import {Link} from "react-router-dom";
 import {putUploadStudentCV} from "../../services/studentServices/StudentFetchService";
+import {generateAlert} from "../../services/universalServices/UniversalUtilService";
 
 const StudentCvUploadPage = ({connectedUser}: { connectedUser: IUser }) => {
     const [waiting, setWaiting] = useState<boolean>(false);
@@ -16,12 +17,16 @@ const StudentCvUploadPage = ({connectedUser}: { connectedUser: IUser }) => {
         if (form.checkValidity()) {
             setWaiting(true)
 
-            const res = await putUploadStudentCV(connectedUser.id, cv, connectedUser.token)
+            try {
+                const response = await putUploadStudentCV(connectedUser.id, cv, connectedUser.token)
 
-            if (res.ok) {
-                alert("CV envoyé")
-            } else {
-                alert("Une erreur est survenue")
+                if (response.ok) {
+                    alert("CV envoyé")
+                } else {
+                    generateAlert()
+                }
+            } catch {
+                generateAlert()
             }
             setWaiting(false);
             window.location.href = "/"

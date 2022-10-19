@@ -9,11 +9,11 @@ import {
     putUnvalidatedCvStudents,
     putValidateCv
 } from "../../services/gestionnaireServices/GestionnaireFetchService";
+import {generateAlert} from "../../services/universalServices/UniversalUtilService";
 
-const StudentCvValidationPage = ({connectedUser, deconnexion}:
-                                     { connectedUser: IUser, deconnexion: Function }): JSX.Element => {
+const StudentCvValidationPage = ({connectedUser}:
+                                     { connectedUser: IUser }): JSX.Element => {
     const [students, setStudents] = useState<any[]>([]);
-    //TODO REMOVE deconnexions AND WTF THIS IS
     const [pdf, setPDF] = useState<Uint8Array>(new Uint8Array([]))
     const [showPDF, setShowPDF] = useState<boolean>(false)
 
@@ -25,19 +25,15 @@ const StudentCvValidationPage = ({connectedUser, deconnexion}:
                 if (response.ok) {
                     const data = await response.json();
                     setStudents(data);
-                } else if (response.status === 403) {
-                    alert("Session expiré");
-                    deconnexion();
                 } else {
-                    throw new Error("Error code not handled");
+                    generateAlert()
                 }
             } catch {
-                alert("Une erreur est survenue, ressayez.");
-                window.location.href = "/"
+                generateAlert()
             }
         }
         fetchUnvalidatedCvStudents();
-    }, [connectedUser, deconnexion]);
+    }, [connectedUser]);
 
     async function validateCV(studentId: number, valid: boolean): Promise<void> {
         try {
@@ -47,14 +43,11 @@ const StudentCvValidationPage = ({connectedUser, deconnexion}:
 
             if (response.ok) {
                 setStudents(students.filter(student => student.id !== studentId));
-            } else if (response.status === 403) {
-                alert("Session expiré");
-                deconnexion();
             } else {
-                throw new Error("Error code not handled");
+                generateAlert()
             }
         } catch (exception) {
-            alert("Une erreur est survenue, ressayez.");
+            generateAlert()
         }
     }
 
@@ -65,14 +58,11 @@ const StudentCvValidationPage = ({connectedUser, deconnexion}:
                 const data = await response.json();
                 setPDF(new Uint8Array(JSON.parse(data.pdf)));
                 setShowPDF(true);
-            } else if (response.status === 403) {
-                alert("Session expiré");
-                deconnexion();
             } else {
-                throw new Error("Error code not handled");
+                generateAlert()
             }
         } catch (exception) {
-            alert("Une erreur est survenue, ressayez.");
+            generateAlert()
         }
     }
 
