@@ -1115,3 +1115,36 @@ paths:
           description: Token invalide ou expiré
         404:
           description: L'offre avec cet id n'existe pas.
+  /getStatutValidationCV/{id}:
+    put:
+      summary: Renvoie le statut d'une validation de cv (Doit avoir un token étudiant)
+      parameters:
+        - in: path
+          name: id
+          description: id de l'étudiant
+          type: string
+          required: true
+        - in: body
+          name: token
+          description: Token valide de l'étudiant
+          schema:
+            type: object
+            properties:
+              token:
+                type: string
+      produces:
+        - application/json
+      responses:
+        200:
+          description: Renvoie un dto de l'état validation de l'étudiant
+          schema:
+            type: object
+            properties:
+              state:
+                type: string
+              message:
+                type: string
+        403:
+          description: Token invalide ou expiré
+        404:
+          description: L'étudiant avec cet id n'existe pas.
