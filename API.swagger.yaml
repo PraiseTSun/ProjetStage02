@@ -1115,3 +1115,48 @@ paths:
           description: Token invalide ou expiré
         404:
           description: L'offre avec cet id n'existe pas.
+  /studentAcceptation/{offerId}_{studentId}:
+    put:
+      summary: Revoie la confirmation de l'acceptation (Doit avoir un token Compagny)
+      parameters:
+        - in: path
+          name: id
+          description: id de l'offre
+          type: string
+          required: true
+        - in: path
+          name: id
+          description: id de l'étudiant
+          type: string
+          required: true
+        - in: body
+          name: token
+          description: Token valide de la compagnie
+          schema:
+            type: object
+            properties:
+              token:
+                type: string
+      produces:
+        - application/json
+      responses:
+        200:
+          description: Revoie la liste des étudiant pour l'offre
+          schema:
+            properties:
+              id:
+                type: number
+              studentId:
+                type: number
+              studentName:
+                type: string
+              companyId:
+                type: number
+              companyName:
+                type: string
+        403:
+          description: Token invalide ou expiré
+        404:
+          description: L'offre avec cet id n'existe pas ou l'étudiant avec cette id n'existe pas.
+        409:
+          description: La compagnie a déjà accepté cette étudiant
