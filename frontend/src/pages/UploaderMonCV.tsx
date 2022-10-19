@@ -8,6 +8,7 @@ const UploaderMonCV = ({ user }: { user: IUser }) => {
     const [waiting, setWaiting] = useState<boolean>(false);
     const [validated, setValidated] = useState<boolean>(false);
     const [cv, setCv] = useState<number[]>([0])
+    const [isChoisi, setIsChoisi] = useState<boolean>(false)
 
     const onSubmit = async (event: React.SyntheticEvent) => {
         const form: any = event.currentTarget;
@@ -48,6 +49,7 @@ const UploaderMonCV = ({ user }: { user: IUser }) => {
         const view = new Uint8Array(fileText)
         const array = intToByteArray(view)
         setCv(array)
+        setIsChoisi(true)
     }
     if (waiting) {
         return (
@@ -79,7 +81,7 @@ const UploaderMonCV = ({ user }: { user: IUser }) => {
                                 }} />
                             <Form.Control.Feedback type="invalid">Champ requis</Form.Control.Feedback>
                         </Form.Group>
-                        <h5 className="text-danger mt-3">Choix votre CV</h5>
+                        {isChoisi ? <h5></h5> : <h5 className="text-danger mt-3">Choix votre CV</h5>}
                     </Row>
                     <Row className="m-4">
                         <Button data-testid="buttonid" type="submit"
