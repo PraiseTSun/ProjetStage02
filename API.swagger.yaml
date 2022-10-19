@@ -533,7 +533,7 @@ paths:
           required: true
         - in: body
           name: token
-          description: Token valide du gestionnaire
+          description: Token valide du gestionnaire ou de la compagnie
           schema:
             type: object
             properties:
@@ -1077,3 +1077,41 @@ paths:
           description: Token invalide ou expiré
         404:
           description: L'étudiant avec cette id n'existe pas.
+  /offer/{id}/applications:
+    put:
+      summary: Revoie une liste des étudiants qui ont appliqués a une offre (Doit avoir un token Compagnies)
+      parameters:
+        - in: path
+          name: id
+          description: id de l'offre
+          type: string
+          required: true
+        - in: body
+          name: token
+          description: Token valide de la compagnie
+          schema:
+            type: object
+            properties:
+              token:
+                type: string
+      produces:
+        - application/json
+      responses:
+        200:
+          description: Revoie la liste des étudiant pour l'offre
+          schema:
+            type: array
+            items:
+              type: object
+              properties:
+                id:
+                  type: number
+                firstName:
+                  type: string
+                lastName:
+                  type: string
+
+        403:
+          description: Token invalide ou expiré
+        404:
+          description: L'offre avec cet id n'existe pas.
