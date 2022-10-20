@@ -260,6 +260,7 @@ public class CompanyServiceTest {
         ApplicationAcceptationDTO dto = companyService.saveStudentApplicationAccepted(1L, 2L);
 
         // Assert
+        verify(applicationAcceptationRepository, times(1)).save(any());
         assertThat(dto.getId()).isEqualTo(applicationAcceptation.getId());
         assertThat(dto.getStudentId()).isEqualTo(applicationAcceptation.getStudentId());
         assertThat(dto.getStudentName()).isEqualTo(applicationAcceptation.getStudentName());
@@ -315,5 +316,4 @@ public class CompanyServiceTest {
         // Assert
         fail("AlreadyExistingAcceptationException not thrown");
     }
-
 }
