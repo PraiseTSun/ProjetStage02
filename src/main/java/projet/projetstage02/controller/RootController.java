@@ -408,6 +408,8 @@ public class RootController {
         }
     }
 
+    //TODO: ask mathieu if he needs it like this or if he prefers receiving the unvalidated one for the current year and the
+// validated ones for a specific year
     @PutMapping("/unvalidatedOffers/{year}")
     public ResponseEntity<List<OffreDTO>> getOfferToValidate(@PathVariable int year,
                                                              @RequestBody TokenDTO tokenDTO) {
@@ -491,7 +493,6 @@ public class RootController {
             return ResponseEntity.status(FORBIDDEN).build();
         }
     }
-    // Todo add tokens
 
     @PutMapping("/unvalidatedCvStudents")
     public ResponseEntity<List<StudentDTO>> getUnvalidatedCvStudent(@RequestBody TokenDTO tokenId) {

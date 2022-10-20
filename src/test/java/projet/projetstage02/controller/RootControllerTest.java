@@ -113,6 +113,7 @@ public class RootControllerTest {
                 .position("Delivery Guy")
                 .heureParSemaine(40)
                 .salaire(40)
+                .session("Hiver 2022")
                 .adresse("654 Duff Street")
                 .pdf(new byte[0])
                 .build();
@@ -786,10 +787,10 @@ public class RootControllerTest {
     @Test
     void testUnvalidatedOffers() throws Exception {
         when(authService.getToken(any(), any())).thenReturn(Token.builder().userId(1).build());
-        when(gestionnaireService.getUnvalidatedOffers())
+        when(gestionnaireService.getUnvalidatedOffers(anyInt()))
                 .thenReturn(List.of(duffOffre));
 
-        mockMvc.perform(put("/unvalidatedOffers")
+        mockMvc.perform(put("/unvalidatedOffers/2022")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(jsonTokenDTO.write(token).getJson()))
                 .andExpect(status().isOk())
@@ -800,7 +801,7 @@ public class RootControllerTest {
     void testUnvalidatedOffersInvalidToken() throws Exception {
         when(authService.getToken(any(), any())).thenThrow(new InvalidTokenException());
 
-        mockMvc.perform(put("/unvalidatedOffers")
+        mockMvc.perform(put("/unvalidatedOffers/2023")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(jsonTokenDTO.write(token).getJson()))
                 .andExpect(status().isForbidden());
@@ -1204,7 +1205,7 @@ public class RootControllerTest {
 
     @Test
     void testGetPostulsOfferIdTokenInvalid() throws Exception {
-        when(authService.getToken(any(),any())).thenThrow(new InvalidTokenException());
+        when(authService.getToken(any(), any())).thenThrow(new InvalidTokenException());
 
         mockMvc.perform(put("/studentApplys/{studentId}", 1)
                         .contentType(MediaType.APPLICATION_JSON)
