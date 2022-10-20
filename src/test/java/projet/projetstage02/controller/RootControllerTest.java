@@ -1232,4 +1232,24 @@ public class RootControllerTest {
                 .andExpect(jsonPath("$.studentName", is(applicationDTO.getStudentName())))
                 .andExpect(jsonPath("$.companyName", is(applicationDTO.getCompanyName())));
     }
+
+    @Test
+    void testSaveStudentAcceptationStudentNotFound() throws Exception {
+        when(companyService.saveStudentApplicationAccepted(anyLong(), anyLong())).thenThrow(new NonExistentEntityException());
+
+        mockMvc.perform(put("/studentAcceptation/{offerId}_{studentId}", 1, 2)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(jsonTokenDTO.write(token).getJson()))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    void testSaveStudentAcceptationOfferNotFound() throws Exception {
+        when(companyService.saveStudentApplicationAccepted(anyLong(), anyLong())).thenThrow(new NonExistentOfferExeption());
+
+        mockMvc.perform(put("/studentAcceptation/{offerId}_{studentId}", 1, 2)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(jsonTokenDTO.write(token).getJson()))
+                .andExpect(status().isNotFound());
+    }
 }
