@@ -16,7 +16,6 @@ import projet.projetstage02.service.CompanyService;
 import projet.projetstage02.service.GestionnaireService;
 import projet.projetstage02.service.StudentService;
 import projet.projetstage02.utils.EmailUtil;
-import projet.projetstage02.utils.TimeUtil;
 
 import javax.validation.Valid;
 import java.util.HashMap;
@@ -25,8 +24,7 @@ import java.util.Map;
 
 import static org.springframework.http.HttpStatus.*;
 import static projet.projetstage02.model.Token.UserTypes.*;
-import static projet.projetstage02.utils.TimeUtil.MILLI_SECOND_DAY;
-import static projet.projetstage02.utils.TimeUtil.currentTimestamp;
+import static projet.projetstage02.utils.TimeUtil.*;
 
 @RestController
 @AllArgsConstructor
@@ -129,7 +127,7 @@ public class RootController {
         try {
             logger.log(Level.INFO, "Post /createOffre entered with body : " + offreDTO);
             authService.getToken(offreDTO.getToken(), COMPANY);
-            offreDTO.setSession("Hiver " + TimeUtil.getNextYear());
+            offreDTO.setSession("Hiver " + getNextYear());
             companyService.createOffre(offreDTO);
             logger.log(Level.INFO, "PostMapping: /createOffre sent 201 response");
             return ResponseEntity.status(CREATED).build();
@@ -410,17 +408,31 @@ public class RootController {
 
     //TODO: ask mathieu if he needs it like this or if he prefers receiving the unvalidated one for the current year and the
 // validated ones for a specific year
-    @PutMapping("/unvalidatedOffers/{year}")
-    public ResponseEntity<List<OffreDTO>> getOfferToValidate(@PathVariable int year,
-                                                             @RequestBody TokenDTO tokenDTO) {
+    @PutMapping("/unvalidatedOffers")
+    public ResponseEntity<List<OffreDTO>> getOfferToValidate(@RequestBody TokenDTO tokenDTO) {
         try {
-            logger.log(Level.INFO, "put /unvalidatedOffers entered with year : " + year);
+            logger.log(Level.INFO, "put /unvalidatedOffers entered with year : ");
             authService.getToken(tokenDTO.getToken(), GESTIONNAIRE);
-            List<OffreDTO> unvalidatedOffers = gestionnaireService.getUnvalidatedOffers(year);
+            List<OffreDTO> unvalidatedOffers = gestionnaireService.getUnvalidatedOffers(getNextYear());
             logger.log(Level.INFO, "PutMapping: /unvalidatedOffers sent 200 response");
             return ResponseEntity.ok(unvalidatedOffers);
         } catch (InvalidTokenException e) {
             logger.log(Level.INFO, "PutMapping: /unvalidatedOffers sent 403 response");
+            return ResponseEntity.status(FORBIDDEN).build();
+        }
+    }
+
+    @PutMapping("/validatedOffers/{year}")
+    public ResponseEntity<List<OffreDTO>> getValidatedOffersForYear(@PathVariable int year,
+                                                                    @RequestBody TokenDTO tokenDTO) {
+        try {
+            logger.log(Level.INFO, "put /validatedOffers entered with year : " + year);
+            authService.getToken(tokenDTO.getToken(), GESTIONNAIRE);
+            List<OffreDTO> validatedOffers = gestionnaireService.getValidatedOffers(year);
+            logger.log(Level.INFO, "PutMapping: /validatedOffers sent 200 response");
+            return ResponseEntity.ok(validatedOffers);
+        } catch (InvalidTokenException e) {
+            logger.log(Level.INFO, "PutMapping: /validatedOffers sent 403 response");
             return ResponseEntity.status(FORBIDDEN).build();
         }
     }
