@@ -24,8 +24,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.regex.Pattern;
 
-import static projet.projetstage02.utils.TimeUtil.MILLI_SECOND_DAY;
-import static projet.projetstage02.utils.TimeUtil.currentTimestamp;
+import static projet.projetstage02.utils.TimeUtil.*;
 
 @Service
 @AllArgsConstructor
@@ -112,30 +111,30 @@ public class GestionnaireService {
         return offreOpt.get();
     }
 
-    public List<OffreDTO> getUnvalidatedOffers() {
+    public List<OffreDTO> getUnvalidatedOffers(int year) {
         List<OffreDTO> offres = new ArrayList<>();
         offreRepository.findAll().stream().
                 filter(offre ->
-                        !offre.isValide() && isCurrentSession(offre.getSession()))
+                        !offre.isValide() && isRightSession(offre.getSession(), year))
                 .forEach(offre ->
                         offres.add(new OffreDTO(offre)));
         offres.forEach(offre -> offre.setPdf(new byte[0]));
         return offres;
     }
 
-    private boolean isCurrentSession(String session) {
+    private boolean isRightSession(String session, int year) {
         if (session == null) {
             return false;
         }
         Pattern regexp = Pattern.compile("^Hiver (\\d{4})$");
         return (regexp.matcher(session).matches())
-                && (Offre.currentSession()).equals(session);
+                && ("Hiver " + year).equals(session);
     }
 
     public OffreDTO validateOfferById(Long id) throws NonExistentOfferExeption, ExpiredSessionException {
 
         Offre offre = getOffer(id);
-        if (!isCurrentSession(offre.getSession())) {
+        if (!isRightSession(offre.getSession(), getNextYear())) {
             throw new ExpiredSessionException();
         }
         offre.setValide(true);
