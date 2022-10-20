@@ -1297,4 +1297,14 @@ public class RootControllerTest {
                         .content(jsonTokenDTO.write(token).getJson()))
                 .andExpect(status().isNotFound());
     }
+
+    @Test
+    void testGetAcceptedStudentsForOfferTokenInvalid() throws Exception {
+        when(authService.getToken(any(),any())).thenThrow(new InvalidTokenException());
+
+        mockMvc.perform(put("/getAcceptedStudentsForOffer/{offerId}", 1)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(jsonTokenDTO.write(token).getJson()))
+                .andExpect(status().isForbidden());
+    }
 }
