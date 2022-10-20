@@ -337,4 +337,18 @@ public class CompanyServiceTest {
         assertThat(dto.getOfferId()).isEqualTo(duffBeerOffer.getId());
         assertThat(dto.getStudentsId().size()).isEqualTo(1);
     }
+
+    @Test
+    void testGetAcceptedStudentForOfferNotFound() {
+        // Arrange
+        when(offreRepository.findById(anyLong())).thenReturn(Optional.empty());
+
+        // Act
+        try {
+            companyService.getAcceptedStudentForOffer(1L);
+        } catch (NonExistentOfferExeption e) {
+            return;
+        }
+        fail("NonExistentOfferException not thrown");
+    }
 }
