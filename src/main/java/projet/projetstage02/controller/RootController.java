@@ -11,7 +11,6 @@ import org.springframework.web.bind.annotation.*;
 import projet.projetstage02.DTO.*;
 import projet.projetstage02.exception.*;
 
-import projet.projetstage02.model.Company;
 import projet.projetstage02.model.Token;
 import projet.projetstage02.service.AuthService;
 import projet.projetstage02.service.CompanyService;
@@ -669,7 +668,7 @@ public class RootController {
 
         try {
             authService.getToken(tokenId.getToken(), COMPANY);
-            OfferAcceptedStudentsDTO dto = companyService.getAcceptedStudentForOffer(Long.parseLong(offerId));
+            OfferAcceptedStudentsDTO dto = companyService.getAcceptedStudentsForOffer(Long.parseLong(offerId));
             logger.log(Level.INFO, "Put /getAcceptedStudentsForOffer/{offerId} sent 200 response");
             return ResponseEntity.ok(dto);
         } catch (InvalidTokenException e) {
@@ -680,6 +679,4 @@ public class RootController {
             return ResponseEntity.notFound().build();
         }
     }
-
-
 }

@@ -131,7 +131,7 @@ public class CompanyService {
         return new ApplicationAcceptationDTO(applicationOpt.get());
     }
 
-    public OfferAcceptedStudentsDTO getAcceptedStudentForOffer (long offerId) throws NonExistentOfferExeption {
+    public OfferAcceptedStudentsDTO getAcceptedStudentsForOffer(long offerId) throws NonExistentOfferExeption {
         Optional<Offre> offreOpt = offreRepository.findById(offerId);
         if(offreOpt.isEmpty()) throw new NonExistentOfferExeption();
         Offre offre = offreOpt.get();

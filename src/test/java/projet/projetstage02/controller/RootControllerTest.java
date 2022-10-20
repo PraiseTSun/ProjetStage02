@@ -22,6 +22,7 @@ import projet.projetstage02.service.StudentService;
 
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -72,6 +73,7 @@ public class RootControllerTest {
     PostulOutDTO bartPostulation;
     StudentApplysDTO bartApplys;
     ApplicationAcceptationDTO applicationDTO;
+    OfferAcceptedStudentsDTO acceptedStudentsDTO;
 
     // https://thepracticaldeveloper.com/guide-spring-boot-controller-tests/
     @BeforeEach
@@ -146,6 +148,11 @@ public class RootControllerTest {
                 .studentName("Simpson Bart")
                 .offerId(1L)
                 .companyName("Duff Beer")
+                .build();
+
+        acceptedStudentsDTO = OfferAcceptedStudentsDTO.builder()
+                .offerId(duffOffre.getId())
+                .studentsId(new ArrayList<>(){{add(bart.getId());}})
                 .build();
     }
 
@@ -1268,5 +1275,16 @@ public class RootControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(jsonTokenDTO.write(token).getJson()))
                 .andExpect(status().isForbidden());
+    }
+
+    @Test
+    void testGetAcceptedStudentsForOfferHappyDay() throws Exception {
+        when(companyService.getAcceptedStudentsForOffer(anyLong())).thenReturn(acceptedStudentsDTO);
+
+        mockMvc.perform(put("/getAcceptedStudentsForOffer/{offerId}", 1)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(jsonTokenDTO.write(token).getJson()))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.studentsId.size()", is(1)));
     }
 }

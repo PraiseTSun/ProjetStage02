@@ -331,7 +331,7 @@ public class CompanyServiceTest {
         when(applicationAcceptationRepository.findAll()).thenReturn(applications);
 
         // Act
-        OfferAcceptedStudentsDTO dto = companyService.getAcceptedStudentForOffer(1L);
+        OfferAcceptedStudentsDTO dto = companyService.getAcceptedStudentsForOffer(1L);
 
         // Assert
         assertThat(dto.getOfferId()).isEqualTo(duffBeerOffer.getId());
@@ -345,7 +345,7 @@ public class CompanyServiceTest {
 
         // Act
         try {
-            companyService.getAcceptedStudentForOffer(1L);
+            companyService.getAcceptedStudentsForOffer(1L);
         } catch (NonExistentOfferExeption e) {
             return;
         }
