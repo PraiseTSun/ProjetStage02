@@ -745,15 +745,10 @@ paths:
           description: Token invalide ou expiré
         404:
           description: La compagnie avec cet id n'existe pas
-  /unvalidatedOffers/{year}:
+  /unvalidatedOffers:
     put:
-      summary: Recevoir la listes des offres à valider pour une session
+      summary: Recevoir la listes des offres à valider
       parameters:
-        - in: path
-          name: year
-          description: Année de la session voulue
-          type: number
-          required: true
         - in: body
           name: token
           description: Token valide du gestionnaire
@@ -784,6 +779,46 @@ paths:
                   type: boolean
         403:
           description: Token invalide
+  /validatedOffers/{year}:
+    put:
+      summary: Recevoir la listes des offres validées pour une session
+      parameters:
+        - in: path
+          name: year
+          description: Année de la session voulue
+          type: number
+          required: true
+        - in: body
+          name: token
+          description: Token valide du gestionnaire
+          schema:
+            type: object
+            properties:
+              token:
+                type: string
+      produces:
+        - application/json
+      responses:
+        200:
+          description: Liste des offres validés pour une année
+          schema:
+            type: array
+            items:
+              type: object
+              properties:
+                id:
+                  type: number
+                department:
+                  type: string
+                position:
+                  type: string
+                heureParSemaine:
+                  type: string
+                adresse:
+                  type: boolean
+        403:
+          description: Token invalide
+
   /validateOffer/{id}:
     put:
       summary: Valide une offre (Doit avoir un token gestionnaire)
