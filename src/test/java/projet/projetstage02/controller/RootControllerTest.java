@@ -153,7 +153,9 @@ public class RootControllerTest {
 
         acceptedStudentsDTO = OfferAcceptedStudentsDTO.builder()
                 .offerId(duffOffre.getId())
-                .studentsId(new ArrayList<>(){{add(bart.getId());}})
+                .studentsId(new ArrayList<>() {{
+                    add(bart.getId());
+                }})
                 .build();
     }
 
@@ -800,10 +802,10 @@ public class RootControllerTest {
     @Test
     void testUnvalidatedOffers() throws Exception {
         when(authService.getToken(any(), any())).thenReturn(Token.builder().userId(1).build());
-        when(gestionnaireService.getUnvalidatedOffers(anyInt()))
+        when(gestionnaireService.getUnvalidatedOffers())
                 .thenReturn(List.of(duffOffre));
 
-        mockMvc.perform(put("/unvalidatedOffers/2022")
+        mockMvc.perform(put("/unvalidatedOffers")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(jsonTokenDTO.write(token).getJson()))
                 .andExpect(status().isOk())
@@ -814,10 +816,33 @@ public class RootControllerTest {
     void testUnvalidatedOffersInvalidToken() throws Exception {
         when(authService.getToken(any(), any())).thenThrow(new InvalidTokenException());
 
-        mockMvc.perform(put("/unvalidatedOffers/2023")
+        mockMvc.perform(put("/unvalidatedOffers")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(jsonTokenDTO.write(token).getJson()))
                 .andExpect(status().isForbidden());
+    }
+
+    @Test
+    void testValidatedOffersInvalidToken() throws Exception {
+        when(authService.getToken(any(), any())).thenThrow(new InvalidTokenException());
+
+        mockMvc.perform(put("/validatedOffers/2022")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(jsonTokenDTO.write(token).getJson()))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    void testValidatedOffersHappyDay() throws Exception {
+        when(authService.getToken(any(), any())).thenReturn(Token.builder().userId(1).build());
+        when(gestionnaireService.getValidatedOffers(anyInt()))
+                .thenReturn(List.of(duffOffre));
+
+        mockMvc.perform(put("/validatedOffers/2022")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(jsonTokenDTO.write(token).getJson()))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[0].nomDeCompagnie", is("Duff Beer")));
     }
 
     @Test
@@ -1270,7 +1295,7 @@ public class RootControllerTest {
 
     @Test
     void testSaveStudentAcceptationTokenInvalid() throws Exception {
-        when(authService.getToken(any(),any())).thenThrow(new InvalidTokenException());
+        when(authService.getToken(any(), any())).thenThrow(new InvalidTokenException());
 
         mockMvc.perform(put("/studentAcceptation/{offerId}_{studentId}", 1, 2)
                         .contentType(MediaType.APPLICATION_JSON)
@@ -1301,7 +1326,7 @@ public class RootControllerTest {
 
     @Test
     void testGetAcceptedStudentsForOfferTokenInvalid() throws Exception {
-        when(authService.getToken(any(),any())).thenThrow(new InvalidTokenException());
+        when(authService.getToken(any(), any())).thenThrow(new InvalidTokenException());
 
         mockMvc.perform(put("/getAcceptedStudentsForOffer/{offerId}", 1)
                         .contentType(MediaType.APPLICATION_JSON)
