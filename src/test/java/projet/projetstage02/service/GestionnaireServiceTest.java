@@ -15,7 +15,6 @@ import projet.projetstage02.repository.CompanyRepository;
 import projet.projetstage02.repository.GestionnaireRepository;
 import projet.projetstage02.repository.OffreRepository;
 import projet.projetstage02.repository.StudentRepository;
-import projet.projetstage02.utils.TimeUtil;
 
 import java.util.*;
 
@@ -274,17 +273,32 @@ public class GestionnaireServiceTest {
     }
 
     @Test
-    public void testGetOffersDifferentYearsHappyDay() {
+    public void testGetUnvalidatedOffersHappyDay() {
         List<Offre> offers = List.of(
                 Offre.builder().session("Hiver 2010").department(Informatique).build(),
                 Offre.builder().session("Hiver 2010").department(Informatique).build(),
-                Offre.builder().session("Hiver 2022").department(Informatique).build(),
+                Offre.builder().session("Hiver 2023").department(Informatique).build(),
                 Offre.builder().session("Hiver 2023").department(Informatique).build()
         );
         when(offreRepository.findAll()).thenReturn(offers);
-        final List<OffreDTO> offers2022 = service.getUnvalidatedOffers(2022);
-        final List<OffreDTO> offers2023 = service.getUnvalidatedOffers(2023);
-        final List<OffreDTO> offers2010 = service.getUnvalidatedOffers(2010);
+        final List<OffreDTO> offersDto = service.getUnvalidatedOffers();
+
+        assertThat(offersDto).hasSize(2);
+    }
+
+    @Test
+    public void testGetValidatedOffersDifferentYearsHappyDay() {
+        List<Offre> offers = List.of(
+                Offre.builder().session("Hiver 2010").valide(true).department(Informatique).build(),
+                Offre.builder().session("Hiver 2010").valide(true).department(Informatique).build(),
+                Offre.builder().session("Hiver 2022").department(Informatique).build(),
+                Offre.builder().session("Hiver 2022").valide(true).department(Informatique).build(),
+                Offre.builder().session("Hiver 2023").valide(true).department(Informatique).build()
+        );
+        when(offreRepository.findAll()).thenReturn(offers);
+        final List<OffreDTO> offers2022 = service.getValidatedOffers(2022);
+        final List<OffreDTO> offers2023 = service.getValidatedOffers(2023);
+        final List<OffreDTO> offers2010 = service.getValidatedOffers(2010);
 
         assertThat(offers2022).hasSize(1);
         assertThat(offers2023).hasSize(1);
@@ -316,7 +330,7 @@ public class GestionnaireServiceTest {
         when(offreRepository.findAll()).thenReturn(offres);
 
         // Act
-        final List<OffreDTO> noneValidateOffers = service.getUnvalidatedOffers(TimeUtil.getNextYear());
+        final List<OffreDTO> noneValidateOffers = service.getUnvalidatedOffers();
 
         // Assert
         assertThat(noneValidateOffers.size()).isEqualTo(2);
