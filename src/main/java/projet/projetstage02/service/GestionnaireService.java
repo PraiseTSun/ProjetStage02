@@ -3,16 +3,11 @@ package projet.projetstage02.service;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import projet.projetstage02.DTO.*;
+import projet.projetstage02.exception.InvalidStatusException;
 import projet.projetstage02.exception.NonExistentEntityException;
 import projet.projetstage02.exception.NonExistentOfferExeption;
-import projet.projetstage02.model.Company;
-import projet.projetstage02.model.Gestionnaire;
-import projet.projetstage02.model.Offre;
-import projet.projetstage02.model.Student;
-import projet.projetstage02.repository.CompanyRepository;
-import projet.projetstage02.repository.GestionnaireRepository;
-import projet.projetstage02.repository.OffreRepository;
-import projet.projetstage02.repository.StudentRepository;
+import projet.projetstage02.model.*;
+import projet.projetstage02.repository.*;
 
 import javax.validation.constraints.NotNull;
 import java.sql.Timestamp;
@@ -31,7 +26,7 @@ public class GestionnaireService {
     private final GestionnaireRepository gestionnaireRepository;
     private final CompanyRepository companyRepository;
     private final StudentRepository studentRepository;
-
+    private final CvStatusRepository cvStatusRepository;
     private final OffreRepository offreRepository;
 
     public long saveGestionnaire(String firstname, String lastname, String email, String password) {
@@ -181,19 +176,40 @@ public class GestionnaireService {
         return studentDTOS;
     }
 
-    public StudentDTO validateStudentCV(long id) throws NonExistentEntityException {
+    public StudentDTO validateStudentCV(long id) throws NonExistentEntityException, InvalidStatusException {
         Optional<Student> studentOpt = studentRepository.findById(id);
         if (studentOpt.isEmpty()) throw new NonExistentEntityException();
         Student student = studentOpt.get();
+        Optional<CvStatus> cvStatusOpt = cvStatusRepository.findById(student.getId());
+        if (cvStatusOpt.isEmpty()) {
+            throw new NonExistentEntityException();
+        }
+        CvStatus cvStatus = cvStatusOpt.get();
+        if (!cvStatus.getStatus().equals("PENDING")) {
+            throw new InvalidStatusException();
+        }
+        cvStatus.setStatus("ACCEPTED");
         student.setCv(student.getCvToValidate());
+        cvStatus.setRefusalMessage("");
         student.setCvToValidate(new byte[0]);
         studentRepository.save(student);
+        cvStatusRepository.save(cvStatus);
         return new StudentDTO(student);
     }
 
-    public StudentDTO removeStudentCvValidation(long id) throws NonExistentEntityException {
+    public StudentDTO removeStudentCvValidation(long id, String refusalReason) throws NonExistentEntityException, InvalidStatusException {
         Optional<Student> studentOpt = studentRepository.findById(id);
         if (studentOpt.isEmpty()) throw new NonExistentEntityException();
+        Optional<CvStatus> cvStatusOpt = cvStatusRepository.findById(id);
+        if (cvStatusOpt.isEmpty()) {
+            throw new NonExistentEntityException();
+        }
+        CvStatus cvStatus = cvStatusOpt.get();
+        if (!cvStatus.getStatus().equals("PENDING")) {
+            throw new InvalidStatusException();
+        }
+        cvStatus.setStatus("REFUSED");
+        cvStatus.setRefusalMessage(refusalReason);
         Student student = studentOpt.get();
         student.setCvToValidate(new byte[0]);
         studentRepository.save(student);
