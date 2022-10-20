@@ -1287,4 +1287,14 @@ public class RootControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.studentsId.size()", is(1)));
     }
+
+    @Test
+    void testGetAcceptedStudentsForOfferNotFound() throws Exception {
+        when(companyService.getAcceptedStudentsForOffer(anyLong())).thenThrow(new NonExistentOfferExeption());
+
+        mockMvc.perform(put("/getAcceptedStudentsForOffer/{offerId}", 1)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(jsonTokenDTO.write(token).getJson()))
+                .andExpect(status().isNotFound());
+    }
 }
