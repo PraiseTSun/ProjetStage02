@@ -610,22 +610,22 @@ public class RootController {
     @PutMapping("/applyToOffer/{studentId}_{offerId}")
     public ResponseEntity<ApplicationDTO> createPostulation
             (@PathVariable String studentId, @PathVariable String offerId, @RequestBody TokenDTO tokenId) {
-        logger.log(Level.INFO, "Put /createPostulation entered with id: " + studentId
+        logger.log(Level.INFO, "Put /applyToOffer entered with id: " + studentId
                 + " and offer id: " + offerId);
 
         try {
             authService.getToken(tokenId.getToken(), STUDENT);
             ApplicationDTO dto = studentService.createPostulation(Long.parseLong(studentId), Long.parseLong(offerId));
-            logger.log(Level.INFO, "Put /getOfferStudent sent 200 response");
+            logger.log(Level.INFO, "Put /applyToOffer sent 200 response");
             return ResponseEntity.ok(dto);
         } catch (NonExistentEntityException e) {
-            logger.log(Level.INFO, "Put /getOfferStudent sent 404 response");
+            logger.log(Level.INFO, "Put /applyToOffer sent 404 response");
             return ResponseEntity.notFound().build();
         } catch (InvalidTokenException e) {
-            logger.log(Level.INFO, "Put /getOfferStudent sent 403 response");
+            logger.log(Level.INFO, "Put /applyToOffer sent 403 response");
             return ResponseEntity.status(FORBIDDEN).build();
         } catch (AlreadyExistingPostulation e) {
-            logger.log(Level.INFO, "Put /getOfferStudent sent 409 response");
+            logger.log(Level.INFO, "Put /applyToOffer sent 409 response");
             return ResponseEntity.status(CONFLICT).build();
         }
     }
@@ -651,18 +651,18 @@ public class RootController {
     @PutMapping("/getStatutValidationCV/{id}")
     public ResponseEntity<CvStatusDTO> getStatutValidationCV(@PathVariable long id, @RequestBody TokenDTO tokenId) {
 
-        logger.log(Level.INFO, "Put /getPostulsOfferId entered with id: " + id);
+        logger.log(Level.INFO, "Put /getStatutValidationCV entered with id: " + id);
 
         try {
             authService.getToken(tokenId.getToken(), STUDENT);
             CvStatusDTO dto = studentService.getStudentCvStatus(id);
-            logger.log(Level.INFO, "Put /getPostulsOfferId sent 200 response");
+            logger.log(Level.INFO, "Put /getStatutValidationCV sent 200 response");
             return ResponseEntity.ok(dto);
         } catch (InvalidTokenException e) {
-            logger.log(Level.INFO, "Put /getPostulsOfferId sent 403 response");
+            logger.log(Level.INFO, "Put /getStatutValidationCV sent 403 response");
             return ResponseEntity.status(FORBIDDEN).build();
         } catch (NonExistentEntityException e) {
-            logger.log(Level.INFO, "Put /getPostulsOfferId sent 404 response");
+            logger.log(Level.INFO, "Put /getStatutValidationCV sent 404 response");
             return ResponseEntity.notFound().build();
         }
     }

@@ -7,8 +7,8 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import projet.projetstage02.DTO.*;
-import projet.projetstage02.exception.InvalidStatusException;
 import projet.projetstage02.exception.ExpiredSessionException;
+import projet.projetstage02.exception.InvalidStatusException;
 import projet.projetstage02.exception.NonExistentEntityException;
 import projet.projetstage02.exception.NonExistentOfferExeption;
 import projet.projetstage02.model.*;
@@ -81,6 +81,7 @@ public class GestionnaireServiceTest {
                 .pdf(new byte[0])
                 .valide(false)
                 .build();
+        cvStatus = CvStatus.builder().build();
     }
 
     @Test
