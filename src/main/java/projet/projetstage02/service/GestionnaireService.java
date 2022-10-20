@@ -122,6 +122,17 @@ public class GestionnaireService {
         return offres;
     }
 
+    public List<OffreDTO> getValidatedOffers(int year) {
+        List<OffreDTO> offres = new ArrayList<>();
+        offreRepository.findAll().stream().
+                filter(offre ->
+                        offre.isValide() && isRightSession(offre.getSession(), year))
+                .forEach(offre ->
+                        offres.add(new OffreDTO(offre)));
+        offres.forEach(offre -> offre.setPdf(new byte[0]));
+        return offres;
+    }
+
     private boolean isRightSession(String session, int year) {
         if (session == null) {
             return false;
