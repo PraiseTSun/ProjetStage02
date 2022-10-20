@@ -406,14 +406,12 @@ public class RootController {
         }
     }
 
-    //TODO: ask mathieu if he needs it like this or if he prefers receiving the unvalidated one for the current year and the
-// validated ones for a specific year
     @PutMapping("/unvalidatedOffers")
     public ResponseEntity<List<OffreDTO>> getOfferToValidate(@RequestBody TokenDTO tokenDTO) {
         try {
             logger.log(Level.INFO, "put /unvalidatedOffers entered with year : ");
             authService.getToken(tokenDTO.getToken(), GESTIONNAIRE);
-            List<OffreDTO> unvalidatedOffers = gestionnaireService.getUnvalidatedOffers(getNextYear());
+            List<OffreDTO> unvalidatedOffers = gestionnaireService.getUnvalidatedOffers();
             logger.log(Level.INFO, "PutMapping: /unvalidatedOffers sent 200 response");
             return ResponseEntity.ok(unvalidatedOffers);
         } catch (InvalidTokenException e) {

@@ -111,11 +111,11 @@ public class GestionnaireService {
         return offreOpt.get();
     }
 
-    public List<OffreDTO> getUnvalidatedOffers(int year) {
+    public List<OffreDTO> getUnvalidatedOffers() {
         List<OffreDTO> offres = new ArrayList<>();
         offreRepository.findAll().stream().
                 filter(offre ->
-                        !offre.isValide() && isRightSession(offre.getSession(), year))
+                        !offre.isValide() && isRightSession(offre.getSession(), getNextYear()))
                 .forEach(offre ->
                         offres.add(new OffreDTO(offre)));
         offres.forEach(offre -> offre.setPdf(new byte[0]));
