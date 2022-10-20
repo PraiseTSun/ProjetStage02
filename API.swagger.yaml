@@ -745,10 +745,15 @@ paths:
           description: Token invalide ou expiré
         404:
           description: La compagnie avec cet id n'existe pas
-  /unvalidatedOffers:
+  /unvalidatedOffers/{year}:
     put:
-      summary: Recevoir la listes des offres à valider
+      summary: Recevoir la listes des offres à valider pour une session
       parameters:
+        - in: path
+          name: year
+          description: Année de la session voulue
+          type: number
+          required: true
         - in: body
           name: token
           description: Token valide du gestionnaire
@@ -804,7 +809,7 @@ paths:
         403:
           description: Token invalide ou expiré
         404:
-          description: L'offre avec cet id n'existe pas
+          description: L'offre avec cet id n'existe pas ou l'offre est expirée
   /removeOffer/{id}:
     put:
       summary: Supprime une offre (Doit avoir un token gestionnaire)
