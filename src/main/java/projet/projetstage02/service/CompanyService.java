@@ -5,7 +5,7 @@ import org.springframework.stereotype.Service;
 import projet.projetstage02.DTO.ApplicationAcceptationDTO;
 import projet.projetstage02.DTO.CompanyDTO;
 import projet.projetstage02.DTO.OffreDTO;
-import projet.projetstage02.exception.AlreadyExistingAcceptation;
+import projet.projetstage02.exception.AlreadyExistingAcceptationException;
 import projet.projetstage02.exception.NonExistentEntityException;
 import projet.projetstage02.exception.NonExistentOfferExeption;
 import projet.projetstage02.model.AbstractUser.Department;
@@ -113,7 +113,7 @@ public class CompanyService {
 
         Optional<ApplicationAcceptation> applicationOpt
                 = applicationAcceptationRepository.findByOfferIdAndStudentId(offerId, studentId);
-        if(applicationOpt.isPresent()) throw new AlreadyExistingAcceptation();
+        if(applicationOpt.isPresent()) throw new AlreadyExistingAcceptationException();
 
         ApplicationAcceptation application = ApplicationAcceptation.builder()
                 .studentId(student.getId())

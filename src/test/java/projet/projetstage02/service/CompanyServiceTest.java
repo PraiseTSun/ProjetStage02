@@ -9,6 +9,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import projet.projetstage02.DTO.ApplicationAcceptationDTO;
 import projet.projetstage02.DTO.CompanyDTO;
 import projet.projetstage02.DTO.OffreDTO;
+import projet.projetstage02.exception.AlreadyExistingAcceptationException;
 import projet.projetstage02.exception.NonExistentEntityException;
 import projet.projetstage02.exception.NonExistentOfferExeption;
 import projet.projetstage02.model.*;
@@ -296,4 +297,23 @@ public class CompanyServiceTest {
         // Assert
         fail("NonExistentOfferException not thrown");
     }
+
+    @Test
+    void testSaveStudentApplicationAcceptedConflict() {
+        // Arrange
+        when(studentRepository.findById(anyLong())).thenReturn(Optional.of(bart));
+        when(offreRepository.findById(anyLong())).thenReturn(Optional.of(duffBeerOffer));
+        when(applicationAcceptationRepository.findByOfferIdAndStudentId(anyLong(), anyLong()))
+                .thenReturn(Optional.of(applicationAcceptation));
+
+        // Act
+        try {
+            companyService.saveStudentApplicationAccepted(1L, 2L);
+        } catch (AlreadyExistingAcceptationException e){
+            return;
+        }catch (Exception e) {}
+        // Assert
+        fail("AlreadyExistingAcceptationException not thrown");
+    }
+
 }
