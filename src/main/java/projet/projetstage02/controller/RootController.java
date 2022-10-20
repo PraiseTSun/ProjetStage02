@@ -408,12 +408,13 @@ public class RootController {
         }
     }
 
-    @PutMapping("/unvalidatedOffers")
-    public ResponseEntity<List<OffreDTO>> getOfferToValidate(@RequestBody TokenDTO tokenDTO) {
+    @PutMapping("/unvalidatedOffers/{year}")
+    public ResponseEntity<List<OffreDTO>> getOfferToValidate(@PathVariable int year,
+                                                             @RequestBody TokenDTO tokenDTO) {
         try {
+            logger.log(Level.INFO, "put /unvalidatedOffers entered with year : " + year);
             authService.getToken(tokenDTO.getToken(), GESTIONNAIRE);
-            logger.log(Level.INFO, "put /unvalidatedOffers entered");
-            List<OffreDTO> unvalidatedOffers = gestionnaireService.getUnvalidatedOffers();
+            List<OffreDTO> unvalidatedOffers = gestionnaireService.getUnvalidatedOffers(year);
             logger.log(Level.INFO, "PutMapping: /unvalidatedOffers sent 200 response");
             return ResponseEntity.ok(unvalidatedOffers);
         } catch (InvalidTokenException e) {
