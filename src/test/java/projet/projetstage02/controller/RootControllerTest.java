@@ -1259,4 +1259,14 @@ public class RootControllerTest {
                         .content(jsonTokenDTO.write(token).getJson()))
                 .andExpect(status().isConflict());
     }
+
+    @Test
+    void testSaveStudentAcceptationTokenInvalid() throws Exception {
+        when(authService.getToken(any(),any())).thenThrow(new InvalidTokenException());
+
+        mockMvc.perform(put("/studentAcceptation/{offerId}_{studentId}", 1, 2)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(jsonTokenDTO.write(token).getJson()))
+                .andExpect(status().isForbidden());
+    }
 }
