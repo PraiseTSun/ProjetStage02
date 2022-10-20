@@ -10,6 +10,7 @@ import projet.projetstage02.model.AbstractUser.Department;
 import projet.projetstage02.service.CompanyService;
 import projet.projetstage02.service.GestionnaireService;
 import projet.projetstage02.service.StudentService;
+import projet.projetstage02.utils.TimeUtil;
 
 @SpringBootApplication
 @AllArgsConstructor
@@ -144,7 +145,7 @@ public class ProjetStage02Application implements CommandLineRunner {
         System.out.println(studentService.getStudentByEmailPassword("Samir@gmail.com", "cooldude"));
         System.out.println(companyService.getCompanyByEmailPassword("Bob@bell.com", "bestcompany"));
         System.out.println(gestionnaireService.getGestionnaireByEmailPassword("dave@gmail.ca", "cooldude"));
-        System.out.println(gestionnaireService.getUnvalidatedOffers());
+        System.out.println(gestionnaireService.getUnvalidatedOffers(TimeUtil.getNextYear()));
         System.out.println(gestionnaireService.getUnvalidatedCVStudents());
     }
 }

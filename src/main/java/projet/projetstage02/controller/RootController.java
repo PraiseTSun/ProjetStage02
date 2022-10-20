@@ -129,7 +129,7 @@ public class RootController {
         try {
             logger.log(Level.INFO, "Post /createOffre entered with body : " + offreDTO);
             authService.getToken(offreDTO.getToken(), COMPANY);
-            offreDTO.setSession("Hiver " + TimeUtil.getCurrentYear());
+            offreDTO.setSession("Hiver " + TimeUtil.getNextYear());
             companyService.createOffre(offreDTO);
             logger.log(Level.INFO, "PostMapping: /createOffre sent 201 response");
             return ResponseEntity.status(CREATED).build();

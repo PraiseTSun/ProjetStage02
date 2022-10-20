@@ -10,7 +10,7 @@ public class TimeUtil {
         return Timestamp.valueOf(LocalDateTime.now()).getTime();
     }
 
-    public static int getCurrentYear() {
-        return LocalDateTime.now().getYear();
+    public static int getNextYear() {
+        return LocalDateTime.now().getYear() + 1;
     }
 }

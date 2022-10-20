@@ -49,6 +49,6 @@ public class Offre {
     private byte[] pdf;
 
     public static String currentSession() {
-        return "Hiver " + TimeUtil.getCurrentYear();
+        return "Hiver " + TimeUtil.getNextYear();
     }
 }
