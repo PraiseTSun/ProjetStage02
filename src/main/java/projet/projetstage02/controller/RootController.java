@@ -9,13 +9,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import projet.projetstage02.DTO.*;
-import projet.projetstage02.exception.AlreadyExistingPostulation;
-import projet.projetstage02.exception.InvalidTokenException;
-import projet.projetstage02.exception.NonExistentEntityException;
-import projet.projetstage02.exception.NonExistentOfferExeption;
-
-import projet.projetstage02.exception.AlreadyExistingPostulation;
-
+import projet.projetstage02.exception.*;
 import projet.projetstage02.model.Token;
 import projet.projetstage02.service.AuthService;
 import projet.projetstage02.service.CompanyService;
@@ -537,7 +531,7 @@ public class RootController {
             StudentDTO studentDTO = gestionnaireService.validateStudentCV(Long.parseLong(studentId));
             logger.log(Level.INFO, "PutMapping: /validateCv sent 200 response");
             return ResponseEntity.ok(studentDTO);
-        } catch (NonExistentEntityException e) {
+        } catch (NonExistentEntityException | InvalidStatusException e) {
             logger.log(Level.INFO, "PutMapping: /validateCv sent 404 response");
             return ResponseEntity.notFound().build();
         } catch (InvalidTokenException e) {
@@ -547,14 +541,15 @@ public class RootController {
     }
 
     @PutMapping("/refuseCv/{studentId}")
-    public ResponseEntity<StudentDTO> refuseStudentCv(@PathVariable String studentId, @RequestBody TokenDTO tokenId) {
+    public ResponseEntity<StudentDTO> refuseStudentCv(@PathVariable long studentId, @RequestBody CvRefusalDTO cvRefusalDTO) {
         logger.log(Level.INFO, "Put /refuseCv entered with id : ");
         try {
-            authService.getToken(tokenId.getToken(), GESTIONNAIRE);
-            StudentDTO studentDTO = gestionnaireService.removeStudentCvValidation(Long.parseLong(studentId));
+            authService.getToken(cvRefusalDTO.getToken(), GESTIONNAIRE);
+            StudentDTO studentDTO = gestionnaireService.removeStudentCvValidation(
+                    studentId, cvRefusalDTO.getRefusalReason());
             logger.log(Level.INFO, "PutMapping: /refuseCv sent 200 response");
             return ResponseEntity.ok(studentDTO);
-        } catch (NonExistentEntityException e) {
+        } catch (NonExistentEntityException | InvalidStatusException e) {
             logger.log(Level.INFO, "PutMapping: /refuseCv sent 404 response");
             return ResponseEntity.notFound().build();
         } catch (InvalidTokenException e) {
@@ -630,6 +625,25 @@ public class RootController {
         try {
             authService.getToken(tokenId.getToken(), STUDENT);
             ApplicationListDTO dto = studentService.getPostulsOfferId(Long.parseLong(studentId));
+            logger.log(Level.INFO, "Put /getPostulsOfferId sent 200 response");
+            return ResponseEntity.ok(dto);
+        } catch (InvalidTokenException e) {
+            logger.log(Level.INFO, "Put /getPostulsOfferId sent 403 response");
+            return ResponseEntity.status(FORBIDDEN).build();
+        } catch (NonExistentEntityException e) {
+            logger.log(Level.INFO, "Put /getPostulsOfferId sent 404 response");
+            return ResponseEntity.notFound().build();
+        }
+    }
+
+    @PutMapping("/getStatutValidationCV/{id}")
+    public ResponseEntity<CvStatusDTO> getStatutValidationCV(@PathVariable long id, @RequestBody TokenDTO tokenId) {
+
+        logger.log(Level.INFO, "Put /getPostulsOfferId entered with id: " + id);
+
+        try {
+            authService.getToken(tokenId.getToken(), STUDENT);
+            CvStatusDTO dto = studentService.getStudentCvStatus(id);
             logger.log(Level.INFO, "Put /getPostulsOfferId sent 200 response");
             return ResponseEntity.ok(dto);
         } catch (InvalidTokenException e) {
