@@ -12,10 +12,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import projet.projetstage02.DTO.*;
-import projet.projetstage02.exception.AlreadyExistingPostulation;
-import projet.projetstage02.exception.InvalidTokenException;
-import projet.projetstage02.exception.NonExistentEntityException;
-import projet.projetstage02.exception.NonExistentOfferExeption;
+import projet.projetstage02.exception.*;
 import projet.projetstage02.model.AbstractUser.Department;
 import projet.projetstage02.model.Token;
 import projet.projetstage02.service.AuthService;
@@ -25,6 +22,7 @@ import projet.projetstage02.service.StudentService;
 
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -74,6 +72,8 @@ public class RootControllerTest {
     PdfDTO bartCV;
     ApplicationDTO bartPostulation;
     ApplicationListDTO bartApplys;
+    ApplicationAcceptationDTO applicationDTO;
+    OfferAcceptedStudentsDTO acceptedStudentsDTO;
 
     // https://thepracticaldeveloper.com/guide-spring-boot-controller-tests/
     @BeforeEach
@@ -141,6 +141,19 @@ public class RootControllerTest {
         bartApplys = ApplicationListDTO.builder()
                 .studentId(bart.getId())
                 .offersId(Arrays.asList(duffOffre.getId()))
+                .build();
+
+        applicationDTO = ApplicationAcceptationDTO.builder()
+                .id(3L)
+                .studentId(2L)
+                .studentName("Simpson Bart")
+                .offerId(1L)
+                .companyName("Duff Beer")
+                .build();
+
+        acceptedStudentsDTO = OfferAcceptedStudentsDTO.builder()
+                .offerId(duffOffre.getId())
+                .studentsId(new ArrayList<>(){{add(bart.getId());}})
                 .build();
     }
 
@@ -1208,6 +1221,89 @@ public class RootControllerTest {
         when(authService.getToken(any(), any())).thenThrow(new InvalidTokenException());
 
         mockMvc.perform(put("/studentApplys/{studentId}", 1)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(jsonTokenDTO.write(token).getJson()))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    void testSaveStudentAcceptationHappyDay() throws Exception {
+        when(companyService.saveStudentApplicationAccepted(anyLong(), anyLong())).thenReturn(applicationDTO);
+
+        mockMvc.perform(put("/studentAcceptation/{offerId}_{studentId}", 1, 2)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(jsonTokenDTO.write(token).getJson()))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.studentName", is(applicationDTO.getStudentName())))
+                .andExpect(jsonPath("$.companyName", is(applicationDTO.getCompanyName())));
+    }
+
+    @Test
+    void testSaveStudentAcceptationStudentNotFound() throws Exception {
+        when(companyService.saveStudentApplicationAccepted(anyLong(), anyLong())).thenThrow(new NonExistentEntityException());
+
+        mockMvc.perform(put("/studentAcceptation/{offerId}_{studentId}", 1, 2)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(jsonTokenDTO.write(token).getJson()))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    void testSaveStudentAcceptationOfferNotFound() throws Exception {
+        when(companyService.saveStudentApplicationAccepted(anyLong(), anyLong())).thenThrow(new NonExistentOfferExeption());
+
+        mockMvc.perform(put("/studentAcceptation/{offerId}_{studentId}", 1, 2)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(jsonTokenDTO.write(token).getJson()))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    void testSaveStudentAcceptationConflict() throws Exception {
+        when(companyService.saveStudentApplicationAccepted(anyLong(), anyLong())).thenThrow(new AlreadyExistingAcceptationException());
+
+        mockMvc.perform(put("/studentAcceptation/{offerId}_{studentId}", 1, 2)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(jsonTokenDTO.write(token).getJson()))
+                .andExpect(status().isConflict());
+    }
+
+    @Test
+    void testSaveStudentAcceptationTokenInvalid() throws Exception {
+        when(authService.getToken(any(),any())).thenThrow(new InvalidTokenException());
+
+        mockMvc.perform(put("/studentAcceptation/{offerId}_{studentId}", 1, 2)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(jsonTokenDTO.write(token).getJson()))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    void testGetAcceptedStudentsForOfferHappyDay() throws Exception {
+        when(companyService.getAcceptedStudentsForOffer(anyLong())).thenReturn(acceptedStudentsDTO);
+
+        mockMvc.perform(put("/getAcceptedStudentsForOffer/{offerId}", 1)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(jsonTokenDTO.write(token).getJson()))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.studentsId.size()", is(1)));
+    }
+
+    @Test
+    void testGetAcceptedStudentsForOfferNotFound() throws Exception {
+        when(companyService.getAcceptedStudentsForOffer(anyLong())).thenThrow(new NonExistentOfferExeption());
+
+        mockMvc.perform(put("/getAcceptedStudentsForOffer/{offerId}", 1)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(jsonTokenDTO.write(token).getJson()))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    void testGetAcceptedStudentsForOfferTokenInvalid() throws Exception {
+        when(authService.getToken(any(),any())).thenThrow(new InvalidTokenException());
+
+        mockMvc.perform(put("/getAcceptedStudentsForOffer/{offerId}", 1)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(jsonTokenDTO.write(token).getJson()))
                 .andExpect(status().isForbidden());

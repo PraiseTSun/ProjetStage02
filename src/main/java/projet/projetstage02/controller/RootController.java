@@ -636,4 +636,47 @@ public class RootController {
             return ResponseEntity.notFound().build();
         }
     }
+
+    @PutMapping("/studentAcceptation/{offerId}_{studentId}")
+    public ResponseEntity<ApplicationAcceptationDTO> saveStudentAcceptation
+            (@PathVariable String offerId, @PathVariable String studentId, @RequestBody TokenDTO tokenId) {
+        logger.log(Level.INFO, "Put /studentAcceptation/{offerId}_{studentId} entered with offerId: " + offerId
+                + " and studentId: " + studentId);
+
+        try {
+            authService.getToken(tokenId.getToken(), COMPANY);
+            ApplicationAcceptationDTO dto = companyService
+                    .saveStudentApplicationAccepted(Long.parseLong(offerId), Long.parseLong(studentId));
+            logger.log(Level.INFO, "Put /studentAcceptation/{offerId}_{studentId} sent 200 response");
+            return ResponseEntity.ok(dto);
+        } catch (InvalidTokenException e) {
+            logger.log(Level.INFO, "Put /studentAcceptation/{offerId}_{studentId} sent 403 response");
+            return ResponseEntity.status(FORBIDDEN).build();
+        } catch (AlreadyExistingAcceptationException e) {
+            logger.log(Level.INFO, "Put /studentAcceptation/{offerId}_{studentId} sent 409 response");
+            return ResponseEntity.status(CONFLICT).build();
+        } catch (Exception e) {
+            logger.log(Level.INFO, "Put /studentAcceptation/{offerId}_{studentId} sent 404 response");
+            return ResponseEntity.notFound().build();
+        }
+    }
+
+    @PutMapping("/getAcceptedStudentsForOffer/{offerId}")
+    public ResponseEntity<OfferAcceptedStudentsDTO> getAcceptedStudentsForOffer
+            (@PathVariable String offerId, @RequestBody TokenDTO tokenId) {
+        logger.log(Level.INFO, "Put /getAcceptedStudentsForOffer/{offerId} entered with offerId: " + offerId);
+
+        try {
+            authService.getToken(tokenId.getToken(), COMPANY);
+            OfferAcceptedStudentsDTO dto = companyService.getAcceptedStudentsForOffer(Long.parseLong(offerId));
+            logger.log(Level.INFO, "Put /getAcceptedStudentsForOffer/{offerId} sent 200 response");
+            return ResponseEntity.ok(dto);
+        } catch (InvalidTokenException e) {
+            logger.log(Level.INFO, "Put /getAcceptedStudentsForOffer/{offerId} sent 403 response");
+            return ResponseEntity.status(FORBIDDEN).build();
+        } catch (NonExistentOfferExeption e) {
+            logger.log(Level.INFO, "Put /getAcceptedStudentsForOffer/{offerId} sent 404 response");
+            return ResponseEntity.notFound().build();
+        }
+    }
 }
