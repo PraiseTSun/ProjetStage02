@@ -123,6 +123,8 @@ public class CompanyService {
                 .build();
         applicationAcceptationRepository.save(application);
 
-        return new ApplicationAcceptationDTO(application);
+        applicationOpt = applicationAcceptationRepository.findByOfferIdAndStudentId(offerId, studentId);
+
+        return new ApplicationAcceptationDTO(applicationOpt.get());
     }
 }

@@ -6,13 +6,15 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import projet.projetstage02.DTO.ApplicationAcceptationDTO;
 import projet.projetstage02.DTO.CompanyDTO;
 import projet.projetstage02.DTO.OffreDTO;
 import projet.projetstage02.exception.NonExistentEntityException;
-import projet.projetstage02.model.AbstractUser;
-import projet.projetstage02.model.Company;
+import projet.projetstage02.model.*;
+import projet.projetstage02.repository.ApplicationAcceptationRepository;
 import projet.projetstage02.repository.CompanyRepository;
 import projet.projetstage02.repository.OffreRepository;
+import projet.projetstage02.repository.StudentRepository;
 
 import java.util.Optional;
 
@@ -34,8 +36,17 @@ public class CompanyServiceTest {
     @Mock
     OffreRepository offreRepository;
 
+    @Mock
+    StudentRepository studentRepository;
+
+    @Mock
+    ApplicationAcceptationRepository applicationAcceptationRepository;
+
     Company duffBeer;
-    OffreDTO duffBeerOffre;
+    OffreDTO duffBeerOffreDTO;
+    Student bart;
+    Offre duffBeerOffer;
+    ApplicationAcceptation applicationAcceptation;
 
     @BeforeEach
     void setup() {
@@ -47,13 +58,41 @@ public class CompanyServiceTest {
                 AbstractUser.Department.Transport,
                 "Duff Beer");
 
-        duffBeerOffre = OffreDTO.builder()
+        duffBeerOffreDTO = OffreDTO.builder()
                 .adresse("653 Duff Street")
                 .department(AbstractUser.Department.Transport.departement)
                 .heureParSemaine(40)
                 .position("Delivery Guy")
                 .nomDeCompagnie("Duff beer")
                 .pdf(new byte[0])
+                .build();
+
+        bart = new Student(
+                "Bart",
+                "Simpson",
+                "bart.simpson@springfield.com",
+                "eatMyShorts",
+                AbstractUser.Department.Informatique);
+        bart.setCv(new byte[0]);
+        bart.setId(2L);
+
+        duffBeerOffer = Offre.builder()
+                .id(1L)
+                .nomDeCompagnie("Duff")
+                .department(AbstractUser.Department.Transport)
+                .position("Manager")
+                .heureParSemaine(69)
+                .adresse("Somewhere")
+                .valide(true)
+                .pdf(new byte[] { 1, 2, 3, 4, 5, 6, 7, 8, 9 })
+                .build();
+
+        applicationAcceptation = ApplicationAcceptation.builder()
+                .id(3L)
+                .studentId(bart.getId())
+                .studentName(bart.getLastName() + " " + bart.getFirstName())
+                .offerId(duffBeerOffer.getId())
+                .companyName(duffBeerOffer.getNomDeCompagnie())
                 .build();
     }
 
@@ -160,10 +199,10 @@ public class CompanyServiceTest {
     @Test
     void createOffreTest() {
         // Arrange
-        when(offreRepository.save(any())).thenReturn(duffBeerOffre.toModel());
+        when(offreRepository.save(any())).thenReturn(duffBeerOffreDTO.toModel());
 
         // Act
-        companyService.createOffre(duffBeerOffre);
+        companyService.createOffre(duffBeerOffreDTO);
 
         // Assert
         verify(offreRepository, times(1)).save(any());
@@ -205,5 +244,24 @@ public class CompanyServiceTest {
         }
         // Assert
         fail("NonExistentEntityException not thrown");
+    }
+
+    @Test
+    void testSaveStudentApplicationAcceptedHappyDay() throws Exception {
+        // Arrange
+        when(studentRepository.findById(anyLong())).thenReturn(Optional.of(bart));
+        when(offreRepository.findById(anyLong())).thenReturn(Optional.of(duffBeerOffer));
+        when(applicationAcceptationRepository.findByOfferIdAndStudentId(anyLong(), anyLong()))
+                .thenReturn(Optional.empty(), Optional.of(applicationAcceptation));
+
+        // Act
+        ApplicationAcceptationDTO dto = companyService.saveStudentApplicationAccepted(1L, 2L);
+
+        // Assert
+        assertThat(dto.getId()).isEqualTo(applicationAcceptation.getId());
+        assertThat(dto.getStudentId()).isEqualTo(applicationAcceptation.getStudentId());
+        assertThat(dto.getStudentName()).isEqualTo(applicationAcceptation.getStudentName());
+        assertThat(dto.getOfferId()).isEqualTo(applicationAcceptation.getOfferId());
+        assertThat(dto.getCompanyName()).isEqualTo(applicationAcceptation.getCompanyName());
     }
 }
