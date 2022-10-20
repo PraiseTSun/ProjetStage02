@@ -472,12 +472,14 @@ paths:
           type: string
           required: true
         - in: body
-          name: token
+          name: cvRefuseDTO
           description: Token valide du gestionnaire
           schema:
             type: object
             properties:
               token:
+                type: string
+              refusalReason:
                 type: string
       produces:
         - application/json
@@ -1122,7 +1124,7 @@ paths:
         - in: path
           name: id
           description: id de l'étudiant
-          type: string
+          type: number
           required: true
         - in: body
           name: token
