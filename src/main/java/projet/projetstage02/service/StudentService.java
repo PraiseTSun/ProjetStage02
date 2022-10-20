@@ -80,7 +80,10 @@ public class StudentService {
         saveStudent(new StudentDTO(student));
         Optional<CvStatus> cvStatusOpt = cvStatusRepository.findById(student.getId());
         CvStatus status;
-        status = cvStatusOpt.orElseGet(() -> CvStatus.builder().studentId(student.getId()).build());
+        status = cvStatusOpt.orElseGet(() -> CvStatus.builder()
+                .studentId(student.getId())
+                .build());
+
         status.setStatus("PENDING");
         status.setRefusalMessage("");
         cvStatusRepository.save(status);
@@ -137,7 +140,7 @@ public class StudentService {
         if (offerOpt.isEmpty()) throw new NonExistentEntityException();
 
         Optional<Application> postulationOpt = applicationRepository.findByStudentIdAndOfferId(studentId, offerID);
-        if (!postulationOpt.isEmpty()) throw new AlreadyExistingPostulation();
+        if (postulationOpt.isPresent()) throw new AlreadyExistingPostulation();
 
         Student student = studentOpt.get();
         Offre offer = offerOpt.get();
@@ -181,7 +184,12 @@ public class StudentService {
         }
         Optional<CvStatus> cvStatusOpt = cvStatusRepository.findById(studentId);
         if (cvStatusOpt.isEmpty()) {
-            CvStatus status = CvStatus.builder().status("NOTHING").refusalMessage("").studentId(studentId).build();
+            CvStatus status = CvStatus.builder()
+                    .status("NOTHING")
+                    .refusalMessage("")
+                    .studentId(studentId)
+                    .build();
+
             cvStatusRepository.save(status);
             return new CvStatusDTO(status);
         }

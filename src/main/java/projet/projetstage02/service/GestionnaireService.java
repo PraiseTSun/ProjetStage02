@@ -111,8 +111,8 @@ public class GestionnaireService {
         offreRepository.findAll().stream().
                 filter(offre ->
                         !offre.isValide() && isRightSession(offre.getSession(), getNextYear()))
-                .forEach(offre ->
-                        offres.add(new OffreDTO(offre)));
+                            .forEach(offre ->
+                                        offres.add(new OffreDTO(offre)));
         offres.forEach(offre -> offre.setPdf(new byte[0]));
         return offres;
     }
@@ -122,8 +122,8 @@ public class GestionnaireService {
         offreRepository.findAll().stream().
                 filter(offre ->
                         offre.isValide() && isRightSession(offre.getSession(), year))
-                .forEach(offre ->
-                        offres.add(new OffreDTO(offre)));
+                            .forEach(offre ->
+                                        offres.add(new OffreDTO(offre)));
         offres.forEach(offre -> offre.setPdf(new byte[0]));
         return offres;
     }

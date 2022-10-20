@@ -812,6 +812,8 @@ paths:
                   type: number
                 department:
                   type: string
+                salaire:
+                  type: string
                 position:
                   type: string
                 heureParSemaine:

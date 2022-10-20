@@ -22,6 +22,6 @@ public class CvStatus {
     @Pattern(regexp = ("NOTHING|PENDING|ACCEPTED|REFUSED"))
     @NotBlank
     String status;
-
+    @Builder.Default
     String refusalMessage = "";
 }
