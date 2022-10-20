@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import projet.projetstage02.DTO.ApplicationAcceptationDTO;
 import projet.projetstage02.DTO.CompanyDTO;
+import projet.projetstage02.DTO.OfferAcceptedStudentsDTO;
 import projet.projetstage02.DTO.OffreDTO;
 import projet.projetstage02.exception.AlreadyExistingAcceptationException;
 import projet.projetstage02.exception.NonExistentEntityException;
@@ -20,6 +21,8 @@ import projet.projetstage02.repository.StudentRepository;
 
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 import static projet.projetstage02.utils.TimeUtil.MILLI_SECOND_DAY;
@@ -126,5 +129,23 @@ public class CompanyService {
         applicationOpt = applicationAcceptationRepository.findByOfferIdAndStudentId(offerId, studentId);
 
         return new ApplicationAcceptationDTO(applicationOpt.get());
+    }
+
+    public OfferAcceptedStudentsDTO getAcceptedStudentsForOffer(long offerId) throws NonExistentOfferExeption {
+        Optional<Offre> offreOpt = offreRepository.findById(offerId);
+        if(offreOpt.isEmpty()) throw new NonExistentOfferExeption();
+        Offre offre = offreOpt.get();
+
+        List<Long> studentsId = new ArrayList<>();
+
+        applicationAcceptationRepository.findAll()
+                .stream()
+                .filter(application -> application.getOfferId() == offre.getId())
+                .forEach(application -> studentsId.add(application.getStudentId()));
+
+        return OfferAcceptedStudentsDTO.builder()
+                .offerId(offre.getId())
+                .studentsId(studentsId)
+                .build();
     }
 }

@@ -8,6 +8,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import projet.projetstage02.DTO.ApplicationAcceptationDTO;
 import projet.projetstage02.DTO.CompanyDTO;
+import projet.projetstage02.DTO.OfferAcceptedStudentsDTO;
 import projet.projetstage02.DTO.OffreDTO;
 import projet.projetstage02.exception.AlreadyExistingAcceptationException;
 import projet.projetstage02.exception.NonExistentEntityException;
@@ -18,6 +19,8 @@ import projet.projetstage02.repository.CompanyRepository;
 import projet.projetstage02.repository.OffreRepository;
 import projet.projetstage02.repository.StudentRepository;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
@@ -260,6 +263,7 @@ public class CompanyServiceTest {
         ApplicationAcceptationDTO dto = companyService.saveStudentApplicationAccepted(1L, 2L);
 
         // Assert
+        verify(applicationAcceptationRepository, times(1)).save(any());
         assertThat(dto.getId()).isEqualTo(applicationAcceptation.getId());
         assertThat(dto.getStudentId()).isEqualTo(applicationAcceptation.getStudentId());
         assertThat(dto.getStudentName()).isEqualTo(applicationAcceptation.getStudentName());
@@ -316,4 +320,35 @@ public class CompanyServiceTest {
         fail("AlreadyExistingAcceptationException not thrown");
     }
 
+    @Test
+    void testGetAcceptedStudentForOfferHappyDay() throws NonExistentOfferExeption {
+        // Arrange
+        List<ApplicationAcceptation> applications = new ArrayList<>(){{
+            add(ApplicationAcceptation.builder().offerId(duffBeerOffer.getId()).studentId(bart.getId()).build());
+            add(ApplicationAcceptation.builder().offerId(0L).studentId(bart.getId()).build());
+        }};
+        when(offreRepository.findById(anyLong())).thenReturn(Optional.of(duffBeerOffer));
+        when(applicationAcceptationRepository.findAll()).thenReturn(applications);
+
+        // Act
+        OfferAcceptedStudentsDTO dto = companyService.getAcceptedStudentsForOffer(1L);
+
+        // Assert
+        assertThat(dto.getOfferId()).isEqualTo(duffBeerOffer.getId());
+        assertThat(dto.getStudentsId().size()).isEqualTo(1);
+    }
+
+    @Test
+    void testGetAcceptedStudentForOfferNotFound() {
+        // Arrange
+        when(offreRepository.findById(anyLong())).thenReturn(Optional.empty());
+
+        // Act
+        try {
+            companyService.getAcceptedStudentsForOffer(1L);
+        } catch (NonExistentOfferExeption e) {
+            return;
+        }
+        fail("NonExistentOfferException not thrown");
+    }
 }
