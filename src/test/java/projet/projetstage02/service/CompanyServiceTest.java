@@ -10,6 +10,7 @@ import projet.projetstage02.DTO.ApplicationAcceptationDTO;
 import projet.projetstage02.DTO.CompanyDTO;
 import projet.projetstage02.DTO.OffreDTO;
 import projet.projetstage02.exception.NonExistentEntityException;
+import projet.projetstage02.exception.NonExistentOfferExeption;
 import projet.projetstage02.model.*;
 import projet.projetstage02.repository.ApplicationAcceptationRepository;
 import projet.projetstage02.repository.CompanyRepository;
@@ -263,5 +264,36 @@ public class CompanyServiceTest {
         assertThat(dto.getStudentName()).isEqualTo(applicationAcceptation.getStudentName());
         assertThat(dto.getOfferId()).isEqualTo(applicationAcceptation.getOfferId());
         assertThat(dto.getCompanyName()).isEqualTo(applicationAcceptation.getCompanyName());
+    }
+
+    @Test
+    void testSaveStudentApplicationAcceptedStudentNotFound() {
+        // Arrange
+        when(studentRepository.findById(anyLong())).thenReturn(Optional.empty());
+
+        // Act
+        try {
+            companyService.saveStudentApplicationAccepted(1L, 2L);
+        } catch (NonExistentEntityException e){
+            return;
+        }catch (Exception e) {}
+        // Assert
+        fail("NonExistentEntityException not thrown");
+    }
+
+    @Test
+    void testSaveStudentApplicationAcceptedOfferNotFound() {
+        // Arrange
+        when(studentRepository.findById(anyLong())).thenReturn(Optional.of(bart));
+        when(offreRepository.findById(anyLong())).thenReturn(Optional.empty());
+
+        // Act
+        try {
+            companyService.saveStudentApplicationAccepted(1L, 2L);
+        } catch (NonExistentOfferExeption e){
+            return;
+        }catch (Exception e) {}
+        // Assert
+        fail("NonExistentOfferException not thrown");
     }
 }
