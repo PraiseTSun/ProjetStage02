@@ -74,6 +74,7 @@ public class RootControllerTest {
     PdfDTO bartCV;
     PostulOutDTO bartPostulation;
     StudentApplysDTO bartApplys;
+    ApplicationAcceptationDTO applicationDTO;
 
     // https://thepracticaldeveloper.com/guide-spring-boot-controller-tests/
     @BeforeEach
@@ -140,6 +141,14 @@ public class RootControllerTest {
         bartApplys = StudentApplysDTO.builder()
                 .studentId(bart.getId())
                 .offersId(Arrays.asList(duffOffre.getId()))
+                .build();
+
+        applicationDTO = ApplicationAcceptationDTO.builder()
+                .id(3L)
+                .studentId(2L)
+                .studentName("Simpson Bart")
+                .offerId(1L)
+                .companyName("Duff Beer")
                 .build();
     }
 
@@ -1210,5 +1219,17 @@ public class RootControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(jsonTokenDTO.write(token).getJson()))
                 .andExpect(status().isForbidden());
+    }
+
+    @Test
+    void testSaveStudentAcceptationHappyDay() throws Exception {
+        when(companyService.saveStudentApplicationAccepted(anyLong(), anyLong())).thenReturn(applicationDTO);
+
+        mockMvc.perform(put("/studentAcceptation/{offerId}_{studentId}", 1, 2)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(jsonTokenDTO.write(token).getJson()))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.studentName", is(applicationDTO.getStudentName())))
+                .andExpect(jsonPath("$.companyName", is(applicationDTO.getCompanyName())));
     }
 }
