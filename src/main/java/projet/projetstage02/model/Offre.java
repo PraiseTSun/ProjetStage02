@@ -5,6 +5,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import projet.projetstage02.model.AbstractUser.Department;
+import projet.projetstage02.utils.TimeUtil;
 
 import javax.persistence.*;
 import javax.validation.constraints.*;
@@ -46,4 +47,8 @@ public class Offre {
     @NotNull
     @Lob
     private byte[] pdf;
+
+    public static String currentSession() {
+        return "Hiver " + TimeUtil.getNextYear();
+    }
 }

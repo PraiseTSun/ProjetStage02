@@ -43,6 +43,7 @@ public class CompanyService {
                 .position(offreDTO.getPosition())
                 .heureParSemaine(offreDTO.getHeureParSemaine())
                 .salaire(offreDTO.getSalaire())
+                .session(offreDTO.getSession())
                 .adresse(offreDTO.getAdresse())
                 .pdf(offreDTO.getPdf())
                 .build();
