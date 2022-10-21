@@ -1,13 +1,34 @@
 import { Button, Col, Container, Form, Row } from "react-bootstrap";
-import React, { useState } from "react";
+import React, {useEffect, useState} from "react";
 import { BeatLoader } from "react-spinners";
 import IUser from "../models/IUser";
 import { Link } from "react-router-dom";
+import {LOCAL_STORAGE_KEY} from "../App";
+import CvStatus from "../models/CvStatus";
+export const status : CvStatus = {
+    state: "",
+    message: ""
+}
 
 const UploaderMonCV = ({ user }: { user: IUser }) => {
     const [waiting, setWaiting] = useState<boolean>(false);
     const [validated, setValidated] = useState<boolean>(false);
     const [cv, setCv] = useState<number[]>([0])
+    const [cvStatus, setCvStatus] = useState(status)
+    useEffect(  () => {
+        const fetchStatusCV = async () => {
+
+            await fetch(`http://localhost:8080/getStatutValidationCV/${user.id}`).then(
+                reponse => {
+                    if (reponse.status == 200) {
+                        setCvStatus(JSON.parse(localStorage.getItem(LOCAL_STORAGE_KEY)!))
+                    }
+                }
+            )
+        }
+
+        fetchStatusCV()
+    },[])
 
     const onSubmit = async (event: React.SyntheticEvent) => {
         const form: any = event.currentTarget;
@@ -86,6 +107,11 @@ const UploaderMonCV = ({ user }: { user: IUser }) => {
                             className="btn btn-success mx-auto w-75">Envoyer</Button>
                     </Row>
                 </Form>
+                <Row className="text-center pt-2 text-white">
+                    <h2>Mon CV</h2>
+                    <h3>State : {cvStatus.state}</h3>
+                    <h3>Message : {cvStatus.message}</h3>
+                </Row>
             </Col>
         </Container>
     )
