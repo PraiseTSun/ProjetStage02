@@ -14,6 +14,7 @@ import ValiderNouvelleOffreStagePage from "./pages/gestionnairePages/ValiderNouv
 import OffersListPage from './pages/studentPages/OffersListPage';
 import StudentCvUploadPage from './pages/studentPages/StudentCvUploadPage';
 import {putUserType} from "./services/universalServices/UniversalFetchService";
+import CompanyOffersPage from "./pages/companyPages/CompanyOffersPage";
 
 export const LOCAL_STORAGE_KEY = "MASSI_BEST_PROGRAMMER_PROJET_STAGE_02_CURRENT_CONNECTED_USER"
 export const emptyUser: IUser = {
@@ -118,6 +119,7 @@ function App() {
                     <Routes>
                         <Route path="/" element={<CompanyDashboard deconnexion={deconnexion} user={connectedUser}/>}/>
                         <Route path="/soumettreOffre" element={<OffreSoumissionPage user={connectedUser}/>}/>
+                        <Route path="/myOffers" element={<CompanyOffersPage connectedUser={connectedUser}/>}/>
                         <Route path="*"
                                element={<h1 className="min-vh-100 text-center text-white display-1">404 - Page pas
                                    trouvé</h1>}/>
