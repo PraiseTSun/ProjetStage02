@@ -1,8 +1,14 @@
-import React, { useEffect, useState } from "react";
-import { Button, Col, Row } from "react-bootstrap";
-import IUser from "../models/IUser";
+import React, {useEffect, useState} from "react";
+import {Button, Col, Row} from "react-bootstrap";
+import IUser from "../../models/IUser";
+import {putUnvalidatedStudents} from "../../services/gestionnaireServices/GestionnaireFetchService";
+import {generateAlert} from "../../services/universalServices/UniversalUtilService";
 
-const ValidationStudent = ({ connectedUser, onValidation, onRemove }: { connectedUser: IUser, onValidation: Function, onRemove: Function }) => {
+const ValidationStudent = ({
+                               connectedUser,
+                               onValidation,
+                               onRemove
+                           }: { connectedUser: IUser, onValidation: Function, onRemove: Function }) => {
     const user = "Student";
     const [students, setStudents] = useState<any[]>([]);
 
@@ -17,26 +23,18 @@ const ValidationStudent = ({ connectedUser, onValidation, onRemove }: { connecte
     }
 
     useEffect(() => {
-        const fetchAndSet = async ()=>{
-            const req = await fetch(`http://localhost:8080/unvalidatedStudents`,
-            {
-                method: "PUT",
-                headers: {
-                    'Accept': 'application/json',
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ token: connectedUser.token })
+        const fetchUnvalidatedStudents = async () => {
+            const res = await putUnvalidatedStudents(connectedUser.token)
 
-            })
-            if(req.ok){
-                const data = await req.json()
+            if (res.ok) {
+                const data = await res.json()
                 setStudents(data)
-                return;
+            } else {
+                generateAlert()
             }
-            alert("Une erreur est survenue")
         }
-        fetchAndSet()
-        
+
+        fetchUnvalidatedStudents()
     }, [connectedUser]);
 
     return (
@@ -49,7 +47,8 @@ const ValidationStudent = ({ connectedUser, onValidation, onRemove }: { connecte
                                 <div className="my-auto">{data.firstName} {data.lastName}</div>
                                 <div className="my-auto">{data.department}</div>
                                 <div>
-                                    <Button className="me-2" variant="success" onClick={() => approve(data.id, idx)}>O</Button>
+                                    <Button className="me-2" variant="success"
+                                            onClick={() => approve(data.id, idx)}>O</Button>
                                     <Button variant="danger" onClick={() => remove(data.id, idx)}>X</Button>
                                 </div>
                             </div>

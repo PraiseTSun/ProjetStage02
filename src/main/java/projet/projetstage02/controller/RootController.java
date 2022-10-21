@@ -9,6 +9,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import projet.projetstage02.DTO.*;
+import projet.projetstage02.exception.AlreadyExistingPostulation;
+import projet.projetstage02.exception.InvalidTokenException;
+import projet.projetstage02.exception.NonExistentEntityException;
+import projet.projetstage02.exception.NonExistentOfferExeption;
 import projet.projetstage02.exception.*;
 
 import projet.projetstage02.model.Token;
@@ -112,7 +116,6 @@ public class RootController {
                 return ResponseEntity.status(INTERNAL_SERVER_ERROR).body(
                         getError("Une erreur avec le service d'email est survenue"));
             }
-            ;
             logger.log(Level.INFO, "PostMapping: /createGestionaire sent 201 response");
             return ResponseEntity.status(CREATED).build();
         } catch (InvalidTokenException ex) {
@@ -619,7 +622,8 @@ public class RootController {
     }
 
     @PutMapping("/studentApplys/{studentId}")
-    public ResponseEntity<ApplicationListDTO> getPostulsOfferId(@PathVariable String studentId, @RequestBody TokenDTO tokenId) {
+    public ResponseEntity<ApplicationListDTO> getPostulsOfferId(@PathVariable String studentId,
+                                                                @RequestBody TokenDTO tokenId) {
         logger.log(Level.INFO, "Put /getPostulsOfferId entered with id: " + studentId);
 
         try {

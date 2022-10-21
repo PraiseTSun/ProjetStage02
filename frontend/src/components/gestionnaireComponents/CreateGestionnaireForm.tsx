@@ -1,9 +1,10 @@
 import React, {useState} from "react";
 import {Button, Col, Form, Row} from "react-bootstrap";
 import {BeatLoader} from "react-spinners";
-import IUser from "../models/IUser";
+import IUser from "../../models/IUser";
+import {postCreateGestionnaire} from "../../services/gestionnaireServices/GestionnaireFetchService";
 
-const CreateGestionnaireForm = ({user}:{user:IUser}) => {
+const CreateGestionnaireForm = ({connectedUser}: { connectedUser: IUser }) => {
     const [waiting, setWaiting] = useState(false);
     const [validated, setValidated] = useState(false);
     const [firstName, setFirstName] = useState("");
@@ -33,26 +34,12 @@ const CreateGestionnaireForm = ({user}:{user:IUser}) => {
                 return;
             }
 
-
-            const res = await fetch(`http://localhost:8080/createGestionnaire`,
-                {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({
-                        "firstName": firstName,
-                        "lastName": lastName,
-                        "email": email,
-                        "password": password,
-                        "token":user.token
-                    })
-                });
+            const res = await postCreateGestionnaire(firstName, lastName, email, password, connectedUser.token)
 
             if (!res.ok) {
                 const data = await res.json();
                 alert(data.error);
-            }else {
+            } else {
                 alert("Le courriel de confirmation à été envoyé.");
             }
             setWaiting(false)
@@ -69,9 +56,9 @@ const CreateGestionnaireForm = ({user}:{user:IUser}) => {
     if (waiting) {
         return (
             <div className="d-flex justify-content-center py-5 bg-light">
-                <BeatLoader className="text-center" color="#292b2c" size={100} />
+                <BeatLoader className="text-center" color="#292b2c" size={100}/>
             </div>
-                );
+        );
     }
 
     return (
@@ -81,7 +68,7 @@ const CreateGestionnaireForm = ({user}:{user:IUser}) => {
                     <Col>
                         <Form.Group>
                             <Form.Label className="fw-bold h5">Prénom</Form.Label>
-                            <Form.Control type="text" minLength={2} required value={firstName}  
+                            <Form.Control type="text" minLength={2} required value={firstName}
                                           onChange={field => setFirstName(field.target.value)}></Form.Control>
 
                             <Form.Control.Feedback type="invalid">Champ requis</Form.Control.Feedback>
@@ -93,7 +80,7 @@ const CreateGestionnaireForm = ({user}:{user:IUser}) => {
                             <Form.Control minLength={2} type="text" required value={lastName}
                                           onChange={field => setLastName(field.target.value)}></Form.Control>
 
-                            <Form.Control.Feedback  type="invalid">Champ requis</Form.Control.Feedback>
+                            <Form.Control.Feedback type="invalid">Champ requis</Form.Control.Feedback>
                         </Form.Group>
                     </Col>
                 </Row>
@@ -110,8 +97,8 @@ const CreateGestionnaireForm = ({user}:{user:IUser}) => {
                     <Col>
                         <Form.Group>
                             <Form.Label className="fw-bold mt-2 h5">Mot de passe</Form.Label>
-                            <Form.Control type="password" required minLength={8} value={password} 
-                            onChange={field => setPassword(field.target.value)}></Form.Control>
+                            <Form.Control type="password" required minLength={8} value={password}
+                                          onChange={field => setPassword(field.target.value)}></Form.Control>
 
                             <Form.Control.Feedback type="invalid">Longueur minimum de 8 requise</Form.Control.Feedback>
                         </Form.Group>
@@ -119,8 +106,8 @@ const CreateGestionnaireForm = ({user}:{user:IUser}) => {
                     <Col>
                         <Form.Group>
                             <Form.Label className="fw-bold mt-2 h5">Confirmer le mot de passe</Form.Label>
-                            <Form.Control type="password" minLength={8} required value={confirmPassword} 
-                            onChange={field => setConfirmPassword(field.target.value)}></Form.Control>
+                            <Form.Control type="password" minLength={8} required value={confirmPassword}
+                                          onChange={field => setConfirmPassword(field.target.value)}></Form.Control>
 
                         </Form.Group>
                     </Col>
