@@ -10,9 +10,11 @@ import projet.projetstage02.DTO.*;
 import projet.projetstage02.exception.AlreadyExistingPostulation;
 import projet.projetstage02.exception.NonExistentEntityException;
 import projet.projetstage02.model.AbstractUser.Department;
+import projet.projetstage02.model.Application;
 import projet.projetstage02.model.Offre;
 import projet.projetstage02.model.Postulation;
 import projet.projetstage02.model.Student;
+import projet.projetstage02.repository.ApplicationRepository;
 import projet.projetstage02.repository.OffreRepository;
 import projet.projetstage02.repository.PostulationRepository;
 import projet.projetstage02.repository.StudentRepository;
@@ -39,12 +41,12 @@ public class StudentServiceTest {
     @Mock
     OffreRepository offreRepository;
     @Mock
-    PostulationRepository postulationRepository;
+    ApplicationRepository applicationRepository;
 
     Student bart;
     PdfDTO bartCv;
     Offre duffOffer;
-    Postulation bartPostulation;
+    Application bartApplication;
 
     @BeforeEach
     void setup() {
@@ -71,7 +73,7 @@ public class StudentServiceTest {
                 .pdf(new byte[] { 1, 2, 3, 4, 5, 6, 7, 8, 9 })
                 .build();
 
-        bartPostulation = Postulation.builder()
+        bartApplication = Application.builder()
                 .id(3L)
                 .studentId(2L)
                 .offerId(1L)
@@ -190,7 +192,7 @@ public class StudentServiceTest {
     }
 
     @Test
-    void testUploadCurriculumVitaeNotFound(){
+    void testUploadCurriculumVitaeNotFound() {
         // Arrange
         when(studentRepository.findById(anyLong())).thenReturn(Optional.empty());
 
@@ -300,7 +302,6 @@ public class StudentServiceTest {
 
         fail("NonExistentEntityException not thrown");
     }
-
     @Test
     void testInvalidStudentReturnsFalse() throws NonExistentEntityException {
         // Arrange
@@ -311,18 +312,19 @@ public class StudentServiceTest {
         assertThat(studentService.isStudentInvalid(bart.getEmail())).isFalse();
     }
 
+    @Test
     void testCreatePostulationSuccess() throws Exception {
         // Arrange
         when(studentRepository.findById(anyLong())).thenReturn(Optional.of(bart));
         when(offreRepository.findById(anyLong())).thenReturn(Optional.of(duffOffer));
-        when(postulationRepository.findByStudentIdAndOfferId(anyLong(), anyLong()))
+        when(applicationRepository.findByStudentIdAndOfferId(anyLong(), anyLong()))
                 .thenReturn(Optional.empty());
 
         // Act
-        PostulOutDTO dto = studentService.createPostulation(2L, 1L);
+        ApplicationDTO dto = studentService.createPostulation(2L, 1L);
 
         // Assert
-        verify(postulationRepository, times(1)).save(any());
+        verify(applicationRepository, times(1)).save(any());
         assertThat(dto.getOfferId()).isEqualTo(duffOffer.getId());
         assertThat(dto.getStudentId()).isEqualTo(bart.getId());
     }
@@ -332,15 +334,16 @@ public class StudentServiceTest {
         // Arrange
         when(studentRepository.findById(anyLong())).thenReturn(Optional.of(bart));
         when(offreRepository.findById(anyLong())).thenReturn(Optional.of(duffOffer));
-        when(postulationRepository.findByStudentIdAndOfferId(anyLong(), anyLong()))
-                .thenReturn(Optional.of(bartPostulation));
+        when(applicationRepository.findByStudentIdAndOfferId(anyLong(), anyLong()))
+                .thenReturn(Optional.of(bartApplication));
 
         // Act
         try {
-            studentService.createPostulation(2L,1L);
+            studentService.createPostulation(2L, 1L);
         } catch (AlreadyExistingPostulation e) {
             return;
-        } catch (Exception e) {}
+        } catch (Exception e) {
+        }
 
         fail("AlreadyExistingPostulation not thrown");
     }
@@ -353,10 +356,11 @@ public class StudentServiceTest {
 
         // Act
         try {
-            studentService.createPostulation(2L,1L);
+            studentService.createPostulation(2L, 1L);
         } catch (NonExistentEntityException e) {
             return;
-        } catch (Exception e) {}
+        } catch (Exception e) {
+        }
 
         fail("NonExistingEntityException not thrown");
     }
@@ -368,10 +372,11 @@ public class StudentServiceTest {
 
         // Act
         try {
-            studentService.createPostulation(2L,1L);
+            studentService.createPostulation(2L, 1L);
         } catch (NonExistentEntityException e) {
             return;
-        } catch (Exception e) {}
+        } catch (Exception e) {
+        }
 
         fail("NonExistingEntityException not thrown");
     }
@@ -380,14 +385,14 @@ public class StudentServiceTest {
     void testGetPostulsOfferIdSuccess() throws NonExistentEntityException {
         // Arrange
         when(studentRepository.findById(anyLong())).thenReturn(Optional.of(bart));
-        when(postulationRepository.findByStudentId(anyLong())).thenReturn(Arrays.asList(bartPostulation));
+        when(applicationRepository.findByStudentId(anyLong())).thenReturn(Arrays.asList(bartApplication));
 
         // Act
-        StudentApplysDTO dto = studentService.getPostulsOfferId(1L);
+        ApplicationListDTO dto = studentService.getPostulsOfferId(1L);
 
         // Assert
         assertThat(dto.getStudentId()).isEqualTo(bart.getId());
-        assertThat(dto.getOffersId().get(0)).isEqualTo(bartPostulation.getOfferId());
+        assertThat(dto.getOffersId().get(0)).isEqualTo(bartApplication.getOfferId());
     }
 
     @Test
