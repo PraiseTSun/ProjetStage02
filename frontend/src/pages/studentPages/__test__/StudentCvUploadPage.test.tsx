@@ -9,11 +9,11 @@ describe('StudentCvUploadPageTests', () => {
         global.fetch = jest.fn((url) => {
                 if (url === "http://localhost:8080/getStatutValidationCV/1") {
                     return Promise.resolve({
-                        ok: true,
-                        json: () => Promise.resolve([{
-                            "State": "NOTHING",
-                            "Message": "",
-                        }])
+                        status: 200,
+                        json: () => Promise.resolve({
+                            "state": "NOTHING",
+                            "message": "",
+                        })
                     });
                 } else throw new Error("Bad url call");
             }
@@ -63,10 +63,8 @@ describe('StudentCvUploadPageTests', () => {
     })
 
     it('H3StateParDefautIsPresentTest', async () => {
-        const h3StateElement = await screen.getByText(`State : NOTHING`)
-        expect(h3StateElement).not.toBeInTheDocument()
-        expect(fetch).toBeCalledWith("http://localhost:8080/getStatutValidationCV/", expect.anything());
-        expect(fetch).toBeCalledTimes(1);
+        const h3StateElement = await screen.findByText(/State : NOTHING/i)
+        expect(h3StateElement).toBeInTheDocument()
     })
 
     it('h3MessageParDefautIsPresentTest', async () => {

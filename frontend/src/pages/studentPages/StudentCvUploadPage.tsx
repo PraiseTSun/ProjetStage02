@@ -6,7 +6,6 @@ import {Link} from "react-router-dom";
 import {putStatusCv, putUploadStudentCV} from "../../services/studentServices/StudentFetchService";
 import {generateAlert} from "../../services/universalServices/UniversalUtilService";
 import CvStatus from "../../models/CvStatus";
-import {LOCAL_STORAGE_KEY} from "../../App";
 
 export const status : CvStatus = {
     state: "",
