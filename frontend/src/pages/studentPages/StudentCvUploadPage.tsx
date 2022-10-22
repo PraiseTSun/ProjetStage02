@@ -9,8 +9,8 @@ import CvStatus from "../../models/CvStatus";
 import {LOCAL_STORAGE_KEY} from "../../App";
 
 export const status: CvStatus = {
-    state: "",
-    message: ""
+    state: "En cours",
+    message: "Attendez la validation"
 }
 
 const StudentCvUploadPage = ({connectedUser}: { connectedUser: IUser }) => {
@@ -19,15 +19,16 @@ const StudentCvUploadPage = ({connectedUser}: { connectedUser: IUser }) => {
     const [cv, setCv] = useState<number[]>([0])
     const [isChoisi, setIsChoisi] = useState<boolean>(false)
     const [cvStatus, setCvStatus] = useState<CvStatus>(status)
-    useEffect(()=>{
-        const fetcheStatusCV = async ()=>{
-             await putStatusCv(connectedUser.id,connectedUser.token).then( reponse => {
-                 if(reponse.status == 200){
-                     setCvStatus(JSON.parse(localStorage.getItem(LOCAL_STORAGE_KEY)!))
-                 }else {
-                     generateAlert()
-                 }
-             })
+
+    useEffect(() => {
+        const fetcheStatusCV = async () => {
+            await putStatusCv(connectedUser.id, connectedUser.token).then(reponse => {
+                if (reponse.status == 200) {
+                    setCvStatus(JSON.parse(localStorage.getItem(LOCAL_STORAGE_KEY)!))
+                } else {
+                    generateAlert()
+                }
+            })
         }
         fetcheStatusCV()
     }, [])
@@ -107,10 +108,10 @@ const StudentCvUploadPage = ({connectedUser}: { connectedUser: IUser }) => {
                     </Row>
                 </Form>
                 <Row className="text-center pt-2 text-white">
-                <h2>Mon CV</h2>
-                <h3>State : {cvStatus.state}</h3>
-                <h3>Message : {cvStatus.message}</h3>
-            </Row>
+                    <h2>Mon CV</h2>
+                    <h3>State : {cvStatus.state}</h3>
+                    <h3>Message : {cvStatus.message}</h3>
+                </Row>
             </Col>
         </Container>
     )
