@@ -15,18 +15,12 @@ const PreviousOffersPage = ({connectedUser}:
     const [showPDF, setShowPDF] = useState<boolean>(false);
     const [year, setYear] = useState<number>(nextYear);
 
-    useEffect(() => {
-        fetchValidatedOffersByYear(nextYear.toString())
-    });
-
-
-    async function fetchValidatedOffersByYear(year: string): Promise<void> {
+    const fetchValidatedOffersByYear = React.useCallback(async (year: string): Promise<void> => {
         try {
             const response: Response = await putValidatedOffersByYear(year, connectedUser.token);
 
             if (response.ok) {
                 const data: IOffer[] = await response.json()
-                console.log(data);
                 setOffers(data);
             } else {
                 generateAlert()
@@ -34,8 +28,12 @@ const PreviousOffersPage = ({connectedUser}:
         } catch {
             generateAlert()
         }
-    }
+    }, [connectedUser]);
 
+    useEffect(() => {
+        fetchValidatedOffersByYear(nextYear.toString())
+    }, [nextYear, fetchValidatedOffersByYear]);
+    
     async function getPDF(offerId: number): Promise<void> {
         try {
             const response = await putOfferPdf(offerId.toString(), connectedUser.token)
