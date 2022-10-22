@@ -3,9 +3,10 @@ import React, {useEffect, useState} from "react";
 import {BeatLoader} from "react-spinners";
 import IUser from "../../models/IUser";
 import {Link} from "react-router-dom";
-import {putUploadStudentCV} from "../../services/studentServices/StudentFetchService";
+import {putStatusCv, putUploadStudentCV} from "../../services/studentServices/StudentFetchService";
 import {generateAlert} from "../../services/universalServices/UniversalUtilService";
 import CvStatus from "../../models/CvStatus";
+import {LOCAL_STORAGE_KEY} from "../../App";
 
 export const status: CvStatus = {
     state: "",
@@ -18,11 +19,18 @@ const StudentCvUploadPage = ({connectedUser}: { connectedUser: IUser }) => {
     const [cv, setCv] = useState<number[]>([0])
     const [isChoisi, setIsChoisi] = useState<boolean>(false)
     const [cvStatus, setCvStatus] = useState<CvStatus>(status)
-    // useEffect(()=>{
-    //     const fetcheStatusCV = async ()=>{
-    //
-    //     }
-    // }, [])
+    useEffect(()=>{
+        const fetcheStatusCV = async ()=>{
+             await putStatusCv(connectedUser.id,connectedUser.token).then( reponse => {
+                 if(reponse.status == 200){
+                     setCvStatus(JSON.parse(localStorage.getItem(LOCAL_STORAGE_KEY)!))
+                 }else {
+                     generateAlert()
+                 }
+             })
+        }
+        fetcheStatusCV()
+    }, [])
     const onSubmit = async (event: React.SyntheticEvent) => {
         const form: any = event.currentTarget;
         event.preventDefault();
