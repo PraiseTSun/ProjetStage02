@@ -3,7 +3,6 @@ import StudentCvUploadPage from "../StudentCvUploadPage";
 import {BrowserRouter} from "react-router-dom";
 import * as React from "react";
 import {emptyUser} from "../../../App";
-import ValiderNouvelleOffreStagePage from "../../gestionnairePages/ValiderNouvelleOffreStagePage";
 
 describe('StudentCvUploadPageTests', () => {
     beforeEach(async () => {
@@ -29,14 +28,17 @@ describe('StudentCvUploadPageTests', () => {
 
         window.alert = jest.fn(() => null) as jest.Mock;
 
+        const student = emptyUser;
+        student.id = "1"
+
         await act(async () => {
-            await render(<StudentCvUploadPage connectedUser={emptyUser}/>, {wrapper: BrowserRouter});
+            await render(<StudentCvUploadPage connectedUser={student}/>, {wrapper: BrowserRouter});
         });
 
     });
 
     it('InputIsPresentTest', async () => {
-        const inputUploaderMonCV =  await screen.getByTestId("uploaderMonCV")
+        const inputUploaderMonCV = await screen.getByTestId("uploaderMonCV")
         expect(inputUploaderMonCV).toBeInTheDocument()
     });
 
