@@ -21,7 +21,7 @@ public class ProjetStage02Application implements CommandLineRunner {
 
     private GestionnaireService gestionnaireService;
 
-    private final byte[] TESTPDF = new byte[]{
+    private final byte[] TEST_PDF = new byte[]{
             37, 80, 68, 70, 45, 49, 46, 55, 10, 10, 49, 32, 48, 32, 111, 98, 106, 32, 32, 37, 32, 101, 110, 116,
             114, 121, 32, 112, 111, 105, 110, 116, 10, 60, 60, 10, 32, 32, 47, 84, 121, 112, 101, 32, 47, 67,
             97, 116, 97, 108, 111, 103, 10, 32, 32, 47, 80, 97, 103, 101, 115, 32, 50, 32, 48, 32, 82, 10, 62,
@@ -90,18 +90,18 @@ public class ProjetStage02Application implements CommandLineRunner {
                 .salaire(40)
                 .nomDeCompagnie("Duff Beer")
                 .position("Delivery Man")
-                .pdf(TESTPDF)
+                .pdf(TEST_PDF)
                 .build());
         gestionnaireService.validateOfferById(offreId);
 
         studentService.uploadCurriculumVitae(PdfDTO.builder()
                 .studentId(1L)
-                .pdf(TESTPDF)
+                .pdf(TEST_PDF)
                 .build());
 
         studentService.uploadCurriculumVitae(PdfDTO.builder()
                 .studentId(student2.getId())
-                .pdf(TESTPDF)
+                .pdf(TEST_PDF)
                 .build());
 
         companyService.createOffre(new OffreDTO(0L,
@@ -111,7 +111,7 @@ public class ProjetStage02Application implements CommandLineRunner {
                 35,
                 35,
                 "My Home",
-                TESTPDF,
+                TEST_PDF,
                 "notoken",
                 false));
         companyService.createOffre(new OffreDTO(0L,
@@ -121,7 +121,7 @@ public class ProjetStage02Application implements CommandLineRunner {
                 36,
                 15,
                 "33 My Home",
-                TESTPDF,
+                TEST_PDF,
                 "notoken",
                 false));
         gestionnaireService.validateStudent(student.getId());

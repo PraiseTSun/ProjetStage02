@@ -9,11 +9,11 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import projet.projetstage02.DTO.*;
+import projet.projetstage02.exception.AlreadyExistingPostulation;
 import projet.projetstage02.exception.InvalidTokenException;
 import projet.projetstage02.exception.NonExistentEntityException;
 import projet.projetstage02.exception.NonExistentOfferExeption;
-
-import projet.projetstage02.exception.AlreadyExistingPostulation;
+import projet.projetstage02.exception.*;
 
 import projet.projetstage02.model.Token;
 import projet.projetstage02.service.AuthService;
@@ -116,7 +116,6 @@ public class RootController {
                 return ResponseEntity.status(INTERNAL_SERVER_ERROR).body(
                         getError("Une erreur avec le service d'email est survenue"));
             }
-            ;
             logger.log(Level.INFO, "PostMapping: /createGestionaire sent 201 response");
             return ResponseEntity.status(CREATED).build();
         } catch (InvalidTokenException ex) {
@@ -600,14 +599,14 @@ public class RootController {
     }
 
     @PutMapping("/applyToOffer/{studentId}_{offerId}")
-    public ResponseEntity<PostulOutDTO> createPostulation(@PathVariable String studentId, @PathVariable String offerId,
-            @RequestBody TokenDTO tokenId) {
+    public ResponseEntity<ApplicationDTO> createPostulation
+            (@PathVariable String studentId, @PathVariable String offerId, @RequestBody TokenDTO tokenId) {
         logger.log(Level.INFO, "Put /createPostulation entered with id: " + studentId
                 + " and offer id: " + offerId);
 
         try {
             authService.getToken(tokenId.getToken(), STUDENT);
-            PostulOutDTO dto = studentService.createPostulation(Long.parseLong(studentId), Long.parseLong(offerId));
+            ApplicationDTO dto = studentService.createPostulation(Long.parseLong(studentId), Long.parseLong(offerId));
             logger.log(Level.INFO, "Put /getOfferStudent sent 200 response");
             return ResponseEntity.ok(dto);
         } catch (NonExistentEntityException e) {
@@ -623,13 +622,13 @@ public class RootController {
     }
 
     @PutMapping("/studentApplys/{studentId}")
-    public ResponseEntity<StudentApplysDTO> getPostulsOfferId(@PathVariable String studentId,
-            @RequestBody TokenDTO tokenId) {
+    public ResponseEntity<ApplicationListDTO> getPostulsOfferId(@PathVariable String studentId,
+                                                                @RequestBody TokenDTO tokenId) {
         logger.log(Level.INFO, "Put /getPostulsOfferId entered with id: " + studentId);
 
         try {
             authService.getToken(tokenId.getToken(), STUDENT);
-            StudentApplysDTO dto = studentService.getPostulsOfferId(Long.parseLong(studentId));
+            ApplicationListDTO dto = studentService.getPostulsOfferId(Long.parseLong(studentId));
             logger.log(Level.INFO, "Put /getPostulsOfferId sent 200 response");
             return ResponseEntity.ok(dto);
         } catch (InvalidTokenException e) {
@@ -637,6 +636,49 @@ public class RootController {
             return ResponseEntity.status(FORBIDDEN).build();
         } catch (NonExistentEntityException e) {
             logger.log(Level.INFO, "Put /getPostulsOfferId sent 404 response");
+            return ResponseEntity.notFound().build();
+        }
+    }
+
+    @PutMapping("/studentAcceptation/{offerId}_{studentId}")
+    public ResponseEntity<ApplicationAcceptationDTO> saveStudentAcceptation
+            (@PathVariable String offerId, @PathVariable String studentId, @RequestBody TokenDTO tokenId) {
+        logger.log(Level.INFO, "Put /studentAcceptation/{offerId}_{studentId} entered with offerId: " + offerId
+                + " and studentId: " + studentId);
+
+        try {
+            authService.getToken(tokenId.getToken(), COMPANY);
+            ApplicationAcceptationDTO dto = companyService
+                    .saveStudentApplicationAccepted(Long.parseLong(offerId), Long.parseLong(studentId));
+            logger.log(Level.INFO, "Put /studentAcceptation/{offerId}_{studentId} sent 200 response");
+            return ResponseEntity.ok(dto);
+        } catch (InvalidTokenException e) {
+            logger.log(Level.INFO, "Put /studentAcceptation/{offerId}_{studentId} sent 403 response");
+            return ResponseEntity.status(FORBIDDEN).build();
+        } catch (AlreadyExistingAcceptationException e) {
+            logger.log(Level.INFO, "Put /studentAcceptation/{offerId}_{studentId} sent 409 response");
+            return ResponseEntity.status(CONFLICT).build();
+        } catch (Exception e) {
+            logger.log(Level.INFO, "Put /studentAcceptation/{offerId}_{studentId} sent 404 response");
+            return ResponseEntity.notFound().build();
+        }
+    }
+
+    @PutMapping("/getAcceptedStudentsForOffer/{offerId}")
+    public ResponseEntity<OfferAcceptedStudentsDTO> getAcceptedStudentsForOffer
+            (@PathVariable String offerId, @RequestBody TokenDTO tokenId) {
+        logger.log(Level.INFO, "Put /getAcceptedStudentsForOffer/{offerId} entered with offerId: " + offerId);
+
+        try {
+            authService.getToken(tokenId.getToken(), COMPANY);
+            OfferAcceptedStudentsDTO dto = companyService.getAcceptedStudentsForOffer(Long.parseLong(offerId));
+            logger.log(Level.INFO, "Put /getAcceptedStudentsForOffer/{offerId} sent 200 response");
+            return ResponseEntity.ok(dto);
+        } catch (InvalidTokenException e) {
+            logger.log(Level.INFO, "Put /getAcceptedStudentsForOffer/{offerId} sent 403 response");
+            return ResponseEntity.status(FORBIDDEN).build();
+        } catch (NonExistentOfferExeption e) {
+            logger.log(Level.INFO, "Put /getAcceptedStudentsForOffer/{offerId} sent 404 response");
             return ResponseEntity.notFound().build();
         }
     }
