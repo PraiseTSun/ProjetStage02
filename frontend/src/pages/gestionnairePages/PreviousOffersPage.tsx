@@ -33,7 +33,7 @@ const PreviousOffersPage = ({connectedUser}:
     useEffect(() => {
         fetchValidatedOffersByYear(nextYear.toString())
     }, [nextYear, fetchValidatedOffersByYear]);
-    
+
     async function getPDF(offerId: number): Promise<void> {
         try {
             const response = await putOfferPdf(offerId.toString(), connectedUser.token)
@@ -113,7 +113,7 @@ const PreviousOffersPage = ({connectedUser}:
                                   value={nextYear - 3}>{nextYear - 3}</ToggleButton>
                     <ToggleButton className="w-100" id="2" variant="primary"
                                   value={nextYear - 2}>{nextYear - 2}</ToggleButton>
-                    <ToggleButton className="w-100" id="3" variant="primary"
+                    <ToggleButton className="w-100" id="3" variant="primary" data-testid="2022"
                                   value={nextYear - 1}>{nextYear - 1}</ToggleButton>
                     <ToggleButton className="w-100" id="4" variant="primary"
                                   value={nextYear}>{nextYear}</ToggleButton>
