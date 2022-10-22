@@ -1,17 +1,28 @@
 import {Button, Col, Container, Form, Row} from "react-bootstrap";
-import React, {useState} from "react";
+import React, {useEffect, useState} from "react";
 import {BeatLoader} from "react-spinners";
 import IUser from "../../models/IUser";
 import {Link} from "react-router-dom";
 import {putUploadStudentCV} from "../../services/studentServices/StudentFetchService";
 import {generateAlert} from "../../services/universalServices/UniversalUtilService";
+import CvStatus from "../../models/CvStatus";
+
+export const status: CvStatus = {
+    state: "",
+    message: ""
+}
 
 const StudentCvUploadPage = ({connectedUser}: { connectedUser: IUser }) => {
     const [waiting, setWaiting] = useState<boolean>(false);
     const [validated, setValidated] = useState<boolean>(false);
     const [cv, setCv] = useState<number[]>([0])
     const [isChoisi, setIsChoisi] = useState<boolean>(false)
-
+    const [cvStatus, setCvStatus] = useState<CvStatus>(status)
+    // useEffect(()=>{
+    //     const fetcheStatusCV = async ()=>{
+    //
+    //     }
+    // }, [])
     const onSubmit = async (event: React.SyntheticEvent) => {
         const form: any = event.currentTarget;
         event.preventDefault();
@@ -87,6 +98,11 @@ const StudentCvUploadPage = ({connectedUser}: { connectedUser: IUser }) => {
                                 className="btn btn-success mx-auto w-75">Envoyer</Button>
                     </Row>
                 </Form>
+                <Row className="text-center pt-2 text-white">
+                <h2>Mon CV</h2>
+                <h3>State : {cvStatus.state}</h3>
+                <h3>Message : {cvStatus.message}</h3>
+            </Row>
             </Col>
         </Container>
     )
