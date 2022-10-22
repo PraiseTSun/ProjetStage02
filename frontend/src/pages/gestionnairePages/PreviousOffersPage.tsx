@@ -1,52 +1,37 @@
 import React, {useEffect, useState} from "react";
-import {Button, Col, Container, Row, Table} from "react-bootstrap";
+import {Button, Col, Container, Row, Table, ToggleButton, ToggleButtonGroup} from "react-bootstrap";
 import {Link} from "react-router-dom";
 import IUser from "../../models/IUser";
 import {Viewer} from '@react-pdf-viewer/core';
-import {
-    deleteRemoveOffer,
-    putOfferPdf,
-    putUnvalidatedOffers,
-    putValidateOffer
-} from "../../services/gestionnaireServices/GestionnaireFetchService";
+import {putOfferPdf, putValidatedOffersByYear} from "../../services/gestionnaireServices/GestionnaireFetchService";
 import {generateAlert} from "../../services/universalServices/UniversalUtilService";
+import IOffer from "../../models/IOffer";
 
-const ValiderNouvelleOffreStagePage = ({connectedUser}:
-                                           { connectedUser: IUser }): JSX.Element => {
+const PreviousOffersPage = ({connectedUser}:
+                                { connectedUser: IUser }): JSX.Element => {
+    const nextYear: number = new Date().getFullYear() + 1
     const [offers, setOffers] = useState<any[]>([]);
     const [pdf, setpdf] = useState<Uint8Array>(new Uint8Array([]));
     const [showPDF, setShowPDF] = useState<boolean>(false);
-
+    const [year, setYear] = useState<number>(nextYear);
 
     useEffect(() => {
-        const fetchOffresAttendreValide = async () => {
-            try {
-                const response = await putUnvalidatedOffers(connectedUser.token)
-                if (response.ok) {
-                    const data = await response.json();
-                    setOffers(data);
-                } else {
-                    generateAlert()
-                }
-            } catch {
-                generateAlert()
-            }
-        }
-        fetchOffresAttendreValide()
-    }, [connectedUser]);
+        fetchValidatedOffersByYear(nextYear.toString())
+    });
 
-    async function valideOffre(offerId: number, valid: boolean): Promise<void> {
+
+    async function fetchValidatedOffersByYear(year: string): Promise<void> {
         try {
-            const response: Response = valid
-                ? await putValidateOffer(offerId.toString(), connectedUser.token)
-                : await deleteRemoveOffer(offerId.toString(), connectedUser.token)
+            const response: Response = await putValidatedOffersByYear(year, connectedUser.token);
 
             if (response.ok) {
-                setOffers(offers.filter(offer => offer.id !== offerId));
+                const data: IOffer[] = await response.json()
+                console.log(data);
+                setOffers(data);
             } else {
                 generateAlert()
             }
-        } catch (exception) {
+        } catch {
             generateAlert()
         }
     }
@@ -90,7 +75,7 @@ const ValiderNouvelleOffreStagePage = ({connectedUser}:
                     <Link to="/" className="btn btn-primary my-3">Home</Link>
                 </Col>
                 <Col sm={8} className="text-center pt-2">
-                    <h1 className="fw-bold text-white display-3 pb-2">Validation des offres</h1>
+                    <h1 className="fw-bold text-white display-3 pb-2">Offres validées précédemment</h1>
                 </Col>
                 <Col sm={2}></Col>
             </Row>
@@ -103,8 +88,6 @@ const ValiderNouvelleOffreStagePage = ({connectedUser}:
                             <th>Départment / Position</th>
                             <th>Heure Par Semaine / Salaire</th>
                             <th>Pdf</th>
-                            <th>Valide</th>
-                            <th>Non Valide</th>
                         </tr>
                         </thead>
                         <tbody className="bg-light">
@@ -116,14 +99,6 @@ const ValiderNouvelleOffreStagePage = ({connectedUser}:
                                     <td>{offer.heureParSemaine} <br/> {offer.salaire}$/h</td>
                                     <td><Button className="btn btn-warning"
                                                 onClick={async () => await getPDF(offer.id)}>pdf</Button></td>
-                                    <td>
-                                        <Button className="btn btn-success mx-5"
-                                                onClick={async () => await valideOffre(offer.id, true)}>O</Button>
-                                    </td>
-                                    <td>
-                                        <Button className="btn btn-danger"
-                                                onClick={async () => await valideOffre(offer.id, false)}>X</Button>
-                                    </td>
                                 </tr>
                             );
                         })}
@@ -131,9 +106,24 @@ const ValiderNouvelleOffreStagePage = ({connectedUser}:
                     </Table>
                 </Col>
             </Row>
+            <Row className="mt-3">
+                <ToggleButtonGroup className="d-flex p-0" name="year" type="radio" value={year} onChange={field => {
+                    setYear(field)
+                    fetchValidatedOffersByYear(field)
+                }}>
+                    <ToggleButton className="w-100" id="1" variant="primary"
+                                  value={nextYear - 3}>{nextYear - 3}</ToggleButton>
+                    <ToggleButton className="w-100" id="2" variant="primary"
+                                  value={nextYear - 2}>{nextYear - 2}</ToggleButton>
+                    <ToggleButton className="w-100" id="3" variant="primary"
+                                  value={nextYear - 1}>{nextYear - 1}</ToggleButton>
+                    <ToggleButton className="w-100" id="4" variant="primary"
+                                  value={nextYear}>{nextYear}</ToggleButton>
+                </ToggleButtonGroup>
+            </Row>
         </Container>
     );
 }
 
-export default ValiderNouvelleOffreStagePage;
+export default PreviousOffersPage;
 

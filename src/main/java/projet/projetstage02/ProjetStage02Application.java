@@ -15,12 +15,6 @@ import projet.projetstage02.service.StudentService;
 @AllArgsConstructor
 public class ProjetStage02Application implements CommandLineRunner {
 
-    private StudentService studentService;
-
-    private CompanyService companyService;
-
-    private GestionnaireService gestionnaireService;
-
     private final byte[] TEST_PDF = new byte[]{
             37, 80, 68, 70, 45, 49, 46, 55, 10, 10, 49, 32, 48, 32, 111, 98, 106, 32, 32, 37, 32, 101, 110, 116,
             114, 121, 32, 112, 111, 105, 110, 116, 10, 60, 60, 10, 32, 32, 47, 84, 121, 112, 101, 32, 47, 67,
@@ -53,6 +47,9 @@ public class ProjetStage02Application implements CommandLineRunner {
             32, 49, 32, 48, 32, 82, 10, 62, 62, 10, 115, 116, 97, 114, 116, 120, 114, 101, 102, 10, 52, 57, 50,
             10, 37, 37, 69, 79, 70
     };
+    private StudentService studentService;
+    private CompanyService companyService;
+    private GestionnaireService gestionnaireService;
 
     public static void main(String[] args) {
         SpringApplication.run(ProjetStage02Application.class, args);
@@ -88,7 +85,7 @@ public class ProjetStage02Application implements CommandLineRunner {
                 .department(Department.Informatique.departement)
                 .heureParSemaine(40)
                 .salaire(40)
-                .session("Hiver 2022")
+                .session("Hiver 2023")
                 .nomDeCompagnie("Duff Beer")
                 .position("Delivery Man")
                 .pdf(TEST_PDF)
@@ -113,7 +110,7 @@ public class ProjetStage02Application implements CommandLineRunner {
                         .position("Support TI")
                         .heureParSemaine(35)
                         .salaire(35)
-                        .session("Hiver 2022")
+                        .session("Hiver 2023")
                         .adresse("My Home")
                         .pdf(TEST_PDF)
                         .token("notoken")
@@ -128,7 +125,7 @@ public class ProjetStage02Application implements CommandLineRunner {
                         .position("Support TI")
                         .heureParSemaine(36)
                         .salaire(15)
-                        .session("Hiver 2022")
+                        .session("Hiver 2023")
                         .adresse("33 My Home")
                         .pdf(TEST_PDF)
                         .token("notoken")
