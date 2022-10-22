@@ -1,3 +1,5 @@
+import axios from 'axios';
+
 export const putGetOffers = (studentId: string, token: string): Promise<Response> => {
     return fetch("http://localhost:8080/getOffers/" + studentId, {
         method: "PUT",
@@ -58,8 +60,8 @@ export const putStatusCv = (studentId: String, token: string): Promise<Response>
         method: "PUT",
         headers: {"Content-Type": "application/json"},
         body: JSON.stringify({
-            studentId: studentId,
-            token: token
+            "studentId": studentId,
+            "token": token
         })
     });
 }

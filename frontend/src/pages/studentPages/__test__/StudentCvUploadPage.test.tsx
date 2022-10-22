@@ -1,52 +1,74 @@
-import {render, screen} from "@testing-library/react";
+import {act, render, screen} from "@testing-library/react";
 import StudentCvUploadPage from "../StudentCvUploadPage";
 import {BrowserRouter} from "react-router-dom";
 import * as React from "react";
 import {emptyUser} from "../../../App";
-import CvStatus from "../../../models/CvStatus";
+import ValiderNouvelleOffreStagePage from "../../gestionnairePages/ValiderNouvelleOffreStagePage";
 
 describe('StudentCvUploadPageTests', () => {
-    let status: CvStatus
-    beforeEach(() => {
-        render(<StudentCvUploadPage connectedUser={emptyUser}/>, {wrapper: BrowserRouter});
-        status = {
-            state: "En cours",
-            message: "Attendez la validation"
-        }
+    beforeEach(async () => {
+        global.fetch = jest.fn((url) => {
+                if (url === "http://localhost:8080/getStatutValidationCV/1") {
+                    return Promise.resolve({
+                        ok: true,
+                        json: () => Promise.resolve([{
+                            "State": "NOTHING",
+                            "Message": "",
+                        }])
+                    });
+                } else throw new Error("Bad url call");
+            }
+        ) as jest.Mock;
+
+        const intersectionObserverMock = () => ({
+            observe: () => null,
+            unobserve: () => null,
+            disconnect: () => null
+        })
+        window.IntersectionObserver = jest.fn().mockImplementation(intersectionObserverMock);
+
+        window.alert = jest.fn(() => null) as jest.Mock;
+
+        await act(async () => {
+            await render(<StudentCvUploadPage connectedUser={emptyUser}/>, {wrapper: BrowserRouter});
+        });
+
     });
 
     it('InputIsPresentTest', async () => {
-        const inputUploaderMonCV = screen.getByTestId("uploaderMonCV")
+        const inputUploaderMonCV =  await screen.getByTestId("uploaderMonCV")
         expect(inputUploaderMonCV).toBeInTheDocument()
     });
 
     it('HeaderIsPresentTest', async () => {
-        const h4Element = screen.getByRole("heading", {name: /Téléverser CV/i});
+        const h4Element = await screen.getByRole("heading", {name: /Téléverser CV/i});
         expect(h4Element).toBeInTheDocument();
     });
 
     it('ButtonIsPresentTest', async () => {
-        const buttonElement = screen.getByRole("button", {name: /Envoyer/i});
+        const buttonElement = await screen.getByRole("button", {name: /Envoyer/i});
         expect(buttonElement).toBeInTheDocument();
     });
 
     it('ErrorIsPresentTest', async () => {
-        const erreurElement = screen.getByText("Choix votre CV")
+        const erreurElement = await screen.getByText("Choix votre CV")
         expect(erreurElement).toBeInTheDocument();
     });
 
     it('H2IsPresentTest', async () => {
-        const h2Element = screen.getByText(/Mon CV/i)
+        const h2Element = await screen.getByText(/Mon CV/i)
         expect(h2Element).toBeInTheDocument()
     })
 
     it('H3StateParDefautIsPresentTest', async () => {
-        const h3StateElement = screen.getByText(`State : ${status.state}`)
-        expect(h3StateElement).toBeInTheDocument()
+        const h3StateElement = await screen.getByText(`State : NOTHING`)
+        expect(h3StateElement).not.toBeInTheDocument()
+        expect(fetch).toBeCalledWith("http://localhost:8080/getStatutValidationCV/", expect.anything());
+        expect(fetch).toBeCalledTimes(1);
     })
 
     it('h3MessageParDefautIsPresentTest', async () => {
-        const h3MessageElement = screen.getByText(`Message : ${status.message}`)
+        const h3MessageElement = screen.getByText(`Message :`)
         expect(h3MessageElement).toBeInTheDocument()
     })
 });

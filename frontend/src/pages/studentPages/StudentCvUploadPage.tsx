@@ -8,9 +8,9 @@ import {generateAlert} from "../../services/universalServices/UniversalUtilServi
 import CvStatus from "../../models/CvStatus";
 import {LOCAL_STORAGE_KEY} from "../../App";
 
-export const status: CvStatus = {
-    state: "En cours",
-    message: "Attendez la validation"
+export const status : CvStatus = {
+    state: "",
+    message: ""
 }
 
 const StudentCvUploadPage = ({connectedUser}: { connectedUser: IUser }) => {
@@ -18,13 +18,13 @@ const StudentCvUploadPage = ({connectedUser}: { connectedUser: IUser }) => {
     const [validated, setValidated] = useState<boolean>(false);
     const [cv, setCv] = useState<number[]>([0])
     const [isChoisi, setIsChoisi] = useState<boolean>(false)
-    const [cvStatus, setCvStatus] = useState<CvStatus>(status)
+    const [cvStatus, setCvStatus] = useState(status)
 
     useEffect(() => {
         const fetcheStatusCV = async () => {
-            await putStatusCv(connectedUser.id, connectedUser.token).then(reponse => {
+            await putStatusCv(connectedUser.id, connectedUser.token).then(async reponse => {
                 if (reponse.status == 200) {
-                    setCvStatus(JSON.parse(localStorage.getItem(LOCAL_STORAGE_KEY)!))
+                    setCvStatus(await reponse.json())
                 } else {
                     generateAlert()
                 }
