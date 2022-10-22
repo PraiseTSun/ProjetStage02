@@ -6,9 +6,11 @@ import projet.projetstage02.DTO.*;
 import projet.projetstage02.exception.AlreadyExistingPostulation;
 import projet.projetstage02.exception.NonExistentEntityException;
 import projet.projetstage02.model.Application;
+import projet.projetstage02.model.CvStatus;
 import projet.projetstage02.model.Offre;
 import projet.projetstage02.model.Student;
 import projet.projetstage02.repository.ApplicationRepository;
+import projet.projetstage02.repository.CvStatusRepository;
 import projet.projetstage02.repository.OffreRepository;
 import projet.projetstage02.repository.StudentRepository;
 
@@ -29,6 +31,8 @@ public class StudentService {
     private final StudentRepository studentRepository;
     private final OffreRepository offreRepository;
     private final ApplicationRepository applicationRepository;
+
+    private final CvStatusRepository cvStatusRepository;
 
     public void saveStudent(String firstName,
                             String lastName,
@@ -74,6 +78,15 @@ public class StudentService {
         Student student = getStudentById(dto.getStudentId()).toModel();
         student.setCvToValidate(dto.getPdf());
         saveStudent(new StudentDTO(student));
+        Optional<CvStatus> cvStatusOpt = cvStatusRepository.findById(student.getId());
+        CvStatus status;
+        status = cvStatusOpt.orElseGet(() -> CvStatus.builder()
+                .studentId(student.getId())
+                .build());
+
+        status.setStatus("PENDING");
+        status.setRefusalMessage("");
+        cvStatusRepository.save(status);
         return new StudentDTO(student);
     }
 
@@ -127,7 +140,7 @@ public class StudentService {
         if (offerOpt.isEmpty()) throw new NonExistentEntityException();
 
         Optional<Application> postulationOpt = applicationRepository.findByStudentIdAndOfferId(studentId, offerID);
-        if (!postulationOpt.isEmpty()) throw new AlreadyExistingPostulation();
+        if (postulationOpt.isPresent()) throw new AlreadyExistingPostulation();
 
         Student student = studentOpt.get();
         Offre offer = offerOpt.get();
@@ -162,5 +175,24 @@ public class StudentService {
                 .studentId(studentOpt.get().getId())
                 .offersId(offersId)
                 .build();
+    }
+
+    public CvStatusDTO getStudentCvStatus(long studentId) throws NonExistentEntityException {
+        Optional<Student> studentOpt = studentRepository.findById(studentId);
+        if (studentOpt.isEmpty()) {
+            throw new NonExistentEntityException();
+        }
+        Optional<CvStatus> cvStatusOpt = cvStatusRepository.findById(studentId);
+        if (cvStatusOpt.isEmpty()) {
+            CvStatus status = CvStatus.builder()
+                    .status("NOTHING")
+                    .refusalMessage("")
+                    .studentId(studentId)
+                    .build();
+
+            cvStatusRepository.save(status);
+            return new CvStatusDTO(status);
+        }
+        return new CvStatusDTO(cvStatusOpt.get());
     }
 }

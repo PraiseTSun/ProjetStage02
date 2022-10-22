@@ -11,12 +11,12 @@ import projet.projetstage02.exception.AlreadyExistingPostulation;
 import projet.projetstage02.exception.NonExistentEntityException;
 import projet.projetstage02.model.AbstractUser.Department;
 import projet.projetstage02.model.Application;
+import projet.projetstage02.model.CvStatus;
 import projet.projetstage02.model.Offre;
-import projet.projetstage02.model.Postulation;
 import projet.projetstage02.model.Student;
 import projet.projetstage02.repository.ApplicationRepository;
+import projet.projetstage02.repository.CvStatusRepository;
 import projet.projetstage02.repository.OffreRepository;
-import projet.projetstage02.repository.PostulationRepository;
 import projet.projetstage02.repository.StudentRepository;
 
 import java.util.ArrayList;
@@ -43,10 +43,13 @@ public class StudentServiceTest {
     @Mock
     ApplicationRepository applicationRepository;
 
+    @Mock
+    CvStatusRepository cvStatusRepository;
     Student bart;
     PdfDTO bartCv;
     Offre duffOffer;
     Application bartApplication;
+    CvStatus cvStatus;
 
     @BeforeEach
     void setup() {
@@ -70,7 +73,7 @@ public class StudentServiceTest {
                 .heureParSemaine(69)
                 .adresse("Somewhere")
                 .valide(true)
-                .pdf(new byte[] { 1, 2, 3, 4, 5, 6, 7, 8, 9 })
+                .pdf(new byte[]{1, 2, 3, 4, 5, 6, 7, 8, 9})
                 .build();
 
         bartApplication = Application.builder()
@@ -78,6 +81,7 @@ public class StudentServiceTest {
                 .studentId(2L)
                 .offerId(1L)
                 .build();
+        cvStatus = CvStatus.builder().build();
     }
 
     @Test
@@ -183,12 +187,14 @@ public class StudentServiceTest {
         // Arrange
         when(studentRepository.findById(anyLong())).thenReturn(Optional.of(bart));
         when(studentRepository.save(any())).thenReturn(bart);
-
+        when(cvStatusRepository.findById(any())).thenReturn(Optional.of(cvStatus));
         //Act
         studentService.uploadCurriculumVitae(bartCv);
 
         // Assert
         verify(studentRepository, times(1)).save(any());
+        verify(cvStatusRepository, times(1)).findById(any());
+        assertThat(cvStatus.getStatus()).isEqualTo("PENDING");
     }
 
     @Test
@@ -302,6 +308,7 @@ public class StudentServiceTest {
 
         fail("NonExistentEntityException not thrown");
     }
+
     @Test
     void testInvalidStudentReturnsFalse() throws NonExistentEntityException {
         // Arrange
@@ -408,5 +415,80 @@ public class StudentServiceTest {
         }
 
         fail("NonExistingEntityException not thrown");
+    }
+
+    @Test
+    void testGetCvStatusNothingStateHappyDay() throws NonExistentEntityException {
+        cvStatus.setStatus("NOTHING");
+        cvStatus.setRefusalMessage("");
+        when(cvStatusRepository.findById(any())).thenReturn(Optional.of(cvStatus));
+        when(studentRepository.findById(anyLong())).thenReturn(Optional.of(bart));
+
+        CvStatusDTO studentCvStatus = studentService.getStudentCvStatus(bart.getId());
+
+        assertThat(studentCvStatus.getStatus()).isEqualTo("NOTHING");
+        assertThat(studentCvStatus.getRefusalMessage()).isEqualTo("");
+
+    }
+
+    @Test
+    void testGetCvStatusPendingStateHappyDay() throws NonExistentEntityException {
+        cvStatus.setStatus("PENDING");
+        cvStatus.setRefusalMessage("");
+        when(cvStatusRepository.findById(any())).thenReturn(Optional.of(cvStatus));
+        when(studentRepository.findById(any())).thenReturn(Optional.of(bart));
+
+        CvStatusDTO studentCvStatus = studentService.getStudentCvStatus(bart.getId());
+
+        assertThat(studentCvStatus.getStatus()).isEqualTo("PENDING");
+        assertThat(studentCvStatus.getRefusalMessage()).isEqualTo("");
+
+    }
+
+    @Test
+    void testGetCvStatusAcceptedStateHappyDay() throws NonExistentEntityException {
+        cvStatus.setStatus("ACCEPTED");
+        cvStatus.setRefusalMessage("");
+        when(cvStatusRepository.findById(any())).thenReturn(Optional.of(cvStatus));
+        when(studentRepository.findById(any())).thenReturn(Optional.of(bart));
+
+        CvStatusDTO studentCvStatus = studentService.getStudentCvStatus(bart.getId());
+
+        assertThat(studentCvStatus.getStatus()).isEqualTo("ACCEPTED");
+        assertThat(studentCvStatus.getRefusalMessage()).isEqualTo("");
+
+    }
+
+    @Test
+    void testGetCvStatusRefusedStateHappyDay() throws NonExistentEntityException {
+        cvStatus.setStatus("REFUSED");
+        cvStatus.setRefusalMessage("refused");
+        when(cvStatusRepository.findById(any())).thenReturn(Optional.of(cvStatus));
+        when(studentRepository.findById(any())).thenReturn(Optional.of(bart));
+
+        CvStatusDTO studentCvStatus = studentService.getStudentCvStatus(bart.getId());
+
+        assertThat(studentCvStatus.getStatus()).isEqualTo("REFUSED");
+        assertThat(studentCvStatus.getRefusalMessage()).isEqualTo("refused");
+    }
+
+    @Test
+    void testGetCvStatusDoesntExistHappyDay() throws NonExistentEntityException {
+        when(cvStatusRepository.findById(any())).thenReturn(Optional.empty());
+        when(studentRepository.findById(any())).thenReturn(Optional.of(bart));
+
+        CvStatusDTO studentCvStatus = studentService.getStudentCvStatus(bart.getId());
+
+        assertThat(studentCvStatus.getStatus()).isEqualTo("NOTHING");
+    }
+
+    @Test
+    void testGetCvStatusNonExistantEntityException() {
+        try {
+            studentService.getStudentCvStatus(bart.getId());
+        } catch (NonExistentEntityException e) {
+            return;
+        }
+        fail("NonExistentEntityException not launched");
     }
 }

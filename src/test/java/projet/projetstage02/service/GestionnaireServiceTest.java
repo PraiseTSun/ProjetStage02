@@ -8,13 +8,11 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import projet.projetstage02.DTO.*;
 import projet.projetstage02.exception.ExpiredSessionException;
+import projet.projetstage02.exception.InvalidStatusException;
 import projet.projetstage02.exception.NonExistentEntityException;
 import projet.projetstage02.exception.NonExistentOfferExeption;
 import projet.projetstage02.model.*;
-import projet.projetstage02.repository.CompanyRepository;
-import projet.projetstage02.repository.GestionnaireRepository;
-import projet.projetstage02.repository.OffreRepository;
-import projet.projetstage02.repository.StudentRepository;
+import projet.projetstage02.repository.*;
 
 import java.util.*;
 
@@ -37,7 +35,8 @@ public class GestionnaireServiceTest {
     private CompanyRepository companyRepository;
     @Mock
     private OffreRepository offreRepository;
-
+    @Mock
+    private CvStatusRepository cvStatusRepository;
     @InjectMocks
     private GestionnaireService service;
 
@@ -45,6 +44,7 @@ public class GestionnaireServiceTest {
     private Company companyTest;
     private Student studentTest;
     private Offre offreTest;
+    private CvStatus cvStatus;
 
     @BeforeEach
     void beforeEach() {
@@ -81,6 +81,7 @@ public class GestionnaireServiceTest {
                 .pdf(new byte[0])
                 .valide(false)
                 .build();
+        cvStatus = CvStatus.builder().build();
     }
 
     @Test
@@ -569,9 +570,11 @@ public class GestionnaireServiceTest {
     }
 
     @Test
-    void testValidateStudentCVSuccess() throws NonExistentEntityException {
+    void testValidateStudentCVSuccess() throws NonExistentEntityException, InvalidStatusException {
         // Arrange
         studentTest.setCvToValidate(new byte[0]);
+        cvStatus.setStatus("PENDING");
+        when(cvStatusRepository.findById(anyLong())).thenReturn(Optional.of(cvStatus));
         when(studentRepository.findById(anyLong())).thenReturn(Optional.of(studentTest));
 
         // Act
@@ -584,9 +587,9 @@ public class GestionnaireServiceTest {
     }
 
     @Test
-    void testValidateStudentCVNotFound() {
+    void testValidateStudentCVNotFound() throws InvalidStatusException {
         // Arrange
-        when(studentRepository.findById(anyLong())).thenReturn(Optional.empty());
+        cvStatus.setStatus("PENDING");
 
         // Act
         try {
@@ -598,31 +601,68 @@ public class GestionnaireServiceTest {
     }
 
     @Test
-    void testRemoveStudentCvValidationSuccess() throws NonExistentEntityException {
+    void testValidateStudentCVInvalidStatus() throws NonExistentEntityException {
         // Arrange
+        cvStatus.setStatus("ACCEPTED");
+        when(cvStatusRepository.findById(anyLong())).thenReturn(Optional.of(cvStatus));
+        when(studentRepository.findById(anyLong())).thenReturn(Optional.of(studentTest));
+
+        // Act
+        try {
+            service.validateStudentCV(1L);
+        } catch (InvalidStatusException e) {
+            return;
+        }
+        fail("InvalidStatusException not caught");
+    }
+
+    @Test
+    void testRemoveStudentCvValidationSuccess() throws NonExistentEntityException, InvalidStatusException {
+        // Arrange
+        cvStatus.setStatus("PENDING");
+        when(cvStatusRepository.findById(anyLong())).thenReturn(Optional.of(cvStatus));
         studentTest.setCvToValidate(new byte[0]);
         when(studentRepository.findById(anyLong())).thenReturn(Optional.of(studentTest));
 
         // Act
-        StudentDTO studentDTO = service.removeStudentCvValidation(1L);
+        StudentDTO studentDTO = service.removeStudentCvValidation(1L, "Refused");
 
         // Assert
         assertThat(studentDTO.getEmail()).isEqualTo(studentTest.getEmail());
         assertThat(studentDTO.getCvToValidate()).isEmpty();
+        assertThat(cvStatus.getRefusalMessage()).isEqualTo("Refused");
+        assertThat(cvStatus.getStatus()).isEqualTo("REFUSED");
     }
 
     @Test
-    void testRemoveStudentCvValidationNotFound() {
+    void testRemoveStudentCvValidationNotFound() throws InvalidStatusException {
         // Arrange
+        cvStatus.setStatus("PENDING");
         when(studentRepository.findById(anyLong())).thenReturn(Optional.empty());
 
         // Act
         try {
-            service.removeStudentCvValidation(1L);
+            service.removeStudentCvValidation(1L, "Refused");
         } catch (NonExistentEntityException e) {
             return;
         }
         fail("NonExistentUserException not caught");
+    }
+
+    @Test
+    void testRemoveStudentCvValidationInvalidStatus() throws NonExistentEntityException {
+        // Arrange
+        cvStatus.setStatus("ACCEPTED");
+        when(cvStatusRepository.findById(anyLong())).thenReturn(Optional.of(cvStatus));
+        when(studentRepository.findById(anyLong())).thenReturn(Optional.of(studentTest));
+
+        // Act
+        try {
+            service.removeStudentCvValidation(1L, "Refused");
+        } catch (InvalidStatusException e) {
+            return;
+        }
+        fail("InvalidStatusException not caught");
     }
 
     @Test

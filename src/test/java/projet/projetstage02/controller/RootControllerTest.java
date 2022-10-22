@@ -60,6 +60,7 @@ public class RootControllerTest {
     JacksonTester<GestionnaireDTO> jsonGestionnaireDTO;
     JacksonTester<OffreDTO> jsonOffreDTO;
     JacksonTester<TokenDTO> jsonTokenDTO;
+    JacksonTester<CvRefusalDTO> jsonCvRefusalDTO;
     JacksonTester<PdfDTO> jsonPdfDTO;
 
     StudentDTO bart;
@@ -70,6 +71,7 @@ public class RootControllerTest {
     OffreDTO duffOffre;
     PdfOutDTO duffOfferOut;
     PdfDTO bartCV;
+    CvRefusalDTO cvRefusalDTO;
     ApplicationDTO bartPostulation;
     ApplicationListDTO bartApplys;
     ApplicationAcceptationDTO applicationDTO;
@@ -141,6 +143,11 @@ public class RootControllerTest {
         bartApplys = ApplicationListDTO.builder()
                 .studentId(bart.getId())
                 .offersId(Arrays.asList(duffOffre.getId()))
+                .build();
+
+        cvRefusalDTO = CvRefusalDTO.builder()
+                .refusalReason("refused")
+                .token(token.getToken())
                 .build();
 
         applicationDTO = ApplicationAcceptationDTO.builder()
@@ -1079,11 +1086,11 @@ public class RootControllerTest {
     @Test
     void testRefuseStudentCVSuccess() throws Exception {
         when(authService.getToken(any(), any())).thenReturn(Token.builder().userId(1).build());
-        when(gestionnaireService.removeStudentCvValidation(anyLong())).thenReturn(bart);
+        when(gestionnaireService.removeStudentCvValidation(anyLong(), anyString())).thenReturn(bart);
 
         mockMvc.perform(put("/refuseCv/{studentId}", 1)
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(jsonTokenDTO.write(token).getJson()))
+                        .content(jsonCvRefusalDTO.write(cvRefusalDTO).getJson()))
 
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.firstName", is(bart.getFirstName())));
@@ -1093,11 +1100,11 @@ public class RootControllerTest {
     void testRefuseStudentCVNotFound() throws Exception {
         when(authService.getToken(any(), any())).thenReturn(Token.builder().userId(1).build());
         doThrow(new NonExistentEntityException()).
-                when(gestionnaireService).removeStudentCvValidation(anyLong());
+                when(gestionnaireService).removeStudentCvValidation(anyLong(), any());
 
         mockMvc.perform(put("/refuseCv/{studentId}", 1)
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(jsonTokenDTO.write(token).getJson()))
+                        .content(jsonCvRefusalDTO.write(cvRefusalDTO).getJson()))
                 .andExpect(status().isNotFound());
     }
 
@@ -1105,11 +1112,11 @@ public class RootControllerTest {
     void testRefuseStudentCVInvalidToken() throws Exception {
         when(authService.getToken(any(), any())).thenReturn(Token.builder().userId(1).build());
         doThrow(new NonExistentEntityException()).
-                when(gestionnaireService).removeStudentCvValidation(anyLong());
+                when(gestionnaireService).removeStudentCvValidation(anyLong(), any());
 
         mockMvc.perform(put("/refuseCv/{studentId}", 1)
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(jsonTokenDTO.write(token).getJson()))
+                        .content(jsonCvRefusalDTO.write(cvRefusalDTO).getJson()))
                 .andExpect(status().isNotFound());
     }
 
