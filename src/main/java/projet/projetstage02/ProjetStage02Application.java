@@ -88,6 +88,7 @@ public class ProjetStage02Application implements CommandLineRunner {
                 .department(Department.Informatique.departement)
                 .heureParSemaine(40)
                 .salaire(40)
+                .session("Hiver 2022")
                 .nomDeCompagnie("Duff Beer")
                 .position("Delivery Man")
                 .pdf(TEST_PDF)
@@ -104,26 +105,36 @@ public class ProjetStage02Application implements CommandLineRunner {
                 .pdf(TEST_PDF)
                 .build());
 
-        companyService.createOffre(new OffreDTO(0L,
-                "Bell",
-                "Techniques de linformatique",
-                "Support TI",
-                35,
-                35,
-                "My Home",
-                TEST_PDF,
-                "notoken",
-                false));
-        companyService.createOffre(new OffreDTO(0L,
-                "Bell BB",
-                "Techniques de linformatique",
-                "Support TI",
-                36,
-                15,
-                "33 My Home",
-                TEST_PDF,
-                "notoken",
-                false));
+        companyService.createOffre(
+                OffreDTO.builder()
+                        .id(0L)
+                        .nomDeCompagnie("Bell")
+                        .department("Techniques de linformatique")
+                        .position("Support TI")
+                        .heureParSemaine(35)
+                        .salaire(35)
+                        .session("Hiver 2022")
+                        .adresse("My Home")
+                        .pdf(TEST_PDF)
+                        .token("notoken")
+                        .valide(false)
+                        .build()
+        );
+        companyService.createOffre(
+                OffreDTO.builder()
+                        .id(0L)
+                        .nomDeCompagnie("Vidéotron")
+                        .department("Techniques de linformatique")
+                        .position("Support TI")
+                        .heureParSemaine(36)
+                        .salaire(15)
+                        .session("Hiver 2022")
+                        .adresse("33 My Home")
+                        .pdf(TEST_PDF)
+                        .token("notoken")
+                        .valide(false)
+                        .build()
+        );
         gestionnaireService.validateStudent(student.getId());
         gestionnaireService.validateStudent(student2.getId());
         System.out.println(studentService.getStudentById(1L));

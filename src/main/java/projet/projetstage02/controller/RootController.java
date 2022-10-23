@@ -14,7 +14,6 @@ import projet.projetstage02.exception.InvalidTokenException;
 import projet.projetstage02.exception.NonExistentEntityException;
 import projet.projetstage02.exception.NonExistentOfferExeption;
 import projet.projetstage02.exception.*;
-
 import projet.projetstage02.model.Token;
 import projet.projetstage02.service.AuthService;
 import projet.projetstage02.service.CompanyService;
@@ -23,15 +22,13 @@ import projet.projetstage02.service.StudentService;
 import projet.projetstage02.utils.EmailUtil;
 
 import javax.validation.Valid;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import static org.springframework.http.HttpStatus.*;
 import static projet.projetstage02.model.Token.UserTypes.*;
-import static projet.projetstage02.utils.TimeUtil.MILLI_SECOND_DAY;
-import static projet.projetstage02.utils.TimeUtil.currentTimestamp;
+import static projet.projetstage02.utils.TimeUtil.*;
 
 @RestController
 @AllArgsConstructor
@@ -131,9 +128,9 @@ public class RootController {
     @PostMapping("/createOffre")
     public ResponseEntity<Map<String, String>> createOffre(@Valid @RequestBody OffreDTO offreDTO) {
         try {
-            System.out.println(Arrays.toString(offreDTO.getPdf()));
-            logger.log(Level.INFO, "Post /createOffre entered with body : " + offreDTO.toString());
+            logger.log(Level.INFO, "Post /createOffre entered with body : " + offreDTO);
             authService.getToken(offreDTO.getToken(), COMPANY);
+            offreDTO.setSession("Hiver " + getNextYear());
             companyService.createOffre(offreDTO);
             logger.log(Level.INFO, "PostMapping: /createOffre sent 201 response");
             return ResponseEntity.status(CREATED).build();
@@ -415,13 +412,28 @@ public class RootController {
     @PutMapping("/unvalidatedOffers")
     public ResponseEntity<List<OffreDTO>> getOfferToValidate(@RequestBody TokenDTO tokenDTO) {
         try {
+            logger.log(Level.INFO, "put /unvalidatedOffers entered with year : ");
             authService.getToken(tokenDTO.getToken(), GESTIONNAIRE);
-            logger.log(Level.INFO, "put /unvalidatedOffers entered");
             List<OffreDTO> unvalidatedOffers = gestionnaireService.getUnvalidatedOffers();
             logger.log(Level.INFO, "PutMapping: /unvalidatedOffers sent 200 response");
             return ResponseEntity.ok(unvalidatedOffers);
         } catch (InvalidTokenException e) {
             logger.log(Level.INFO, "PutMapping: /unvalidatedOffers sent 403 response");
+            return ResponseEntity.status(FORBIDDEN).build();
+        }
+    }
+
+    @PutMapping("/validatedOffers/{year}")
+    public ResponseEntity<List<OffreDTO>> getValidatedOffersForYear(@PathVariable int year,
+                                                                    @RequestBody TokenDTO tokenDTO) {
+        try {
+            logger.log(Level.INFO, "put /validatedOffers entered with year : " + year);
+            authService.getToken(tokenDTO.getToken(), GESTIONNAIRE);
+            List<OffreDTO> validatedOffers = gestionnaireService.getValidatedOffers(year);
+            logger.log(Level.INFO, "PutMapping: /validatedOffers sent 200 response");
+            return ResponseEntity.ok(validatedOffers);
+        } catch (InvalidTokenException e) {
+            logger.log(Level.INFO, "PutMapping: /validatedOffers sent 403 response");
             return ResponseEntity.status(FORBIDDEN).build();
         }
     }
@@ -435,7 +447,7 @@ public class RootController {
             logger.log(Level.INFO, "PutMapping: /validateOffer sent 200 response");
             OffreDTO offreDTO = gestionnaireService.validateOfferById(Long.parseLong(id));
             return ResponseEntity.ok(offreDTO);
-        } catch (NonExistentOfferExeption exception) {
+        } catch (NonExistentOfferExeption | ExpiredSessionException exception) {
             logger.log(Level.INFO, "PutMapping: /validateOffer sent 404 response");
             return ResponseEntity.notFound().build();
         } catch (InvalidTokenException e) {
@@ -494,7 +506,6 @@ public class RootController {
             return ResponseEntity.status(FORBIDDEN).build();
         }
     }
-    // Todo add tokens
 
     @PutMapping("/unvalidatedCvStudents")
     public ResponseEntity<List<StudentDTO>> getUnvalidatedCvStudent(@RequestBody TokenDTO tokenId) {
@@ -535,7 +546,7 @@ public class RootController {
             StudentDTO studentDTO = gestionnaireService.validateStudentCV(Long.parseLong(studentId));
             logger.log(Level.INFO, "PutMapping: /validateCv sent 200 response");
             return ResponseEntity.ok(studentDTO);
-        } catch (NonExistentEntityException e) {
+        } catch (NonExistentEntityException | InvalidStatusException e) {
             logger.log(Level.INFO, "PutMapping: /validateCv sent 404 response");
             return ResponseEntity.notFound().build();
         } catch (InvalidTokenException e) {
@@ -545,14 +556,15 @@ public class RootController {
     }
 
     @PutMapping("/refuseCv/{studentId}")
-    public ResponseEntity<StudentDTO> refuseStudentCv(@PathVariable String studentId, @RequestBody TokenDTO tokenId) {
+    public ResponseEntity<StudentDTO> refuseStudentCv(@PathVariable long studentId, @RequestBody CvRefusalDTO cvRefusalDTO) {
         logger.log(Level.INFO, "Put /refuseCv entered with id : ");
         try {
-            authService.getToken(tokenId.getToken(), GESTIONNAIRE);
-            StudentDTO studentDTO = gestionnaireService.removeStudentCvValidation(Long.parseLong(studentId));
+            authService.getToken(cvRefusalDTO.getToken(), GESTIONNAIRE);
+            StudentDTO studentDTO = gestionnaireService.removeStudentCvValidation(
+                    studentId, cvRefusalDTO.getRefusalReason());
             logger.log(Level.INFO, "PutMapping: /refuseCv sent 200 response");
             return ResponseEntity.ok(studentDTO);
-        } catch (NonExistentEntityException e) {
+        } catch (NonExistentEntityException | InvalidStatusException e) {
             logger.log(Level.INFO, "PutMapping: /refuseCv sent 404 response");
             return ResponseEntity.notFound().build();
         } catch (InvalidTokenException e) {
@@ -601,22 +613,22 @@ public class RootController {
     @PutMapping("/applyToOffer/{studentId}_{offerId}")
     public ResponseEntity<ApplicationDTO> createPostulation
             (@PathVariable String studentId, @PathVariable String offerId, @RequestBody TokenDTO tokenId) {
-        logger.log(Level.INFO, "Put /createPostulation entered with id: " + studentId
+        logger.log(Level.INFO, "Put /applyToOffer entered with id: " + studentId
                 + " and offer id: " + offerId);
 
         try {
             authService.getToken(tokenId.getToken(), STUDENT);
             ApplicationDTO dto = studentService.createPostulation(Long.parseLong(studentId), Long.parseLong(offerId));
-            logger.log(Level.INFO, "Put /getOfferStudent sent 200 response");
+            logger.log(Level.INFO, "Put /applyToOffer sent 200 response");
             return ResponseEntity.ok(dto);
         } catch (NonExistentEntityException e) {
-            logger.log(Level.INFO, "Put /getOfferStudent sent 404 response");
+            logger.log(Level.INFO, "Put /applyToOffer sent 404 response");
             return ResponseEntity.notFound().build();
         } catch (InvalidTokenException e) {
-            logger.log(Level.INFO, "Put /getOfferStudent sent 403 response");
+            logger.log(Level.INFO, "Put /applyToOffer sent 403 response");
             return ResponseEntity.status(FORBIDDEN).build();
         } catch (AlreadyExistingPostulation e) {
-            logger.log(Level.INFO, "Put /getOfferStudent sent 409 response");
+            logger.log(Level.INFO, "Put /applyToOffer sent 409 response");
             return ResponseEntity.status(CONFLICT).build();
         }
     }
@@ -636,6 +648,25 @@ public class RootController {
             return ResponseEntity.status(FORBIDDEN).build();
         } catch (NonExistentEntityException e) {
             logger.log(Level.INFO, "Put /getPostulsOfferId sent 404 response");
+            return ResponseEntity.notFound().build();
+        }
+    }
+
+    @PutMapping("/getStatutValidationCV/{id}")
+    public ResponseEntity<CvStatusDTO> getStatutValidationCV(@PathVariable long id, @RequestBody TokenDTO tokenId) {
+
+        logger.log(Level.INFO, "Put /getStatutValidationCV entered with id: " + id);
+
+        try {
+            authService.getToken(tokenId.getToken(), STUDENT);
+            CvStatusDTO dto = studentService.getStudentCvStatus(id);
+            logger.log(Level.INFO, "Put /getStatutValidationCV sent 200 response");
+            return ResponseEntity.ok(dto);
+        } catch (InvalidTokenException e) {
+            logger.log(Level.INFO, "Put /getStatutValidationCV sent 403 response");
+            return ResponseEntity.status(FORBIDDEN).build();
+        } catch (NonExistentEntityException e) {
+            logger.log(Level.INFO, "Put /getStatutValidationCV sent 404 response");
             return ResponseEntity.notFound().build();
         }
     }

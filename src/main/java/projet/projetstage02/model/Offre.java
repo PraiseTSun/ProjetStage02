@@ -5,6 +5,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import projet.projetstage02.model.AbstractUser.Department;
+import projet.projetstage02.utils.TimeUtil;
 
 import javax.persistence.*;
 import javax.validation.constraints.*;
@@ -23,6 +24,9 @@ public class Offre {
     @NotBlank
     @Size(min = 2)
     private String nomDeCompagnie;
+    @Size(min = 10)
+    @Pattern(regexp = "^Hiver (\\d{4})$")
+    private String session;
     @NotNull
     private Department department;
     @NotBlank
@@ -43,4 +47,8 @@ public class Offre {
     @NotNull
     @Lob
     private byte[] pdf;
+
+    public static String currentSession() {
+        return "Hiver " + TimeUtil.getNextYear();
+    }
 }
