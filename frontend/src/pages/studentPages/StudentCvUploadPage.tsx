@@ -6,10 +6,11 @@ import {Link} from "react-router-dom";
 import {putStatusCv, putUploadStudentCV} from "../../services/studentServices/StudentFetchService";
 import {generateAlert} from "../../services/universalServices/UniversalUtilService";
 import CvStatus from "../../models/CvStatus";
+import {Viewer} from "@react-pdf-viewer/core";
 
-export const status : CvStatus = {
-    state: "",
-    message: ""
+export const statusCV : CvStatus = {
+    status: "",
+    refusalMessage: ""
 }
 
 const StudentCvUploadPage = ({connectedUser}: { connectedUser: IUser }) => {
@@ -17,13 +18,16 @@ const StudentCvUploadPage = ({connectedUser}: { connectedUser: IUser }) => {
     const [validated, setValidated] = useState<boolean>(false);
     const [cv, setCv] = useState<number[]>([0])
     const [isChoisi, setIsChoisi] = useState<boolean>(false)
-    const [cvStatus, setCvStatus] = useState(status)
+    const [cvStatus, setCvStatus] = useState(statusCV)
+    const [cvCourant, setCvCourant] = useState<Uint8Array>(new Uint8Array([]))
+    const [showCV, setShowCV] = useState<boolean>(false)
 
     useEffect(() => {
         const fetcheStatusCV = async () => {
             await putStatusCv(connectedUser.id, connectedUser.token).then(async reponse => {
                 if (reponse.status == 200) {
-                    setCvStatus(await reponse.json())
+                    const data = await reponse.json()
+                    setCvStatus(data)
                 } else {
                     generateAlert()
                 }
@@ -77,6 +81,32 @@ const StudentCvUploadPage = ({connectedUser}: { connectedUser: IUser }) => {
         );
     }
 
+
+    async function getCv(): Promise<void> {
+        if(connectedUser.cv == null){
+            alert("Il y a pas de CV courant, svp envoyez votre CV")
+            return ;
+        }
+        const enc = new TextEncoder(); // always utf-8
+        console.log(enc.encode(connectedUser.cv))
+        setCvCourant(enc.encode(connectedUser.cv));
+        setShowCV(true);
+
+    }
+    if (showCV) {
+        return (
+            <Container className="min-vh-100 bg-white p-0">
+                <div className="bg-dark p-2">
+                    <Button className="Btn btn-primary" onClick={() => setShowCV(false)}>
+                        Fermer
+                    </Button>
+                </div>
+                <div>
+                    <Viewer fileUrl={cvCourant}/>
+                </div>
+            </Container>
+        );
+    }
     return (
         <Container className="justify-content-center min-vh-100">
             <Col className="col-12 ">
@@ -107,9 +137,31 @@ const StudentCvUploadPage = ({connectedUser}: { connectedUser: IUser }) => {
                     </Row>
                 </Form>
                 <Row className="text-center pt-2 text-white">
-                    <h2>Mon CV</h2>
-                    <h3>State : {cvStatus.state}</h3>
-                    <h3>Message : {cvStatus.message}</h3>
+                    <Row>
+                        <Col className="h3">
+                            Mon CV
+                        </Col>
+                        <Col className="h3">
+                           <Button className="btn btn-warning" onClick={async () => await getCv()}>CV</Button>
+                        </Col>
+                    </Row>
+                    <Row>
+                        <Col className="h3">
+                            Status :
+                        </Col>
+                        <Col className="h3">
+                            {cvStatus.status}
+                        </Col>
+                    </Row>
+                    <Row>
+                        <Col className="h3">
+                            Refusal Message :
+                        </Col>
+                        <Col className="h3">
+                            {cvStatus.refusalMessage}
+                        </Col>
+                    </Row>
+
                 </Row>
             </Col>
         </Container>
