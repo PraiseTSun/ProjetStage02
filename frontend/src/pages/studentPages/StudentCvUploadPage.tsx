@@ -88,7 +88,7 @@ const StudentCvUploadPage = ({connectedUser}: { connectedUser: IUser }) => {
             return ;
         }
         const enc = new TextEncoder(); // always utf-8
-        console.log(enc.encode(connectedUser.cv))
+        console.log(connectedUser.cv)
         setCvCourant(enc.encode(connectedUser.cv));
         setShowCV(true);
 
@@ -136,33 +136,24 @@ const StudentCvUploadPage = ({connectedUser}: { connectedUser: IUser }) => {
                                 className="btn btn-success mx-auto w-75">Envoyer</Button>
                     </Row>
                 </Form>
-                <Row className="text-center pt-2 text-white">
-                    <Row>
-                        <Col className="h3">
-                            Mon CV
-                        </Col>
-                        <Col className="h3">
-                           <Button className="btn btn-warning" onClick={async () => await getCv()}>CV</Button>
-                        </Col>
-                    </Row>
-                    <Row>
-                        <Col className="h3">
-                            Status :
-                        </Col>
-                        <Col className="h3">
-                            {cvStatus.status}
-                        </Col>
-                    </Row>
-                    <Row>
-                        <Col className="h3">
-                            Refusal Message :
-                        </Col>
-                        <Col className="h3">
-                            {cvStatus.refusalMessage}
-                        </Col>
-                    </Row>
-
-                </Row>
+                <table className="table table-bordered pt-2 text-white">
+                    <tbody>
+                    <tr>
+                        <th>Mon Cv</th>
+                        <td className="text-center">
+                            <Button className="btn" onClick={async () => await getCv()}>CV</Button>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>Status :</th>
+                        <td  className="text-center">{cvStatus.status}</td>
+                    </tr>
+                    <tr>
+                        <th> Refusal Message :</th>
+                        <td>{cvStatus.refusalMessage}</td>
+                    </tr>
+                    </tbody>
+                </table>
             </Col>
         </Container>
     )
