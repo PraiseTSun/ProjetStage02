@@ -23,5 +23,6 @@ public class StageContract {
     @NotBlank
     private Long offerId;
     @NotBlank
-    private Long gestionnaireId;
+    private Long companyId;
+    private String description;
 }
