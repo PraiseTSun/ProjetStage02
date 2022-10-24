@@ -1,11 +1,18 @@
 import React, {useEffect, useState} from "react";
 import {Button, Col, Container, Row, Table} from "react-bootstrap";
 import {Link} from "react-router-dom";
-import IUser from "../models/IUser";
+import IUser from "../../models/IUser";
 import {Viewer} from '@react-pdf-viewer/core';
+import {
+    deleteRemoveOffer,
+    putOfferPdf,
+    putUnvalidatedOffers,
+    putValidateOffer
+} from "../../services/gestionnaireServices/GestionnaireFetchService";
+import {generateAlert} from "../../services/universalServices/UniversalUtilService";
 
-const ValiderNouvelleOffreStagePage = ({connectedUser, deconnexion}:
-                                           { connectedUser: IUser, deconnexion: Function }): JSX.Element => {
+const ValiderNouvelleOffreStagePage = ({connectedUser}:
+                                           { connectedUser: IUser }): JSX.Element => {
     const [offers, setOffers] = useState<any[]>([]);
     const [pdf, setpdf] = useState<Uint8Array>(new Uint8Array([]))
     const [showPDF, setShowPDF] = useState<boolean>(false)
@@ -13,86 +20,48 @@ const ValiderNouvelleOffreStagePage = ({connectedUser, deconnexion}:
     useEffect(() => {
         const fetchOffresAttendreValide = async () => {
             try {
-                const response = await fetch("http://localhost:8080/unvalidatedOffers", {
-                    method: "PUT",
-                    headers: {
-                        'Accept': 'application/json',
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({"token": connectedUser.token})
-                });
+                const response = await putUnvalidatedOffers(connectedUser.token)
                 if (response.ok) {
                     const data = await response.json();
                     setOffers(data);
-                } else if (response.status === 403) {
-                    alert("Session expiré");
-                    deconnexion();
                 } else {
-                    throw new Error("Error code not handled");
+                    generateAlert()
                 }
             } catch {
-                alert("Une erreur est survenue, ressayez.");
-                window.location.href = "/"
+                generateAlert()
             }
         }
         fetchOffresAttendreValide()
-    }, [connectedUser, deconnexion]);
+    }, [connectedUser]);
 
     async function valideOffre(offerId: number, valid: boolean): Promise<void> {
         try {
-            const url: String = valid ? "http://localhost:8080/validateOffer/" : "http://localhost:8080/removeOffer/";
-            const response: Response = valid ? await fetch(url + offerId.toString(), {
-                method: "PUT",
-                headers: {
-                    'Accept': 'application/json',
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({"token": connectedUser.token})
-            }) : await fetch(url + offerId.toString(), {
-                method: "DELETE",
-                headers: {
-                    'Accept': 'application/json',
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({"token": connectedUser.token})
-            });
+            const response: Response = valid
+                ? await putValidateOffer(offerId.toString(), connectedUser.token)
+                : await deleteRemoveOffer(offerId.toString(), connectedUser.token)
 
             if (response.ok) {
                 setOffers(offers.filter(offer => offer.id !== offerId));
-            } else if (response.status === 403) {
-                alert("Session expiré");
-                deconnexion();
             } else {
-                throw new Error("Error code not handled");
+                generateAlert()
             }
         } catch (exception) {
-            alert("Une erreur est survenue, ressayez.");
+            generateAlert()
         }
     }
 
     async function getPDF(offerId: number): Promise<void> {
         try {
-            const response = await fetch("http://localhost:8080/offerPdf/" + offerId.toString(), {
-                method: "PUT",
-                headers: {
-                    'Accept': 'application/json',
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({"token": connectedUser.token})
-            });
-
+            const response = await putOfferPdf(offerId.toString(), connectedUser.token)
             if (response.ok) {
                 const data = await response.json();
                 setpdf(new Uint8Array(JSON.parse(data.pdf)))
                 setShowPDF(true);
-            } else if (response.status === 403) {
-                alert("Session expiré");
-                deconnexion();
             } else {
-                throw new Error("Error code not handled");
+                generateAlert()
             }
         } catch (exception) {
-            alert("Une erreur est survenue, ressayez.");
+            generateAlert()
         }
     }
 
@@ -126,7 +95,7 @@ const ValiderNouvelleOffreStagePage = ({connectedUser, deconnexion}:
             </Row>
             <Row>
                 <Col>
-                    <Table data-testid="tableValiderNouvelleOffreStage" className="text-center" hover>
+                    <Table className="text-center" hover>
                         <thead className="bg-primary">
                         <tr>
                             <th>Nom De Compagnie / Adresse</th>
@@ -137,7 +106,7 @@ const ValiderNouvelleOffreStagePage = ({connectedUser, deconnexion}:
                             <th>Non Valide</th>
                         </tr>
                         </thead>
-                        <tbody className="bg-light" data-testid="offre-container">
+                        <tbody className="bg-light">
                         {offers.map((offer, index) => {
                             return (
                                 <tr key={index}>
