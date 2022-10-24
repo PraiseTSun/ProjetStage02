@@ -7,13 +7,12 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import projet.projetstage02.DTO.*;
+import projet.projetstage02.exception.ExpiredSessionException;
+import projet.projetstage02.exception.InvalidStatusException;
 import projet.projetstage02.exception.NonExistentEntityException;
 import projet.projetstage02.exception.NonExistentOfferExeption;
 import projet.projetstage02.model.*;
-import projet.projetstage02.repository.CompanyRepository;
-import projet.projetstage02.repository.GestionnaireRepository;
-import projet.projetstage02.repository.OffreRepository;
-import projet.projetstage02.repository.StudentRepository;
+import projet.projetstage02.repository.*;
 
 import java.util.*;
 
@@ -22,6 +21,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.*;
+import static projet.projetstage02.model.AbstractUser.Department.Informatique;
 import static projet.projetstage02.utils.TimeUtil.currentTimestamp;
 
 @ExtendWith(MockitoExtension.class)
@@ -35,7 +35,8 @@ public class GestionnaireServiceTest {
     private CompanyRepository companyRepository;
     @Mock
     private OffreRepository offreRepository;
-
+    @Mock
+    private CvStatusRepository cvStatusRepository;
     @InjectMocks
     private GestionnaireService service;
 
@@ -43,6 +44,7 @@ public class GestionnaireServiceTest {
     private Company companyTest;
     private Student studentTest;
     private Offre offreTest;
+    private CvStatus cvStatus;
 
     @BeforeEach
     void beforeEach() {
@@ -65,18 +67,21 @@ public class GestionnaireServiceTest {
                 "nom",
                 "email@email.com",
                 "password",
-                AbstractUser.Department.Informatique);
+                Informatique);
 
-        offreTest = new Offre(
-                1L,
-                "Company Test",
-                AbstractUser.Department.Informatique,
-                "Stagiaire test backend",
-                40,
-                40,
-                "69 shitty street",
-                false,
-                new byte[0]);
+        offreTest = Offre.builder()
+                .id(1L)
+                .nomDeCompagnie("Company Test")
+                .department(Informatique)
+                .position("Stagiaire test backend")
+                .heureParSemaine(40)
+                .salaire(40)
+                .session(Offre.currentSession())
+                .adresse("69 shitty street")
+                .pdf(new byte[0])
+                .valide(false)
+                .build();
+        cvStatus = CvStatus.builder().build();
     }
 
     @Test
@@ -269,21 +274,57 @@ public class GestionnaireServiceTest {
     }
 
     @Test
+    public void testGetUnvalidatedOffersHappyDay() {
+        List<Offre> offers = List.of(
+                Offre.builder().session("Hiver 2010").department(Informatique).build(),
+                Offre.builder().session("Hiver 2010").department(Informatique).build(),
+                Offre.builder().session("Hiver 2023").department(Informatique).build(),
+                Offre.builder().session("Hiver 2023").department(Informatique).build()
+        );
+        when(offreRepository.findAll()).thenReturn(offers);
+        final List<OffreDTO> offersDto = service.getUnvalidatedOffers();
+
+        assertThat(offersDto).hasSize(2);
+    }
+
+    @Test
+    public void testGetValidatedOffersDifferentYearsHappyDay() {
+        List<Offre> offers = List.of(
+                Offre.builder().session("Hiver 2010").valide(true).department(Informatique).build(),
+                Offre.builder().session("Hiver 2010").valide(true).department(Informatique).build(),
+                Offre.builder().session("Hiver 2022").department(Informatique).build(),
+                Offre.builder().session("Hiver 2022").valide(true).department(Informatique).build(),
+                Offre.builder().session("Hiver 2023").valide(true).department(Informatique).build()
+        );
+        when(offreRepository.findAll()).thenReturn(offers);
+        final List<OffreDTO> offers2022 = service.getValidatedOffers(2022);
+        final List<OffreDTO> offers2023 = service.getValidatedOffers(2023);
+        final List<OffreDTO> offers2010 = service.getValidatedOffers(2010);
+
+        assertThat(offers2022).hasSize(1);
+        assertThat(offers2023).hasSize(1);
+        assertThat(offers2010).hasSize(2);
+    }
+
+    @Test
     public void testOffreNotValidated() {
         // Arrange
         List<Offre> offres = new ArrayList<>();
         Offre offre = new Offre();
-        offre.setDepartment(AbstractUser.Department.Informatique);
+        offre.setDepartment(Informatique);
+        offre.setSession("Hiver 2022");
         offres.add(offre);
         offre = new Offre();
-        offre.setDepartment(AbstractUser.Department.Informatique);
+        offre.setDepartment(Informatique);
+        offre.setSession("Hiver 2023");
         offres.add(offre);
         offre = new Offre();
-        offre.setDepartment(AbstractUser.Department.Informatique);
+        offre.setDepartment(Informatique);
+        offre.setSession("Hiver 2023");
         offres.add(offre);
 
         offre = new Offre();
-        offre.setDepartment(AbstractUser.Department.Informatique);
+        offre.setDepartment(Informatique);
         offre.setValide(true);
         offres.add(offre);
 
@@ -293,11 +334,11 @@ public class GestionnaireServiceTest {
         final List<OffreDTO> noneValidateOffers = service.getUnvalidatedOffers();
 
         // Assert
-        assertThat(noneValidateOffers.size()).isEqualTo(3);
+        assertThat(noneValidateOffers.size()).isEqualTo(2);
     }
 
     @Test
-    public void testValidateOfferByIdSuccess() throws NonExistentOfferExeption {
+    public void testValidateOfferByIdSuccess() throws NonExistentOfferExeption, ExpiredSessionException {
         // Arrange
         when(offreRepository.findById(anyLong())).thenReturn(Optional.of(offreTest));
 
@@ -309,7 +350,7 @@ public class GestionnaireServiceTest {
     }
 
     @Test
-    public void testValidateOfferByIdNotFound() {
+    public void testValidateOfferByIdNotFound() throws ExpiredSessionException {
         // Arrange
         when(offreRepository.findById(anyLong())).thenReturn(Optional.empty());
 
@@ -320,6 +361,22 @@ public class GestionnaireServiceTest {
             return;
         }
         fail("NonExistentOfferException not caught");
+
+    }
+
+    @Test
+    public void testValidateOfferExpiredOfferException() throws NonExistentOfferExeption {
+        // Arrange
+        offreTest.setSession("Hiver 2019");
+        when(offreRepository.findById(anyLong())).thenReturn(Optional.of(offreTest));
+
+        // Act
+        try {
+            service.validateOfferById(1L);
+        } catch (ExpiredSessionException e) {
+            return;
+        }
+        fail("ExpiredSessionException not caught");
 
     }
 
@@ -356,21 +413,21 @@ public class GestionnaireServiceTest {
         List<Student> students = new ArrayList<>();
 
         Student student = new Student();
-        student.setDepartment(AbstractUser.Department.Informatique);
+        student.setDepartment(Informatique);
         students.add(student);
 
         student = new Student();
-        student.setDepartment(AbstractUser.Department.Informatique);
+        student.setDepartment(Informatique);
         student.setEmailConfirmed(true);
         students.add(student);
 
         student = new Student();
-        student.setDepartment(AbstractUser.Department.Informatique);
+        student.setDepartment(Informatique);
         student.setEmailConfirmed(true);
         students.add(student);
 
         student = new Student();
-        student.setDepartment(AbstractUser.Department.Informatique);
+        student.setDepartment(Informatique);
         student.setEmailConfirmed(true);
         student.setConfirm(true);
         students.add(student);
@@ -390,21 +447,21 @@ public class GestionnaireServiceTest {
         List<Company> companies = new ArrayList<>();
 
         Company company = new Company();
-        company.setDepartment(AbstractUser.Department.Informatique);
+        company.setDepartment(Informatique);
         companies.add(company);
 
         company = new Company();
-        company.setDepartment(AbstractUser.Department.Informatique);
+        company.setDepartment(Informatique);
         company.setEmailConfirmed(true);
         companies.add(company);
 
         company = new Company();
-        company.setDepartment(AbstractUser.Department.Informatique);
+        company.setDepartment(Informatique);
         company.setEmailConfirmed(true);
         companies.add(company);
 
         company = new Company();
-        company.setDepartment(AbstractUser.Department.Informatique);
+        company.setDepartment(Informatique);
         company.setEmailConfirmed(true);
         company.setConfirm(true);
         companies.add(company);
@@ -513,9 +570,11 @@ public class GestionnaireServiceTest {
     }
 
     @Test
-    void testValidateStudentCVSuccess() throws NonExistentEntityException {
+    void testValidateStudentCVSuccess() throws NonExistentEntityException, InvalidStatusException {
         // Arrange
         studentTest.setCvToValidate(new byte[0]);
+        cvStatus.setStatus("PENDING");
+        when(cvStatusRepository.findById(anyLong())).thenReturn(Optional.of(cvStatus));
         when(studentRepository.findById(anyLong())).thenReturn(Optional.of(studentTest));
 
         // Act
@@ -528,9 +587,9 @@ public class GestionnaireServiceTest {
     }
 
     @Test
-    void testValidateStudentCVNotFound() {
+    void testValidateStudentCVNotFound() throws InvalidStatusException {
         // Arrange
-        when(studentRepository.findById(anyLong())).thenReturn(Optional.empty());
+        cvStatus.setStatus("PENDING");
 
         // Act
         try {
@@ -542,31 +601,68 @@ public class GestionnaireServiceTest {
     }
 
     @Test
-    void testRemoveStudentCvValidationSuccess() throws NonExistentEntityException {
+    void testValidateStudentCVInvalidStatus() throws NonExistentEntityException {
         // Arrange
+        cvStatus.setStatus("ACCEPTED");
+        when(cvStatusRepository.findById(anyLong())).thenReturn(Optional.of(cvStatus));
+        when(studentRepository.findById(anyLong())).thenReturn(Optional.of(studentTest));
+
+        // Act
+        try {
+            service.validateStudentCV(1L);
+        } catch (InvalidStatusException e) {
+            return;
+        }
+        fail("InvalidStatusException not caught");
+    }
+
+    @Test
+    void testRemoveStudentCvValidationSuccess() throws NonExistentEntityException, InvalidStatusException {
+        // Arrange
+        cvStatus.setStatus("PENDING");
+        when(cvStatusRepository.findById(anyLong())).thenReturn(Optional.of(cvStatus));
         studentTest.setCvToValidate(new byte[0]);
         when(studentRepository.findById(anyLong())).thenReturn(Optional.of(studentTest));
 
         // Act
-        StudentDTO studentDTO = service.removeStudentCvValidation(1L);
+        StudentDTO studentDTO = service.removeStudentCvValidation(1L, "Refused");
 
         // Assert
         assertThat(studentDTO.getEmail()).isEqualTo(studentTest.getEmail());
         assertThat(studentDTO.getCvToValidate()).isEmpty();
+        assertThat(cvStatus.getRefusalMessage()).isEqualTo("Refused");
+        assertThat(cvStatus.getStatus()).isEqualTo("REFUSED");
     }
 
     @Test
-    void testRemoveStudentCvValidationNotFound() {
+    void testRemoveStudentCvValidationNotFound() throws InvalidStatusException {
         // Arrange
+        cvStatus.setStatus("PENDING");
         when(studentRepository.findById(anyLong())).thenReturn(Optional.empty());
 
         // Act
         try {
-            service.removeStudentCvValidation(1L);
+            service.removeStudentCvValidation(1L, "Refused");
         } catch (NonExistentEntityException e) {
             return;
         }
         fail("NonExistentUserException not caught");
+    }
+
+    @Test
+    void testRemoveStudentCvValidationInvalidStatus() throws NonExistentEntityException {
+        // Arrange
+        cvStatus.setStatus("ACCEPTED");
+        when(cvStatusRepository.findById(anyLong())).thenReturn(Optional.of(cvStatus));
+        when(studentRepository.findById(anyLong())).thenReturn(Optional.of(studentTest));
+
+        // Act
+        try {
+            service.removeStudentCvValidation(1L, "Refused");
+        } catch (InvalidStatusException e) {
+            return;
+        }
+        fail("InvalidStatusException not caught");
     }
 
     @Test

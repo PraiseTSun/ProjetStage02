@@ -39,10 +39,12 @@ public class CompanyService {
     public long createOffre(OffreDTO offreDTO) {
         Offre offre = Offre.builder()
                 .nomDeCompagnie(offreDTO.getNomDeCompagnie())
+                .idCompagnie(offreDTO.getCompanyId())
                 .department(Department.getDepartment(offreDTO.getDepartment()))
                 .position(offreDTO.getPosition())
                 .heureParSemaine(offreDTO.getHeureParSemaine())
                 .salaire(offreDTO.getSalaire())
+                .session(offreDTO.getSession())
                 .adresse(offreDTO.getAdresse())
                 .pdf(offreDTO.getPdf())
                 .build();
@@ -107,16 +109,16 @@ public class CompanyService {
 
     public ApplicationAcceptationDTO saveStudentApplicationAccepted(long offerId, long studentId) throws Exception {
         Optional<Student> studentOpt = studentRepository.findById(studentId);
-        if(studentOpt.isEmpty()) throw new NonExistentEntityException();
+        if (studentOpt.isEmpty()) throw new NonExistentEntityException();
         Student student = studentOpt.get();
 
         Optional<Offre> offerOpt = offreRepository.findById(offerId);
-        if(offerOpt.isEmpty()) throw new NonExistentOfferExeption();
+        if (offerOpt.isEmpty()) throw new NonExistentOfferExeption();
         Offre offre = offerOpt.get();
 
         Optional<ApplicationAcceptation> applicationOpt
                 = applicationAcceptationRepository.findByOfferIdAndStudentId(offerId, studentId);
-        if(applicationOpt.isPresent()) throw new AlreadyExistingAcceptationException();
+        if (applicationOpt.isPresent()) throw new AlreadyExistingAcceptationException();
 
         ApplicationAcceptation application = ApplicationAcceptation.builder()
                 .studentId(student.getId())
@@ -133,7 +135,7 @@ public class CompanyService {
 
     public OfferAcceptedStudentsDTO getAcceptedStudentsForOffer(long offerId) throws NonExistentOfferExeption {
         Optional<Offre> offreOpt = offreRepository.findById(offerId);
-        if(offreOpt.isEmpty()) throw new NonExistentOfferExeption();
+        if (offreOpt.isEmpty()) throw new NonExistentOfferExeption();
         Offre offre = offreOpt.get();
 
         List<Long> studentsId = new ArrayList<>();
