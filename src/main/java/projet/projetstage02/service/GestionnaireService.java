@@ -3,10 +3,7 @@ package projet.projetstage02.service;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import projet.projetstage02.DTO.*;
-import projet.projetstage02.exception.InvalidStatusException;
-import projet.projetstage02.exception.ExpiredSessionException;
-import projet.projetstage02.exception.NonExistentEntityException;
-import projet.projetstage02.exception.NonExistentOfferExeption;
+import projet.projetstage02.exception.*;
 import projet.projetstage02.model.*;
 import projet.projetstage02.repository.*;
 
@@ -268,7 +265,7 @@ public class GestionnaireService {
     }
 
     public StageContractOutDTO createStageContract (StageContractInDTO contract)
-            throws NonExistentEntityException, NonExistentOfferExeption {
+            throws NonExistentEntityException, NonExistentOfferExeption, AlreadyExistingStageContractException {
         Optional<Student> studentOpt = studentRepository.findById(contract.getStudentId());
         if(studentOpt.isEmpty()) throw new NonExistentEntityException();
         Student student = studentOpt.get();
@@ -285,6 +282,10 @@ public class GestionnaireService {
                 + student.getLastName() + " en tant que " + offre.getPosition() + " pour la session "
                 + offre.getSession() + ".";
 
+        Optional<StageContract> stageContractOpt
+                = stageContractRepository.findByStudentIdAndCompanyIdAndOfferId(student.getId(), company.getId(), offre.getId());
+        if (stageContractOpt.isPresent()) throw new AlreadyExistingStageContractException();
+
         StageContract stageContract = StageContract.builder()
                 .studentId(student.getId())
                 .offerId(offre.getId())
@@ -293,7 +294,7 @@ public class GestionnaireService {
                 .build();
         stageContractRepository.save(stageContract);
 
-        Optional<StageContract> stageContractOpt
+         stageContractOpt
                 = stageContractRepository.findByStudentIdAndCompanyIdAndOfferId(student.getId(), company.getId(), offre.getId());
 
         return new StageContractOutDTO(stageContractOpt.get());
