@@ -1230,3 +1230,36 @@ paths:
           description: Token invalide ou expiré
         404:
           description: L'offre avec cet id n'existe pas
+  /createStageContract/{studentId}_{offerId}:
+    put:
+      summary: Céer un entante de stage (Doit avoir un token gestionnaire)
+      parameters:
+        - in: path
+          name: studentId
+          description: id de l'étudiant
+          type: string
+          required: true
+        - in: path
+          name: offerId
+          description: id de l'offre
+          type: string
+          required: true
+        - in: body
+          name: token
+          description: Token valide du gestionnaire
+          schema:
+            type: object
+            properties:
+              token:
+                type: string
+      produces:
+        - application/json
+      responses:
+        200:
+          description: L'entante de stage a été créé
+        403:
+          description: Token invalide ou expiré
+        404:
+          description: L'étudiant avec cet id n'existe pas ou l'offre avec cette id n'existe pas
+        409:
+          description: L'entante de stage existe déjà
