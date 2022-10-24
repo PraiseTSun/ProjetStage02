@@ -2,7 +2,7 @@ import {act, fireEvent, render, screen} from "@testing-library/react";
 import {emptyUser} from "../../../App";
 import {BrowserRouter} from "react-router-dom";
 import * as React from "react";
-import PreviousOffersPage from "../PreviousOffersPage";
+import OfferHistoryPage from "../OfferHistoryPage";
 
 
 describe("PreviousOffersPageTests", () => {
@@ -57,7 +57,7 @@ describe("PreviousOffersPageTests", () => {
         window.alert = jest.fn(() => null) as jest.Mock;
 
         await act(async () => {
-            render(<PreviousOffersPage connectedUser={emptyUser}/>,
+            render(<OfferHistoryPage connectedUser={emptyUser}/>,
                 {wrapper: BrowserRouter});
         });
     });

@@ -7,8 +7,8 @@ import {putOfferPdf, putValidatedOffersByYear} from "../../services/gestionnaire
 import {generateAlert} from "../../services/universalServices/UniversalUtilService";
 import IOffer from "../../models/IOffer";
 
-const PreviousOffersPage = ({connectedUser}:
-                                { connectedUser: IUser }): JSX.Element => {
+const OfferHistoryPage = ({connectedUser}:
+                              { connectedUser: IUser }): JSX.Element => {
     const nextYear: number = new Date().getFullYear() + 1
     const [offers, setOffers] = useState<any[]>([]);
     const [pdf, setpdf] = useState<Uint8Array>(new Uint8Array([]));
@@ -73,7 +73,7 @@ const PreviousOffersPage = ({connectedUser}:
                     <Link to="/" className="btn btn-primary my-3">Home</Link>
                 </Col>
                 <Col sm={8} className="text-center pt-2">
-                    <h1 className="fw-bold text-white display-3 pb-2">Offres validées précédemment</h1>
+                    <h1 className="fw-bold text-white display-3 pb-2">Historique des offres</h1>
                 </Col>
                 <Col sm={2}></Col>
             </Row>
@@ -123,5 +123,5 @@ const PreviousOffersPage = ({connectedUser}:
     );
 }
 
-export default PreviousOffersPage;
+export default OfferHistoryPage;
 
