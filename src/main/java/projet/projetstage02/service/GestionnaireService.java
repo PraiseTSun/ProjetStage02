@@ -224,4 +224,8 @@ public class GestionnaireService {
         return !isEmailUnique(email)
                 && !deleteUnconfirmedGestionnaire(email);
     }
+
+    public StageContractOutDTO createStageContract (StageContractInDTO contract){
+        return null;
+    }
 }
