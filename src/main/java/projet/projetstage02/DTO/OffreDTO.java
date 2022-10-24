@@ -36,6 +36,8 @@ public class OffreDTO {
     @NotBlank
     @Size(min = 2)
     private String adresse;
+
+    private long companyId;
     @NotNull
     @ToString.Exclude
     private byte[] pdf;
@@ -46,6 +48,7 @@ public class OffreDTO {
         return Offre.builder()
                 .id(id)
                 .nomDeCompagnie(nomDeCompagnie)
+                .idCompagnie(companyId)
                 .department(AbstractUser.Department.getDepartment(department))
                 .position(position)
                 .heureParSemaine(heureParSemaine)
@@ -58,6 +61,7 @@ public class OffreDTO {
 
     public OffreDTO(Offre offre) {
         id = offre.getId();
+        companyId = offre.getIdCompagnie();
         nomDeCompagnie = offre.getNomDeCompagnie();
         department = offre.getDepartment().departement;
         position = offre.getPosition();

@@ -24,6 +24,9 @@ public class Offre {
     @NotBlank
     @Size(min = 2)
     private String nomDeCompagnie;
+
+    @Min(0)
+    private long idCompagnie;
     @Size(min = 10)
     @Pattern(regexp = "^Hiver (\\d{4})$")
     private String session;

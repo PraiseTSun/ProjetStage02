@@ -9,10 +9,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import projet.projetstage02.DTO.*;
-import projet.projetstage02.exception.AlreadyExistingPostulation;
-import projet.projetstage02.exception.InvalidTokenException;
-import projet.projetstage02.exception.NonExistentEntityException;
-import projet.projetstage02.exception.NonExistentOfferExeption;
 import projet.projetstage02.exception.*;
 import projet.projetstage02.model.Token;
 import projet.projetstage02.service.AuthService;
@@ -129,8 +125,9 @@ public class RootController {
     public ResponseEntity<Map<String, String>> createOffre(@Valid @RequestBody OffreDTO offreDTO) {
         try {
             logger.log(Level.INFO, "Post /createOffre entered with body : " + offreDTO);
-            authService.getToken(offreDTO.getToken(), COMPANY);
+            Token token = authService.getToken(offreDTO.getToken(), COMPANY);
             offreDTO.setSession("Hiver " + getNextYear());
+            offreDTO.setCompanyId(token.getUserId());
             companyService.createOffre(offreDTO);
             logger.log(Level.INFO, "PostMapping: /createOffre sent 201 response");
             return ResponseEntity.status(CREATED).build();
