@@ -6,18 +6,12 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import projet.projetstage02.DTO.ApplicationAcceptationDTO;
-import projet.projetstage02.DTO.CompanyDTO;
-import projet.projetstage02.DTO.OfferAcceptedStudentsDTO;
-import projet.projetstage02.DTO.OffreDTO;
+import projet.projetstage02.DTO.*;
 import projet.projetstage02.exception.AlreadyExistingAcceptationException;
 import projet.projetstage02.exception.NonExistentEntityException;
 import projet.projetstage02.exception.NonExistentOfferExeption;
 import projet.projetstage02.model.*;
-import projet.projetstage02.repository.ApplicationAcceptationRepository;
-import projet.projetstage02.repository.CompanyRepository;
-import projet.projetstage02.repository.OffreRepository;
-import projet.projetstage02.repository.StudentRepository;
+import projet.projetstage02.repository.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -47,11 +41,16 @@ public class CompanyServiceTest {
     @Mock
     ApplicationAcceptationRepository applicationAcceptationRepository;
 
+    @Mock
+    ApplicationRepository applicationRepository;
+
     Company duffBeer;
     OffreDTO duffBeerOffreDTO;
     Student bart;
     Offre duffBeerOffer;
     ApplicationAcceptation applicationAcceptation;
+
+    OfferApplicationDTO offerApplicationDTO;
 
     @BeforeEach
     void setup() {
@@ -89,7 +88,7 @@ public class CompanyServiceTest {
                 .heureParSemaine(69)
                 .adresse("Somewhere")
                 .valide(true)
-                .pdf(new byte[] { 1, 2, 3, 4, 5, 6, 7, 8, 9 })
+                .pdf(new byte[]{1, 2, 3, 4, 5, 6, 7, 8, 9})
                 .build();
 
         applicationAcceptation = ApplicationAcceptation.builder()
@@ -99,6 +98,8 @@ public class CompanyServiceTest {
                 .offerId(duffBeerOffer.getId())
                 .companyName(duffBeerOffer.getNomDeCompagnie())
                 .build();
+
+        offerApplicationDTO = OfferApplicationDTO.builder().build();
     }
 
     @Test
@@ -132,7 +133,7 @@ public class CompanyServiceTest {
     }
 
     @Test
-    void getCompanyByEmailAndPasswordHappyDayTest() throws NonExistentEntityException{
+    void getCompanyByEmailAndPasswordHappyDayTest() throws NonExistentEntityException {
         // Arrange
         when(companyRepository.findByEmailAndPassword(
                 "duff.beer@springfield.com",
@@ -279,9 +280,10 @@ public class CompanyServiceTest {
         // Act
         try {
             companyService.saveStudentApplicationAccepted(1L, 2L);
-        } catch (NonExistentEntityException e){
+        } catch (NonExistentEntityException e) {
             return;
-        }catch (Exception e) {}
+        } catch (Exception e) {
+        }
         // Assert
         fail("NonExistentEntityException not thrown");
     }
@@ -295,9 +297,10 @@ public class CompanyServiceTest {
         // Act
         try {
             companyService.saveStudentApplicationAccepted(1L, 2L);
-        } catch (NonExistentOfferExeption e){
+        } catch (NonExistentOfferExeption e) {
             return;
-        }catch (Exception e) {}
+        } catch (Exception e) {
+        }
         // Assert
         fail("NonExistentOfferException not thrown");
     }
@@ -313,9 +316,10 @@ public class CompanyServiceTest {
         // Act
         try {
             companyService.saveStudentApplicationAccepted(1L, 2L);
-        } catch (AlreadyExistingAcceptationException e){
+        } catch (AlreadyExistingAcceptationException e) {
             return;
-        }catch (Exception e) {}
+        } catch (Exception e) {
+        }
         // Assert
         fail("AlreadyExistingAcceptationException not thrown");
     }
@@ -323,7 +327,7 @@ public class CompanyServiceTest {
     @Test
     void testGetAcceptedStudentForOfferHappyDay() throws NonExistentOfferExeption {
         // Arrange
-        List<ApplicationAcceptation> applications = new ArrayList<>(){{
+        List<ApplicationAcceptation> applications = new ArrayList<>() {{
             add(ApplicationAcceptation.builder().offerId(duffBeerOffer.getId()).studentId(bart.getId()).build());
             add(ApplicationAcceptation.builder().offerId(0L).studentId(bart.getId()).build());
         }};
@@ -350,5 +354,71 @@ public class CompanyServiceTest {
             return;
         }
         fail("NonExistentOfferException not thrown");
+    }
+
+    @Test
+    void testGetApplicantsForOfferHappyDay() throws NonExistentOfferExeption {
+        // Arrange
+        Application application1 = Application.builder().studentId(1L).build();
+        Application application2 = Application.builder().studentId(2L).build();
+        Application application3 = Application.builder().studentId(3L).build();
+        Application application4 = Application.builder().studentId(4L).build();
+        Application application5 = Application.builder().studentId(5L).build();
+        when(offreRepository.findById(anyLong())).thenReturn(Optional.of(duffBeerOffer));
+        when(applicationRepository.findByOfferId(anyLong())).thenReturn(List.of(application1,
+                application2,
+                application3,
+                application4,
+                application5));
+
+        when(studentRepository.findById(anyLong())).thenReturn(Optional.of(bart));
+        // Act
+        OfferApplicationDTO studentsForOffer = companyService.getStudentsForOffer(1L);
+        assertThat(studentsForOffer.getApplicants().size()).isEqualTo(5);
+    }
+
+    @Test
+    void testGetApplicantsForOfferNotFull() throws NonExistentOfferExeption {
+        // Arrange
+        Application application1 = Application.builder().studentId(1L).build();
+        Application application2 = Application.builder().build();
+        Application application3 = Application.builder().studentId(3L).build();
+        Application application4 = Application.builder().build();
+        Application application5 = Application.builder().studentId(5L).build();
+        when(offreRepository.findById(anyLong())).thenReturn(Optional.of(duffBeerOffer));
+        List<Application> applications = List.of(application1,
+                application2,
+                application3,
+                application4,
+                application5);
+        when(applicationRepository.findByOfferId(anyLong())).thenReturn(applications);
+
+        when(studentRepository.findById(anyLong())).thenReturn(Optional.of(bart));
+        // Act
+        OfferApplicationDTO studentsForOffer = companyService.getStudentsForOffer(1L);
+        assertThat(studentsForOffer.getApplicants().size()).isEqualTo(3);
+    }
+
+    @Test
+    void testGetApplicantsForOfferNonExistentOffer() {
+        // Arrange
+        when(offreRepository.findById(anyLong())).thenReturn(Optional.empty());
+        // Act
+        try {
+            companyService.getStudentsForOffer(1L);
+        } catch (NonExistentOfferExeption e) {
+            return;
+        }
+        fail("NonExistentOfferExeption not thrown");
+    }
+
+    @Test
+    void testGetApplicantsForOfferEmpty() throws NonExistentOfferExeption {
+        // Arrange
+        when(offreRepository.findById(anyLong())).thenReturn(Optional.of(duffBeerOffer));
+        when(applicationRepository.findByOfferId(anyLong())).thenReturn(new ArrayList<>());
+        // Act
+        OfferApplicationDTO studentsForOffer = companyService.getStudentsForOffer(1L);
+        assertThat(studentsForOffer.getApplicants().size()).isEqualTo(0);
     }
 }
