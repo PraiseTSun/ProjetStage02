@@ -710,4 +710,29 @@ public class RootController {
             return ResponseEntity.notFound().build();
         }
     }
+
+    @PostMapping("/createStageContract")
+    public ResponseEntity<StageContractOutDTO> createStageContract
+            (@Valid @RequestBody StageContractInDTO stageContractInDTO, @RequestBody TokenDTO tokenId){
+        logger.log(Level.INFO, "Post /createStageContract entered with StageContractInDTO: " + stageContractInDTO);
+
+        try {
+            authService.getToken(tokenId.getToken(), GESTIONNAIRE);
+            StageContractOutDTO dto = gestionnaireService.createStageContract(stageContractInDTO);
+            logger.log(Level.INFO, "Post /createStageContract sent request 200");
+            return ResponseEntity.ok(dto);
+        } catch (NonExistentEntityException e) {
+            logger.log(Level.INFO, "Post /createStageContract sent request 404");
+            return ResponseEntity.notFound().build();
+        } catch (NonExistentOfferExeption e) {
+            logger.log(Level.INFO, "Post /createStageContract sent request 404");
+            return ResponseEntity.notFound().build();
+        } catch (AlreadyExistingStageContractException e) {
+            logger.log(Level.INFO, "Post /createStageContract sent request 409");
+            return ResponseEntity.status(CONFLICT).build();
+        }catch (InvalidTokenException e) {
+            logger.log(Level.INFO, "Post /createStageContract sent request 403");
+            return ResponseEntity.status(FORBIDDEN).build();
+        }
+    }
 }
