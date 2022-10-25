@@ -1239,7 +1239,7 @@ paths:
           description: La compagnie a déjà accepté cette étudiant
   /getAcceptedStudentsForOffer/{offerId}:
     put:
-      summary: Revoie la liste des id étudiants qui ont été accepté à cette offre (Doit avoir un token Compagny)
+      summary: Revoie la liste des id étudiants qui ont été accepté à cette offre (Doit avoir un token Company)
       parameters:
         - in: path
           name: id
@@ -1307,3 +1307,67 @@ paths:
           description: L'étudiant avec cet id n'existe pas ou l'offre avec cette id n'existe pas
         409:
           description: L'entante de stage existe déjà
+  /companyContracts/{companyId}:
+    put:
+      summary: Renvoie les contracts qui appartient à la compagnie (Doit avoir un token Company)
+      parameters:
+        - in: path
+          name: compagnyId
+          description: id de la compagnie
+          type: string
+          required: true
+        - in: body
+          name: token
+          description: Token valide de la compagnie
+          schema:
+            type: object
+            properties:
+              token:
+                type: string
+      produces:
+        - application/json
+      responses:
+        200:
+          description: Renvoie les contracts qui appartient à la compagnie
+        403:
+          description: Token invalide ou expiré
+        404:
+          description: La compagnie n'existe pas
+  /companySignatureContract:
+    put:
+      summary: Revoie l'entente de stage signé par la compagnie et l'étudiant s'il a déjà signé (Doit avoir un token Company)
+      parameters:
+        - in: body
+          name: CompanySignatureInDTO
+          description: La dto contenant la signature de la compagnie
+          schema:
+            type: object
+            properties:
+              companyId:
+                type: number
+              stageContractId:
+                type: number
+              signature:
+                type: array
+                items:
+                  type: number
+          required: true
+        - in: body
+          name: token
+          description: Token valide de la compagnie
+          schema:
+            type: object
+            properties:
+              token:
+                type: string
+      produces:
+        - application/json
+      responses:
+        200:
+          description: Revoie l'entente de stage signé par la compagnie et l'étudiant s'il a déjà signé
+        403:
+          description: Token invalide ou expiré
+        404:
+          description: La compagnie n'existe pas ou le contract n'existe pas
+        409:
+          description: Le contract n'appartient pas à la compagnie
