@@ -712,15 +712,15 @@ public class RootController {
     }
 
     @PostMapping("/createStageContract")
-    public ResponseEntity<Map<String, String>> createStageContract
-            (@Valid @RequestBody StageContractInDTO stageContractInDTO, @RequestBody TokenDTO tokenId){
+    public ResponseEntity<StageContractOutDTO> createStageContract
+            (@Valid StageContractInDTO stageContractInDTO, @RequestBody TokenDTO tokenId){
         logger.log(Level.INFO, "Post /createStageContract entered with StageContractInDTO: " + stageContractInDTO);
 
         try {
             authService.getToken(tokenId.getToken(), GESTIONNAIRE);
             StageContractOutDTO dto = gestionnaireService.createStageContract(stageContractInDTO);
             logger.log(Level.INFO, "Post /createStageContract sent request 201 : " + dto);
-            return ResponseEntity.status(CREATED).build();
+            return ResponseEntity.status(CREATED).body(dto);
         } catch (NonExistentEntityException e) {
             logger.log(Level.INFO, "Post /createStageContract sent request 404");
             return ResponseEntity.notFound().build();
