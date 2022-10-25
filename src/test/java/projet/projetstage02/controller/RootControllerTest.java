@@ -62,6 +62,7 @@ public class RootControllerTest {
     JacksonTester<TokenDTO> jsonTokenDTO;
     JacksonTester<CvRefusalDTO> jsonCvRefusalDTO;
     JacksonTester<PdfDTO> jsonPdfDTO;
+    JacksonTester<StageContractInDTO> jsonStageDTO;
 
     StudentDTO bart;
     CompanyDTO duffBeer;
@@ -76,6 +77,8 @@ public class RootControllerTest {
     ApplicationListDTO bartApplys;
     ApplicationAcceptationDTO applicationDTO;
     OfferAcceptedStudentsDTO acceptedStudentsDTO;
+    StageContractInDTO stageContractInDTO;
+    StageContractOutDTO stageContractOutDTO;
 
     // https://thepracticaldeveloper.com/guide-spring-boot-controller-tests/
     @BeforeEach
@@ -163,6 +166,19 @@ public class RootControllerTest {
                 .studentsId(new ArrayList<>() {{
                     add(bart.getId());
                 }})
+                .build();
+
+        stageContractInDTO = StageContractInDTO.builder()
+                .studentId(7L)
+                .offerId(8L)
+                .build();
+
+        stageContractOutDTO = StageContractOutDTO.builder()
+                .id(9L)
+                .studentId(7L)
+                .offerId(8L)
+                .companyId(6L)
+                .description("description")
                 .build();
     }
 
@@ -1336,6 +1352,57 @@ public class RootControllerTest {
         when(authService.getToken(any(), any())).thenThrow(new InvalidTokenException());
 
         mockMvc.perform(put("/getAcceptedStudentsForOffer/{offerId}", 1)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(jsonTokenDTO.write(token).getJson()))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    void testCreateStageContactHappyDay() throws Exception {
+        when(gestionnaireService.createStageContract(any())).thenReturn(stageContractOutDTO);
+
+        mockMvc.perform(post("/createStageContract")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(jsonStageDTO.write(stageContractInDTO).getJson()))
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.id", is(stageContractOutDTO.getId())));
+    }
+
+    @Test
+    void testCreateStageContactUserNotFound() throws Exception {
+        when(gestionnaireService.createStageContract(any())).thenThrow(new NonExistentEntityException());
+
+        mockMvc.perform(post("/createStageContract", stageContractInDTO)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(jsonTokenDTO.write(token).getJson()))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    void testCreateStageContactOfferNotFound() throws Exception {
+        when(gestionnaireService.createStageContract(any())).thenThrow(new NonExistentOfferExeption());
+
+        mockMvc.perform(post("/createStageContract", stageContractInDTO)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(jsonTokenDTO.write(token).getJson()))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    void testCreateStageContactConflict() throws Exception {
+        when(gestionnaireService.createStageContract(any())).thenThrow(new AlreadyExistingStageContractException());
+
+        mockMvc.perform(post("/createStageContract", stageContractInDTO)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(jsonTokenDTO.write(token).getJson()))
+                .andExpect(status().isConflict());
+    }
+
+    @Test
+    void testCreateStageContactInvalidToken() throws Exception {
+        when(authService.getToken(any(), any())).thenThrow(new InvalidTokenException());
+
+        mockMvc.perform(post("/createStageContract", stageContractInDTO)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(jsonTokenDTO.write(token).getJson()))
                 .andExpect(status().isForbidden());
