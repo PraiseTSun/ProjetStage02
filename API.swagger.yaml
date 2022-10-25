@@ -1231,7 +1231,7 @@ paths:
         404:
           description: L'offre avec cet id n'existe pas
   /createStageContract/{studentId}_{offerId}:
-    put:
+    post:
       summary: Céer un entante de stage (Doit avoir un token gestionnaire)
       parameters:
         - in: path
