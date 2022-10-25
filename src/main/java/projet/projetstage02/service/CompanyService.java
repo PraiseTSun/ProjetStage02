@@ -2,22 +2,13 @@ package projet.projetstage02.service;
 
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
-import projet.projetstage02.DTO.ApplicationAcceptationDTO;
-import projet.projetstage02.DTO.CompanyDTO;
-import projet.projetstage02.DTO.OfferAcceptedStudentsDTO;
-import projet.projetstage02.DTO.OffreDTO;
+import projet.projetstage02.DTO.*;
 import projet.projetstage02.exception.AlreadyExistingAcceptationException;
 import projet.projetstage02.exception.NonExistentEntityException;
 import projet.projetstage02.exception.NonExistentOfferExeption;
 import projet.projetstage02.model.AbstractUser.Department;
-import projet.projetstage02.model.ApplicationAcceptation;
-import projet.projetstage02.model.Company;
-import projet.projetstage02.model.Offre;
-import projet.projetstage02.model.Student;
-import projet.projetstage02.repository.ApplicationAcceptationRepository;
-import projet.projetstage02.repository.CompanyRepository;
-import projet.projetstage02.repository.OffreRepository;
-import projet.projetstage02.repository.StudentRepository;
+import projet.projetstage02.model.*;
+import projet.projetstage02.repository.*;
 
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
@@ -35,6 +26,7 @@ public class CompanyService {
     private final OffreRepository offreRepository;
     private final StudentRepository studentRepository;
     private final ApplicationAcceptationRepository applicationAcceptationRepository;
+    private final ApplicationRepository applicationRepository;
 
     public long createOffre(OffreDTO offreDTO) {
         Offre offre = Offre.builder()
@@ -149,5 +141,22 @@ public class CompanyService {
                 .offerId(offre.getId())
                 .studentsId(studentsId)
                 .build();
+    }
+
+    public OfferApplicationDTO getStudentsForOffer(long offerId) throws NonExistentOfferExeption {
+        if (offreRepository.findById(offerId).isEmpty()) {
+            throw new NonExistentOfferExeption();
+        }
+        List<Application> applications = applicationRepository.findByOfferId(offerId);
+        List<StudentDTO> studentDTOS = new ArrayList<>();
+        applications.stream().map(Application::getStudentId).forEach(id -> {
+            Optional<Student> optionnal = studentRepository.findById(id);
+            if (optionnal.isEmpty()) {
+                return;
+            }
+            Student student = optionnal.get();
+            studentDTOS.add(new StudentDTO(student));
+        });
+        return OfferApplicationDTO.builder().applicants(studentDTOS).build();
     }
 }
