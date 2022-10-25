@@ -710,4 +710,23 @@ public class RootController {
             return ResponseEntity.notFound().build();
         }
     }
+
+    @PutMapping("/offer/{id}/applications")
+    public ResponseEntity<OfferApplicationDTO> getStudentForOffer
+            (@PathVariable long id, @RequestBody TokenDTO tokenId) {
+        logger.log(Level.INFO, "/offer/{id}/applications entered with id: " + id);
+        try {
+            authService.getToken(tokenId.getToken(), COMPANY);
+            OfferApplicationDTO dto = companyService.getStudentsForOffer(id);
+            logger.log(Level.INFO, "/offer/{id}/applications sent 200 response");
+            return ResponseEntity.ok(dto);
+        } catch (InvalidTokenException e) {
+            logger.log(Level.INFO, "/offer/{id}/applications sent 403 response");
+            return ResponseEntity.status(FORBIDDEN).build();
+        } catch (NonExistentOfferExeption e) {
+            logger.log(Level.INFO, "/offer/{id}/applications sent 404 response");
+            return ResponseEntity.notFound().build();
+        }
+    }
+
 }
