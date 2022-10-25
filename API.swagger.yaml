@@ -1239,7 +1239,7 @@ paths:
           description: La compagnie a déjà accepté cette étudiant
   /getAcceptedStudentsForOffer/{offerId}:
     put:
-      summary: Revoie la liste des id étudiants qui ont été accepté à cette offre (Doit avoir un token Compagny)
+      summary: Revoie la liste des id étudiants qui ont été accepté à cette offre (Doit avoir un token Company)
       parameters:
         - in: path
           name: id
