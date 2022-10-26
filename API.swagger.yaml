@@ -1281,6 +1281,10 @@ paths:
                 items:
                   type: object
                   properties:
+                    studentId:
+                      type: number
+                    offerId:
+                      type: number
                     employFullName:
                       type: string
                     companyName:
