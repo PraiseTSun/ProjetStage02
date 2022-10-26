@@ -19,6 +19,7 @@ describe("CompanyOfferPageTests", () => {
     const offer: IOffer = {
         pdf: [],
         token: "",
+        companyId: "1",
         heureParSemaine: "40",
         salaire: "20",
         adresse: "123 Duff Street",
@@ -50,7 +51,7 @@ describe("CompanyOfferPageTests", () => {
                         ok: true,
                         json: () => Promise.resolve({applicants: [student]})
                     });
-                } else if (url === "http://localhost:8080/studentCv/3") {
+                } else if (url === "http://localhost:8080/company/studentCv/3") {
                     return Promise.resolve({
                         ok: true,
                         json: () => Promise.resolve({pdf: "[10]"})
