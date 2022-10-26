@@ -734,7 +734,7 @@ public class RootController {
             (@PathVariable long id, @RequestBody TokenDTO tokenId) {
         try {
             logger.log(Level.INFO, "put /validatedOffers entered with id : " + id);
-            authService.getToken(tokenId.getToken(), GESTIONNAIRE);
+            authService.getToken(tokenId.getToken(), COMPANY);
             List<OffreDTO> validatedOffers = companyService.getValidatedOffers();
             logger.log(Level.INFO, "PutMapping: /validatedOffers sent 200 response");
             return ResponseEntity.ok(validatedOffers);

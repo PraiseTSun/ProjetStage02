@@ -37,8 +37,8 @@ const CompanyOffersPage = ({connectedUser}: { connectedUser: IUser }): JSX.Eleme
             const response: Response = await putOfferApplications(offerId, connectedUser.token);
 
             if (response.ok) {
-                const data: IUser[] = await response.json();
-                setStudents(data);
+                const data = await response.json();
+                setStudents(data.applicants);
             } else {
                 generateAlert()
             }
@@ -119,10 +119,10 @@ const CompanyOffersPage = ({connectedUser}: { connectedUser: IUser }): JSX.Eleme
                             </tr>
                             </thead>
                             <tbody>
-                            {students!.length === 0 &&
+                            {students.length === 0 &&
                                 <td colSpan={3}><h1>Aucun applicants</h1></td>
                             }
-                            {students!.length !== 0 &&
+                            {students.length !== 0 &&
                                 students!.map((student, index) => {
                                     return (
                                         <tr key={index}>
