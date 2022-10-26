@@ -13,6 +13,7 @@ import projet.projetstage02.repository.*;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
@@ -168,5 +169,13 @@ public class CompanyService {
                         offres.add(new OffreDTO(offre)));
         offres.forEach(offre -> offre.setPdf(new byte[0]));
         return offres;
+    }
+
+    public PdfOutDTO getStudentCv(long studentId) throws NonExistentEntityException {
+        Optional<Student> studentOpt = studentRepository.findById(studentId);
+        if (studentOpt.isEmpty()) throw new NonExistentEntityException();
+        byte[] cv = studentOpt.get().getCv();
+        String cvConvert = Arrays.toString(cv).replaceAll("\\s+", "");
+        return new PdfOutDTO(studentOpt.get().getId(), cvConvert);
     }
 }

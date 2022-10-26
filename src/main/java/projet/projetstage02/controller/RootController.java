@@ -530,14 +530,15 @@ public class RootController {
             logger.log(Level.INFO, "PutMapping: /studentCv sent 404 response");
             return ResponseEntity.notFound().build();
         } catch (InvalidTokenException e) {
-            return getCvAsCompany(studentId, tokenId);
+            return ResponseEntity.status(FORBIDDEN).build();
         }
     }
 
-    private ResponseEntity<PdfOutDTO> getCvAsCompany(String studentId, TokenDTO tokenId) {
+    @PutMapping("/company/studentCv/{studentId}")
+    private ResponseEntity<PdfOutDTO> getCvAsCompany(@PathVariable long studentId, @RequestBody TokenDTO tokenId) {
         try {
             authService.getToken(tokenId.getToken(), COMPANY);
-            PdfOutDTO cv = gestionnaireService.getStudentCvToValidate(Long.parseLong(studentId));
+            PdfOutDTO cv = companyService.getStudentCv(studentId);
             logger.log(Level.INFO, "PutMapping: /studentCv sent 200 response");
             return ResponseEntity.ok(cv);
         } catch (InvalidTokenException ex) {
