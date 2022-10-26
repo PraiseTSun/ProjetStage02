@@ -309,8 +309,8 @@ public class GestionnaireService {
     public UnvalidatedAcceptationsDTO getUnvalidatedAcceptation(){
         UnvalidatedAcceptationsDTO unvalidatedAcceptationsDTO = new UnvalidatedAcceptationsDTO();
 
-        applicationAcceptationRepository.findAll()
-                .stream()
+        List<ApplicationAcceptation> applications = applicationAcceptationRepository.findAll();
+        applications.stream()
                 .forEach(applicationAcceptation -> {
                     Optional<Offre> offerOpt = offreRepository.findById(applicationAcceptation.getOfferId());
                     Offre offer = offerOpt.get();

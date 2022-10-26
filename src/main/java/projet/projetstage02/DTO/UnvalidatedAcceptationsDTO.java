@@ -13,4 +13,8 @@ public class UnvalidatedAcceptationsDTO {
     public void add(UnvalidatedAcceptationDTO unvalidatedAcceptationDTO){
         applications.add(unvalidatedAcceptationDTO);
     }
+
+    public int size(){
+        return applications.size();
+    }
 }
