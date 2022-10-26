@@ -729,4 +729,18 @@ public class RootController {
         }
     }
 
+    @PutMapping("/company/validatedOffers/{id}")
+    public ResponseEntity<List<OffreDTO>> getValidatedOffers
+            (@PathVariable long id, @RequestBody TokenDTO tokenId) {
+        try {
+            logger.log(Level.INFO, "put /validatedOffers entered with id : " + id);
+            authService.getToken(tokenId.getToken(), GESTIONNAIRE);
+            List<OffreDTO> validatedOffers = companyService.getValidatedOffers();
+            logger.log(Level.INFO, "PutMapping: /validatedOffers sent 200 response");
+            return ResponseEntity.ok(validatedOffers);
+        } catch (InvalidTokenException e) {
+            logger.log(Level.INFO, "PutMapping: /validatedOffers sent 403 response");
+            return ResponseEntity.status(FORBIDDEN).build();
+        }
+    }
 }

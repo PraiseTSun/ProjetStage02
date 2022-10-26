@@ -16,8 +16,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import static projet.projetstage02.utils.TimeUtil.MILLI_SECOND_DAY;
-import static projet.projetstage02.utils.TimeUtil.currentTimestamp;
+import static projet.projetstage02.utils.TimeUtil.*;
 
 @Service
 @AllArgsConstructor
@@ -158,5 +157,16 @@ public class CompanyService {
             studentDTOS.add(new StudentDTO(student));
         });
         return OfferApplicationDTO.builder().applicants(studentDTOS).build();
+    }
+
+    public List<OffreDTO> getValidatedOffers() {
+        List<OffreDTO> offres = new ArrayList<>();
+        offreRepository.findAll().stream().
+                filter(offre ->
+                        offre.isValide() && isRightSession(offre.getSession(), getNextYear()))
+                .forEach(offre ->
+                        offres.add(new OffreDTO(offre)));
+        offres.forEach(offre -> offre.setPdf(new byte[0]));
+        return offres;
     }
 }
