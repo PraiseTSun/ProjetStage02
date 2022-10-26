@@ -22,6 +22,7 @@ import java.util.List;
 import java.util.Optional;
 
 import static projet.projetstage02.model.AbstractUser.Department;
+import static projet.projetstage02.utils.ByteConverter.byteToString;
 import static projet.projetstage02.utils.TimeUtil.MILLI_SECOND_DAY;
 import static projet.projetstage02.utils.TimeUtil.currentTimestamp;
 
@@ -128,7 +129,7 @@ public class StudentService {
         if (offerOpt.isEmpty())
             throw new NonExistentEntityException();
         Offre offre = offerOpt.get();
-        String cv = Arrays.toString(offre.getPdf()).replaceAll("\\s+", "");
+        String cv = byteToString(offre.getPdf());
         return new PdfOutDTO(offre.getId(), cv);
     }
 
