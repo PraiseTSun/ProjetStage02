@@ -21,6 +21,7 @@ const StudentCvUploadPage = ({connectedUser}: { connectedUser: IUser }) => {
     const [cvStatus, setCvStatus] = useState(statusCV)
     // const [z, setCvCourant] = useState<Uint8Array>(new Uint8Array(JSON.parse(connectedUser.cvToValidate)));
     const [showCV, setShowCV] = useState<boolean>(false)
+    const [showCvToValidate, setShowCvToValidate] = useState<boolean>(false)
 
     useEffect(() => {
         const fetcheStatusCV = async () => {
@@ -83,7 +84,7 @@ const StudentCvUploadPage = ({connectedUser}: { connectedUser: IUser }) => {
 
 
     async function getCv(): Promise<void> {
-        if(connectedUser.cvToValidate == null){
+        if(connectedUser.cv == null){
             alert("Il y a pas de CV a valider courant, svp envoyez votre CV")
             return ;
         }
@@ -93,7 +94,29 @@ const StudentCvUploadPage = ({connectedUser}: { connectedUser: IUser }) => {
         setShowCV(true);
 
     }
+    async function getCvToValidate(): Promise<void> {
+        if(connectedUser.cvToValidate == null){
+            alert("Il y a pas de CV a valider courant, svp envoyez votre CV")
+            return ;
+        }
+        setShowCvToValidate(true);
+    }
     if (showCV) {
+        return (
+            <Container className="min-vh-100 bg-white p-0">
+                <div className="bg-dark p-2">
+                    <Button className="Btn btn-primary" onClick={() => setShowCV(false)}>
+                        Fermer
+                    </Button>
+                </div>
+                <div>
+                    <Viewer fileUrl={new Uint8Array(JSON.parse(connectedUser.cv!))}/>
+                </div>
+            </Container>
+        );
+    }
+
+    if (showCvToValidate) {
         return (
             <Container className="min-vh-100 bg-white p-0">
                 <div className="bg-dark p-2">
@@ -136,7 +159,7 @@ const StudentCvUploadPage = ({connectedUser}: { connectedUser: IUser }) => {
                                 className="btn btn-success mx-auto w-75">Envoyer</Button>
                     </Row>
                 </Form>
-                <table className="table table-bordered pt-2 text-white">
+                <table className="table table-bordered pt-2 bg-light">
                     <tbody>
                     <tr>
                         <th>Mon Cv</th>
@@ -151,6 +174,12 @@ const StudentCvUploadPage = ({connectedUser}: { connectedUser: IUser }) => {
                     <tr>
                         <th> Refusal Message :</th>
                         <td>{cvStatus.refusalMessage}</td>
+                    </tr>
+                    <tr>
+                        <th>Cv To Validate :</th>
+                        <td className="text-center">
+                            <Button className="btn" onClick={async () => await getCvToValidate()}>Cv To Validate</Button>
+                        </td>
                     </tr>
                     </tbody>
                 </table>
