@@ -704,7 +704,7 @@ public class RootController {
             logger.log(Level.INFO, "Put /studentAcceptation/{offerId}_{studentId} sent 404 response");
             return ResponseEntity.notFound().build();
         } catch (NonExistentOfferExeption e) {
-            logger.log(Level.INFO, "Put /studentAcceptation/{offerId}_{studentId} sent 404 response");
+            logger.log(Level.INFO, "Put /studentAcceptation/{offerId}_{studentId} sent 404 response : ");
             return ResponseEntity.notFound().build();
         }
     }

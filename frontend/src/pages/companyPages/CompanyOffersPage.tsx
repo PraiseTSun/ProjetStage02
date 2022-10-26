@@ -4,14 +4,23 @@ import {Button, Col, Container, Row, Table} from "react-bootstrap";
 import PageHeader from "../../components/universalComponents/PageHeader";
 import IOffer from "../../models/IOffer";
 import {generateAlert} from "../../services/universalServices/UniversalUtilService";
-import {putCompanyOffers, putOfferApplications, putStudentCv} from "../../services/companyServices/CompanyFetchService";
+import {
+    putAcceptedStudentsForOffer,
+    putCompanyOffers,
+    putOfferApplications,
+    putStudentAcceptation,
+    putStudentCv
+} from "../../services/companyServices/CompanyFetchService";
 import {Viewer} from "@react-pdf-viewer/core";
+import IAcceptedStudents from "../../models/IAcceptedStudents";
 
 const CompanyOffersPage = ({connectedUser}: { connectedUser: IUser }): JSX.Element => {
     const [offers, setOffers] = useState<IOffer[]>([]);
     const [students, setStudents] = useState<IUser[] | null>(null);
     const [cv, setCv] = useState<Uint8Array>(new Uint8Array([]))
     const [showCv, setShowCv] = useState<boolean>(false)
+    const [acceptedStudents, setAcceptedStudents] = useState<string[]>([])
+    const [currentlySelectedOffer, setCurrentlySelectedOffer] = useState<string>("")
 
     useEffect(() => {
         const fetchOffers = async (): Promise<void> => {
@@ -38,6 +47,38 @@ const CompanyOffersPage = ({connectedUser}: { connectedUser: IUser }): JSX.Eleme
             if (response.ok) {
                 const data = await response.json();
                 setStudents(data.applicants);
+                await fetchAcceptedStudents(offerId);
+            } else {
+                generateAlert()
+            }
+        } catch {
+            generateAlert()
+        }
+    }
+
+    const fetchAcceptedStudents = async (offerId: string): Promise<void> => {
+        try {
+            const response: Response = await putAcceptedStudentsForOffer(offerId, connectedUser.token);
+
+            if (response.ok) {
+                const data: IAcceptedStudents = await response.json();
+                setCurrentlySelectedOffer(data.offerId)
+                setAcceptedStudents(data.studentsId);
+            } else {
+                generateAlert()
+            }
+        } catch {
+            generateAlert()
+        }
+    }
+
+    const hireStudent = async (studentId: string): Promise<void> => {
+        try {
+            const response: Response =
+                await putStudentAcceptation(currentlySelectedOffer, studentId, connectedUser.token);
+
+            if (response.ok) {
+                setAcceptedStudents([...acceptedStudents, studentId])
             } else {
                 generateAlert()
             }
@@ -98,9 +139,10 @@ const CompanyOffersPage = ({connectedUser}: { connectedUser: IUser }): JSX.Eleme
                                     <td>{offer.nomDeCompagnie}</td>
                                     <td>{offer.position}</td>
                                     <td>{offer.department}</td>
-                                    <th><Button variant="warning" onClick={async () => {
-                                        await fetchOfferApplications(offer.id)
-                                    }}>Applicants</Button></th>
+                                    <th><Button disabled={currentlySelectedOffer == offer.id} variant="warning"
+                                                onClick={async () => {
+                                                    await fetchOfferApplications(offer.id)
+                                                }}>Applicants</Button></th>
                                 </tr>
                             );
                         })}
@@ -115,11 +157,16 @@ const CompanyOffersPage = ({connectedUser}: { connectedUser: IUser }): JSX.Eleme
                                 <th>Prénom</th>
                                 <th>Nom</th>
                                 <th>CV</th>
+                                <th>Engager</th>
                             </tr>
                             </thead>
                             <tbody>
                             {students.length === 0 &&
-                                <td colSpan={3}><h1>Aucun applicants</h1></td>
+                                <tr>
+                                    <td colSpan={4}>
+                                        <h1>Aucun applicants</h1>
+                                    </td>
+                                </tr>
                             }
                             {students.length !== 0 &&
                                 students!.map((student, index) => {
@@ -130,6 +177,13 @@ const CompanyOffersPage = ({connectedUser}: { connectedUser: IUser }): JSX.Eleme
                                             <td><Button variant="warning" onClick={async () => {
                                                 await fetchStudentCv(student.id)
                                             }}>CV</Button></td>
+                                            <td>
+                                                {acceptedStudents.includes(student.id) ?
+                                                    <h1 className="text-primary">Déjà engagé</h1> :
+                                                    <Button variant="success" onClick={async () => {
+                                                        await hireStudent(student.id)
+                                                    }}>Engager</Button>}
+                                            </td>
                                         </tr>
                                     );
                                 })}
