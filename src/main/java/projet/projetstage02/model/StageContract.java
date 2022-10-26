@@ -25,4 +25,5 @@ public class StageContract {
     @NotBlank
     private Long companyId;
     private String description;
+    private byte[] companySignature;
 }

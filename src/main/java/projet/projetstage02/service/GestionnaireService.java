@@ -16,6 +16,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.regex.Pattern;
 
+import static projet.projetstage02.utils.ByteConverter.byteToString;
 import static projet.projetstage02.utils.TimeUtil.*;
 
 @Service
@@ -175,7 +176,7 @@ public class GestionnaireService {
 
     public PdfOutDTO getOffrePdfById(long id) throws NonExistentOfferExeption {
         @NotNull byte[] offer = getOffer(id).getPdf();
-        String offreString = Arrays.toString(offer).replaceAll("\\s+", "");
+        String offreString = byteToString(offer);
         return PdfOutDTO.builder().pdf(offreString).build();
     }
 
@@ -243,7 +244,7 @@ public class GestionnaireService {
         Optional<Student> studentOpt = studentRepository.findById(studentId);
         if (studentOpt.isEmpty()) throw new NonExistentEntityException();
         byte[] cv = studentOpt.get().getCvToValidate();
-        String cvConvert = Arrays.toString(cv).replaceAll("\\s+", "");
+        String cvConvert = byteToString(cv);
         return new PdfOutDTO(studentOpt.get().getId(), cvConvert);
     }
 
@@ -291,6 +292,7 @@ public class GestionnaireService {
                 .offerId(offre.getId())
                 .companyId(company.getId())
                 .description(description)
+                .companySignature(new byte[0])
                 .build();
         stageContractRepository.save(stageContract);
 

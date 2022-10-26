@@ -33,6 +33,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static projet.projetstage02.model.Token.UserTypes.*;
+import static projet.projetstage02.utils.ByteConverter.byteToString;
 import static projet.projetstage02.utils.TimeUtil.currentTimestamp;
 
 @ExtendWith(MockitoExtension.class)
@@ -62,7 +63,7 @@ public class RootControllerTest {
     JacksonTester<TokenDTO> jsonTokenDTO;
     JacksonTester<CvRefusalDTO> jsonCvRefusalDTO;
     JacksonTester<PdfDTO> jsonPdfDTO;
-    JacksonTester<StageContractInDTO> jsonStageDTO;
+    JacksonTester<SignatureInDTO> jsonSignatureDTO;
 
     StudentDTO bart;
     CompanyDTO duffBeer;
@@ -79,6 +80,7 @@ public class RootControllerTest {
     OfferAcceptedStudentsDTO acceptedStudentsDTO;
     StageContractInDTO stageContractInDTO;
     StageContractOutDTO stageContractOutDTO;
+    SignatureInDTO signatureInDTO;
 
     // https://thepracticaldeveloper.com/guide-spring-boot-controller-tests/
     @BeforeEach
@@ -179,6 +181,14 @@ public class RootControllerTest {
                 .offerId(8L)
                 .companyId(6L)
                 .description("description")
+                .companySignature(byteToString(new byte[]{0,1,2,3,4,5,6,7,8,9}))
+                .build();
+
+        signatureInDTO = SignatureInDTO.builder()
+                .token(token.getToken())
+                .contractId(10L)
+                .userId(11L)
+                .signature(new byte[]{0,1,2,3,4,5,6,7,8,9})
                 .build();
     }
 
@@ -1406,6 +1416,47 @@ public class RootControllerTest {
         mockMvc.perform(post("/createStageContract", stageContractInDTO)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(jsonTokenDTO.write(token).getJson()))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    void testCompanyContractSignatureHappyDay() throws Exception {
+        when(companyService.addSignatureToContract(any())).thenReturn(stageContractOutDTO);
+
+        mockMvc.perform(put("/companySignatureContract")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(jsonSignatureDTO.write(signatureInDTO).getJson()))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.companySignature", is(byteToString(signatureInDTO.getSignature()))));
+    }
+
+    @Test
+    void testCompanyContractSignatureNotFound() throws Exception {
+        when(companyService.addSignatureToContract(any())).thenThrow(new NonExistentEntityException());
+
+        mockMvc.perform(put("/companySignatureContract")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(jsonSignatureDTO.write(signatureInDTO).getJson()))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    void testCompanyContractSignatureConflict() throws Exception {
+        when(companyService.addSignatureToContract(any())).thenThrow(new InvalidOwnershipException());
+
+        mockMvc.perform(put("/companySignatureContract")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(jsonSignatureDTO.write(signatureInDTO).getJson()))
+                .andExpect(status().isConflict());
+    }
+
+    @Test
+    void testCompanyContractSignatureInvalidToken() throws Exception {
+        when(authService.getToken(any(), any())).thenThrow(new InvalidTokenException());
+
+        mockMvc.perform(put("/companySignatureContract")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(jsonSignatureDTO.write(signatureInDTO).getJson()))
                 .andExpect(status().isForbidden());
     }
 }
