@@ -261,7 +261,7 @@ public class StudentServiceTest {
         when(offreRepository.findAll()).thenReturn(offres);
 
         // Act
-        List<OffreDTO> offerDTOs = studentService.getOffersByStudentDepartment(1L);
+        List<OffreOutDTO> offerDTOs = studentService.getOffersByStudentDepartment(1L);
 
         // Assert
         assertThat(offerDTOs.size()).isEqualTo(1);

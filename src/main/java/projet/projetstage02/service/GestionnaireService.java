@@ -19,6 +19,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.regex.Pattern;
 
+import static projet.projetstage02.utils.ByteConverter.byteToString;
 import static projet.projetstage02.utils.TimeUtil.*;
 
 @Service
@@ -106,25 +107,25 @@ public class GestionnaireService {
         return offreOpt.get();
     }
 
-    public List<OffreDTO> getUnvalidatedOffers() {
-        List<OffreDTO> offres = new ArrayList<>();
+    public List<OffreOutDTO> getUnvalidatedOffers() {
+        List<OffreOutDTO> offres = new ArrayList<>();
         offreRepository.findAll().stream().
                 filter(offre ->
                         !offre.isValide() && isRightSession(offre.getSession(), getNextYear()))
                 .forEach(offre ->
-                        offres.add(new OffreDTO(offre)));
-        offres.forEach(offre -> offre.setPdf(new byte[0]));
+                        offres.add(new OffreOutDTO(offre)));
+        offres.forEach(offre -> offre.setPdf(byteToString(new byte[0])));
         return offres;
     }
 
-    public List<OffreDTO> getValidatedOffers(int year) {
-        List<OffreDTO> offres = new ArrayList<>();
+    public List<OffreOutDTO> getValidatedOffers(int year) {
+        List<OffreOutDTO> offres = new ArrayList<>();
         offreRepository.findAll().stream().
                 filter(offre ->
                         offre.isValide() && isRightSession(offre.getSession(), year))
                 .forEach(offre ->
-                        offres.add(new OffreDTO(offre)));
-        offres.forEach(offre -> offre.setPdf(new byte[0]));
+                        offres.add(new OffreOutDTO(offre)));
+        offres.forEach(offre -> offre.setPdf(byteToString(new byte[0])));
         return offres;
     }
 
@@ -137,7 +138,7 @@ public class GestionnaireService {
                 && ("Hiver " + year).equals(session);
     }
 
-    public OffreDTO validateOfferById(Long id) throws NonExistentOfferExeption, ExpiredSessionException {
+    public OffreOutDTO validateOfferById(Long id) throws NonExistentOfferExeption, ExpiredSessionException {
 
         Offre offre = getOffer(id);
         if (!isRightSession(offre.getSession(), getNextYear())) {
@@ -146,7 +147,7 @@ public class GestionnaireService {
         offre.setValide(true);
         offreRepository.save(offre);
 
-        return new OffreDTO(offre);
+        return new OffreOutDTO(offre);
     }
 
     public void removeOfferById(long id) throws NonExistentOfferExeption {

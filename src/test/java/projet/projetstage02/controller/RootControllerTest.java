@@ -19,7 +19,6 @@ import projet.projetstage02.service.AuthService;
 import projet.projetstage02.service.CompanyService;
 import projet.projetstage02.service.GestionnaireService;
 import projet.projetstage02.service.StudentService;
-import projet.projetstage02.utils.ByteConverter;
 
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
@@ -34,6 +33,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static projet.projetstage02.model.Token.UserTypes.*;
+import static projet.projetstage02.utils.ByteConverter.byteToString;
 import static projet.projetstage02.utils.TimeUtil.currentTimestamp;
 
 @ExtendWith(MockitoExtension.class)
@@ -59,7 +59,7 @@ public class RootControllerTest {
     JacksonTester<LoginDTO> jsonLoginDTO;
     JacksonTester<CompanyDTO> jsonCompanyDTO;
     JacksonTester<GestionnaireDTO> jsonGestionnaireDTO;
-    JacksonTester<OffreDTO> jsonOffreDTO;
+    JacksonTester<OffreInDTO> jsonOffreDTO;
     JacksonTester<TokenDTO> jsonTokenDTO;
     JacksonTester<CvRefusalDTO> jsonCvRefusalDTO;
     JacksonTester<PdfDTO> jsonPdfDTO;
@@ -70,7 +70,8 @@ public class RootControllerTest {
     TokenDTO token;
     LoginDTO login;
     GestionnaireDTO burns;
-    OffreDTO duffOffre;
+    OffreInDTO duffOffre;
+    OffreOutDTO duffOffreOut;
     PdfOutDTO duffOfferOut;
     PdfDTO bartCV;
     CvRefusalDTO cvRefusalDTO;
@@ -120,7 +121,7 @@ public class RootControllerTest {
                 .password("excellent")
                 .build();
 
-        duffOffre = OffreDTO.builder()
+        duffOffre = OffreInDTO.builder()
                 .nomDeCompagnie("Duff Beer")
                 .department(Department.Transport.departement)
                 .position("Delivery Guy")
@@ -129,6 +130,16 @@ public class RootControllerTest {
                 .session("Hiver 2022")
                 .adresse("654 Duff Street")
                 .pdf(new byte[0])
+                .build();
+        duffOffreOut = OffreOutDTO.builder()
+                .nomDeCompagnie("Duff Beer")
+                .department(Department.Transport.departement)
+                .position("Delivery Guy")
+                .heureParSemaine(40)
+                .salaire(40)
+                .session("Hiver 2022")
+                .adresse("654 Duff Street")
+                .pdf(byteToString(new byte[0]))
                 .build();
 
         token = TokenDTO.builder()
@@ -353,7 +364,7 @@ public class RootControllerTest {
     void testCreateOffreBadRequest() throws Exception {
         mockMvc.perform(post("/createOffre")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(jsonOffreDTO.write(new OffreDTO()).getJson()))
+                        .content(jsonOffreDTO.write(new OffreInDTO()).getJson()))
 
                 .andExpect(status().isBadRequest());
     }
@@ -821,7 +832,7 @@ public class RootControllerTest {
     void testUnvalidatedOffers() throws Exception {
         when(authService.getToken(any(), any())).thenReturn(Token.builder().userId(1).build());
         when(gestionnaireService.getUnvalidatedOffers())
-                .thenReturn(List.of(duffOffre));
+                .thenReturn(List.of(duffOffreOut));
 
         mockMvc.perform(put("/unvalidatedOffers")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -854,7 +865,7 @@ public class RootControllerTest {
     void testValidatedOffersHappyDay() throws Exception {
         when(authService.getToken(any(), any())).thenReturn(Token.builder().userId(1).build());
         when(gestionnaireService.getValidatedOffers(anyInt()))
-                .thenReturn(List.of(duffOffre));
+                .thenReturn(List.of(duffOffreOut));
 
         mockMvc.perform(put("/validatedOffers/2022")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -865,8 +876,8 @@ public class RootControllerTest {
 
     @Test
     void testValidateOfferSuccess() throws Exception {
-        duffOffre.setValide(true);
-        when(gestionnaireService.validateOfferById(anyLong())).thenReturn(duffOffre);
+        duffOffreOut.setValide(true);
+        when(gestionnaireService.validateOfferById(anyLong())).thenReturn(duffOffreOut);
 
         mockMvc.perform(put("/validateOffer/{id}", 1)
                         .contentType(MediaType.APPLICATION_JSON)
@@ -936,7 +947,7 @@ public class RootControllerTest {
     @Test
     void testUploadCurriculumVitaeSuccess() throws Exception {
         when(authService.getToken(any(), any())).thenReturn(Token.builder().userId(1).build());
-        bartOut.setCvToValidate(ByteConverter.byteToString(bartCV.getPdf()));
+        bartOut.setCvToValidate(byteToString(bartCV.getPdf()));
         when(studentService.uploadCurriculumVitae(any())).thenReturn(bartOut);
 
         mockMvc.perform(put("/uploadStudentCV")
@@ -1134,7 +1145,7 @@ public class RootControllerTest {
     @Test
     void testGetOffersByStudentDepartmentSuccess() throws Exception {
         when(authService.getToken(any(), any())).thenReturn(Token.builder().userId(1).build());
-        when(studentService.getOffersByStudentDepartment(anyLong())).thenReturn(List.of(duffOffre));
+        when(studentService.getOffersByStudentDepartment(anyLong())).thenReturn(List.of(duffOffreOut));
 
         mockMvc.perform(put("/getOffers/{studentId}", 1)
                         .contentType(MediaType.APPLICATION_JSON)

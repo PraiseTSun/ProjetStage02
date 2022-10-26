@@ -122,13 +122,13 @@ public class RootController {
     }
 
     @PostMapping("/createOffre")
-    public ResponseEntity<Map<String, String>> createOffre(@Valid @RequestBody OffreDTO offreDTO) {
+    public ResponseEntity<Map<String, String>> createOffre(@Valid @RequestBody OffreInDTO offreInDTO) {
         try {
-            logger.log(Level.INFO, "Post /createOffre entered with body : " + offreDTO);
-            Token token = authService.getToken(offreDTO.getToken(), COMPANY);
-            offreDTO.setSession("Hiver " + getNextYear());
-            offreDTO.setCompanyId(token.getUserId());
-            companyService.createOffre(offreDTO);
+            logger.log(Level.INFO, "Post /createOffre entered with body : " + offreInDTO);
+            Token token = authService.getToken(offreInDTO.getToken(), COMPANY);
+            offreInDTO.setSession("Hiver " + getNextYear());
+            offreInDTO.setCompanyId(token.getUserId());
+            companyService.createOffre(offreInDTO);
             logger.log(Level.INFO, "PostMapping: /createOffre sent 201 response");
             return ResponseEntity.status(CREATED).build();
         } catch (InvalidTokenException ex) {
@@ -408,11 +408,11 @@ public class RootController {
     }
 
     @PutMapping("/unvalidatedOffers")
-    public ResponseEntity<List<OffreDTO>> getOfferToValidate(@RequestBody TokenDTO tokenDTO) {
+    public ResponseEntity<List<OffreOutDTO>> getOfferToValidate(@RequestBody TokenDTO tokenDTO) {
         try {
             logger.log(Level.INFO, "put /unvalidatedOffers entered with year : ");
             authService.getToken(tokenDTO.getToken(), GESTIONNAIRE);
-            List<OffreDTO> unvalidatedOffers = gestionnaireService.getUnvalidatedOffers();
+            List<OffreOutDTO> unvalidatedOffers = gestionnaireService.getUnvalidatedOffers();
             logger.log(Level.INFO, "PutMapping: /unvalidatedOffers sent 200 response");
             return ResponseEntity.ok(unvalidatedOffers);
         } catch (InvalidTokenException e) {
@@ -422,12 +422,12 @@ public class RootController {
     }
 
     @PutMapping("/validatedOffers/{year}")
-    public ResponseEntity<List<OffreDTO>> getValidatedOffersForYear(@PathVariable int year,
-                                                                    @RequestBody TokenDTO tokenDTO) {
+    public ResponseEntity<List<OffreOutDTO>> getValidatedOffersForYear(@PathVariable int year,
+                                                                       @RequestBody TokenDTO tokenDTO) {
         try {
             logger.log(Level.INFO, "put /validatedOffers entered with year : " + year);
             authService.getToken(tokenDTO.getToken(), GESTIONNAIRE);
-            List<OffreDTO> validatedOffers = gestionnaireService.getValidatedOffers(year);
+            List<OffreOutDTO> validatedOffers = gestionnaireService.getValidatedOffers(year);
             logger.log(Level.INFO, "PutMapping: /validatedOffers sent 200 response");
             return ResponseEntity.ok(validatedOffers);
         } catch (InvalidTokenException e) {
@@ -437,14 +437,14 @@ public class RootController {
     }
 
     @PutMapping("/validateOffer/{id}")
-    public ResponseEntity<OffreDTO> validateOffer(@PathVariable String id, @RequestBody TokenDTO tokenDTO) {
+    public ResponseEntity<OffreOutDTO> validateOffer(@PathVariable String id, @RequestBody TokenDTO tokenDTO) {
         logger.log(Level.INFO, "Put /validateOffer/{id} entered with id : " + id);
         try {
             authService.getToken(tokenDTO.getToken(), GESTIONNAIRE);
             gestionnaireService.validateOfferById(Long.parseLong(id));
             logger.log(Level.INFO, "PutMapping: /validateOffer sent 200 response");
-            OffreDTO offreDTO = gestionnaireService.validateOfferById(Long.parseLong(id));
-            return ResponseEntity.ok(offreDTO);
+            OffreOutDTO offreInDTO = gestionnaireService.validateOfferById(Long.parseLong(id));
+            return ResponseEntity.ok(offreInDTO);
         } catch (NonExistentOfferExeption | ExpiredSessionException exception) {
             logger.log(Level.INFO, "PutMapping: /validateOffer sent 404 response");
             return ResponseEntity.notFound().build();
@@ -572,13 +572,13 @@ public class RootController {
     }
 
     @PutMapping("/getOffers/{studentId}")
-    public ResponseEntity<List<OffreDTO>> getOffersByStudentDepartment(@PathVariable String studentId,
-                                                                       @RequestBody TokenDTO tokenId) {
+    public ResponseEntity<List<OffreOutDTO>> getOffersByStudentDepartment(@PathVariable String studentId,
+                                                                          @RequestBody TokenDTO tokenId) {
         logger.log(Level.INFO, "Put /getOffersByStudentDepartment entered with student id : " + studentId);
 
         try {
             authService.getToken(tokenId.getToken(), STUDENT);
-            List<OffreDTO> offers = studentService.getOffersByStudentDepartment(Long.parseLong(studentId));
+            List<OffreOutDTO> offers = studentService.getOffersByStudentDepartment(Long.parseLong(studentId));
             logger.log(Level.INFO, "PutMapping: /getOffersByStudentDepartment sent 200 response");
             return ResponseEntity.ok(offers);
         } catch (NonExistentEntityException e) {

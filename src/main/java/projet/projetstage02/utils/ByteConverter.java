@@ -7,7 +7,7 @@ public class ByteConverter {
         return Arrays.toString(byteArray).replaceAll("\\s+", "");
     }
 
-    public static byte[] StringToBytes(String string) {
+    public static byte[] stringToBytes(String string) {
         if (string == null || string.equals("null"))
             return new byte[0];
         string = string.replaceAll("\\[*]*", "");

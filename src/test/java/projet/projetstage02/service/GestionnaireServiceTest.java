@@ -282,7 +282,7 @@ public class GestionnaireServiceTest {
                 Offre.builder().session("Hiver 2023").department(Informatique).build()
         );
         when(offreRepository.findAll()).thenReturn(offers);
-        final List<OffreDTO> offersDto = service.getUnvalidatedOffers();
+        final List<OffreOutDTO> offersDto = service.getUnvalidatedOffers();
 
         assertThat(offersDto).hasSize(2);
     }
@@ -297,9 +297,9 @@ public class GestionnaireServiceTest {
                 Offre.builder().session("Hiver 2023").valide(true).department(Informatique).build()
         );
         when(offreRepository.findAll()).thenReturn(offers);
-        final List<OffreDTO> offers2022 = service.getValidatedOffers(2022);
-        final List<OffreDTO> offers2023 = service.getValidatedOffers(2023);
-        final List<OffreDTO> offers2010 = service.getValidatedOffers(2010);
+        final List<OffreOutDTO> offers2022 = service.getValidatedOffers(2022);
+        final List<OffreOutDTO> offers2023 = service.getValidatedOffers(2023);
+        final List<OffreOutDTO> offers2010 = service.getValidatedOffers(2010);
 
         assertThat(offers2022).hasSize(1);
         assertThat(offers2023).hasSize(1);
@@ -331,7 +331,7 @@ public class GestionnaireServiceTest {
         when(offreRepository.findAll()).thenReturn(offres);
 
         // Act
-        final List<OffreDTO> noneValidateOffers = service.getUnvalidatedOffers();
+        final List<OffreOutDTO> noneValidateOffers = service.getUnvalidatedOffers();
 
         // Assert
         assertThat(noneValidateOffers.size()).isEqualTo(2);
@@ -343,10 +343,10 @@ public class GestionnaireServiceTest {
         when(offreRepository.findById(anyLong())).thenReturn(Optional.of(offreTest));
 
         // Act
-        final OffreDTO offreDTO = service.validateOfferById(1L);
+        final OffreOutDTO offreInDTO = service.validateOfferById(1L);
 
         // Assert
-        assertThat(offreDTO.isValide()).isTrue();
+        assertThat(offreInDTO.isValide()).isTrue();
     }
 
     @Test

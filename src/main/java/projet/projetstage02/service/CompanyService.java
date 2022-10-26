@@ -5,7 +5,7 @@ import org.springframework.stereotype.Service;
 import projet.projetstage02.DTO.ApplicationAcceptationDTO;
 import projet.projetstage02.DTO.CompanyDTO;
 import projet.projetstage02.DTO.OfferAcceptedStudentsDTO;
-import projet.projetstage02.DTO.OffreDTO;
+import projet.projetstage02.DTO.OffreInDTO;
 import projet.projetstage02.exception.AlreadyExistingAcceptationException;
 import projet.projetstage02.exception.NonExistentEntityException;
 import projet.projetstage02.exception.NonExistentOfferExeption;
@@ -36,17 +36,17 @@ public class CompanyService {
     private final StudentRepository studentRepository;
     private final ApplicationAcceptationRepository applicationAcceptationRepository;
 
-    public long createOffre(OffreDTO offreDTO) {
+    public long createOffre(OffreInDTO offreInDTO) {
         Offre offre = Offre.builder()
-                .nomDeCompagnie(offreDTO.getNomDeCompagnie())
-                .idCompagnie(offreDTO.getCompanyId())
-                .department(Department.getDepartment(offreDTO.getDepartment()))
-                .position(offreDTO.getPosition())
-                .heureParSemaine(offreDTO.getHeureParSemaine())
-                .salaire(offreDTO.getSalaire())
-                .session(offreDTO.getSession())
-                .adresse(offreDTO.getAdresse())
-                .pdf(offreDTO.getPdf())
+                .nomDeCompagnie(offreInDTO.getNomDeCompagnie())
+                .idCompagnie(offreInDTO.getCompanyId())
+                .department(Department.getDepartment(offreInDTO.getDepartment()))
+                .position(offreInDTO.getPosition())
+                .heureParSemaine(offreInDTO.getHeureParSemaine())
+                .salaire(offreInDTO.getSalaire())
+                .session(offreInDTO.getSession())
+                .adresse(offreInDTO.getAdresse())
+                .pdf(offreInDTO.getPdf())
                 .build();
 
         return offreRepository.save(offre).getId();

@@ -80,7 +80,7 @@ public class ProjetStage02Application implements CommandLineRunner {
         student2.setEmailConfirmed(true);
         studentService.saveStudent(new StudentInDTO(student2.toModel()));
 
-        long offreId = companyService.createOffre(OffreDTO.builder()
+        long offreId = companyService.createOffre(OffreInDTO.builder()
                 .adresse("123 Joe Road")
                 .department(Department.Informatique.departement)
                 .heureParSemaine(40)
@@ -103,7 +103,7 @@ public class ProjetStage02Application implements CommandLineRunner {
                 .build());
 
         companyService.createOffre(
-                OffreDTO.builder()
+                OffreInDTO.builder()
                         .id(0L)
                         .nomDeCompagnie("Bell")
                         .department("Techniques de linformatique")
@@ -118,7 +118,7 @@ public class ProjetStage02Application implements CommandLineRunner {
                         .build()
         );
         companyService.createOffre(
-                OffreDTO.builder()
+                OffreInDTO.builder()
                         .id(0L)
                         .nomDeCompagnie("Vidéotron")
                         .department("Techniques de linformatique")

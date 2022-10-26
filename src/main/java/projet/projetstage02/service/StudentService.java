@@ -22,6 +22,7 @@ import java.util.List;
 import java.util.Optional;
 
 import static projet.projetstage02.model.AbstractUser.Department;
+import static projet.projetstage02.utils.ByteConverter.byteToString;
 import static projet.projetstage02.utils.TimeUtil.MILLI_SECOND_DAY;
 import static projet.projetstage02.utils.TimeUtil.currentTimestamp;
 
@@ -102,21 +103,21 @@ public class StudentService {
         return false;
     }
 
-    public List<OffreDTO> getOffersByStudentDepartment(long id) throws NonExistentEntityException {
+    public List<OffreOutDTO> getOffersByStudentDepartment(long id) throws NonExistentEntityException {
         Optional<Student> studentOpt = studentRepository.findById(id);
         if (studentOpt.isEmpty())
             throw new NonExistentEntityException();
         Department department = studentOpt.get().getDepartment();
 
-        List<OffreDTO> offers = new ArrayList<>();
+        List<OffreOutDTO> offers = new ArrayList<>();
         offreRepository.findAll().stream().
                 filter(offre ->
                         offre.isValide()
                                 && offre.getDepartment().equals(department)
                 )
                 .forEach(offre -> {
-                    OffreDTO dto = new OffreDTO(offre);
-                    dto.setPdf(new byte[0]);
+                    OffreOutDTO dto = new OffreOutDTO(offre);
+                    dto.setPdf(byteToString(new byte[0]));
                     offers.add(dto);
                 });
 

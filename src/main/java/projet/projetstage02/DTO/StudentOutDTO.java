@@ -9,8 +9,8 @@ import javax.persistence.Lob;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Pattern;
 
-import static projet.projetstage02.utils.ByteConverter.StringToBytes;
 import static projet.projetstage02.utils.ByteConverter.byteToString;
+import static projet.projetstage02.utils.ByteConverter.stringToBytes;
 
 @Data
 @EqualsAndHashCode(callSuper = false)
@@ -55,8 +55,8 @@ public class StudentOutDTO extends AbstractUserDTO<Student> {
         student.setConfirm(isConfirmed);
         student.setEmailConfirmed(emailConfirmed);
         student.setId(id);
-        student.setCv(StringToBytes(cv));
-        student.setCvToValidate(StringToBytes(cvToValidate));
+        student.setCv(stringToBytes(cv));
+        student.setCvToValidate(stringToBytes(cvToValidate));
         return student;
     }
 }
