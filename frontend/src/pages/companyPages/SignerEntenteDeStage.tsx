@@ -2,12 +2,17 @@ import React, {useEffect, useState} from "react";
 import {Button, Col, Container, Row, Table} from "react-bootstrap";
 import {Link} from "react-router-dom";
 import IUser from "../../models/IUser";
-import {putcompanyContracts, putUnvalidatedOffers} from "../../services/gestionnaireServices/GestionnaireFetchService";
+import {
+    putcompanyContracts,
+    putCompanySignatureContract
+} from "../../services/gestionnaireServices/GestionnaireFetchService";
 import {generateAlert} from "../../services/universalServices/UniversalUtilService";
+import {Viewer} from "@react-pdf-viewer/core";
 
 const SignerEntenteDeStage = ({user}: { user: IUser }): JSX.Element => {
     const [contratsNonSigner, setContratsNonSigner] = useState<any[]>([])
-
+    const [isSigner, setIsSigner] = useState(false)
+    const [contratId, setContratId] = useState(0)
     useEffect(()=>{
         const fetchCompanyContracts = async () => {
             try {
@@ -25,8 +30,37 @@ const SignerEntenteDeStage = ({user}: { user: IUser }): JSX.Element => {
        fetchCompanyContracts()
     },[])
 
-    async function getEntente(ententeId: number): Promise<void> {
+    async function getEntente(contratId: number): Promise<void> {
+        setIsSigner(true)
+        setContratId(contratId)
+    }
 
+    async function signer():Promise<void>{
+        setIsSigner(false)
+        try {
+            const response = await putCompanySignatureContract(user.token,user.id, contratId )
+            if (response.ok) {
+                alert("Félicitations vous avez signé le contrat")
+            } else {
+                generateAlert()
+            }
+        } catch {
+            generateAlert()
+        }
+    }
+    if(isSigner){
+        return (
+            <Container className="min-vh-100 bg-white p-0">
+                <div className="bg-dark p-2">
+                    <Button className="Btn btn-primary" onClick={async () => await signer()}>
+                        Fermer
+                    </Button>
+                </div>
+                <div>
+                    <Viewer fileUrl={""}/>
+                </div>
+            </Container>
+        );
     }
 
     return (
@@ -45,9 +79,9 @@ const SignerEntenteDeStage = ({user}: { user: IUser }): JSX.Element => {
                         <Table className="text-center table table-bordered" hover>
                             <thead className="bg-primary">
                             <tr>
-                                <th>Nom Étudiant</th>
-                                <th>Position</th>
-                                <th>Date</th>
+                                <th>First Name</th>
+                                <th>Last Name</th>
+                                <th>Description</th>
                                 <th>Ententes</th>
                             </tr>
                             </thead>
@@ -55,12 +89,12 @@ const SignerEntenteDeStage = ({user}: { user: IUser }): JSX.Element => {
                             {contratsNonSigner.map((contrat, index) => {
                                 return (
                                     <tr key={index}>
-                                        <td>{user.firstName} {user.lastName}</td>
-                                        <td>{}</td>
-                                        <td>{}</td>
+                                        <td>{user.firstName}</td>
+                                        <td>{user.lastName}</td>
+                                        <td>{contrat.description}</td>
                                         <td>
                                             <Button className="btn btn-warning"
-                                                    onClick={async () => await getEntente(contrat.id)}>Signer</Button>
+                                                    onClick={async () => await getEntente(Number(contrat.contractId)) }>Signer</Button>
                                         </td>
                                     </tr>
                                 );
