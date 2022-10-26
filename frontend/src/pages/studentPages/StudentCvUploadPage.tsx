@@ -168,16 +168,16 @@ const StudentCvUploadPage = ({connectedUser}: { connectedUser: IUser }) => {
                         </td>
                     </tr>
                     <tr>
-                        <th>Status :</th>
+                        <th data-testid="State">Status :</th>
                         <td  className="text-center">{cvStatus.status}</td>
                     </tr>
                     <tr>
-                        <th> Refusal Message :</th>
+                        <th data-testid="RefusalMessage"> Refusal Message :</th>
                         <td>{cvStatus.refusalMessage}</td>
                     </tr>
                     <tr>
                         <th>Cv To Validate :</th>
-                        <td className="text-center">
+                        <td data-testid="CvToValidate" className="text-center">
                             <Button className="btn" onClick={async () => await getCvToValidate()}>Cv To Validate</Button>
                         </td>
                     </tr>

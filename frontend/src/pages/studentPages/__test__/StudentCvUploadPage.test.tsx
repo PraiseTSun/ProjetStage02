@@ -62,13 +62,23 @@ describe('StudentCvUploadPageTests', () => {
         expect(h2Element).toBeInTheDocument()
     })
 
-    it('H3StateParDefautIsPresentTest', async () => {
-        const h3StateElement = await screen.findByText(/State : NOTHING/i)
-        expect(h3StateElement).toBeInTheDocument()
+    it('thStateParDefautIsPresentTest', async () => {
+        const hrStateElement = await screen.findByTestId("State")
+        expect(hrStateElement).toBeInTheDocument()
     })
 
-    it('h3MessageParDefautIsPresentTest', async () => {
-        const h3MessageElement = screen.getByText(`Message :`)
-        expect(h3MessageElement).toBeInTheDocument()
+    it('thMessageParDefautIsPresentTest', async () => {
+        const thMessageElement = await screen.findByTestId(/RefusalMessage/i)
+        expect(thMessageElement).toBeInTheDocument()
+    })
+
+    it('textCVToValidationParDefautIsPresentTest', async () => {
+        const textCVToValidationElement = await screen.getByText(/Cv To Validate :/i)
+        expect(textCVToValidationElement).toBeInTheDocument()
+    })
+
+    it('buttonCVToValidationParDefautIsPresentTest', async () => {
+        const buttonCVToValidationElement = await screen.findByTestId("CvToValidate")
+        expect(buttonCVToValidationElement).toBeInTheDocument()
     })
 });
