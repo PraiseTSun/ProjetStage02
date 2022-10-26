@@ -19,7 +19,7 @@ const StudentCvUploadPage = ({connectedUser}: { connectedUser: IUser }) => {
     const [cv, setCv] = useState<number[]>([0])
     const [isChoisi, setIsChoisi] = useState<boolean>(false)
     const [cvStatus, setCvStatus] = useState(statusCV)
-    const [cvCourant, setCvCourant] = useState<Uint8Array>(new Uint8Array([]))
+    // const [z, setCvCourant] = useState<Uint8Array>(new Uint8Array(JSON.parse(connectedUser.cvToValidate)));
     const [showCV, setShowCV] = useState<boolean>(false)
 
     useEffect(() => {
@@ -83,13 +83,13 @@ const StudentCvUploadPage = ({connectedUser}: { connectedUser: IUser }) => {
 
 
     async function getCv(): Promise<void> {
-        if(connectedUser.cv == null){
-            alert("Il y a pas de CV courant, svp envoyez votre CV")
+        if(connectedUser.cvToValidate == null){
+            alert("Il y a pas de CV a valider courant, svp envoyez votre CV")
             return ;
         }
-        const enc = new TextEncoder(); // always utf-8
-        console.log(connectedUser.cv)
-        setCvCourant(enc.encode(connectedUser.cv));
+        // const enc = new TextEncoder(); // always utf-8
+        // console.log(connectedUser.cv)
+        // setCvCourant(new Uint8Array(JSON.parse(data.pdf)));
         setShowCV(true);
 
     }
@@ -102,7 +102,7 @@ const StudentCvUploadPage = ({connectedUser}: { connectedUser: IUser }) => {
                     </Button>
                 </div>
                 <div>
-                    <Viewer fileUrl={cvCourant}/>
+                    <Viewer fileUrl={new Uint8Array(JSON.parse(connectedUser.cvToValidate!))}/>
                 </div>
             </Container>
         );

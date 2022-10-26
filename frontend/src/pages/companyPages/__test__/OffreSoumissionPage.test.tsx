@@ -15,7 +15,8 @@ describe("OffreSoumissionPageTests", () => {
             firstName: "Bob",
             lastName: "Marley",
             userType: "company",
-            token: "324324332"
+            token: "324324332",
+            cvToValidate: ""
         }
         await act(async () => {
             render(<OffreSoumissionPage user={company}/>, {wrapper: BrowserRouter});
