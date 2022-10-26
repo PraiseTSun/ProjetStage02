@@ -3,10 +3,7 @@ package projet.projetstage02.service;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import projet.projetstage02.DTO.*;
-import projet.projetstage02.exception.InvalidStatusException;
-import projet.projetstage02.exception.ExpiredSessionException;
-import projet.projetstage02.exception.NonExistentEntityException;
-import projet.projetstage02.exception.NonExistentOfferExeption;
+import projet.projetstage02.exception.*;
 import projet.projetstage02.model.*;
 import projet.projetstage02.repository.*;
 
@@ -29,6 +26,7 @@ public class GestionnaireService {
     private final StudentRepository studentRepository;
     private final CvStatusRepository cvStatusRepository;
     private final OffreRepository offreRepository;
+    private final StageContractRepository stageContractRepository;
 
     public long saveGestionnaire(String firstname, String lastname, String email, String password) {
         GestionnaireDTO dto = GestionnaireDTO.builder()
@@ -264,5 +262,41 @@ public class GestionnaireService {
     public boolean isGestionnaireInvalid(String email) throws NonExistentEntityException {
         return !isEmailUnique(email)
                 && !deleteUnconfirmedGestionnaire(email);
+    }
+
+    public StageContractOutDTO createStageContract (StageContractInDTO contract)
+            throws NonExistentEntityException, NonExistentOfferExeption, AlreadyExistingStageContractException {
+        Optional<Student> studentOpt = studentRepository.findById(contract.getStudentId());
+        if(studentOpt.isEmpty()) throw new NonExistentEntityException();
+        Student student = studentOpt.get();
+
+        Optional<Offre> offerOpt = offreRepository.findById(contract.getOfferId());
+        if(offerOpt.isEmpty()) throw new NonExistentOfferExeption();
+        Offre offre = offerOpt.get();
+
+        Optional<Company> companyOpt = companyRepository.findById(offre.getIdCompagnie());
+        if(companyOpt.isEmpty()) throw new NonExistentEntityException();
+        Company company = companyOpt.get();
+
+        String description = company.getCompanyName() + " a accepté " + student.getFirstName() + " "
+                + student.getLastName() + " en tant que " + offre.getPosition() + " pour la session "
+                + offre.getSession() + ".";
+
+        Optional<StageContract> stageContractOpt
+                = stageContractRepository.findByStudentIdAndCompanyIdAndOfferId(student.getId(), company.getId(), offre.getId());
+        if (stageContractOpt.isPresent()) throw new AlreadyExistingStageContractException();
+
+        StageContract stageContract = StageContract.builder()
+                .studentId(student.getId())
+                .offerId(offre.getId())
+                .companyId(company.getId())
+                .description(description)
+                .build();
+        stageContractRepository.save(stageContract);
+
+         stageContractOpt
+                = stageContractRepository.findByStudentIdAndCompanyIdAndOfferId(student.getId(), company.getId(), offre.getId());
+
+        return new StageContractOutDTO(stageContractOpt.get());
     }
 }
