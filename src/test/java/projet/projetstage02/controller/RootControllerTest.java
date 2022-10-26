@@ -76,6 +76,9 @@ public class RootControllerTest {
     ApplicationListDTO bartApplys;
     ApplicationAcceptationDTO applicationDTO;
     OfferAcceptedStudentsDTO acceptedStudentsDTO;
+    OfferApplicationDTO offerApplicationDTO;
+
+    CvStatusDTO cvStatusDTO;
 
     // https://thepracticaldeveloper.com/guide-spring-boot-controller-tests/
     @BeforeEach
@@ -163,6 +166,17 @@ public class RootControllerTest {
                 .studentsId(new ArrayList<>() {{
                     add(bart.getId());
                 }})
+                .build();
+
+        offerApplicationDTO = OfferApplicationDTO.builder().applicants(List.of(
+                StudentDTO.builder().build(),
+                StudentDTO.builder().build(),
+                StudentDTO.builder().build()
+        )).build();
+
+        cvStatusDTO = CvStatusDTO.builder()
+                .status("ACCEPTED")
+                .refusalMessage("")
                 .build();
     }
 
@@ -1336,6 +1350,88 @@ public class RootControllerTest {
         when(authService.getToken(any(), any())).thenThrow(new InvalidTokenException());
 
         mockMvc.perform(put("/getAcceptedStudentsForOffer/{offerId}", 1)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(jsonTokenDTO.write(token).getJson()))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    void testGetApplicationsForOfferHappyDay() throws Exception {
+
+        when(companyService.getStudentsForOffer(anyLong())).thenReturn(offerApplicationDTO);
+        mockMvc.perform(put("/offer/{id}/applications", 1)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(jsonTokenDTO.write(token).getJson()))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.applicants.length()", is(3)));
+    }
+
+    @Test
+    void testGetApplicationsForOfferNotFound() throws Exception {
+
+        when(companyService.getStudentsForOffer(anyLong())).thenThrow(new NonExistentOfferExeption());
+        mockMvc.perform(put("/offer/{id}/applications", 1)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(jsonTokenDTO.write(token).getJson()))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    void testGetApplicationsForOfferForbidden() throws Exception {
+
+        when(authService.getToken(any(), any())).thenThrow(new InvalidTokenException());
+        mockMvc.perform(put("/offer/{id}/applications", 1)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(jsonTokenDTO.write(token).getJson()))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    void testGetStatusValidationCVHappyDay() throws Exception {
+
+        when(studentService.getStudentCvStatus(anyLong())).thenReturn(cvStatusDTO);
+        mockMvc.perform(put("/getStatutValidationCV/{id}", 1)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(jsonTokenDTO.write(token).getJson()))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.status", is("ACCEPTED")));
+    }
+
+    @Test
+    void testGetStatusValidationCVForbidden() throws Exception {
+
+        when(authService.getToken(any(), any())).thenThrow(new InvalidTokenException());
+        mockMvc.perform(put("/getStatutValidationCV/{id}", 1)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(jsonTokenDTO.write(token).getJson()))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    void testGetStatusValidationCVNotFound() throws Exception {
+
+        when(studentService.getStudentCvStatus(anyLong())).thenThrow(new NonExistentEntityException());
+        mockMvc.perform(put("/getStatutValidationCV/{id}", 1)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(jsonTokenDTO.write(token).getJson()))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    void testGetCompanyOffersHappyDay() throws Exception {
+
+        when(companyService.getValidatedOffers(anyLong())).thenReturn(List.of(duffOffre));
+        mockMvc.perform(put("/company/validatedOffers/{id}", 1)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(jsonTokenDTO.write(token).getJson()))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.length()", is(1)));
+    }
+
+    @Test
+    void testGetCompanyOffersForbidden() throws Exception {
+        when(authService.getToken(any(), any())).thenThrow(new InvalidTokenException());
+        mockMvc.perform(put("/company/validatedOffers/{id}", 1)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(jsonTokenDTO.write(token).getJson()))
                 .andExpect(status().isForbidden());

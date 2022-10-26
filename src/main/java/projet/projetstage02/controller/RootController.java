@@ -735,7 +735,7 @@ public class RootController {
         try {
             logger.log(Level.INFO, "put /validatedOffers entered with id : " + id);
             authService.getToken(tokenId.getToken(), COMPANY);
-            List<OffreDTO> validatedOffers = companyService.getValidatedOffers();
+            List<OffreDTO> validatedOffers = companyService.getValidatedOffers(id);
             logger.log(Level.INFO, "PutMapping: /validatedOffers sent 200 response");
             return ResponseEntity.ok(validatedOffers);
         } catch (InvalidTokenException e) {
