@@ -301,4 +301,8 @@ public class GestionnaireService {
 
         return new StageContractOutDTO(stageContractOpt.get());
     }
+
+    public UnvalidatedAcceptationsDTO getUnvalidatedAcceptation(){
+        return null;
+    }
 }
