@@ -739,22 +739,37 @@ public class RootController {
     @PutMapping("/companySignatureContract")
     public ResponseEntity<StageContractOutDTO> companyContractSignature
             (@RequestBody SignatureInDTO signatureInDTO){
-        logger.log(Level.INFO, "Post /companySignatureContract entered with SignatureInDTO: " + signatureInDTO);
+        logger.log(Level.INFO, "Put /companySignatureContract entered with SignatureInDTO: " + signatureInDTO);
 
         try {
             authService.getToken(signatureInDTO.getToken(), COMPANY);
             StageContractOutDTO dto = companyService.addSignatureToContract(signatureInDTO);
-            logger.log(Level.INFO, "Post /companySignatureContract sent request 201 : " + dto);
+            logger.log(Level.INFO, "Put /companySignatureContract sent request 200 : " + dto);
             return ResponseEntity.ok(dto);
         } catch (NonExistentEntityException e) {
-            logger.log(Level.INFO, "Post /companySignatureContract sent request 404");
+            logger.log(Level.INFO, "Put /companySignatureContract sent request 404");
             return ResponseEntity.notFound().build();
         } catch (InvalidTokenException e) {
-            logger.log(Level.INFO, "Post /companySignatureContract sent request 403");
+            logger.log(Level.INFO, "Put /companySignatureContract sent request 403");
             return ResponseEntity.status(FORBIDDEN).build();
         } catch (InvalidOwnershipException e) {
-            logger.log(Level.INFO, "Post /companySignatureContract sent request 409");
+            logger.log(Level.INFO, "Put /companySignatureContract sent request 409");
             return ResponseEntity.status(CONFLICT).build();
+        }
+    }
+
+    @PutMapping("/unvalidatedAcceptations")
+    public ResponseEntity<UnvalidatedAcceptationsDTO> getUnvalidatedAcceptations(@RequestBody TokenDTO tokenId){
+        logger.log(Level.INFO, "Put /unvalidatedAcceptations");
+
+        try {
+            authService.getToken(tokenId.getToken(), GESTIONNAIRE);
+            UnvalidatedAcceptationsDTO dto = gestionnaireService.getUnvalidatedAcceptation();
+            logger.log(Level.INFO, "Post /unvalidatedAcceptations sent request 200 : " + dto);
+            return ResponseEntity.status(CREATED).body(dto);
+        } catch (InvalidTokenException e) {
+            logger.log(Level.INFO, "Post /unvalidatedAcceptations sent request 403");
+            return ResponseEntity.status(FORBIDDEN).build();
         }
     }
 }
