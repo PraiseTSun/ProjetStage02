@@ -1285,7 +1285,7 @@ paths:
             type: object
             properties:
               token:
-                type: String
+                type: string
               studentId:
                 type: number
               offerId:
@@ -1325,6 +1325,10 @@ paths:
                 items:
                   type: object
                   properties:
+                    studentId:
+                      type: number
+                    offerId:
+                      type: number
                     employFullName:
                       type: string
                     companyName:
