@@ -6,7 +6,7 @@ import IUser from "../../models/IUser";
 const SignerEntenteDeStage = ({user}: { user: IUser }): JSX.Element => {
     const [ententes, setEntentes] = useState<any[]>([]);
 
-    async function getEntente(offerId: number): Promise<void> {
+    async function getEntente(ententeId: number): Promise<void> {
 
     }
 
@@ -26,8 +26,8 @@ const SignerEntenteDeStage = ({user}: { user: IUser }): JSX.Element => {
                         <Table className="text-center table table-bordered" hover>
                             <thead className="bg-primary">
                             <tr>
-                                <th>Position</th>
                                 <th>Nom Étudiant</th>
+                                <th>Position</th>
                                 <th>Date</th>
                                 <th>Ententes</th>
                             </tr>
@@ -36,7 +36,7 @@ const SignerEntenteDeStage = ({user}: { user: IUser }): JSX.Element => {
                             {ententes.map((entente, index) => {
                                 return (
                                     <tr key={index}>
-                                        <td>{}</td>
+                                        <td>{user.firstName} {user.lastName}</td>
                                         <td>{}</td>
                                         <td>{}</td>
                                         <td><Button className="btn btn-warning"
