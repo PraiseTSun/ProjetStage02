@@ -82,7 +82,7 @@ const CompanyOffersPage = ({connectedUser}: { connectedUser: IUser }): JSX.Eleme
             } else {
                 generateAlert()
             }
-        } catch {
+        } catch (exception) {
             generateAlert()
         }
     }
@@ -139,7 +139,7 @@ const CompanyOffersPage = ({connectedUser}: { connectedUser: IUser }): JSX.Eleme
                                     <td>{offer.nomDeCompagnie}</td>
                                     <td>{offer.position}</td>
                                     <td>{offer.department}</td>
-                                    <th><Button disabled={currentlySelectedOffer == offer.id} variant="warning"
+                                    <th><Button disabled={currentlySelectedOffer === offer.id} variant="warning"
                                                 onClick={async () => {
                                                     await fetchOfferApplications(offer.id)
                                                 }}>Applicants</Button></th>

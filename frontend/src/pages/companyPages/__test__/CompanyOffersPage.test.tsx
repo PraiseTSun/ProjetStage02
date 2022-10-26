@@ -41,20 +41,29 @@ describe("CompanyOfferPageTests", () => {
 
     beforeEach(async () => {
         global.fetch = jest.fn((url) => {
-                if (url === "http://localhost:8080/company/validatedOffers/1") {
+                if (url === `http://localhost:8080/company/validatedOffers/${company.id}`) {
                     return Promise.resolve({
                         ok: true,
                         json: () => Promise.resolve([offer])
                     });
-                } else if (url === "http://localhost:8080/offer/2/applications") {
+                } else if (url === `http://localhost:8080/offer/${offer.id}/applications`) {
                     return Promise.resolve({
                         ok: true,
                         json: () => Promise.resolve({applicants: [student]})
                     });
-                } else if (url === "http://localhost:8080/company/studentCv/3") {
+                } else if (url === `http://localhost:8080/company/studentCv/${student.id}`) {
                     return Promise.resolve({
                         ok: true,
                         json: () => Promise.resolve({pdf: "[10]"})
+                    });
+                } else if (url === `http://localhost:8080/getAcceptedStudentsForOffer/${offer.id}`) {
+                    return Promise.resolve({
+                        ok: true,
+                        json: () => Promise.resolve({studentsId: [], offerId: offer.id})
+                    });
+                } else if (url === `http://localhost:8080/studentAcceptation/${offer.id}_${student.id}`) {
+                    return Promise.resolve({
+                        ok: true,
                     });
                 } else throw new Error("Bad url call");
             }
@@ -100,4 +109,19 @@ describe("CompanyOfferPageTests", () => {
         expect(await screen.findByRole("button", {name: /fermer/i})).toBeInTheDocument();
     });
 
+    it("AcceptStudentTest", async () => {
+        const applicantsButton = await screen.findByRole("button", {name: /Applicants/i});
+
+        await act(async () => {
+            fireEvent.click(applicantsButton);
+        });
+
+        const hireButton = await screen.findByRole("button", {name: /Engager/i});
+
+        await act(async () => {
+            fireEvent.click(hireButton);
+        });
+
+        expect(await screen.findByText(/Déjà engagé/i)).toBeInTheDocument();
+    });
 });
