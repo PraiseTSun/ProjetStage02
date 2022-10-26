@@ -20,6 +20,7 @@ import projet.projetstage02.service.CompanyService;
 import projet.projetstage02.service.GestionnaireService;
 import projet.projetstage02.service.StudentService;
 
+import java.io.IOException;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -81,6 +82,7 @@ public class RootControllerTest {
     StageContractInDTO stageContractInDTO;
     StageContractOutDTO stageContractOutDTO;
     SignatureInDTO signatureInDTO;
+    UnvalidatedAcceptationsDTO acceptationsDTO;
 
     // https://thepracticaldeveloper.com/guide-spring-boot-controller-tests/
     @BeforeEach
@@ -190,6 +192,17 @@ public class RootControllerTest {
                 .userId(11L)
                 .signature(new byte[]{0,1,2,3,4,5,6,7,8,9})
                 .build();
+
+        acceptationsDTO = new UnvalidatedAcceptationsDTO();
+        acceptationsDTO.add(UnvalidatedAcceptationDTO.builder()
+                .employFullName("Bob Marley")
+                .companyName("Bell")
+                .studentId(1L)
+                .studentFullName("Samir Badi")
+                .offerId(2L)
+                .position("Smoking weed")
+                .build()
+        );
     }
 
     @Test
@@ -1457,6 +1470,27 @@ public class RootControllerTest {
         mockMvc.perform(put("/companySignatureContract")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(jsonSignatureDTO.write(signatureInDTO).getJson()))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    void testGetUnvalidatedAcceptationsHappyDay() throws Exception {
+        when(gestionnaireService.getUnvalidatedAcceptation()).thenReturn(acceptationsDTO);
+
+        mockMvc.perform(put("/unvalidatedAcceptations")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(jsonTokenDTO.write(token).getJson()))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.applications.size()", is(1)));
+    }
+
+    @Test
+    void testGetUnvalidatedAcceptationsInvalidToken() throws Exception {
+        when(authService.getToken(any(), any())).thenThrow(new InvalidTokenException());
+
+        mockMvc.perform(put("/unvalidatedAcceptations")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(jsonTokenDTO.write(token).getJson()))
                 .andExpect(status().isForbidden());
     }
 }

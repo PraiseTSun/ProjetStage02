@@ -765,10 +765,10 @@ public class RootController {
         try {
             authService.getToken(tokenId.getToken(), GESTIONNAIRE);
             UnvalidatedAcceptationsDTO dto = gestionnaireService.getUnvalidatedAcceptation();
-            logger.log(Level.INFO, "Post /unvalidatedAcceptations sent request 200 : " + dto);
-            return ResponseEntity.status(CREATED).body(dto);
+            logger.log(Level.INFO, "Put /unvalidatedAcceptations sent request 200 : " + dto);
+            return ResponseEntity.ok(dto);
         } catch (InvalidTokenException e) {
-            logger.log(Level.INFO, "Post /unvalidatedAcceptations sent request 403");
+            logger.log(Level.INFO, "Put /unvalidatedAcceptations sent request 403");
             return ResponseEntity.status(FORBIDDEN).build();
         }
     }

@@ -1,8 +1,11 @@
 package projet.projetstage02.DTO;
 
+import lombok.Data;
+
 import java.util.ArrayList;
 import java.util.List;
 
+@Data
 public class UnvalidatedAcceptationsDTO {
     private List<UnvalidatedAcceptationDTO> applications;
 
