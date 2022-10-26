@@ -1,10 +1,29 @@
-import React, {useState} from "react";
+import React, {useEffect, useState} from "react";
 import {Button, Col, Container, Row, Table} from "react-bootstrap";
 import {Link} from "react-router-dom";
 import IUser from "../../models/IUser";
+import {putcompanyContracts, putUnvalidatedOffers} from "../../services/gestionnaireServices/GestionnaireFetchService";
+import {generateAlert} from "../../services/universalServices/UniversalUtilService";
 
 const SignerEntenteDeStage = ({user}: { user: IUser }): JSX.Element => {
-    const [ententes, setEntentes] = useState<any[]>([]);
+    const [contratsNonSigner, setContratsNonSigner] = useState<any[]>([])
+
+    useEffect(()=>{
+        const fetchCompanyContracts = async () => {
+            try {
+                const response = await putcompanyContracts(user.id, user.token)
+                if (response.ok) {
+                    const data = await response.json();
+                    setContratsNonSigner(data)
+                } else {
+                    generateAlert()
+                }
+            } catch {
+                generateAlert()
+            }
+        }
+       fetchCompanyContracts()
+    },[])
 
     async function getEntente(ententeId: number): Promise<void> {
 
@@ -33,14 +52,15 @@ const SignerEntenteDeStage = ({user}: { user: IUser }): JSX.Element => {
                             </tr>
                             </thead>
                             <tbody className="bg-light">
-                            {ententes.map((entente, index) => {
+                            {contratsNonSigner.map((contrat, index) => {
                                 return (
                                     <tr key={index}>
                                         <td>{user.firstName} {user.lastName}</td>
                                         <td>{}</td>
                                         <td>{}</td>
-                                        <td><Button className="btn btn-warning"
-                                                    onClick={async () => await getEntente(entente.id)}>Signer</Button>
+                                        <td>
+                                            <Button className="btn btn-warning"
+                                                    onClick={async () => await getEntente(contrat.id)}>Signer</Button>
                                         </td>
                                     </tr>
                                 );
