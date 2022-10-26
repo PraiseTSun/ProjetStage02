@@ -137,6 +137,8 @@ public class ProjetStage02Application implements CommandLineRunner {
         );
         gestionnaireService.validateStudent(student.getId());
         gestionnaireService.validateStudent(student2.getId());
+        gestionnaireService.validateCompany(company.getId());
+        gestionnaireService.validateStudentCV(student.getId());
         System.out.println(studentService.getStudentById(1L));
         System.out.println(companyService.getCompanyById(2L));
         System.out.println(gestionnaireService.getGestionnaireById(3L));
