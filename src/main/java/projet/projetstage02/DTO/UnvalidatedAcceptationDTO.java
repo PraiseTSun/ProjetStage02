@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class UvalidatedAcceptationDTO {
+public class UnvalidatedAcceptationDTO {
     private String employFullName;
     private String companyName;
     private long studentId;
