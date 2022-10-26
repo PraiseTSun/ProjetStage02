@@ -742,7 +742,7 @@ public class RootController {
         logger.log(Level.INFO, "Post /companySignatureContract entered with SignatureInDTO: " + signatureInDTO);
 
         try {
-            authService.getToken(signatureInDTO.getTokenId(), COMPANY);
+            authService.getToken(signatureInDTO.getToken(), COMPANY);
             StageContractOutDTO dto = companyService.addSignatureToContract(signatureInDTO);
             logger.log(Level.INFO, "Post /companySignatureContract sent request 201 : " + dto);
             return ResponseEntity.ok(dto);
@@ -754,7 +754,7 @@ public class RootController {
             return ResponseEntity.status(FORBIDDEN).build();
         } catch (InvalidOwnershipException e) {
             logger.log(Level.INFO, "Post /companySignatureContract sent request 409");
-            return ResponseEntity.status(FORBIDDEN).build();
+            return ResponseEntity.status(CONFLICT).build();
         }
     }
 }
