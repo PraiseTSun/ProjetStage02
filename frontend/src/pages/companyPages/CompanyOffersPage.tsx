@@ -139,7 +139,7 @@ const CompanyOffersPage = ({connectedUser}: { connectedUser: IUser }): JSX.Eleme
                                     <td>{offer.nomDeCompagnie}</td>
                                     <td>{offer.position}</td>
                                     <td>{offer.department}</td>
-                                    <th><Button disabled={currentlySelectedOffer == offer.id} variant="warning"
+                                    <th><Button disabled={currentlySelectedOffer === offer.id} variant="warning"
                                                 onClick={async () => {
                                                     await fetchOfferApplications(offer.id)
                                                 }}>Applicants</Button></th>
@@ -178,11 +178,12 @@ const CompanyOffersPage = ({connectedUser}: { connectedUser: IUser }): JSX.Eleme
                                                 await fetchStudentCv(student.id)
                                             }}>CV</Button></td>
                                             <td>
-                                                {acceptedStudents.includes(student.id) ?
-                                                    <h1 className="text-primary">Déjà engagé</h1> :
-                                                    <Button variant="success" onClick={async () => {
-                                                        await hireStudent(student.id)
-                                                    }}>Engager</Button>}
+                                                <Button disabled={acceptedStudents.includes(student.id)}
+                                                        variant="success" onClick={async () => {
+                                                    await hireStudent(student.id)
+                                                }}>Engager</Button>
+                                                {acceptedStudents.includes(student.id) &&
+                                                    <p className="text-primary">Déjà engagé</p>}
                                             </td>
                                         </tr>
                                     );

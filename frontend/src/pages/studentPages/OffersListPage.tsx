@@ -143,12 +143,13 @@ const OffersListPage = ({connectedUser}:
                                         {connectedUser.cv === null &&
                                             <p className="h4 text-danger">Vous n'avez pas de CV</p>}
                                         {connectedUser.cv !== null && studentApplys.offersId.includes(offer.id) &&
-                                            <p className="h4 text-success">Déjà Postulé</p>}
-                                        {connectedUser.cv !== null && !studentApplys.offersId.includes(offer.id) &&
-                                            <Button
-                                                className="btn btn-success" onClick={async () => {
-                                                await applyToOffer(offer.id)
-                                            }}>Postuler</Button>}
+                                            <>
+                                                <p className="h4 text-success">Déjà Postulé</p>
+                                                <Button disabled={studentApplys.offersId.includes(offer.id)}
+                                                        className="btn btn-success" onClick={async () => {
+                                                    await applyToOffer(offer.id)
+                                                }}>Postuler</Button>
+                                            </>}
                                     </td>
                                 </tr>
                             );
