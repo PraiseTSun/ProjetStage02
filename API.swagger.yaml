@@ -1329,6 +1329,15 @@ paths:
       responses:
         200:
           description: Renvoie les contracts qui appartient à la compagnie
+          schema:
+            type: array
+            items:
+              type: object
+              properties:
+                contractId:
+                  type: number
+                description:
+                  type: string
         403:
           description: Token invalide ou expiré
         404:
@@ -1343,6 +1352,8 @@ paths:
           schema:
             type: object
             properties:
+              token:
+                type: string
               companyId:
                 type: number
               stageContractId:
@@ -1352,14 +1363,6 @@ paths:
                 items:
                   type: number
           required: true
-        - in: body
-          name: token
-          description: Token valide de la compagnie
-          schema:
-            type: object
-            properties:
-              token:
-                type: string
       produces:
         - application/json
       responses:
