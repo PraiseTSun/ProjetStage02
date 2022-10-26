@@ -582,8 +582,8 @@ public class GestionnaireServiceTest {
 
         // Assert
         assertThat(studentDTO.getFirstName()).isEqualTo(studentTest.getFirstName());
-        assertThat(studentDTO.getCv()).isEqualTo(new byte[0]);
-        assertThat(studentDTO.getCvToValidate()).isEmpty();
+        assertThat(studentDTO.getCv()).isEqualTo("[]");
+        assertThat(studentDTO.getCvToValidate()).isEqualTo("[]");
     }
 
     @Test
@@ -629,7 +629,7 @@ public class GestionnaireServiceTest {
 
         // Assert
         assertThat(studentDTO.getEmail()).isEqualTo(studentTest.getEmail());
-        assertThat(studentDTO.getCvToValidate()).isEmpty();
+        assertThat(studentDTO.getCvToValidate()).isEqualTo("[]");
         assertThat(cvStatus.getRefusalMessage()).isEqualTo("Refused");
         assertThat(cvStatus.getStatus()).isEqualTo("REFUSED");
     }

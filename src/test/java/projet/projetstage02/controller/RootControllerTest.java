@@ -19,6 +19,7 @@ import projet.projetstage02.service.AuthService;
 import projet.projetstage02.service.CompanyService;
 import projet.projetstage02.service.GestionnaireService;
 import projet.projetstage02.service.StudentService;
+import projet.projetstage02.utils.ByteConverter;
 
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
@@ -371,7 +372,7 @@ public class RootControllerTest {
     @Test
     void testConfirmStudentEmailHappyDay() throws Exception {
         when(studentService.getStudentById(1L)).thenReturn(bartOut);
-        when(studentService.saveStudent(bart)).thenReturn(1L);
+        when(studentService.saveStudent(any())).thenReturn(1L);
 
         mockMvc.perform(
                         put("/confirmEmail/student/{id}", 1))
@@ -391,7 +392,7 @@ public class RootControllerTest {
 
     @Test
     void testConfirmStudentEmailExpired() throws Exception {
-        bart.setInscriptionTimestamp(Timestamp.valueOf(LocalDateTime.now().minusMonths(1)).getTime());
+        bartOut.setInscriptionTimestamp(Timestamp.valueOf(LocalDateTime.now().minusMonths(1)).getTime());
         when(studentService.getStudentById(1L)).thenReturn(bartOut);
 
         mockMvc.perform(
@@ -480,7 +481,7 @@ public class RootControllerTest {
 
     @Test
     void testLoginStudentHappyDay() throws Exception {
-        bart.setEmailConfirmed(true);
+        bartOut.setEmailConfirmed(true);
         when(authService.getToken(token.getToken(), STUDENT)).thenReturn(Token.builder().userId(1L).build());
         when(studentService.getStudentById(1L)).thenReturn(bartOut);
 
@@ -634,7 +635,7 @@ public class RootControllerTest {
     void testUnvalidatedStudentsHappyDay() throws Exception {
         when(authService.getToken(any(), any())).thenReturn(Token.builder().userId(1).build());
         when(gestionnaireService.getUnvalidatedStudents())
-                .thenReturn(List.of(bart));
+                .thenReturn(List.of(bartOut));
 
         mockMvc.perform(put("/unvalidatedStudents")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -935,7 +936,7 @@ public class RootControllerTest {
     @Test
     void testUploadCurriculumVitaeSuccess() throws Exception {
         when(authService.getToken(any(), any())).thenReturn(Token.builder().userId(1).build());
-        bart.setCvToValidate(bartCV.getPdf());
+        bartOut.setCvToValidate(ByteConverter.byteToString(bartCV.getPdf()));
         when(studentService.uploadCurriculumVitae(any())).thenReturn(bartOut);
 
         mockMvc.perform(put("/uploadStudentCV")
@@ -944,7 +945,7 @@ public class RootControllerTest {
 
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.firstName", is("Bart")))
-                .andExpect(jsonPath("$.cvToValidate", is("")));
+                .andExpect(jsonPath("$.cvToValidate", is("[]")));
     }
 
     @Test
@@ -1005,7 +1006,7 @@ public class RootControllerTest {
     @Test
     void testUnvalidatedCvStudents() throws Exception {
         when(authService.getToken(any(), any())).thenReturn(Token.builder().userId(1).build());
-        when(gestionnaireService.getUnvalidatedCVStudents()).thenReturn(List.of(bart));
+        when(gestionnaireService.getUnvalidatedCVStudents()).thenReturn(List.of(bartOut));
 
         mockMvc.perform(put("/unvalidatedCvStudents", 1)
                         .contentType(MediaType.APPLICATION_JSON)
@@ -1061,7 +1062,7 @@ public class RootControllerTest {
 
     @Test
     void testValidateStudentCVSuccess() throws Exception {
-        when(gestionnaireService.validateStudentCV(anyLong())).thenReturn(bart);
+        when(gestionnaireService.validateStudentCV(anyLong())).thenReturn(bartOut);
 
         mockMvc.perform(put("/validateCv/{studentId}", 1)
                         .contentType(MediaType.APPLICATION_JSON)
@@ -1096,7 +1097,7 @@ public class RootControllerTest {
     @Test
     void testRefuseStudentCVSuccess() throws Exception {
         when(authService.getToken(any(), any())).thenReturn(Token.builder().userId(1).build());
-        when(gestionnaireService.removeStudentCvValidation(anyLong(), anyString())).thenReturn(bart);
+        when(gestionnaireService.removeStudentCvValidation(anyLong(), anyString())).thenReturn(bartOut);
 
         mockMvc.perform(put("/refuseCv/{studentId}", 1)
                         .contentType(MediaType.APPLICATION_JSON)

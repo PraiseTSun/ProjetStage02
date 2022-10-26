@@ -9,6 +9,9 @@ import javax.persistence.Lob;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Pattern;
 
+import static projet.projetstage02.utils.ByteConverter.StringToBytes;
+import static projet.projetstage02.utils.ByteConverter.byteToString;
+
 @Data
 @EqualsAndHashCode(callSuper = false)
 @NoArgsConstructor
@@ -34,8 +37,8 @@ public class StudentOutDTO extends AbstractUserDTO<Student> {
         department = student.getDepartment().departement;
         inscriptionTimestamp = student.getInscriptionTimestamp();
         emailConfirmed = student.isEmailConfirmed();
-        cv = student.getCv();
-        cvToValidate = student.getCvToValidate();
+        cv = byteToString(student.getCv());
+        cvToValidate = byteToString(student.getCvToValidate());
     }
 
     @Override
@@ -52,8 +55,8 @@ public class StudentOutDTO extends AbstractUserDTO<Student> {
         student.setConfirm(isConfirmed);
         student.setEmailConfirmed(emailConfirmed);
         student.setId(id);
-        student.setCv(cv.getBytes());
-        student.setCvToValidate(cvToValidate.getBytes());
+        student.setCv(StringToBytes(cv));
+        student.setCvToValidate(StringToBytes(cvToValidate));
         return student;
     }
 }

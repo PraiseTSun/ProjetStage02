@@ -61,6 +61,7 @@ public class StudentServiceTest {
                 Department.Informatique);
 
         bart.setCv(new byte[0]);
+        bart.setCvToValidate(new byte[0]);
         bart.setId(2L);
 
         bartCv = PdfDTO.builder().studentId(1).pdf(new byte[0]).build();
@@ -87,6 +88,7 @@ public class StudentServiceTest {
     @Test
     void getStudentByIdHappyDayTest() throws NonExistentEntityException {
         // Arrange
+        bart.setCv(new byte[]{23, 45, 2, 13, 42});
         when(studentRepository.findById(anyLong()))
                 .thenReturn(Optional.of(bart));
 
