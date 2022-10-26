@@ -159,9 +159,9 @@ public class CompanyService {
         return OfferApplicationDTO.builder().applicants(studentDTOS).build();
     }
 
-    public List<OffreDTO> getValidatedOffers() {
+    public List<OffreDTO> getValidatedOffers(long id) {
         List<OffreDTO> offres = new ArrayList<>();
-        offreRepository.findAll().stream().
+        offreRepository.findAllByIdCompagnie(id).stream().
                 filter(offre ->
                         offre.isValide() && isRightSession(offre.getSession(), getNextYear()))
                 .forEach(offre ->

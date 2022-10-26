@@ -66,6 +66,7 @@ public class CompanyServiceTest {
                 .adresse("653 Duff Street")
                 .department(AbstractUser.Department.Transport.departement)
                 .heureParSemaine(40)
+                .session("Hiver 2023")
                 .position("Delivery Guy")
                 .nomDeCompagnie("Duff beer")
                 .pdf(new byte[0])
@@ -89,6 +90,7 @@ public class CompanyServiceTest {
                 .adresse("Somewhere")
                 .valide(true)
                 .pdf(new byte[]{1, 2, 3, 4, 5, 6, 7, 8, 9})
+                .session("Hiver 2023")
                 .build();
 
         applicationAcceptation = ApplicationAcceptation.builder()
@@ -420,5 +422,25 @@ public class CompanyServiceTest {
         // Act
         OfferApplicationDTO studentsForOffer = companyService.getStudentsForOffer(1L);
         assertThat(studentsForOffer.getApplicants().size()).isEqualTo(0);
+    }
+
+    @Test
+    void testGetOffersForCompanyHappyDay() {
+        // Arrange
+        when(offreRepository.findAllByIdCompagnie(anyLong()))
+                .thenReturn(List.of(duffBeerOffer));
+        // Act
+        List<OffreDTO> validatedOffers = companyService.getValidatedOffers(1L);
+        assertThat(validatedOffers.size()).isEqualTo(1);
+    }
+
+    @Test
+    void testGetOffersForCompanyEmpty() {
+        // Arrange
+        when(offreRepository.findAllByIdCompagnie(anyLong()))
+                .thenReturn(new ArrayList<>());
+        // Act
+        List<OffreDTO> validatedOffers = companyService.getValidatedOffers(1L);
+        assertThat(validatedOffers.size()).isEqualTo(0);
     }
 }
