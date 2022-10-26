@@ -435,7 +435,7 @@ public class GestionnaireServiceTest {
         when(studentRepository.findAll()).thenReturn(students);
 
         // Act
-        List<StudentDTO> unvalidatedStudents = service.getUnvalidatedStudents();
+        List<StudentOutDTO> unvalidatedStudents = service.getUnvalidatedStudents();
 
         // Assert
         assertThat(unvalidatedStudents.size()).isEqualTo(2);
@@ -561,7 +561,7 @@ public class GestionnaireServiceTest {
         when(studentRepository.findAll()).thenReturn(students);
 
         // Act
-        List<StudentDTO> unvalidatedStudentCV = service.getUnvalidatedCVStudents();
+        List<StudentOutDTO> unvalidatedStudentCV = service.getUnvalidatedCVStudents();
         // Assert
         assertThat(unvalidatedStudentCV.get(0).getEmail()).isEqualTo(studentTest.getEmail());
         assertThat(unvalidatedStudentCV.get(0).getFirstName()).isEqualTo(studentTest.getFirstName());
@@ -578,7 +578,7 @@ public class GestionnaireServiceTest {
         when(studentRepository.findById(anyLong())).thenReturn(Optional.of(studentTest));
 
         // Act
-        StudentDTO studentDTO = service.validateStudentCV(1L);
+        StudentOutDTO studentDTO = service.validateStudentCV(1L);
 
         // Assert
         assertThat(studentDTO.getFirstName()).isEqualTo(studentTest.getFirstName());
@@ -625,7 +625,7 @@ public class GestionnaireServiceTest {
         when(studentRepository.findById(anyLong())).thenReturn(Optional.of(studentTest));
 
         // Act
-        StudentDTO studentDTO = service.removeStudentCvValidation(1L, "Refused");
+        StudentOutDTO studentDTO = service.removeStudentCvValidation(1L, "Refused");
 
         // Assert
         assertThat(studentDTO.getEmail()).isEqualTo(studentTest.getEmail());

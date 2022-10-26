@@ -91,7 +91,7 @@ public class StudentServiceTest {
                 .thenReturn(Optional.of(bart));
 
         // Act
-        StudentDTO studentDTO = studentService.getStudentById(1L);
+        StudentOutDTO studentDTO = studentService.getStudentById(1L);
 
         // Assert
         assertThat(studentDTO.toModel()).isEqualTo(bart);
@@ -123,7 +123,7 @@ public class StudentServiceTest {
                 .thenReturn(Optional.of(bart));
 
         // Act
-        StudentDTO studentDTO = studentService
+        StudentOutDTO studentDTO = studentService
                 .getStudentByEmailPassword(
                         "bart.simpson@springfield.com",
                         "eatMyShorts");
@@ -176,7 +176,7 @@ public class StudentServiceTest {
                 .thenReturn(bart);
 
         // Act
-        studentService.saveStudent(new StudentDTO(bart));
+        studentService.saveStudent(new StudentInDTO(bart));
 
         // Assert
         verify(studentRepository, times(1)).save(any());

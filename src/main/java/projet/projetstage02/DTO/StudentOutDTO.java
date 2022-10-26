@@ -15,16 +15,16 @@ import javax.validation.constraints.Pattern;
 @AllArgsConstructor
 @SuperBuilder
 @ToString(callSuper = true)
-public class StudentDTO extends AbstractUserDTO<Student> {
+public class StudentOutDTO extends AbstractUserDTO<Student> {
     @NotBlank
     @Pattern(regexp = ("Techniques de linformatique|Techniques de la logistique du transport"))
     private String department;
     @Lob
-    private byte[] cv;
+    private String cv;
     @Lob
-    private byte[] cvToValidate;
+    private String cvToValidate;
 
-    public StudentDTO(Student student) {
+    public StudentOutDTO(Student student) {
         id = student.getId();
         firstName = student.getFirstName();
         lastName = student.getLastName();
@@ -52,8 +52,8 @@ public class StudentDTO extends AbstractUserDTO<Student> {
         student.setConfirm(isConfirmed);
         student.setEmailConfirmed(emailConfirmed);
         student.setId(id);
-        student.setCv(cv);
-        student.setCvToValidate(cvToValidate);
+        student.setCv(cv.getBytes());
+        student.setCvToValidate(cvToValidate.getBytes());
         return student;
     }
 }

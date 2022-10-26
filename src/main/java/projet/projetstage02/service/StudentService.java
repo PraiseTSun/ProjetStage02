@@ -39,7 +39,7 @@ public class StudentService {
                             String email,
                             String password,
                             Department department) {
-        StudentDTO dto = StudentDTO.builder()
+        StudentInDTO dto = StudentInDTO.builder()
                 .firstName(firstName)
                 .lastName(lastName)
                 .email(email.toLowerCase())
@@ -52,7 +52,7 @@ public class StudentService {
         saveStudent(dto);
     }
 
-    public long saveStudent(StudentDTO dto) {
+    public long saveStudent(StudentInDTO dto) {
         return studentRepository.save(dto.toModel()).getId();
     }
 
@@ -60,24 +60,24 @@ public class StudentService {
         return studentRepository.findByEmail(email).isEmpty();
     }
 
-    public StudentDTO getStudentById(Long id) throws NonExistentEntityException {
+    public StudentOutDTO getStudentById(Long id) throws NonExistentEntityException {
         var studentOpt = studentRepository.findById(id);
         if (studentOpt.isEmpty())
             throw new NonExistentEntityException();
-        return new StudentDTO(studentOpt.get());
+        return new StudentOutDTO(studentOpt.get());
     }
 
-    public StudentDTO getStudentByEmailPassword(String email, String password) throws NonExistentEntityException {
+    public StudentOutDTO getStudentByEmailPassword(String email, String password) throws NonExistentEntityException {
         var studentOpt = studentRepository.findByEmailAndPassword(email.toLowerCase(), password);
         if (studentOpt.isEmpty())
             throw new NonExistentEntityException();
-        return new StudentDTO(studentOpt.get());
+        return new StudentOutDTO(studentOpt.get());
     }
 
-    public StudentDTO uploadCurriculumVitae(PdfDTO dto) throws NonExistentEntityException {
+    public StudentOutDTO uploadCurriculumVitae(PdfDTO dto) throws NonExistentEntityException {
         Student student = getStudentById(dto.getStudentId()).toModel();
         student.setCvToValidate(dto.getPdf());
-        saveStudent(new StudentDTO(student));
+        saveStudent(new StudentInDTO(student));
         Optional<CvStatus> cvStatusOpt = cvStatusRepository.findById(student.getId());
         CvStatus status;
         status = cvStatusOpt.orElseGet(() -> CvStatus.builder()
@@ -87,7 +87,7 @@ public class StudentService {
         status.setStatus("PENDING");
         status.setRefusalMessage("");
         cvStatusRepository.save(status);
-        return new StudentDTO(student);
+        return new StudentOutDTO(student);
     }
 
     private boolean deleteUnconfirmedStudent(String email) throws NonExistentEntityException {

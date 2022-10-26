@@ -39,7 +39,7 @@ public class RootController {
     private final Logger logger = LogManager.getLogger(RootController.class);
 
     @PostMapping("/createStudent")
-    public ResponseEntity<Map<String, String>> createStudent(@Valid @RequestBody StudentDTO studentDTO) {
+    public ResponseEntity<Map<String, String>> createStudent(@Valid @RequestBody StudentInDTO studentDTO) {
         try {
             logger.log(Level.INFO, "PostMapping: /createStudent entered with body : " + studentDTO.toString());
             if (studentService.isStudentInvalid(studentDTO.getEmail())) {
@@ -147,14 +147,14 @@ public class RootController {
     public ResponseEntity<Map<String, String>> confirmStudentMail(@PathVariable String id) {
         logger.log(Level.INFO, "Put /confirmEmail/student/{id} entered with id : " + id);
         try {
-            StudentDTO studentDTO = studentService.getStudentById(Long.parseLong(id));
+            StudentOutDTO studentDTO = studentService.getStudentById(Long.parseLong(id));
             if (currentTimestamp() - studentDTO.getInscriptionTimestamp() > MILLI_SECOND_DAY) {
                 logger.log(Level.INFO, "PutMapping: /confirmEmail/student sent 400 response");
                 return ResponseEntity.status(BAD_REQUEST)
                         .body(getError("La période de confirmation est expirée"));
             }
             studentDTO.setEmailConfirmed(true);
-            studentService.saveStudent(studentDTO);
+            studentService.saveStudent(new StudentInDTO(studentDTO.toModel()));
             logger.log(Level.INFO, "PutMapping: /confirmEmail/student sent 201 response");
             return ResponseEntity.status(HttpStatus.CREATED).build();
         } catch (NonExistentEntityException e) {
@@ -242,11 +242,11 @@ public class RootController {
     }
 
     @PutMapping("/student")
-    public ResponseEntity<StudentDTO> getStudent(@Valid @RequestBody TokenDTO tokenId) {
+    public ResponseEntity<StudentOutDTO> getStudent(@Valid @RequestBody TokenDTO tokenId) {
         logger.log(Level.INFO, "Put /student entered with body : " + tokenId.toString());
         try {
             Token token = authService.getToken(tokenId.getToken(), STUDENT);
-            StudentDTO dto = studentService.getStudentById(token.getUserId());
+            StudentOutDTO dto = studentService.getStudentById(token.getUserId());
             dto.setPassword("");
             logger.log(Level.INFO, "PutMapping: /student sent "
                     + (!dto.isEmailConfirmed() ? "404" : "200") + " response");
@@ -300,11 +300,12 @@ public class RootController {
     }
 
     @PutMapping("/unvalidatedStudents")
-    public ResponseEntity<List<StudentDTO>> getUnvalidatedStudents(@Valid @RequestBody TokenDTO tokenId) {
+    public ResponseEntity<List<StudentOutDTO>> getUnvalidatedStudents(@Valid @RequestBody TokenDTO tokenId) {
         try {
             logger.log(Level.INFO, "get /unvalidatedStudents entered");
             authService.getToken(tokenId.getToken(), GESTIONNAIRE);
-            List<StudentDTO> unvalidatedStudents = gestionnaireService.getUnvalidatedStudents();
+            List<StudentOutDTO> unvalidatedStudents =
+                    gestionnaireService.getUnvalidatedStudents();
             unvalidatedStudents.forEach(student -> student.setPassword(""));
             logger.log(Level.INFO, "PutMapping: /unvalidatedStudents sent 200 response");
             return ResponseEntity.ok(unvalidatedStudents);
@@ -471,10 +472,10 @@ public class RootController {
     }
 
     @PutMapping("/uploadStudentCV")
-    public ResponseEntity<StudentDTO> uploadStudentCurriculumVitae(@Valid @RequestBody PdfDTO pdf) {
+    public ResponseEntity<StudentOutDTO> uploadStudentCurriculumVitae(@Valid @RequestBody PdfDTO pdf) {
         try {
             authService.getToken(pdf.getToken(), STUDENT);
-            StudentDTO dto = studentService.uploadCurriculumVitae(pdf);
+            StudentOutDTO dto = studentService.uploadCurriculumVitae(pdf);
             dto.setPassword("");
             logger.log(Level.INFO, "PutMapping: /uploadStudentCV sent 200 response");
             return ResponseEntity.ok(dto);
@@ -505,11 +506,11 @@ public class RootController {
     }
 
     @PutMapping("/unvalidatedCvStudents")
-    public ResponseEntity<List<StudentDTO>> getUnvalidatedCvStudent(@RequestBody TokenDTO tokenId) {
+    public ResponseEntity<List<StudentOutDTO>> getUnvalidatedCvStudent(@RequestBody TokenDTO tokenId) {
         logger.log(Level.INFO, "Put /unvalidatedCvStudents entered with id : " + tokenId);
         try {
             authService.getToken(tokenId.getToken(), GESTIONNAIRE);
-            List<StudentDTO> students = gestionnaireService.getUnvalidatedCVStudents();
+            List<StudentOutDTO> students = gestionnaireService.getUnvalidatedCVStudents();
             logger.log(Level.INFO, "PutMapping: /unvalidatedCvStudents sent 200 response");
             return ResponseEntity.ok(students);
         } catch (InvalidTokenException e) {
@@ -536,11 +537,11 @@ public class RootController {
     }
 
     @PutMapping("/validateCv/{studentId}")
-    public ResponseEntity<StudentDTO> validateStudentCv(@PathVariable String studentId, @RequestBody TokenDTO tokenId) {
+    public ResponseEntity<StudentOutDTO> validateStudentCv(@PathVariable String studentId, @RequestBody TokenDTO tokenId) {
         logger.log(Level.INFO, "Put /validateCv entered with id : ");
         try {
             authService.getToken(tokenId.getToken(), GESTIONNAIRE);
-            StudentDTO studentDTO = gestionnaireService.validateStudentCV(Long.parseLong(studentId));
+            StudentOutDTO studentDTO = gestionnaireService.validateStudentCV(Long.parseLong(studentId));
             logger.log(Level.INFO, "PutMapping: /validateCv sent 200 response");
             return ResponseEntity.ok(studentDTO);
         } catch (NonExistentEntityException | InvalidStatusException e) {
@@ -553,11 +554,11 @@ public class RootController {
     }
 
     @PutMapping("/refuseCv/{studentId}")
-    public ResponseEntity<StudentDTO> refuseStudentCv(@PathVariable long studentId, @RequestBody CvRefusalDTO cvRefusalDTO) {
+    public ResponseEntity<StudentOutDTO> refuseStudentCv(@PathVariable long studentId, @RequestBody CvRefusalDTO cvRefusalDTO) {
         logger.log(Level.INFO, "Put /refuseCv entered with id : ");
         try {
             authService.getToken(cvRefusalDTO.getToken(), GESTIONNAIRE);
-            StudentDTO studentDTO = gestionnaireService.removeStudentCvValidation(
+            StudentOutDTO studentDTO = gestionnaireService.removeStudentCvValidation(
                     studentId, cvRefusalDTO.getRefusalReason());
             logger.log(Level.INFO, "PutMapping: /refuseCv sent 200 response");
             return ResponseEntity.ok(studentDTO);

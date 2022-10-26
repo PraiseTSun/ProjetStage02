@@ -54,7 +54,7 @@ public class RootControllerTest {
     @Mock
     GestionnaireService gestionnaireService;
 
-    JacksonTester<StudentDTO> jsonStudentDTO;
+    JacksonTester<StudentInDTO> jsonStudentDTO;
     JacksonTester<LoginDTO> jsonLoginDTO;
     JacksonTester<CompanyDTO> jsonCompanyDTO;
     JacksonTester<GestionnaireDTO> jsonGestionnaireDTO;
@@ -63,7 +63,8 @@ public class RootControllerTest {
     JacksonTester<CvRefusalDTO> jsonCvRefusalDTO;
     JacksonTester<PdfDTO> jsonPdfDTO;
 
-    StudentDTO bart;
+    StudentInDTO bart;
+    StudentOutDTO bartOut;
     CompanyDTO duffBeer;
     TokenDTO token;
     LoginDTO login;
@@ -80,7 +81,16 @@ public class RootControllerTest {
     // https://thepracticaldeveloper.com/guide-spring-boot-controller-tests/
     @BeforeEach
     void setup() {
-        bart = StudentDTO.builder()
+        bart = StudentInDTO.builder()
+                .firstName("Bart")
+                .lastName("Simpson")
+                .email("bart.simpson@springfield.com")
+                .department(Department.Transport.departement)
+                .password("eatMyShorts")
+                .isConfirmed(false)
+                .inscriptionTimestamp(Timestamp.valueOf(LocalDateTime.now()).getTime())
+                .build();
+        bartOut = StudentOutDTO.builder()
                 .firstName("Bart")
                 .lastName("Simpson")
                 .email("bart.simpson@springfield.com")
@@ -192,7 +202,7 @@ public class RootControllerTest {
     void testCreateStudentBadRequest() throws Exception {
         mockMvc.perform(post("/createStudent")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(jsonStudentDTO.write(new StudentDTO()).getJson()))
+                        .content(jsonStudentDTO.write(new StudentInDTO()).getJson()))
 
                 .andExpect(status().isBadRequest());
     }
@@ -360,7 +370,7 @@ public class RootControllerTest {
 
     @Test
     void testConfirmStudentEmailHappyDay() throws Exception {
-        when(studentService.getStudentById(1L)).thenReturn(bart);
+        when(studentService.getStudentById(1L)).thenReturn(bartOut);
         when(studentService.saveStudent(bart)).thenReturn(1L);
 
         mockMvc.perform(
@@ -382,7 +392,7 @@ public class RootControllerTest {
     @Test
     void testConfirmStudentEmailExpired() throws Exception {
         bart.setInscriptionTimestamp(Timestamp.valueOf(LocalDateTime.now().minusMonths(1)).getTime());
-        when(studentService.getStudentById(1L)).thenReturn(bart);
+        when(studentService.getStudentById(1L)).thenReturn(bartOut);
 
         mockMvc.perform(
                         put("/confirmEmail/student/{id}", 1))
@@ -472,7 +482,7 @@ public class RootControllerTest {
     void testLoginStudentHappyDay() throws Exception {
         bart.setEmailConfirmed(true);
         when(authService.getToken(token.getToken(), STUDENT)).thenReturn(Token.builder().userId(1L).build());
-        when(studentService.getStudentById(1L)).thenReturn(bart);
+        when(studentService.getStudentById(1L)).thenReturn(bartOut);
 
         mockMvc.perform(put("/student")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -926,7 +936,7 @@ public class RootControllerTest {
     void testUploadCurriculumVitaeSuccess() throws Exception {
         when(authService.getToken(any(), any())).thenReturn(Token.builder().userId(1).build());
         bart.setCvToValidate(bartCV.getPdf());
-        when(studentService.uploadCurriculumVitae(any())).thenReturn(bart);
+        when(studentService.uploadCurriculumVitae(any())).thenReturn(bartOut);
 
         mockMvc.perform(put("/uploadStudentCV")
                         .contentType(MediaType.APPLICATION_JSON)
