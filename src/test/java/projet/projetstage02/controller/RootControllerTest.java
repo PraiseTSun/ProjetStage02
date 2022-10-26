@@ -70,8 +70,8 @@ public class RootControllerTest {
     OffreDTO duffOffre;
     PdfOutDTO duffOfferOut;
     PdfDTO bartCV;
-    PostulOutDTO bartPostulation;
-    StudentApplysDTO bartApplys;
+    ApplicationDTO bartPostulation;
+    ApplicationListDTO bartApplys;
     ApplicationAcceptationDTO applicationDTO;
     OfferAcceptedStudentsDTO acceptedStudentsDTO;
 
@@ -132,12 +132,12 @@ public class RootControllerTest {
                 .pdf("[1,2,3,4,5,6,7,8,9]")
                 .build();
 
-        bartPostulation = PostulOutDTO.builder()
+        bartPostulation = ApplicationDTO.builder()
                 .fullName(bart.getFirstName() + " " + bart.getLastName())
                 .company(duffOffre.getNomDeCompagnie())
                 .build();
 
-        bartApplys = StudentApplysDTO.builder()
+        bartApplys = ApplicationListDTO.builder()
                 .studentId(bart.getId())
                 .offersId(Arrays.asList(duffOffre.getId()))
                 .build();
