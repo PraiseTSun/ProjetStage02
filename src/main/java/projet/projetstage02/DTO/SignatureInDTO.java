@@ -10,6 +10,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Builder
 public class SignatureInDTO {
+    private String tokenId;
     private long userId;
     private long contractId;
     private byte[] signature;

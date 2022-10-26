@@ -735,4 +735,26 @@ public class RootController {
             return ResponseEntity.status(FORBIDDEN).build();
         }
     }
+
+    @PutMapping("/companySignatureContract")
+    public ResponseEntity<StageContractOutDTO> companyContractSignature
+            (@RequestBody SignatureInDTO signatureInDTO){
+        logger.log(Level.INFO, "Post /companySignatureContract entered with SignatureInDTO: " + signatureInDTO);
+
+        try {
+            authService.getToken(signatureInDTO.getTokenId(), COMPANY);
+            StageContractOutDTO dto = companyService.addSignatureToContract(signatureInDTO);
+            logger.log(Level.INFO, "Post /companySignatureContract sent request 201 : " + dto);
+            return ResponseEntity.ok(dto);
+        } catch (NonExistentEntityException e) {
+            logger.log(Level.INFO, "Post /companySignatureContract sent request 404");
+            return ResponseEntity.notFound().build();
+        } catch (InvalidTokenException e) {
+            logger.log(Level.INFO, "Post /companySignatureContract sent request 403");
+            return ResponseEntity.status(FORBIDDEN).build();
+        } catch (InvalidOwnershipException e) {
+            logger.log(Level.INFO, "Post /companySignatureContract sent request 409");
+            return ResponseEntity.status(FORBIDDEN).build();
+        }
+    }
 }
