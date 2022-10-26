@@ -1240,18 +1240,12 @@ paths:
           schema:
             type: object
             properties:
+              token:
+                type: String
               studentId:
                 type: number
               offerId:
                 type: number
-        - in: body
-          name: token
-          description: Token valide du gestionnaire
-          schema:
-            type: object
-            properties:
-              token:
-                type: string
       produces:
         - application/json
       responses:
@@ -1263,3 +1257,37 @@ paths:
           description: L'étudiant avec cet id n'existe pas ou l'offre avec cette id n'existe pas
         409:
           description: L'entante de stage existe déjà
+  /unvalidatedAcceptations:
+    put:
+      summary: Renvoi la liste des postulations acceptées (Doit avoir un token gestionnaire)
+      parameters:
+        - in: body
+          name: token
+          description: Token valide du Gestionnaire
+          schema:
+            type: object
+            properties:
+              token:
+                type: string
+      produces:
+        - application/json
+      responses:
+        200:
+          description: Renvoi la liste des postulations acceptées
+          schema:
+            properties:
+              applications:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    employFullName:
+                      type: string
+                    companyName:
+                      type: string
+                    studentFullName:
+                      type: string
+                    position:
+                      type: string
+        403:
+          description: Token invalide ou expiré
