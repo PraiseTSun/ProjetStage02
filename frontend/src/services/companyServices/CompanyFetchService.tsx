@@ -9,7 +9,7 @@ export const postCreateOffre = (offer: IOffer): Promise<Response> => {
 };
 
 export const putCompanyOffers = (companyId: string, token: string): Promise<Response> => {
-    return fetch("http://localhost:8080/validatedOffers/" + companyId, {
+    return fetch("http://localhost:8080/company/validatedOffers/" + companyId, {
         method: "PUT",
         headers: {
             'Accept': 'application/json',
