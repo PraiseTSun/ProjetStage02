@@ -15,6 +15,7 @@ import OffersListPage from './pages/studentPages/OffersListPage';
 import StudentCvUploadPage from './pages/studentPages/StudentCvUploadPage';
 import {putUserType} from "./services/universalServices/UniversalFetchService";
 import OfferHistoryPage from "./pages/gestionnairePages/OfferHistoryPage";
+import EvaluerLeMilieuDeStage from "./pages/gestionnairePages/EvaluerLeMilieuDeStage";
 
 export const LOCAL_STORAGE_KEY = "MASSI_BEST_PROGRAMMER_PROJET_STAGE_02_CURRENT_CONNECTED_USER"
 export const emptyUser: IUser = {
@@ -143,6 +144,8 @@ function App() {
                                    trouvé</h1>}/>
                         <Route path="/validerNouvelleOffre"
                                element={<ValiderNouvelleOffreStagePage connectedUser={connectedUser}/>}/>
+                        <Route path="/evaluerLeMilieuDeStage"
+                               element={<EvaluerLeMilieuDeStage user={connectedUser}/>}/>
                     </Routes>
                 </BrowserRouter>
             </Container>
