@@ -82,6 +82,8 @@ const SignerEntenteDeStage = ({user}: { user: IUser }): JSX.Element => {
                                 <th>First Name</th>
                                 <th>Last Name</th>
                                 <th>Description</th>
+                                <th>Company Signature</th>
+                                <th>Company Signature Date</th>
                                 <th>Ententes</th>
                             </tr>
                             </thead>
@@ -92,9 +94,11 @@ const SignerEntenteDeStage = ({user}: { user: IUser }): JSX.Element => {
                                         <td>{user.firstName}</td>
                                         <td>{user.lastName}</td>
                                         <td>{contrat.description}</td>
+                                        <td>{contrat.companySignature}</td>
+                                        <td>{contrat.companySignatureDate}</td>
                                         <td>
                                             <Button className="btn btn-warning"
-                                                    onClick={async () => await getEntente(Number(contrat.contractId)) }>Signer</Button>
+                                                    onClick={async () => await getEntente(contrat.contractId) }>Signer</Button>
                                         </td>
                                     </tr>
                                 );
