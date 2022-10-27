@@ -1338,6 +1338,10 @@ paths:
                   type: number
                 description:
                   type: string
+                companySignature:
+                  type: string
+                companySignatureDate:
+                  type: string
         403:
           description: Token invalide ou expiré
         404:
@@ -1356,7 +1360,7 @@ paths:
                 type: string
               companyId:
                 type: number
-              stageContractId:
+              contractId:
                 type: number
               signature:
                 type: array
