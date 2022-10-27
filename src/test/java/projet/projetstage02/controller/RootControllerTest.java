@@ -1385,10 +1385,9 @@ public class RootControllerTest {
 
         mockMvc.perform(post("/createStageContract")
                         .contentType(MediaType.APPLICATION_JSON)
-//                        .content(jsonStageDTO.write(stageContractInDTO).getJson())
                         .content(jsonTokenDTO.write(token).getJson()))
                 .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.id", is((int) stageContractOutDTO.getContractId())));
+                .andExpect(jsonPath("$.contractId", is((int) stageContractOutDTO.getContractId())));
     }
 
     @Test
