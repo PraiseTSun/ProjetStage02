@@ -713,11 +713,11 @@ public class RootController {
 
     @PostMapping("/createStageContract")
     public ResponseEntity<StageContractOutDTO> createStageContract
-            (@Valid StageContractInDTO stageContractInDTO, @RequestBody TokenDTO tokenId){
+            (@Valid StageContractInDTO stageContractInDTO){
         logger.log(Level.INFO, "Post /createStageContract entered with StageContractInDTO: " + stageContractInDTO);
 
         try {
-            authService.getToken(tokenId.getToken(), GESTIONNAIRE);
+            authService.getToken(stageContractInDTO.getToken(), GESTIONNAIRE);
             StageContractOutDTO dto = gestionnaireService.createStageContract(stageContractInDTO);
             logger.log(Level.INFO, "Post /createStageContract sent request 201 : " + dto);
             return ResponseEntity.status(CREATED).body(dto);
