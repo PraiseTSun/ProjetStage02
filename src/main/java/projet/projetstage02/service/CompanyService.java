@@ -12,6 +12,7 @@ import projet.projetstage02.model.AbstractUser.Department;
 import projet.projetstage02.repository.*;
 
 import java.sql.Timestamp;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -158,7 +159,10 @@ public class CompanyService {
             throw new InvalidOwnershipException();
 
         stageContract.setCompanySignature(signature.getSignature());
+        stageContract.setCompanySignatureDate(LocalDateTime.now());
         stageContractRepository.save(stageContract);
+
+
 
         return new StageContractOutDTO(stageContract);
     }

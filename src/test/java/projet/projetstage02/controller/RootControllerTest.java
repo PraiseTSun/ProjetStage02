@@ -20,7 +20,6 @@ import projet.projetstage02.service.CompanyService;
 import projet.projetstage02.service.GestionnaireService;
 import projet.projetstage02.service.StudentService;
 
-import java.io.IOException;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -178,7 +177,7 @@ public class RootControllerTest {
                 .build();
 
         stageContractOutDTO = StageContractOutDTO.builder()
-                .id(9L)
+                .contractId(9L)
                 .studentId(7L)
                 .offerId(8L)
                 .companyId(6L)
@@ -1389,7 +1388,7 @@ public class RootControllerTest {
 //                        .content(jsonStageDTO.write(stageContractInDTO).getJson())
                         .content(jsonTokenDTO.write(token).getJson()))
                 .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.id", is((int) stageContractOutDTO.getId())));
+                .andExpect(jsonPath("$.id", is((int) stageContractOutDTO.getContractId())));
     }
 
     @Test

@@ -376,7 +376,7 @@ public class CompanyServiceTest {
         StageContractOutDTO dto = companyService.addSignatureToContract(signatureInDTO);
 
         assertThat(dto.getCompanyId()).isEqualTo(duffBeer.getId());
-        assertThat(dto.getId()).isEqualTo(stageContract.getId());
+        assertThat(dto.getContractId()).isEqualTo(stageContract.getId());
         assertThat(dto.getCompanySignature()).isEqualTo(byteToString(signatureInDTO.getSignature()));
     }
 

@@ -736,6 +736,21 @@ public class RootController {
         }
     }
 
+    @PutMapping("/unvalidatedAcceptations")
+    public ResponseEntity<UnvalidatedAcceptationsDTO> getUnvalidatedAcceptations(@RequestBody TokenDTO tokenId){
+        logger.log(Level.INFO, "Put /unvalidatedAcceptations");
+
+        try {
+            authService.getToken(tokenId.getToken(), GESTIONNAIRE);
+            UnvalidatedAcceptationsDTO dto = gestionnaireService.getUnvalidatedAcceptation();
+            logger.log(Level.INFO, "Put /unvalidatedAcceptations sent request 200 : " + dto);
+            return ResponseEntity.ok(dto);
+        } catch (InvalidTokenException e) {
+            logger.log(Level.INFO, "Put /unvalidatedAcceptations sent request 403");
+            return ResponseEntity.status(FORBIDDEN).build();
+        }
+    }
+
     @PutMapping("/companySignatureContract")
     public ResponseEntity<StageContractOutDTO> companyContractSignature
             (@RequestBody SignatureInDTO signatureInDTO){
@@ -755,21 +770,6 @@ public class RootController {
         } catch (InvalidOwnershipException e) {
             logger.log(Level.INFO, "Put /companySignatureContract sent request 409");
             return ResponseEntity.status(CONFLICT).build();
-        }
-    }
-
-    @PutMapping("/unvalidatedAcceptations")
-    public ResponseEntity<UnvalidatedAcceptationsDTO> getUnvalidatedAcceptations(@RequestBody TokenDTO tokenId){
-        logger.log(Level.INFO, "Put /unvalidatedAcceptations");
-
-        try {
-            authService.getToken(tokenId.getToken(), GESTIONNAIRE);
-            UnvalidatedAcceptationsDTO dto = gestionnaireService.getUnvalidatedAcceptation();
-            logger.log(Level.INFO, "Put /unvalidatedAcceptations sent request 200 : " + dto);
-            return ResponseEntity.ok(dto);
-        } catch (InvalidTokenException e) {
-            logger.log(Level.INFO, "Put /unvalidatedAcceptations sent request 403");
-            return ResponseEntity.status(FORBIDDEN).build();
         }
     }
 }
