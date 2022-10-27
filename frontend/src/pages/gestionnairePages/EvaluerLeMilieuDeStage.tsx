@@ -97,6 +97,7 @@ const EvaluerLeMilieuDeStage = ({user}: { user: IUser }): JSX.Element => {
     if (afficheFormulaire) {
         return (
             <Container className="min-vh-100">
+
                 <h1 className="text-center p-3">Évluation du milieu de stage</h1>
                 <Tab.Container defaultActiveKey="#etudiant">
                     <ListGroup horizontal className="">
@@ -209,9 +210,9 @@ const EvaluerLeMilieuDeStage = ({user}: { user: IUser }): JSX.Element => {
                                         </Col>
                                     </Row>
                                     <Row>
-                                        <Col>
+                                        <Col className="col-10">
                                             <Form.Group>
-                                                <Form.Label className="fw-bold  mt-2  h5">Date Stage(Début - Fin)</Form.Label>
+                                                <Form.Label className="fw-bold mt-2 h5">Date Stage(Début - Fin)</Form.Label>
                                                 <Form.Control minLength={12} type="text" required value={dateStage}
                                                               onChange={e => setDateStage(e.target.value)}></Form.Control>
 
@@ -219,16 +220,24 @@ const EvaluerLeMilieuDeStage = ({user}: { user: IUser }): JSX.Element => {
                                                     requis</Form.Control.Feedback>
                                             </Form.Group>
                                         </Col>
-                                    </Row>
-                                    <Row>
-                                        <Form.Group>
-                                            <Form.Label className="fw-bold mt-2 h5">Stage Session</Form.Label>
-                                            <Form.Control type="numbre" required value={stageSession}
-                                                          onChange={e => setStageSession(e.target.value)}></Form.Control>
+                                        <Col className="col-2">
+                                            <Form.Group>
+                                                <Form.Label className="fw-bold mt-2 h5">Stage Session
+                                                    <Form.Select className="mt-2"  required
+                                                                 value={stageSession} onChange={(e) => setStageSession(e.target.value)}>
+                                                        <option hidden value="" disabled>Session
+                                                        </option>
+                                                        <option value="1">1
+                                                        </option>
+                                                        <option value="2">2
+                                                        </option>
+                                                    </Form.Select>
+                                                </Form.Label>
 
-                                            <Form.Control.Feedback type="invalid">Stage Session
-                                                invalide</Form.Control.Feedback>
-                                        </Form.Group>
+                                                <Form.Control.Feedback type="invalid">Stage Session
+                                                    invalide</Form.Control.Feedback>
+                                            </Form.Group>
+                                        </Col>
                                     </Row>
 
                                     <Row className="mt-3">
@@ -238,6 +247,323 @@ const EvaluerLeMilieuDeStage = ({user}: { user: IUser }): JSX.Element => {
                                 </Col>
                             </Tab.Pane>
                             <Tab.Pane eventKey="#evaluation">
+                                <Col  className="bg-light px-4 pb-2 pt-1">
+                                    <Row>
+                                        <Form.Group>
+                                            <Form.Label className="fw-bold mt-2 h5">
+                                                Les tâches confiées au stagiaire sont conformes aux tâches annoncées
+                                                dans l'entente de stage.
+                                            </Form.Label>
+                                            <Form.Select className="mt-2"  required
+                                                         value={tachesAnnoncees} onChange={(e) => setTachesAnnoncees(e.target.value)}>
+                                                <option hidden value="" disabled>Choix
+                                                </option>
+                                                <option value="totalemenEnAccord">Totalement en accord
+                                                </option>
+                                                <option value="plutotEnAccord">Plutôt en accord
+                                                </option>
+                                                <option value="plutotEnDesaccord">Plutôt en désaccord
+                                                </option>
+                                                <option value="totalementEnDesaccord">Totalement en désaccord
+                                                </option>
+                                                <option value="impossibleDeSePrononcer">Impossible de se prononcer
+                                                </option>
+                                            </Form.Select>
+                                            <Form.Control.Feedback type="invalid">Stage Session
+                                                invalide</Form.Control.Feedback>
+                                        </Form.Group>
+                                    </Row>
+                                    <Row>
+                                        <Form.Group>
+                                            <Form.Label className="fw-bold mt-2 h5">
+                                                Des mesures d'accueil facilitent l'intégration du nouveau stagiaire.
+                                            </Form.Label>
+                                            <Form.Select className="mt-2"  required
+                                                         value={integration} onChange={(e) => setIntegration(e.target.value)}>
+                                                <option hidden value="" disabled>Choix
+                                                </option>
+                                                <option value="totalemenEnAccord">Totalement en accord
+                                                </option>
+                                                <option value="plutotEnAccord">Plutôt en accord
+                                                </option>
+                                                <option value="plutotEnDesaccord">Plutôt en désaccord
+                                                </option>
+                                                <option value="totalementEnDesaccord">Totalement en désaccord
+                                                </option>
+                                                <option value="impossibleDeSePrononcer">Impossible de se prononcer
+                                                </option>
+                                            </Form.Select>
+                                            <Form.Control.Feedback type="invalid">Stage Session
+                                                invalide</Form.Control.Feedback>
+                                        </Form.Group>
+                                    </Row>
+                                    <Row>
+                                        <Form.Group>
+                                            <Form.Label className="fw-bold mt-2 h5">
+                                                Le temps réel consacré à l'encadrement du stagiaire est suffisant.
+                                            </Form.Label>
+                                            <Form.Select className="mt-2"  required
+                                                         value={tempsReelConsacre} onChange={(e) => setTempsReelConsacre(e.target.value)}>
+                                                <option hidden value="" disabled>Choix
+                                                </option>
+                                                <option value="totalemenEnAccord">Totalement en accord
+                                                </option>
+                                                <option value="plutotEnAccord">Plutôt en accord
+                                                </option>
+                                                <option value="plutotEnDesaccord">Plutôt en désaccord
+                                                </option>
+                                                <option value="totalementEnDesaccord">Totalement en désaccord
+                                                </option>
+                                                <option value="impossibleDeSePrononcer">Impossible de se prononcer
+                                                </option>
+                                            </Form.Select>
+                                            <Form.Control.Feedback type="invalid">Stage Session
+                                                invalide</Form.Control.Feedback>
+                                        </Form.Group>
+                                    </Row>
+                                    <Row>
+                                        <h3 className="fw-bold mt-2 h5">Préciser le nombre d'heures/semaine:</h3>
+                                    </Row>
+                                    <Row>
+                                        <Col>
+                                            <Form.Group>
+                                                <Form.Label className="fw-bold h5">Premier mois</Form.Label>
+                                                <Form.Control type="text" minLength={6} required value={premierMois}
+                                                              onChange={e => setPremierMois(Number(e.target.value))}></Form.Control>
+                                                <Form.Control.Feedback type="invalid">Premier mois invalide</Form.Control.Feedback>
+                                            </Form.Group>
+                                        </Col>
+                                        <Col>
+                                            <Form.Group>
+                                                <Form.Label className="fw-bold h5">Deuxième mois</Form.Label>
+                                                <Form.Control type="text" minLength={6} required value={deuxiemeMois}
+                                                              onChange={e => setDeuxiemeMois(Number(e.target.value))}></Form.Control>
+                                                <Form.Control.Feedback type="invalid">Deuxième mois invalide</Form.Control.Feedback>
+                                            </Form.Group>
+                                        </Col>
+                                        <Col>
+                                            <Form.Group>
+                                                <Form.Label className="fw-bold h5">Troisième mois</Form.Label>
+                                                <Form.Control type="text" minLength={6} required value={troisiemeMois}
+                                                              onChange={e => setTroisiemeMois(Number(e.target.value))}></Form.Control>
+                                                <Form.Control.Feedback type="invalid">Troisième mois invalide</Form.Control.Feedback>
+                                            </Form.Group>
+                                        </Col>
+                                    </Row>
+                                    <Row>
+                                        <Form.Group>
+                                            <Form.Label className="fw-bold mt-2 h5">
+                                                L'environnement de travail respecte les normes d'hygiène et
+                                                de sécurité au travail.
+                                            </Form.Label>
+                                            <Form.Select className="mt-2" value={environnementDeTravail}
+                                                         onChange={(e) => setenvironnementDeTravail(e.target.value)}>
+                                                <option hidden value="" disabled>Choix
+                                                </option>
+                                                <option value="totalemenEnAccord">Totalement en accord
+                                                </option>
+                                                <option value="plutotEnAccord">Plutôt en accord
+                                                </option>
+                                                <option value="plutotEnDesaccord">Plutôt en désaccord
+                                                </option>
+                                                <option value="totalementEnDesaccord">Totalement en désaccord
+                                                </option>
+                                                <option value="impossibleDeSePrononcer">Impossible de se prononcer
+                                                </option>
+                                            </Form.Select>
+                                            <Form.Control.Feedback type="invalid">Environnement de travail
+                                                invalide</Form.Control.Feedback>
+                                        </Form.Group>
+                                    </Row>
+                                    <Row>
+                                        <Form.Group>
+                                            <Form.Label className="fw-bold mt-2 h5">
+                                               Le climat de travail est agréable.
+                                            </Form.Label>
+                                            <Form.Select className="mt-2"  required value={climatDeTravail}
+                                                         onChange={(e) => setclimatDeTravail(e.target.value)}>
+                                                <option hidden value="" disabled>Choix
+                                                </option>
+                                                <option value="totalemenEnAccord">Totalement en accord
+                                                </option>
+                                                <option value="plutotEnAccord">Plutôt en accord
+                                                </option>
+                                                <option value="plutotEnDesaccord">Plutôt en désaccord
+                                                </option>
+                                                <option value="totalementEnDesaccord">Totalement en désaccord
+                                                </option>
+                                                <option value="impossibleDeSePrononcer">Impossible de se prononcer
+                                                </option>
+                                            </Form.Select>
+                                            <Form.Control.Feedback type="invalid">Le climat de travail
+                                                invalide</Form.Control.Feedback>
+                                        </Form.Group>
+                                    </Row>
+                                    <Row>
+                                        <Form.Group>
+                                            <Form.Label className="fw-bold mt-2 h5">
+                                                Le milieu de stage est accessble par transport en commun.
+                                            </Form.Label>
+                                            <Form.Select className="mt-2"  required  value={milieuDeStage}
+                                                         onChange={(e) => setMilieuDeStage(e.target.value)}>
+                                                <option hidden value="" disabled>Choix
+                                                </option>
+                                                <option value="totalemenEnAccord">Totalement en accord
+                                                </option>
+                                                <option value="plutotEnAccord">Plutôt en accord
+                                                </option>
+                                                <option value="plutotEnDesaccord">Plutôt en désaccord
+                                                </option>
+                                                <option value="totalementEnDesaccord">Totalement en désaccord
+                                                </option>
+                                                <option value="impossibleDeSePrononcer">Impossible de se prononcer
+                                                </option>
+                                            </Form.Select>
+                                            <Form.Control.Feedback type="invalid">Le milieu de stage
+                                                invalide</Form.Control.Feedback>
+                                        </Form.Group>
+                                    </Row>
+                                    <Row>
+                                        <Form.Group>
+                                            <Form.Label className="fw-bold mt-2 h5">
+                                               Le salaire offert est intéressant pour le stagiaire.
+                                            </Form.Label>
+                                            <Form.Select className="mt-2"  required  value={salaireOffert}
+                                                         onChange={(e) => setSalaireOffert(e.target.value)}>
+                                                <option hidden value="" disabled>Choix
+                                                </option>
+                                                <option value="totalemenEnAccord">Totalement en accord
+                                                </option>
+                                                <option value="plutotEnAccord">Plutôt en accord
+                                                </option>
+                                                <option value="plutotEnDesaccord">Plutôt en désaccord
+                                                </option>
+                                                <option value="totalementEnDesaccord">Totalement en désaccord
+                                                </option>
+                                                <option value="impossibleDeSePrononcer">Impossible de se prononcer
+                                                </option>
+                                            </Form.Select>
+                                            <Form.Control.Feedback type="invalid">Le salaire offert
+                                                invalide</Form.Control.Feedback>
+                                        </Form.Group>
+                                    </Row>
+                                    <Row className="mt-4">
+
+                                            <Col className="fw-bold h5 text-nowrap col-2">Préciser :
+                                            </Col>
+                                            <Col className="col-8">
+                                                <Form.Control type="text" minLength={6} required value={salaireParHeure}
+                                                              onChange={e => setSalaireParHeure(e.target.value)}></Form.Control>
+                                            </Col>
+                                            <Col className="fw-bold h5 col-2">/l'heure. </Col>
+                                    </Row>
+                                    <Row>
+                                        <Form.Group>
+                                            <Form.Label className="fw-bold mt-2 h5">
+                                                La communication avec le superviseur de stage facilite
+                                                le déroulement du stage.
+                                            </Form.Label>
+                                            <Form.Select className="mt-2"  required  value={communicationAvecLeSuperviseurDeStage}
+                                                         onChange={(e) => setCommunicationAvecLeSuperviseurDeStage(e.target.value)}>
+                                                <option hidden value="" disabled>Choix
+                                                </option>
+                                                <option value="totalemenEnAccord">Totalement en accord
+                                                </option>
+                                                <option value="plutotEnAccord">Plutôt en accord
+                                                </option>
+                                                <option value="plutotEnDesaccord">Plutôt en désaccord
+                                                </option>
+                                                <option value="totalementEnDesaccord">Totalement en désaccord
+                                                </option>
+                                                <option value="impossibleDeSePrononcer">Impossible de se prononcer
+                                                </option>
+                                            </Form.Select>
+                                            <Form.Control.Feedback type="invalid">Le communication
+                                                invalide</Form.Control.Feedback>
+                                        </Form.Group>
+                                    </Row>
+                                    <Row>
+                                        <Form.Group>
+                                            <Form.Label className="fw-bold mt-2 h5">
+                                               L'équipement fourni est adéquat pour réaliser les tâches confiées.
+                                            </Form.Label>
+                                            <Form.Select className="mt-2"  required  value={equipementFourni}
+                                                         onChange={(e) => setEquipementFourni(e.target.value)}>
+                                                <option hidden value="" disabled>Choix
+                                                </option>
+                                                <option value="totalemenEnAccord">Totalement en accord
+                                                </option>
+                                                <option value="plutotEnAccord">Plutôt en accord
+                                                </option>
+                                                <option value="plutotEnDesaccord">Plutôt en désaccord
+                                                </option>
+                                                <option value="totalementEnDesaccord">Totalement en désaccord
+                                                </option>
+                                                <option value="impossibleDeSePrononcer">Impossible de se prononcer
+                                                </option>
+                                            </Form.Select>
+                                            <Form.Control.Feedback type="invalid">L'équipement fourni
+                                                invalide</Form.Control.Feedback>
+                                        </Form.Group>
+                                    </Row>
+                                    <Row>
+                                        <Form.Group>
+                                            <Form.Label className="fw-bold mt-2 h5">
+                                               Le volume de travail est acceptable.
+                                            </Form.Label>
+                                            <Form.Select className="mt-2"  required  value={volumeDeTravail}
+                                                         onChange={(e) => setVolumeDeTravail(e.target.value)}>
+                                                <option hidden value="" disabled>Choix
+                                                </option>
+                                                <option value="totalemenEnAccord">Totalement en accord
+                                                </option>
+                                                <option value="plutotEnAccord">Plutôt en accord
+                                                </option>
+                                                <option value="plutotEnDesaccord">Plutôt en désaccord
+                                                </option>
+                                                <option value="totalementEnDesaccord">Totalement en désaccord
+                                                </option>
+                                                <option value="impossibleDeSePrononcer">Impossible de se prononcer
+                                                </option>
+                                            </Form.Select>
+                                            <Form.Control.Feedback type="invalid">Le volume de travail
+                                                invalide</Form.Control.Feedback>
+                                        </Form.Group>
+                                    </Row>
+                                    <Row className="mb-4">
+                                        <Col>
+                                            <Form.Group>
+                                                <Form.Label className="fw-bold mt-2 h5">Commentaires</Form.Label>
+                                                <Form.Control as="textarea"  type="text" minLength={2} required value={commentaire}
+                                                              onChange={e => setCommentaire(e.target.value)}></Form.Control>
+                                                <Form.Control.Feedback type="invalid">Champ
+                                                    requis</Form.Control.Feedback>
+                                            </Form.Group>
+                                        </Col>
+                                    </Row>
+                                    <Row className="mt-3">
+                                        <Col>
+                                            <Form.Group>
+                                                <Form.Control type="text" minLength={6} required value={signature}
+                                                              onChange={e => setSignature(e.target.value)}></Form.Control>
+                                                <Form.Label className="fw-bold h5">Signature de l'enseignant responsable du stagiaire</Form.Label>
+                                                <Form.Control.Feedback type="invalid">Champ requis</Form.Control.Feedback>
+                                            </Form.Group>
+                                        </Col>
+                                        <Col>
+                                            <Form.Group>
+                                                <Form.Control type="text" minLength={6} required value={dateSigner}
+                                                              onChange={e => setDateSigner(e.target.value)}></Form.Control>
+                                                <Form.Label className="fw-bold h5">Date</Form.Label>
+                                                <Form.Control.Feedback type="invalid">Champ requis</Form.Control.Feedback>
+                                            </Form.Group>
+                                        </Col>
+                                    </Row>
+                                    <Row className="mt-3">
+                                        <Button type="submit"
+                                                className="btn btn-success mx-auto">Enregistrer</Button>
+                                    </Row>
+                                </Col>
                             </Tab.Pane>
                         </Tab.Content>
                     </Form>
@@ -245,6 +571,7 @@ const EvaluerLeMilieuDeStage = ({user}: { user: IUser }): JSX.Element => {
             </Container>
         )
     }
+
     return (
         <Container className="min-vh-100">
             <Row>
