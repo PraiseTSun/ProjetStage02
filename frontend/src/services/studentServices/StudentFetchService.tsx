@@ -1,5 +1,3 @@
-import axios from 'axios';
-
 export const putGetOffers = (studentId: string, token: string): Promise<Response> => {
     return fetch("http://localhost:8080/getOffers/" + studentId, {
         method: "PUT",

@@ -120,7 +120,7 @@ const StudentCvUploadPage = ({connectedUser}: { connectedUser: IUser }) => {
         return (
             <Container className="min-vh-100 bg-white p-0">
                 <div className="bg-dark p-2">
-                    <Button className="Btn btn-primary" onClick={() => setShowCV(false)}>
+                    <Button className="Btn btn-primary" onClick={() => setShowCvToValidate(false)}>
                         Fermer
                     </Button>
                 </div>
