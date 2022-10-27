@@ -42,8 +42,10 @@ const EvaluerLeMilieuDeStage = ({user}: { user: IUser }): JSX.Element => {
     const [dateSigner, setDateSigner] = useState("")
 
     const showFormulaires = () => {
-        console.log(afficheFormulaire)
         setAfficheFormuaire(true)
+    }
+    const notShowFormulaires = () => {
+        setAfficheFormuaire(false)
     }
     const onSubmit = async (event: React.SyntheticEvent) => {
         const form: any = event.currentTarget;
@@ -97,8 +99,16 @@ const EvaluerLeMilieuDeStage = ({user}: { user: IUser }): JSX.Element => {
     if (afficheFormulaire) {
         return (
             <Container className="min-vh-100">
+                <Row>
+                    <Col sm={2}>
+                        <Link to="/evaluerLeMilieuDeStage" onClick={()=>{notShowFormulaires()}} className="btn btn-primary my-3">Page précédente</Link>
+                    </Col>
+                    <Col sm={8} className="text-center pt-2">
+                        <h1 className="fw-bold text-white display-3 pb-2">Évluation du milieu de stage</h1>
+                    </Col>
+                    <Col sm={2}></Col>
+                </Row>
 
-                <h1 className="text-center p-3">Évluation du milieu de stage</h1>
                 <Tab.Container defaultActiveKey="#etudiant">
                     <ListGroup horizontal className="">
                         <ListGroup.Item action href="#entreprise" variant="primary">
