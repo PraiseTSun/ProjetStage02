@@ -1338,6 +1338,10 @@ paths:
                   type: number
                 description:
                   type: string
+                signature:
+                  type: string
+                dateOfSignature:
+                  type: string
         403:
           description: Token invalide ou expiré
         404:
