@@ -10,6 +10,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Builder
 public class StageContractInDTO {
+    private String token;
     private long studentId;
     private long offerId;
 }
