@@ -36,6 +36,8 @@ public class GestionnaireServiceTest {
     private CvStatusRepository cvStatusRepository;
     @Mock
     private StageContractRepository stageContractRepository;
+    @Mock
+    private ApplicationAcceptationRepository applicationAcceptationRepository;
     @InjectMocks
     private GestionnaireService gestionnaireService;
 
@@ -45,6 +47,8 @@ public class GestionnaireServiceTest {
     private Offre offerTest;
     private CvStatus cvStatus;
     private StageContract stageContract;
+    private ApplicationAcceptation applicationAcceptationTest;
+
     private StageContractInDTO stageContractInDTO;
 
     @BeforeEach
@@ -98,6 +102,14 @@ public class GestionnaireServiceTest {
         stageContractInDTO = StageContractInDTO.builder()
                 .studentId(studentTest.getId())
                 .offerId(offerTest.getId())
+                .build();
+
+        applicationAcceptationTest = ApplicationAcceptation.builder()
+                .id(6L)
+                .studentId(studentTest.getId())
+                .studentName(studentTest.getFirstName() + " " + studentTest.getLastName())
+                .offerId(offerTest.getId())
+                .companyName(companyTest.getCompanyName())
                 .build();
     }
 
@@ -718,6 +730,8 @@ public class GestionnaireServiceTest {
         when(studentRepository.findById(anyLong())).thenReturn(Optional.of(studentTest));
         when(offreRepository.findById(anyLong())).thenReturn(Optional.of(offerTest));
         when(companyRepository.findById(anyLong())).thenReturn(Optional.of(companyTest));
+        when(applicationAcceptationRepository.findByOfferIdAndStudentId(anyLong(), anyLong()))
+                .thenReturn(Optional.of(applicationAcceptationTest));
         when(stageContractRepository.findByStudentIdAndCompanyIdAndOfferId(anyLong(), anyLong(), anyLong()))
                 .thenReturn(Optional.empty(), Optional.of(stageContract));
 
@@ -726,6 +740,7 @@ public class GestionnaireServiceTest {
 
         // Assert
         verify(stageContractRepository, times(1)).save(any());
+        verify(applicationAcceptationRepository, times(1)).delete(any());
         assertThat(dto.getStudentId()).isEqualTo(studentTest.getId());
         assertThat(dto.getOfferId()).isEqualTo(offerTest.getId());
         assertThat(dto.getCompanyId()).isEqualTo(companyTest.getId());
@@ -792,5 +807,21 @@ public class GestionnaireServiceTest {
             return;
         } catch (Exception e) {}
         fail("Failed to catch the error NonExistentEntityException!");
+    }
+
+    @Test
+    void testGetUnvalidatedAcceptationHappyDay(){
+        when(applicationAcceptationRepository.findAll()).thenReturn(new ArrayList<>(){{
+            add(applicationAcceptationTest);
+            add(applicationAcceptationTest);
+            add(applicationAcceptationTest);
+        }});
+        when(offreRepository.findById(anyLong())).thenReturn(Optional.of(offerTest));
+        when(companyRepository.findById(anyLong())).thenReturn(Optional.of(companyTest));
+        when(studentRepository.findById(anyLong())).thenReturn(Optional.of(studentTest));
+
+        UnvalidatedAcceptationsDTO dto = gestionnaireService.getUnvalidatedAcceptation();
+
+        assertThat(dto.size()).isEqualTo(3);
     }
 }

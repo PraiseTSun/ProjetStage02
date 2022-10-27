@@ -11,7 +11,6 @@ import javax.validation.constraints.NotNull;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.regex.Pattern;
@@ -28,6 +27,7 @@ public class GestionnaireService {
     private final CvStatusRepository cvStatusRepository;
     private final OffreRepository offreRepository;
     private final StageContractRepository stageContractRepository;
+    private final ApplicationAcceptationRepository applicationAcceptationRepository;
 
     public long saveGestionnaire(String firstname, String lastname, String email, String password) {
         GestionnaireDTO dto = GestionnaireDTO.builder()
@@ -273,32 +273,66 @@ public class GestionnaireService {
 
         Optional<Offre> offerOpt = offreRepository.findById(contract.getOfferId());
         if(offerOpt.isEmpty()) throw new NonExistentOfferExeption();
-        Offre offre = offerOpt.get();
+        Offre offer = offerOpt.get();
 
-        Optional<Company> companyOpt = companyRepository.findById(offre.getIdCompagnie());
+        Optional<Company> companyOpt = companyRepository.findById(offer.getIdCompagnie());
         if(companyOpt.isEmpty()) throw new NonExistentEntityException();
         Company company = companyOpt.get();
 
         String description = company.getCompanyName() + " a accepté " + student.getFirstName() + " "
-                + student.getLastName() + " en tant que " + offre.getPosition() + " pour la session "
-                + offre.getSession() + ".";
+                + student.getLastName() + " en tant que " + offer.getPosition() + " pour la session "
+                + offer.getSession() + ".";
 
         Optional<StageContract> stageContractOpt
-                = stageContractRepository.findByStudentIdAndCompanyIdAndOfferId(student.getId(), company.getId(), offre.getId());
+                = stageContractRepository.findByStudentIdAndCompanyIdAndOfferId(student.getId(), company.getId(), offer.getId());
         if (stageContractOpt.isPresent()) throw new AlreadyExistingStageContractException();
 
         StageContract stageContract = StageContract.builder()
                 .studentId(student.getId())
-                .offerId(offre.getId())
+                .offerId(offer.getId())
                 .companyId(company.getId())
                 .description(description)
                 .companySignature(new byte[0])
                 .build();
-        stageContractRepository.save(stageContract);
 
-         stageContractOpt
-                = stageContractRepository.findByStudentIdAndCompanyIdAndOfferId(student.getId(), company.getId(), offre.getId());
+        stageContractRepository.save(stageContract);
+        Optional<ApplicationAcceptation> application
+                = applicationAcceptationRepository.findByOfferIdAndStudentId(offer.getId(), student.getId());
+        applicationAcceptationRepository.delete(application.get());
+
+        stageContractOpt
+                = stageContractRepository.findByStudentIdAndCompanyIdAndOfferId(student.getId(), company.getId(), offer.getId());
 
         return new StageContractOutDTO(stageContractOpt.get());
+    }
+
+    public UnvalidatedAcceptationsDTO getUnvalidatedAcceptation(){
+        UnvalidatedAcceptationsDTO unvalidatedAcceptationsDTO = new UnvalidatedAcceptationsDTO();
+
+        List<ApplicationAcceptation> applications = applicationAcceptationRepository.findAll();
+        applications.stream()
+                .forEach(applicationAcceptation -> {
+                    Optional<Offre> offerOpt = offreRepository.findById(applicationAcceptation.getOfferId());
+                    Offre offer = offerOpt.get();
+
+                    Optional<Company> companyOpt = companyRepository.findById(offer.getIdCompagnie());
+                    Company company = companyOpt.get();
+
+                    Optional<Student> studentOpt = studentRepository.findById(applicationAcceptation.getStudentId());
+                    Student student = studentOpt.get();
+
+                    unvalidatedAcceptationsDTO.add(
+                            UnvalidatedAcceptationDTO.builder()
+                                    .employFullName(company.getFirstName() + " " + company.getLastName())
+                                    .companyName(company.getCompanyName())
+                                    .studentId(student.getId())
+                                    .studentFullName(student.getFirstName() + " " + student.getLastName())
+                                    .offerId(offer.getId())
+                                    .position(offer.getPosition())
+                                    .build()
+                    );
+                });
+
+        return unvalidatedAcceptationsDTO;
     }
 }
