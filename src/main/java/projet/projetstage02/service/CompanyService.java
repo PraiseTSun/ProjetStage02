@@ -166,4 +166,18 @@ public class CompanyService {
 
         return new StageContractOutDTO(stageContract);
     }
+
+    public List<StageContractOutDTO> getContracts(long companyId) throws NonExistentEntityException {
+        Optional<Company> companyOpt = companyRepository.findById(companyId);
+        if(companyOpt.isEmpty()) throw new NonExistentEntityException();
+
+        List<StageContractOutDTO> contracts = new ArrayList<>();
+
+        stageContractRepository.findAll()
+                .stream()
+                .filter(stageContract -> stageContract.getCompanyId() == companyId)
+                .forEach(stageContract -> contracts.add(new StageContractOutDTO(stageContract)));
+
+        return contracts;
+    }
 }
