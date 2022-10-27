@@ -53,6 +53,17 @@ export const putUnvalidatedOffers = (token: string): Promise<Response> => {
     });
 }
 
+export const putValidatedOffersByYear = (year: string, token: string): Promise<Response> => {
+    return fetch("http://localhost:8080/validatedOffers/" + year, {
+        method: "PUT",
+        headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({"token": token})
+    });
+}
+
 export const putOfferPdf = (offerId: string, token: string): Promise<Response> => {
     return fetch("http://localhost:8080/offerPdf/" + offerId.toString(), {
         method: "PUT",

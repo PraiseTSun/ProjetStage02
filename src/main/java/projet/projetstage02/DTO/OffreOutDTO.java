@@ -7,11 +7,14 @@ import projet.projetstage02.model.Offre;
 
 import javax.validation.constraints.*;
 
+import static projet.projetstage02.utils.ByteConverter.byteToString;
+import static projet.projetstage02.utils.ByteConverter.stringToBytes;
+
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class OffreDTO {
+public class OffreOutDTO {
     private long id;
 
     @NotBlank
@@ -36,9 +39,11 @@ public class OffreDTO {
     @NotBlank
     @Size(min = 2)
     private String adresse;
+
+    private long companyId;
     @NotNull
     @ToString.Exclude
-    private byte[] pdf;
+    private String pdf;
     private String token;
     private boolean valide;
 
@@ -46,18 +51,20 @@ public class OffreDTO {
         return Offre.builder()
                 .id(id)
                 .nomDeCompagnie(nomDeCompagnie)
+                .idCompagnie(companyId)
                 .department(AbstractUser.Department.getDepartment(department))
                 .position(position)
                 .heureParSemaine(heureParSemaine)
                 .salaire(salaire)
                 .session(session)
                 .adresse(adresse)
-                .pdf(pdf)
+                .pdf(stringToBytes(pdf))
                 .valide(valide).build();
     }
 
-    public OffreDTO(Offre offre) {
+    public OffreOutDTO(Offre offre) {
         id = offre.getId();
+        companyId = offre.getIdCompagnie();
         nomDeCompagnie = offre.getNomDeCompagnie();
         department = offre.getDepartment().departement;
         position = offre.getPosition();
@@ -65,7 +72,7 @@ public class OffreDTO {
         adresse = offre.getAdresse();
         salaire = offre.getSalaire();
         session = offre.getSession();
-        pdf = offre.getPdf();
+        pdf = byteToString(offre.getPdf());
         valide = offre.isValide();
     }
 }
