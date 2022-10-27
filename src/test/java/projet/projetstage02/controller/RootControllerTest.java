@@ -83,6 +83,8 @@ public class RootControllerTest {
     SignatureInDTO signatureInDTO;
     UnvalidatedAcceptationsDTO acceptationsDTO;
 
+    List<StageContractOutDTO> contracts;
+
     // https://thepracticaldeveloper.com/guide-spring-boot-controller-tests/
     @BeforeEach
     void setup() {
@@ -202,6 +204,12 @@ public class RootControllerTest {
                 .position("Smoking weed")
                 .build()
         );
+
+        contracts = new ArrayList<>(){{
+            add(stageContractOutDTO);
+            add(stageContractOutDTO);
+            add(stageContractOutDTO);
+        }};
     }
 
     @Test
@@ -1487,6 +1495,37 @@ public class RootControllerTest {
         when(authService.getToken(any(), any())).thenThrow(new InvalidTokenException());
 
         mockMvc.perform(put("/unvalidatedAcceptations")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(jsonTokenDTO.write(token).getJson()))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    void testGetCompanyContractsHappyDay() throws Exception {
+        when(companyService.getContracts(anyLong())).thenReturn(contracts);
+
+        mockMvc.perform(put("/companyContracts/{companyId}", 1)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(jsonTokenDTO.write(token).getJson()))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.size()",is(3)));
+    }
+
+    @Test
+    void testGetCompanyContractsNotFound() throws Exception {
+        when(companyService.getContracts(anyLong())).thenThrow(new NonExistentEntityException());
+
+        mockMvc.perform(put("/companyContracts/{companyId}", 1)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(jsonTokenDTO.write(token).getJson()))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    void testGetCompanyContractsTokenInvalid() throws Exception {
+        when(authService.getToken(any(), any())).thenThrow(new InvalidTokenException());
+
+        mockMvc.perform(put("/companyContracts/{companyId}", 1)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(jsonTokenDTO.write(token).getJson()))
                 .andExpect(status().isForbidden());

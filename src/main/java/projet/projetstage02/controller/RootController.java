@@ -754,6 +754,25 @@ public class RootController {
         }
     }
 
+    @PutMapping("/companyContracts/{companyId}")
+    public ResponseEntity<List<StageContractOutDTO>> getCompanyContracts
+            (@PathVariable String companyId, @RequestBody TokenDTO tokenId) {
+        logger.log(Level.INFO, "Put /companyContracts/{companyId} entered with companyId: " + companyId);
+
+        try {
+            authService.getToken(tokenId.getToken(), COMPANY);
+            List<StageContractOutDTO> contracts = companyService.getContracts(Long.parseLong(companyId));
+            logger.log(Level.INFO, "Put /companyContracts/{companyId} sent 200 response");
+            return ResponseEntity.ok(contracts);
+        } catch (NonExistentEntityException e) {
+            logger.log(Level.INFO, "Put /companyContracts/{companyId} sent 404 response");
+            return ResponseEntity.notFound().build();
+        } catch (InvalidTokenException e) {
+            logger.log(Level.INFO, "Put /companyContracts/{companyId} sent 403 response");
+            return ResponseEntity.status(FORBIDDEN).build();
+        }
+    }
+
     @PutMapping("/companySignatureContract")
     public ResponseEntity<StageContractOutDTO> companyContractSignature
             (@RequestBody SignatureInDTO signatureInDTO){
