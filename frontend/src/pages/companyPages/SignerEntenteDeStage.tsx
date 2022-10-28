@@ -17,6 +17,7 @@ const SignerEntenteDeStage = ({user}: { user: IUser }): JSX.Element => {
                 const response = await putcompanyContracts(user.id, user.token, "Hiver", nextYear)
                 if (response.ok) {
                     const data = await response.json();
+                    console.log(data)
                     setContratsNonSigner(data)
                 } else {
                     generateAlert()
@@ -69,7 +70,8 @@ const SignerEntenteDeStage = ({user}: { user: IUser }): JSX.Element => {
                     <Col sm={2}>
                         <Link to="/" className="btn btn-primary mt-1">Home</Link>
                     </Col>
-                    <Col sm={8} className="">
+                    <Col sm={8} className="text-center pt-2">
+                        <h1 className="fw-bold text-white display-3 pb-2">Signer Entente De Stage</h1>
                     </Col>
                     <Col sm={2}></Col>
                 </Row>
@@ -77,7 +79,7 @@ const SignerEntenteDeStage = ({user}: { user: IUser }): JSX.Element => {
                     <Col className="bg-light p-0">
                         <Table className="text-center table table-bordered" hover>
                             <thead className="bg-primary">
-                            <tr>
+                            <tr className="text-white">
                                 <th>First Name</th>
                                 <th>Last Name</th>
                                 <th>Session</th>

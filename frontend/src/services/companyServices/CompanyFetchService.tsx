@@ -10,7 +10,7 @@ export const postCreateOffre = (offer: IOffer): Promise<Response> => {
 
 
 export const putcompanyContracts = (companyId: string, token: string, saison: string, year : number): Promise<Response> => {
-    return fetch(`http://localhost:8080/companyContracts/${companyId}_${saison}-${year}`, {
+    return fetch(`http://localhost:8080/companyContracts/${companyId}_${saison} ${year}`, {
         method: "PUT",
         headers: {
             'Accept': 'application/json',
