@@ -18,10 +18,8 @@ public class ApplicationAcceptation {
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "id", nullable = false)
     private Long id;
-    @NotBlank
     private long studentId;
     private String studentName;
-    @NotBlank
     private long offerId;
     private String companyName;
 }
