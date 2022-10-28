@@ -86,7 +86,8 @@ public class ProjetStage02Application implements CommandLineRunner {
                 .heureParSemaine(40)
                 .salaire(40)
                 .session("Hiver 2023")
-                .nomDeCompagnie("Duff Beer")
+                .nomDeCompagnie("Bell")
+                .companyId(company.getId())
                 .position("Delivery Man")
                 .pdf(TEST_PDF)
                 .build());
@@ -106,6 +107,7 @@ public class ProjetStage02Application implements CommandLineRunner {
                 OffreDTO.builder()
                         .id(0L)
                         .nomDeCompagnie("Bell")
+                        .companyId(company.getId())
                         .department("Techniques de linformatique")
                         .position("Support TI")
                         .heureParSemaine(35)
@@ -120,7 +122,8 @@ public class ProjetStage02Application implements CommandLineRunner {
         companyService.createOffre(
                 OffreDTO.builder()
                         .id(0L)
-                        .nomDeCompagnie("Vidéotron")
+                        .nomDeCompagnie("Bell")
+                        .companyId(company.getId())
                         .department("Techniques de linformatique")
                         .position("Support TI")
                         .heureParSemaine(36)
@@ -143,5 +146,15 @@ public class ProjetStage02Application implements CommandLineRunner {
         System.out.println(gestionnaireService.getGestionnaireByEmailPassword("dave@gmail.ca", "cooldude"));
         System.out.println(gestionnaireService.getUnvalidatedOffers());
         System.out.println(gestionnaireService.getUnvalidatedCVStudents());
+        studentService.createPostulation(student.getId(), offreId);
+        studentService.createPostulation(student2.getId(), offreId);
+        companyService.saveStudentApplicationAccepted(offreId, student.getId());
+        companyService.saveStudentApplicationAccepted(offreId, student2.getId());
+        System.out.println(gestionnaireService.createStageContract(
+            new StageContractInDTO("noToken", student.getId(), offreId)
+        ));
+        System.out.println(gestionnaireService.createStageContract(
+                new StageContractInDTO("noToken", student2.getId(), offreId)
+        ));
     }
 }
