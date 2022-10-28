@@ -9,16 +9,11 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import projet.projetstage02.DTO.*;
 import projet.projetstage02.exception.AlreadyExistingPostulation;
 import projet.projetstage02.exception.NonExistentEntityException;
+import projet.projetstage02.model.*;
 import projet.projetstage02.model.AbstractUser.Department;
-import projet.projetstage02.model.Application;
-import projet.projetstage02.model.CvStatus;
-import projet.projetstage02.model.Offre;
-import projet.projetstage02.model.Student;
-import projet.projetstage02.repository.ApplicationRepository;
-import projet.projetstage02.repository.CvStatusRepository;
-import projet.projetstage02.repository.OffreRepository;
-import projet.projetstage02.repository.StudentRepository;
+import projet.projetstage02.repository.*;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -42,6 +37,9 @@ public class StudentServiceTest {
     OffreRepository offreRepository;
     @Mock
     ApplicationRepository applicationRepository;
+
+    @Mock
+    StageContractRepository stageContractRepository;
 
     @Mock
     CvStatusRepository cvStatusRepository;
@@ -490,5 +488,43 @@ public class StudentServiceTest {
             return;
         }
         fail("NonExistentEntityException not launched");
+    }
+
+    @Test
+    void testGetContractHappyDay() throws NonExistentEntityException {
+        when(studentRepository.findById(anyLong())).thenReturn(Optional.of(bart));
+        StageContract contractValid = StageContract.builder()
+                .id(1L).studentId(1L).offerId(1L).companyId(bart.getId()).companySignature(new byte[0])
+                .session(Offre.currentSession()).description("").companySignatureDate(LocalDateTime.now()).build();
+        StageContract contractInvalid1 = StageContract.builder()
+                .id(1L).studentId(1L).offerId(1L).companyId(bart.getId()).companySignature(new byte[0]).session("Hiver 2000")
+                .description("").companySignatureDate(LocalDateTime.now()).build();
+        StageContract contractInvalid2 = StageContract.builder()
+                .id(1L).studentId(1L).offerId(1L).companyId(bart.getId()).companySignature(new byte[0]).session("Hiver 1997")
+                .description("").companySignatureDate(LocalDateTime.now()).build();
+        when(stageContractRepository.findByStudentId(anyLong())).thenReturn(
+                new ArrayList<>(){{
+                    add(contractValid);
+                    add(contractInvalid1);
+                    add(contractValid);
+                    add(contractInvalid2);
+                }}
+        );
+
+        List<StageContractOutDTO> contracts = studentService.getContracts(bart.getId(), Offre.currentSession());
+
+        assertThat(contracts.size()).isEqualTo(2);
+    }
+
+    @Test
+    void testGetContractsNotFound(){
+        when(studentRepository.findById(anyLong())).thenReturn(Optional.empty());
+
+        try {
+            studentService.getContracts(1L, "");
+        } catch (NonExistentEntityException e) {
+            return;
+        }
+        fail("Fail to catch the NonExistentEntityException");
     }
 }

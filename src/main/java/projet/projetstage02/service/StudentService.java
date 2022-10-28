@@ -5,14 +5,8 @@ import org.springframework.stereotype.Service;
 import projet.projetstage02.DTO.*;
 import projet.projetstage02.exception.AlreadyExistingPostulation;
 import projet.projetstage02.exception.NonExistentEntityException;
-import projet.projetstage02.model.Application;
-import projet.projetstage02.model.CvStatus;
-import projet.projetstage02.model.Offre;
-import projet.projetstage02.model.Student;
-import projet.projetstage02.repository.ApplicationRepository;
-import projet.projetstage02.repository.CvStatusRepository;
-import projet.projetstage02.repository.OffreRepository;
-import projet.projetstage02.repository.StudentRepository;
+import projet.projetstage02.model.*;
+import projet.projetstage02.repository.*;
 
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
@@ -32,7 +26,7 @@ public class StudentService {
     private final StudentRepository studentRepository;
     private final OffreRepository offreRepository;
     private final ApplicationRepository applicationRepository;
-
+    private final StageContractRepository stageContractRepository;
     private final CvStatusRepository cvStatusRepository;
 
     public void saveStudent(String firstName,
@@ -195,5 +189,19 @@ public class StudentService {
             return new CvStatusDTO(status);
         }
         return new CvStatusDTO(cvStatusOpt.get());
+    }
+
+    public List<StageContractOutDTO> getContracts(long studentId, String session) throws NonExistentEntityException {
+        Optional<Student> studentOpt = studentRepository.findById(studentId);
+        if(studentOpt.isEmpty()) throw new NonExistentEntityException();
+
+        List<StageContractOutDTO> contracts = new ArrayList<>();
+
+        List<StageContract> all = stageContractRepository.findByStudentId(studentId);
+        all.stream()
+                .filter(stageContract -> stageContract.getSession().equals(session))
+                .forEach(stageContract -> contracts.add(new StageContractOutDTO(stageContract)));
+
+        return contracts;
     }
 }
