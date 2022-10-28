@@ -9,8 +9,11 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class StageContractInDTO {
-    private String token;
+public class UnvalidatedAcceptationDTO {
+    private String employFullName;
+    private String companyName;
     private long studentId;
+    private String studentFullName;
     private long offerId;
+    private String position;
 }

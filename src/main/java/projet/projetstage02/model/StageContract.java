@@ -7,6 +7,9 @@ import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.Pattern;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 
 @Entity
 @Data
@@ -24,5 +27,9 @@ public class StageContract {
     private Long offerId;
     @NotBlank
     private Long companyId;
+    @Pattern(regexp = "^Hiver (\\d{4})$")
+    private String session;
     private String description;
+    private byte[] companySignature;
+    private LocalDateTime companySignatureDate;
 }

@@ -6,19 +6,15 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import projet.projetstage02.DTO.ApplicationAcceptationDTO;
-import projet.projetstage02.DTO.CompanyDTO;
-import projet.projetstage02.DTO.OfferAcceptedStudentsDTO;
-import projet.projetstage02.DTO.OffreDTO;
+import projet.projetstage02.DTO.*;
 import projet.projetstage02.exception.AlreadyExistingAcceptationException;
+import projet.projetstage02.exception.InvalidOwnershipException;
 import projet.projetstage02.exception.NonExistentEntityException;
 import projet.projetstage02.exception.NonExistentOfferExeption;
 import projet.projetstage02.model.*;
-import projet.projetstage02.repository.ApplicationAcceptationRepository;
-import projet.projetstage02.repository.CompanyRepository;
-import projet.projetstage02.repository.OffreRepository;
-import projet.projetstage02.repository.StudentRepository;
+import projet.projetstage02.repository.*;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -27,6 +23,7 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.assertj.core.api.Fail.fail;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
+import static projet.projetstage02.utils.ByteConverter.byteToString;
 import static projet.projetstage02.utils.TimeUtil.currentTimestamp;
 
 @ExtendWith(MockitoExtension.class)
@@ -43,7 +40,8 @@ public class CompanyServiceTest {
 
     @Mock
     StudentRepository studentRepository;
-
+    @Mock
+    StageContractRepository stageContractRepository;
     @Mock
     ApplicationAcceptationRepository applicationAcceptationRepository;
 
@@ -52,6 +50,8 @@ public class CompanyServiceTest {
     Student bart;
     Offre duffBeerOffer;
     ApplicationAcceptation applicationAcceptation;
+    StageContract stageContract;
+    SignatureInDTO signatureInDTO;
 
     @BeforeEach
     void setup() {
@@ -62,6 +62,7 @@ public class CompanyServiceTest {
                 "bestBeer",
                 AbstractUser.Department.Transport,
                 "Duff Beer");
+        duffBeer.setId(4L);
 
         duffBeerOffreDTO = OffreDTO.builder()
                 .adresse("653 Duff Street")
@@ -83,6 +84,7 @@ public class CompanyServiceTest {
 
         duffBeerOffer = Offre.builder()
                 .id(1L)
+                .idCompagnie(duffBeer.getId())
                 .nomDeCompagnie("Duff")
                 .department(AbstractUser.Department.Transport)
                 .position("Manager")
@@ -98,6 +100,21 @@ public class CompanyServiceTest {
                 .studentName(bart.getLastName() + " " + bart.getFirstName())
                 .offerId(duffBeerOffer.getId())
                 .companyName(duffBeerOffer.getNomDeCompagnie())
+                .build();
+
+        stageContract = StageContract.builder()
+                .id(5L)
+                .studentId(bart.getId())
+                .offerId(duffBeerOffer.getId())
+                .companyId(duffBeer.getId())
+                .description("Do a better job than Homer Simpson")
+                .companySignature(new byte[0])
+                .build();
+
+        signatureInDTO = SignatureInDTO.builder()
+                .userId(duffBeer.getId())
+                .contractId(stageContract.getId())
+                .signature(new byte[]{0,1,2,3,4,5,6,7,8,9})
                 .build();
     }
 
@@ -350,5 +367,94 @@ public class CompanyServiceTest {
             return;
         }
         fail("NonExistentOfferException not thrown");
+    }
+
+    @Test
+    void testAddSignatureToContractHappyDay() throws Exception{
+        when(companyRepository.findById(anyLong())).thenReturn(Optional.of(duffBeer));
+        when(stageContractRepository.findById(anyLong())).thenReturn(Optional.of(stageContract));
+
+        StageContractOutDTO dto = companyService.addSignatureToContract(signatureInDTO);
+
+        assertThat(dto.getCompanyId()).isEqualTo(duffBeer.getId());
+        assertThat(dto.getContractId()).isEqualTo(stageContract.getId());
+        assertThat(dto.getCompanySignature()).isEqualTo(byteToString(signatureInDTO.getSignature()));
+    }
+
+    @Test
+    void testAddSignatureToContractOwnershipConflict(){
+        duffBeer.setId(99L);
+        when(companyRepository.findById(anyLong())).thenReturn(Optional.of(duffBeer));
+        when(stageContractRepository.findById(anyLong())).thenReturn(Optional.of(stageContract));
+
+        try {
+            companyService.addSignatureToContract(signatureInDTO);
+        } catch (InvalidOwnershipException e) {
+            return;
+        } catch (Exception e) {}
+
+        fail("Fail to catch the InvalidOwnershipException!");
+    }
+
+    @Test
+    void testAddSignatureToContractCompanyNotFound(){
+        when(companyRepository.findById(anyLong())).thenReturn(Optional.empty());
+
+        try {
+            companyService.addSignatureToContract(signatureInDTO);
+        } catch (NonExistentEntityException e) {
+            return;
+        } catch (Exception e) {}
+
+        fail("Fail to catch the NonExistentEntityException!");
+    }
+
+    @Test
+    void testAddSignatureToContractNotFound(){
+        when(companyRepository.findById(anyLong())).thenReturn(Optional.of(duffBeer));
+        when(stageContractRepository.findById(anyLong())).thenReturn(Optional.empty());
+
+        try {
+            companyService.addSignatureToContract(signatureInDTO);
+        } catch (NonExistentEntityException e) {
+            return;
+        } catch (Exception e) {}
+
+        fail("Fail to catch the NonExistentEntityException!");
+    }
+
+    @Test
+    void testGetContractHappyDay() throws NonExistentEntityException {
+        when(companyRepository.findById(anyLong())).thenReturn(Optional.of(duffBeer));
+        StageContract contractValid = StageContract.builder()
+                .id(1L).studentId(1L).offerId(1L).companyId(duffBeer.getId()).companySignature(new byte[0])
+                .description("").companySignatureDate(LocalDateTime.now()).build();
+        StageContract contractInvalid = StageContract.builder()
+                .id(1L).studentId(1L).offerId(1L).companyId(0L).companySignature(new byte[0])
+                .description("").companySignatureDate(LocalDateTime.now()).build();
+
+        when(stageContractRepository.findAll()).thenReturn(
+                new ArrayList<>(){{
+                    add(contractValid);
+                    add(contractInvalid);
+                    add(contractValid);
+                }}
+        );
+
+        List<StageContractOutDTO> contracts = companyService.getContracts(duffBeer.getId());
+
+        assertThat(contracts.size()).isEqualTo(2);
+    }
+
+    @Test
+    void testGetContractsNotFound(){
+        when(companyRepository.findById(anyLong())).thenReturn(Optional.empty());
+
+        try {
+            companyService.getContracts(1L);
+        } catch (NonExistentEntityException e) {
+            return;
+        }
+        fail("Fail to catch the NonExistentEntityException");
     }
 }

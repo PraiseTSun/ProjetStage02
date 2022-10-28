@@ -6,11 +6,12 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Data
-@NoArgsConstructor
 @AllArgsConstructor
+@NoArgsConstructor
 @Builder
-public class StageContractInDTO {
+public class SignatureInDTO {
     private String token;
-    private long studentId;
-    private long offerId;
+    private long userId;
+    private long contractId;
+    private byte[] signature;
 }

@@ -2,24 +2,17 @@ package projet.projetstage02.service;
 
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
-import projet.projetstage02.DTO.ApplicationAcceptationDTO;
-import projet.projetstage02.DTO.CompanyDTO;
-import projet.projetstage02.DTO.OfferAcceptedStudentsDTO;
-import projet.projetstage02.DTO.OffreDTO;
+import projet.projetstage02.DTO.*;
 import projet.projetstage02.exception.AlreadyExistingAcceptationException;
+import projet.projetstage02.exception.InvalidOwnershipException;
 import projet.projetstage02.exception.NonExistentEntityException;
 import projet.projetstage02.exception.NonExistentOfferExeption;
+import projet.projetstage02.model.*;
 import projet.projetstage02.model.AbstractUser.Department;
-import projet.projetstage02.model.ApplicationAcceptation;
-import projet.projetstage02.model.Company;
-import projet.projetstage02.model.Offre;
-import projet.projetstage02.model.Student;
-import projet.projetstage02.repository.ApplicationAcceptationRepository;
-import projet.projetstage02.repository.CompanyRepository;
-import projet.projetstage02.repository.OffreRepository;
-import projet.projetstage02.repository.StudentRepository;
+import projet.projetstage02.repository.*;
 
 import java.sql.Timestamp;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -35,6 +28,7 @@ public class CompanyService {
     private final OffreRepository offreRepository;
     private final StudentRepository studentRepository;
     private final ApplicationAcceptationRepository applicationAcceptationRepository;
+    private final StageContractRepository stageContractRepository;
 
     public long createOffre(OffreDTO offreDTO) {
         Offre offre = Offre.builder()
@@ -107,7 +101,7 @@ public class CompanyService {
                 && !deleteUnconfirmedCompany(email);
     }
 
-    public ApplicationAcceptationDTO saveStudentApplicationAccepted(long offerId, long studentId) throws Exception {
+    public ApplicationAcceptationDTO saveStudentApplicationAccepted(long offerId, long studentId) throws NonExistentEntityException, NonExistentOfferExeption, AlreadyExistingAcceptationException {
         Optional<Student> studentOpt = studentRepository.findById(studentId);
         if (studentOpt.isEmpty()) throw new NonExistentEntityException();
         Student student = studentOpt.get();
@@ -149,5 +143,41 @@ public class CompanyService {
                 .offerId(offre.getId())
                 .studentsId(studentsId)
                 .build();
+    }
+
+    public StageContractOutDTO addSignatureToContract(SignatureInDTO signature) throws NonExistentEntityException, InvalidOwnershipException {
+        Optional<Company> companyOpt = companyRepository.findById(signature.getUserId());
+        if(companyOpt.isEmpty()) throw new NonExistentEntityException();
+
+        Optional<StageContract> stageContractOpt = stageContractRepository.findById(signature.getContractId());
+        if (stageContractOpt.isEmpty()) throw new NonExistentEntityException();
+
+        Company company = companyOpt.get();
+        StageContract stageContract = stageContractOpt.get();
+
+        if(company.getId() != stageContract.getCompanyId())
+            throw new InvalidOwnershipException();
+
+        stageContract.setCompanySignature(signature.getSignature());
+        stageContract.setCompanySignatureDate(LocalDateTime.now());
+        stageContractRepository.save(stageContract);
+
+
+
+        return new StageContractOutDTO(stageContract);
+    }
+
+    public List<StageContractOutDTO> getContracts(long companyId) throws NonExistentEntityException {
+        Optional<Company> companyOpt = companyRepository.findById(companyId);
+        if(companyOpt.isEmpty()) throw new NonExistentEntityException();
+
+        List<StageContractOutDTO> contracts = new ArrayList<>();
+
+        stageContractRepository.findAll()
+                .stream()
+                .filter(stageContract -> stageContract.getCompanyId() == companyId)
+                .forEach(stageContract -> contracts.add(new StageContractOutDTO(stageContract)));
+
+        return contracts;
     }
 }
