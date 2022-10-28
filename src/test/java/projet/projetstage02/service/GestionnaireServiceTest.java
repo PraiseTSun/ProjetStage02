@@ -96,6 +96,7 @@ public class GestionnaireServiceTest {
                 .studentId(studentTest.getId())
                 .offerId(offerTest.getId())
                 .companyId(companyTest.getId())
+                .session(offerTest.getSession())
                 .description("description")
                 .build();
 
@@ -744,6 +745,7 @@ public class GestionnaireServiceTest {
         assertThat(dto.getStudentId()).isEqualTo(studentTest.getId());
         assertThat(dto.getOfferId()).isEqualTo(offerTest.getId());
         assertThat(dto.getCompanyId()).isEqualTo(companyTest.getId());
+        assertThat(dto.getSession()).isEqualTo(Offre.currentSession());
     }
 
     @Test

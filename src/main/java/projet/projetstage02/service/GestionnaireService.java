@@ -291,6 +291,7 @@ public class GestionnaireService {
                 .studentId(student.getId())
                 .offerId(offer.getId())
                 .companyId(company.getId())
+                .session(offer.getSession())
                 .description(description)
                 .companySignature(new byte[0])
                 .build();
