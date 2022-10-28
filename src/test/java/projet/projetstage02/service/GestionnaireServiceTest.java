@@ -7,13 +7,9 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import projet.projetstage02.DTO.*;
-import projet.projetstage02.exception.NonExistentEntityException;
-import projet.projetstage02.exception.NonExistentOfferExeption;
+import projet.projetstage02.exception.*;
 import projet.projetstage02.model.*;
-import projet.projetstage02.repository.CompanyRepository;
-import projet.projetstage02.repository.GestionnaireRepository;
-import projet.projetstage02.repository.OffreRepository;
-import projet.projetstage02.repository.StudentRepository;
+import projet.projetstage02.repository.*;
 
 import java.util.*;
 
@@ -22,6 +18,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.*;
+import static projet.projetstage02.model.AbstractUser.Department.Informatique;
 import static projet.projetstage02.utils.TimeUtil.currentTimestamp;
 
 @ExtendWith(MockitoExtension.class)
@@ -35,14 +32,24 @@ public class GestionnaireServiceTest {
     private CompanyRepository companyRepository;
     @Mock
     private OffreRepository offreRepository;
-
+    @Mock
+    private CvStatusRepository cvStatusRepository;
+    @Mock
+    private StageContractRepository stageContractRepository;
+    @Mock
+    private ApplicationAcceptationRepository applicationAcceptationRepository;
     @InjectMocks
-    private GestionnaireService service;
+    private GestionnaireService gestionnaireService;
 
     private Gestionnaire gestionnaireTest;
     private Company companyTest;
     private Student studentTest;
-    private Offre offreTest;
+    private Offre offerTest;
+    private CvStatus cvStatus;
+    private StageContract stageContract;
+    private ApplicationAcceptation applicationAcceptationTest;
+
+    private StageContractInDTO stageContractInDTO;
 
     @BeforeEach
     void beforeEach() {
@@ -51,6 +58,7 @@ public class GestionnaireServiceTest {
                 "nom",
                 "email@email.com",
                 "password");
+        gestionnaireTest.setId(1L);
 
         companyTest = new Company(
                 "prenom",
@@ -59,24 +67,50 @@ public class GestionnaireServiceTest {
                 "password",
                 AbstractUser.Department.Transport,
                 "Company Test");
+        companyTest.setId(2L);
 
         studentTest = new Student(
                 "prenom",
                 "nom",
                 "email@email.com",
                 "password",
-                AbstractUser.Department.Informatique);
+                Informatique);
+        studentTest.setId(3L);
 
-        offreTest = new Offre(
-                1L,
-                "Company Test",
-                AbstractUser.Department.Informatique,
-                "Stagiaire test backend",
-                40,
-                40,
-                "69 shitty street",
-                false,
-                new byte[0]);
+        offerTest = Offre.builder()
+                .id(4L)
+                .nomDeCompagnie("Company Test")
+                .department(Informatique)
+                .position("Stagiaire test backend")
+                .heureParSemaine(40)
+                .salaire(40)
+                .session(Offre.currentSession())
+                .adresse("69 shitty street")
+                .pdf(new byte[0])
+                .valide(false)
+                .build();
+        cvStatus = CvStatus.builder().build();
+
+        stageContract = StageContract.builder()
+                .id(5L)
+                .studentId(studentTest.getId())
+                .offerId(offerTest.getId())
+                .companyId(companyTest.getId())
+                .description("description")
+                .build();
+
+        stageContractInDTO = StageContractInDTO.builder()
+                .studentId(studentTest.getId())
+                .offerId(offerTest.getId())
+                .build();
+
+        applicationAcceptationTest = ApplicationAcceptation.builder()
+                .id(6L)
+                .studentId(studentTest.getId())
+                .studentName(studentTest.getFirstName() + " " + studentTest.getLastName())
+                .offerId(offerTest.getId())
+                .companyName(companyTest.getCompanyName())
+                .build();
     }
 
     @Test
@@ -85,7 +119,7 @@ public class GestionnaireServiceTest {
         when(gestionnaireRepository.save(any())).thenReturn(gestionnaireTest);
 
         // Act
-        service.saveGestionnaire("Dave", "Chapel", "email", "password");
+        gestionnaireService.saveGestionnaire("Dave", "Chapel", "email", "password");
 
         // Assert
         verify(gestionnaireRepository, times(1)).save(any());
@@ -97,7 +131,7 @@ public class GestionnaireServiceTest {
         when(gestionnaireRepository.save(any())).thenReturn(gestionnaireTest);
 
         // Act
-        service.saveGestionnaire(new GestionnaireDTO(gestionnaireTest));
+        gestionnaireService.saveGestionnaire(new GestionnaireDTO(gestionnaireTest));
 
         // Assert
         verify(gestionnaireRepository, times(1)).save(any());
@@ -109,7 +143,7 @@ public class GestionnaireServiceTest {
         when(gestionnaireRepository.findById(anyLong())).thenReturn(Optional.of(gestionnaireTest));
 
         // Act
-        GestionnaireDTO dto = service.getGestionnaireById(1L);
+        GestionnaireDTO dto = gestionnaireService.getGestionnaireById(1L);
 
         // Assert
         assertThat(dto.toModel()).isEqualTo(gestionnaireTest);
@@ -122,7 +156,7 @@ public class GestionnaireServiceTest {
 
         // Act
         try {
-            service.getGestionnaireById(1L);
+            gestionnaireService.getGestionnaireById(1L);
         } catch (NonExistentEntityException e) {
             // Assert
             return;
@@ -137,7 +171,7 @@ public class GestionnaireServiceTest {
                 .thenReturn(Optional.of(gestionnaireTest));
 
         // Act
-        GestionnaireDTO dto = service.getGestionnaireByEmailPassword(anyString(), anyString());
+        GestionnaireDTO dto = gestionnaireService.getGestionnaireByEmailPassword(anyString(), anyString());
 
         //Assert
         assertThat(dto.getEmail()).isEqualTo(gestionnaireTest.getEmail());
@@ -152,7 +186,7 @@ public class GestionnaireServiceTest {
 
         // Act
         try {
-            service.getGestionnaireByEmailPassword(anyString(), anyString());
+            gestionnaireService.getGestionnaireByEmailPassword(anyString(), anyString());
         } catch (NonExistentEntityException e) {
             // Assert
             return;
@@ -166,7 +200,7 @@ public class GestionnaireServiceTest {
         when(companyRepository.findById(anyLong())).thenReturn(Optional.of(companyTest));
 
         // Act
-        service.validateCompany(1L);
+        gestionnaireService.validateCompany(1L);
 
         // Assert
         assertThat(companyTest.isConfirm()).isTrue();
@@ -179,7 +213,7 @@ public class GestionnaireServiceTest {
 
         // Act
         try {
-            service.validateCompany(1L);
+            gestionnaireService.validateCompany(1L);
         } catch (NonExistentEntityException e) {
             return;
         }
@@ -192,7 +226,7 @@ public class GestionnaireServiceTest {
         when(studentRepository.findById(anyLong())).thenReturn(Optional.of(studentTest));
 
         // Act
-        service.validateStudent(1L);
+        gestionnaireService.validateStudent(1L);
 
         // Assert
         assertThat(studentTest.isConfirm()).isTrue();
@@ -205,7 +239,7 @@ public class GestionnaireServiceTest {
 
         // Act
         try {
-            service.validateStudent(1L);
+            gestionnaireService.validateStudent(1L);
         } catch (NonExistentEntityException e) {
             return;
         }
@@ -220,7 +254,7 @@ public class GestionnaireServiceTest {
         doNothing().when(companyRepository).delete(any());
 
         // Act
-        service.removeCompany(1L);
+        gestionnaireService.removeCompany(1L);
 
         // Assert
         verify(companyRepository).delete(companyTest);
@@ -233,7 +267,7 @@ public class GestionnaireServiceTest {
 
         // Act
         try {
-            service.removeCompany(1L);
+            gestionnaireService.removeCompany(1L);
         } catch (NonExistentEntityException e) {
             return;
         }
@@ -248,7 +282,7 @@ public class GestionnaireServiceTest {
         doNothing().when(studentRepository).delete(any());
 
         // Act
-        service.removeStudent(1L);
+        gestionnaireService.removeStudent(1L);
 
         // Assert
         verify(studentRepository).delete(studentTest);
@@ -261,7 +295,7 @@ public class GestionnaireServiceTest {
 
         // Act
         try {
-            service.removeStudent(1L);
+            gestionnaireService.removeStudent(1L);
         } catch (NonExistentEntityException e) {
             return;
         }
@@ -269,53 +303,89 @@ public class GestionnaireServiceTest {
     }
 
     @Test
+    public void testGetUnvalidatedOffersHappyDay() {
+        List<Offre> offers = List.of(
+                Offre.builder().session("Hiver 2010").department(Informatique).build(),
+                Offre.builder().session("Hiver 2010").department(Informatique).build(),
+                Offre.builder().session("Hiver 2023").department(Informatique).build(),
+                Offre.builder().session("Hiver 2023").department(Informatique).build()
+        );
+        when(offreRepository.findAll()).thenReturn(offers);
+        final List<OffreDTO> offersDto = gestionnaireService.getUnvalidatedOffers();
+
+        assertThat(offersDto).hasSize(2);
+    }
+
+    @Test
+    public void testGetValidatedOffersDifferentYearsHappyDay() {
+        List<Offre> offers = List.of(
+                Offre.builder().session("Hiver 2010").valide(true).department(Informatique).build(),
+                Offre.builder().session("Hiver 2010").valide(true).department(Informatique).build(),
+                Offre.builder().session("Hiver 2022").department(Informatique).build(),
+                Offre.builder().session("Hiver 2022").valide(true).department(Informatique).build(),
+                Offre.builder().session("Hiver 2023").valide(true).department(Informatique).build()
+        );
+        when(offreRepository.findAll()).thenReturn(offers);
+        final List<OffreDTO> offers2022 = gestionnaireService.getValidatedOffers(2022);
+        final List<OffreDTO> offers2023 = gestionnaireService.getValidatedOffers(2023);
+        final List<OffreDTO> offers2010 = gestionnaireService.getValidatedOffers(2010);
+
+        assertThat(offers2022).hasSize(1);
+        assertThat(offers2023).hasSize(1);
+        assertThat(offers2010).hasSize(2);
+    }
+
+    @Test
     public void testOffreNotValidated() {
         // Arrange
         List<Offre> offres = new ArrayList<>();
         Offre offre = new Offre();
-        offre.setDepartment(AbstractUser.Department.Informatique);
+        offre.setDepartment(Informatique);
+        offre.setSession("Hiver 2022");
         offres.add(offre);
         offre = new Offre();
-        offre.setDepartment(AbstractUser.Department.Informatique);
+        offre.setDepartment(Informatique);
+        offre.setSession("Hiver 2023");
         offres.add(offre);
         offre = new Offre();
-        offre.setDepartment(AbstractUser.Department.Informatique);
+        offre.setDepartment(Informatique);
+        offre.setSession("Hiver 2023");
         offres.add(offre);
 
         offre = new Offre();
-        offre.setDepartment(AbstractUser.Department.Informatique);
+        offre.setDepartment(Informatique);
         offre.setValide(true);
         offres.add(offre);
 
         when(offreRepository.findAll()).thenReturn(offres);
 
         // Act
-        final List<OffreDTO> noneValidateOffers = service.getUnvalidatedOffers();
+        final List<OffreDTO> noneValidateOffers = gestionnaireService.getUnvalidatedOffers();
 
         // Assert
-        assertThat(noneValidateOffers.size()).isEqualTo(3);
+        assertThat(noneValidateOffers.size()).isEqualTo(2);
     }
 
     @Test
-    public void testValidateOfferByIdSuccess() throws NonExistentOfferExeption {
+    public void testValidateOfferByIdSuccess() throws NonExistentOfferExeption, ExpiredSessionException {
         // Arrange
-        when(offreRepository.findById(anyLong())).thenReturn(Optional.of(offreTest));
+        when(offreRepository.findById(anyLong())).thenReturn(Optional.of(offerTest));
 
         // Act
-        final OffreDTO offreDTO = service.validateOfferById(1L);
+        final OffreDTO offreDTO = gestionnaireService.validateOfferById(1L);
 
         // Assert
         assertThat(offreDTO.isValide()).isTrue();
     }
 
     @Test
-    public void testValidateOfferByIdNotFound() {
+    public void testValidateOfferByIdNotFound() throws ExpiredSessionException {
         // Arrange
         when(offreRepository.findById(anyLong())).thenReturn(Optional.empty());
 
         // Act
         try {
-            service.validateOfferById(1L);
+            gestionnaireService.validateOfferById(1L);
         } catch (NonExistentOfferExeption e) {
             return;
         }
@@ -324,16 +394,32 @@ public class GestionnaireServiceTest {
     }
 
     @Test
+    public void testValidateOfferExpiredOfferException() throws NonExistentOfferExeption {
+        // Arrange
+        offerTest.setSession("Hiver 2019");
+        when(offreRepository.findById(anyLong())).thenReturn(Optional.of(offerTest));
+
+        // Act
+        try {
+            gestionnaireService.validateOfferById(1L);
+        } catch (ExpiredSessionException e) {
+            return;
+        }
+        fail("ExpiredSessionException not caught");
+
+    }
+
+    @Test
     public void testRemoveOfferByIdSuccess() throws NonExistentOfferExeption {
         // Arrange
-        when(offreRepository.findById(anyLong())).thenReturn(Optional.of(offreTest));
+        when(offreRepository.findById(anyLong())).thenReturn(Optional.of(offerTest));
         doNothing().when(offreRepository).delete(any());
 
         // Act
-        service.removeOfferById(1L);
+        gestionnaireService.removeOfferById(1L);
 
         // Assert
-        verify(offreRepository).delete(offreTest);
+        verify(offreRepository).delete(offerTest);
     }
 
     @Test
@@ -343,7 +429,7 @@ public class GestionnaireServiceTest {
 
         // Act
         try {
-            service.removeOfferById(1L);
+            gestionnaireService.removeOfferById(1L);
         } catch (NonExistentOfferExeption e) {
             return;
         }
@@ -356,21 +442,21 @@ public class GestionnaireServiceTest {
         List<Student> students = new ArrayList<>();
 
         Student student = new Student();
-        student.setDepartment(AbstractUser.Department.Informatique);
+        student.setDepartment(Informatique);
         students.add(student);
 
         student = new Student();
-        student.setDepartment(AbstractUser.Department.Informatique);
+        student.setDepartment(Informatique);
         student.setEmailConfirmed(true);
         students.add(student);
 
         student = new Student();
-        student.setDepartment(AbstractUser.Department.Informatique);
+        student.setDepartment(Informatique);
         student.setEmailConfirmed(true);
         students.add(student);
 
         student = new Student();
-        student.setDepartment(AbstractUser.Department.Informatique);
+        student.setDepartment(Informatique);
         student.setEmailConfirmed(true);
         student.setConfirm(true);
         students.add(student);
@@ -378,7 +464,7 @@ public class GestionnaireServiceTest {
         when(studentRepository.findAll()).thenReturn(students);
 
         // Act
-        List<StudentDTO> unvalidatedStudents = service.getUnvalidatedStudents();
+        List<StudentDTO> unvalidatedStudents = gestionnaireService.getUnvalidatedStudents();
 
         // Assert
         assertThat(unvalidatedStudents.size()).isEqualTo(2);
@@ -390,21 +476,21 @@ public class GestionnaireServiceTest {
         List<Company> companies = new ArrayList<>();
 
         Company company = new Company();
-        company.setDepartment(AbstractUser.Department.Informatique);
+        company.setDepartment(Informatique);
         companies.add(company);
 
         company = new Company();
-        company.setDepartment(AbstractUser.Department.Informatique);
+        company.setDepartment(Informatique);
         company.setEmailConfirmed(true);
         companies.add(company);
 
         company = new Company();
-        company.setDepartment(AbstractUser.Department.Informatique);
+        company.setDepartment(Informatique);
         company.setEmailConfirmed(true);
         companies.add(company);
 
         company = new Company();
-        company.setDepartment(AbstractUser.Department.Informatique);
+        company.setDepartment(Informatique);
         company.setEmailConfirmed(true);
         company.setConfirm(true);
         companies.add(company);
@@ -412,7 +498,7 @@ public class GestionnaireServiceTest {
         when(companyRepository.findAll()).thenReturn(companies);
 
         // Act
-        List<CompanyDTO> unvalidatedCompanies = service.getUnvalidatedCompanies();
+        List<CompanyDTO> unvalidatedCompanies = gestionnaireService.getUnvalidatedCompanies();
 
         // Assert
         assertThat(unvalidatedCompanies.size()).isEqualTo(2);
@@ -421,13 +507,13 @@ public class GestionnaireServiceTest {
     @Test
     void testGetOffreInfoByIdSuccess() throws NonExistentOfferExeption {
         // Arrange
-        when(offreRepository.findById(any())).thenReturn(Optional.of(offreTest));
+        when(offreRepository.findById(any())).thenReturn(Optional.of(offerTest));
 
         // Act
-        PdfOutDTO pdf = service.getOffrePdfById(1L);
+        PdfOutDTO pdf = gestionnaireService.getOffrePdfById(1L);
 
         // Assert
-        assertThat(pdf.getPdf()).isEqualTo(Arrays.toString(offreTest.getPdf()).replaceAll("\\s+", ""));
+        assertThat(pdf.getPdf()).isEqualTo(Arrays.toString(offerTest.getPdf()).replaceAll("\\s+", ""));
     }
 
     @Test
@@ -437,7 +523,7 @@ public class GestionnaireServiceTest {
 
         // Act
         try {
-            service.getOffrePdfById(1L);
+            gestionnaireService.getOffrePdfById(1L);
         } catch (NonExistentOfferExeption e) {
             return;
         }
@@ -451,7 +537,7 @@ public class GestionnaireServiceTest {
         when(gestionnaireRepository.findByEmail(any())).thenReturn(Optional.of(gestionnaireTest));
 
         // Act
-        service.isGestionnaireInvalid(gestionnaireTest.getEmail());
+        gestionnaireService.isGestionnaireInvalid(gestionnaireTest.getEmail());
 
         // Assert
         verify(gestionnaireRepository, times(1)).delete(any());
@@ -465,7 +551,7 @@ public class GestionnaireServiceTest {
 
         // Act
         try {
-            service.isGestionnaireInvalid(gestionnaireTest.getEmail());
+            gestionnaireService.isGestionnaireInvalid(gestionnaireTest.getEmail());
         } catch (NonExistentEntityException e) {
             return;
         }
@@ -481,7 +567,7 @@ public class GestionnaireServiceTest {
 
         // Act
         try {
-            service.isGestionnaireInvalid(gestionnaireTest.getEmail());
+            gestionnaireService.isGestionnaireInvalid(gestionnaireTest.getEmail());
         } catch (NonExistentEntityException e) {
             return;
         }
@@ -504,7 +590,7 @@ public class GestionnaireServiceTest {
         when(studentRepository.findAll()).thenReturn(students);
 
         // Act
-        List<StudentDTO> unvalidatedStudentCV = service.getUnvalidatedCVStudents();
+        List<StudentDTO> unvalidatedStudentCV = gestionnaireService.getUnvalidatedCVStudents();
         // Assert
         assertThat(unvalidatedStudentCV.get(0).getEmail()).isEqualTo(studentTest.getEmail());
         assertThat(unvalidatedStudentCV.get(0).getFirstName()).isEqualTo(studentTest.getFirstName());
@@ -513,13 +599,15 @@ public class GestionnaireServiceTest {
     }
 
     @Test
-    void testValidateStudentCVSuccess() throws NonExistentEntityException {
+    void testValidateStudentCVSuccess() throws NonExistentEntityException, InvalidStatusException {
         // Arrange
         studentTest.setCvToValidate(new byte[0]);
+        cvStatus.setStatus("PENDING");
+        when(cvStatusRepository.findById(anyLong())).thenReturn(Optional.of(cvStatus));
         when(studentRepository.findById(anyLong())).thenReturn(Optional.of(studentTest));
 
         // Act
-        StudentDTO studentDTO = service.validateStudentCV(1L);
+        StudentDTO studentDTO = gestionnaireService.validateStudentCV(1L);
 
         // Assert
         assertThat(studentDTO.getFirstName()).isEqualTo(studentTest.getFirstName());
@@ -528,13 +616,13 @@ public class GestionnaireServiceTest {
     }
 
     @Test
-    void testValidateStudentCVNotFound() {
+    void testValidateStudentCVNotFound() throws InvalidStatusException {
         // Arrange
-        when(studentRepository.findById(anyLong())).thenReturn(Optional.empty());
+        cvStatus.setStatus("PENDING");
 
         // Act
         try {
-            service.validateStudentCV(1L);
+            gestionnaireService.validateStudentCV(1L);
         } catch (NonExistentEntityException e) {
             return;
         }
@@ -542,31 +630,68 @@ public class GestionnaireServiceTest {
     }
 
     @Test
-    void testRemoveStudentCvValidationSuccess() throws NonExistentEntityException {
+    void testValidateStudentCVInvalidStatus() throws NonExistentEntityException {
         // Arrange
+        cvStatus.setStatus("ACCEPTED");
+        when(cvStatusRepository.findById(anyLong())).thenReturn(Optional.of(cvStatus));
+        when(studentRepository.findById(anyLong())).thenReturn(Optional.of(studentTest));
+
+        // Act
+        try {
+            gestionnaireService.validateStudentCV(1L);
+        } catch (InvalidStatusException e) {
+            return;
+        }
+        fail("InvalidStatusException not caught");
+    }
+
+    @Test
+    void testRemoveStudentCvValidationSuccess() throws NonExistentEntityException, InvalidStatusException {
+        // Arrange
+        cvStatus.setStatus("PENDING");
+        when(cvStatusRepository.findById(anyLong())).thenReturn(Optional.of(cvStatus));
         studentTest.setCvToValidate(new byte[0]);
         when(studentRepository.findById(anyLong())).thenReturn(Optional.of(studentTest));
 
         // Act
-        StudentDTO studentDTO = service.removeStudentCvValidation(1L);
+        StudentDTO studentDTO = gestionnaireService.removeStudentCvValidation(1L, "Refused");
 
         // Assert
         assertThat(studentDTO.getEmail()).isEqualTo(studentTest.getEmail());
         assertThat(studentDTO.getCvToValidate()).isEmpty();
+        assertThat(cvStatus.getRefusalMessage()).isEqualTo("Refused");
+        assertThat(cvStatus.getStatus()).isEqualTo("REFUSED");
     }
 
     @Test
-    void testRemoveStudentCvValidationNotFound() {
+    void testRemoveStudentCvValidationNotFound() throws InvalidStatusException {
         // Arrange
+        cvStatus.setStatus("PENDING");
         when(studentRepository.findById(anyLong())).thenReturn(Optional.empty());
 
         // Act
         try {
-            service.removeStudentCvValidation(1L);
+            gestionnaireService.removeStudentCvValidation(1L, "Refused");
         } catch (NonExistentEntityException e) {
             return;
         }
         fail("NonExistentUserException not caught");
+    }
+
+    @Test
+    void testRemoveStudentCvValidationInvalidStatus() throws NonExistentEntityException {
+        // Arrange
+        cvStatus.setStatus("ACCEPTED");
+        when(cvStatusRepository.findById(anyLong())).thenReturn(Optional.of(cvStatus));
+        when(studentRepository.findById(anyLong())).thenReturn(Optional.of(studentTest));
+
+        // Act
+        try {
+            gestionnaireService.removeStudentCvValidation(1L, "Refused");
+        } catch (InvalidStatusException e) {
+            return;
+        }
+        fail("InvalidStatusException not caught");
     }
 
     @Test
@@ -578,7 +703,7 @@ public class GestionnaireServiceTest {
         when(studentRepository.findById(anyLong())).thenReturn(Optional.of(studentTest));
 
         // Act
-        PdfOutDTO cv = service.getStudentCvToValidate(1L);
+        PdfOutDTO cv = gestionnaireService.getStudentCvToValidate(1L);
 
         //
         assertThat(cv.getPdf()).isEqualTo(result);
@@ -591,10 +716,112 @@ public class GestionnaireServiceTest {
 
         // Act
         try {
-            service.getStudentCvToValidate(1L);
+            gestionnaireService.getStudentCvToValidate(1L);
         } catch (NonExistentEntityException e) {
             return;
         }
         fail("NonExistentUserException not caught");
+    }
+
+    @Test
+    void testCreateStageContractHappyDay()
+            throws NonExistentOfferExeption, NonExistentEntityException, AlreadyExistingStageContractException {
+        // Arrange
+        when(studentRepository.findById(anyLong())).thenReturn(Optional.of(studentTest));
+        when(offreRepository.findById(anyLong())).thenReturn(Optional.of(offerTest));
+        when(companyRepository.findById(anyLong())).thenReturn(Optional.of(companyTest));
+        when(applicationAcceptationRepository.findByOfferIdAndStudentId(anyLong(), anyLong()))
+                .thenReturn(Optional.of(applicationAcceptationTest));
+        when(stageContractRepository.findByStudentIdAndCompanyIdAndOfferId(anyLong(), anyLong(), anyLong()))
+                .thenReturn(Optional.empty(), Optional.of(stageContract));
+
+        // Act
+        StageContractOutDTO dto = gestionnaireService.createStageContract(stageContractInDTO);
+
+        // Assert
+        verify(stageContractRepository, times(1)).save(any());
+        verify(applicationAcceptationRepository, times(1)).delete(any());
+        assertThat(dto.getStudentId()).isEqualTo(studentTest.getId());
+        assertThat(dto.getOfferId()).isEqualTo(offerTest.getId());
+        assertThat(dto.getCompanyId()).isEqualTo(companyTest.getId());
+    }
+
+    @Test
+    void testCreateStageContractConflict() {
+        // Arrange
+        when(studentRepository.findById(anyLong())).thenReturn(Optional.of(studentTest));
+        when(offreRepository.findById(anyLong())).thenReturn(Optional.of(offerTest));
+        when(companyRepository.findById(anyLong())).thenReturn(Optional.of(companyTest));
+        when(stageContractRepository.findByStudentIdAndCompanyIdAndOfferId(anyLong(), anyLong(), anyLong()))
+                .thenReturn(Optional.of(stageContract));
+
+        // Act
+        try {
+            gestionnaireService.createStageContract(stageContractInDTO);
+        } catch (AlreadyExistingStageContractException e) {
+            return;
+        } catch (Exception e) {}
+        fail("Failed to catch the error AlreadyExistingStageContractException!");
+    }
+
+    @Test
+    void testCreateStageContractCompanyNotFound() {
+        // Arrange
+        when(studentRepository.findById(anyLong())).thenReturn(Optional.of(studentTest));
+        when(offreRepository.findById(anyLong())).thenReturn(Optional.of(offerTest));
+        when(companyRepository.findById(anyLong())).thenReturn(Optional.empty());
+
+        // Act
+        try {
+            gestionnaireService.createStageContract(stageContractInDTO);
+        } catch (NonExistentEntityException e) {
+            return;
+        } catch (Exception e) {}
+        fail("Failed to catch the error NonExistentEntityException!");
+    }
+
+    @Test
+    void testCreateStageContractOfferNotFound() {
+        // Arrange
+        when(studentRepository.findById(anyLong())).thenReturn(Optional.of(studentTest));
+        when(offreRepository.findById(anyLong())).thenReturn(Optional.empty());
+
+        // Act
+        try {
+            gestionnaireService.createStageContract(stageContractInDTO);
+        } catch (NonExistentOfferExeption e) {
+            return;
+        } catch (Exception e) {}
+        fail("Failed to catch the error NonExistentOfferExeption!");
+    }
+
+    @Test
+    void testCreateStageContractStudentNotFound() {
+        // Arrange
+        when(studentRepository.findById(anyLong())).thenReturn(Optional.empty());
+        
+        // Act
+        try {
+            gestionnaireService.createStageContract(stageContractInDTO);
+        } catch (NonExistentEntityException e) {
+            return;
+        } catch (Exception e) {}
+        fail("Failed to catch the error NonExistentEntityException!");
+    }
+
+    @Test
+    void testGetUnvalidatedAcceptationHappyDay(){
+        when(applicationAcceptationRepository.findAll()).thenReturn(new ArrayList<>(){{
+            add(applicationAcceptationTest);
+            add(applicationAcceptationTest);
+            add(applicationAcceptationTest);
+        }});
+        when(offreRepository.findById(anyLong())).thenReturn(Optional.of(offerTest));
+        when(companyRepository.findById(anyLong())).thenReturn(Optional.of(companyTest));
+        when(studentRepository.findById(anyLong())).thenReturn(Optional.of(studentTest));
+
+        UnvalidatedAcceptationsDTO dto = gestionnaireService.getUnvalidatedAcceptation();
+
+        assertThat(dto.size()).isEqualTo(3);
     }
 }

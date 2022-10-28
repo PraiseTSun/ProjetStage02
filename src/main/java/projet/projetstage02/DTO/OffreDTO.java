@@ -17,6 +17,7 @@ public class OffreDTO {
     @NotBlank
     @Size(min = 2)
     private String nomDeCompagnie;
+    private String session;
     @NotBlank
     @Pattern(regexp = ("Techniques de linformatique|Techniques de la logistique du transport"))
     private String department;
@@ -35,6 +36,8 @@ public class OffreDTO {
     @NotBlank
     @Size(min = 2)
     private String adresse;
+
+    private long companyId;
     @NotNull
     @ToString.Exclude
     private byte[] pdf;
@@ -45,10 +48,12 @@ public class OffreDTO {
         return Offre.builder()
                 .id(id)
                 .nomDeCompagnie(nomDeCompagnie)
+                .idCompagnie(companyId)
                 .department(AbstractUser.Department.getDepartment(department))
                 .position(position)
                 .heureParSemaine(heureParSemaine)
                 .salaire(salaire)
+                .session(session)
                 .adresse(adresse)
                 .pdf(pdf)
                 .valide(valide).build();
@@ -56,12 +61,14 @@ public class OffreDTO {
 
     public OffreDTO(Offre offre) {
         id = offre.getId();
+        companyId = offre.getIdCompagnie();
         nomDeCompagnie = offre.getNomDeCompagnie();
         department = offre.getDepartment().departement;
         position = offre.getPosition();
         heureParSemaine = offre.getHeureParSemaine();
         adresse = offre.getAdresse();
         salaire = offre.getSalaire();
+        session = offre.getSession();
         pdf = offre.getPdf();
         valide = offre.isValide();
     }

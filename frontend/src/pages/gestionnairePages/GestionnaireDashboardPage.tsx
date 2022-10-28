@@ -16,6 +16,7 @@ const GestionnaireDashboard = ({user, deconnexion}: { user: IUser, deconnexion: 
                 <Link to="/cvValidation" className="btn btn-primary mt-3">Validation des curriculums vitae des
                     étudiants</Link>
                 <Link to="/validerNouvelleOffre" className="btn btn-primary mt-3">Validation nouvelle offre stage</Link>
+                <Link to="/offerHistory" className="btn btn-primary mt-3">Historique des offres</Link>
             </Row>
         </div>
     );
