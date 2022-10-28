@@ -167,15 +167,15 @@ public class CompanyService {
         return new StageContractOutDTO(stageContract);
     }
 
-    public List<StageContractOutDTO> getContracts(long companyId) throws NonExistentEntityException {
+    public List<StageContractOutDTO> getContracts(long companyId, String session) throws NonExistentEntityException {
         Optional<Company> companyOpt = companyRepository.findById(companyId);
         if(companyOpt.isEmpty()) throw new NonExistentEntityException();
 
         List<StageContractOutDTO> contracts = new ArrayList<>();
 
-        stageContractRepository.findAll()
-                .stream()
-                .filter(stageContract -> stageContract.getCompanyId() == companyId)
+        List<StageContract> all = stageContractRepository.findByCompanyId(companyId);
+        all.stream()
+                .filter(stageContract -> stageContract.getSession() == session)
                 .forEach(stageContract -> contracts.add(new StageContractOutDTO(stageContract)));
 
         return contracts;
