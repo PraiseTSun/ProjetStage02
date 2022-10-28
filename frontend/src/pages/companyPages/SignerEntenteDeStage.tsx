@@ -10,47 +10,33 @@ const SignerEntenteDeStage = ({user}: { user: IUser }): JSX.Element => {
     const [contratsNonSigner, setContratsNonSigner] = useState<any[]>([])
     const [isSigner, setIsSigner] = useState(false)
     const [contratId, setContratId] = useState(0)
-    const mois :number = new Date().getMonth()+1;
-    const year: number = new Date().getFullYear()
-    console.log(new Date().getMonth())
-    console.log(year)
-    useEffect(()=>{
+    const nextYear: number = new Date().getFullYear() + 1
+    useEffect(() => {
         const fetchCompanyContracts = async () => {
             try {
-                if(mois > 6){
-                    const response = await putcompanyContracts(user.id, user.token,"Hiver" , (year +1))
-                    if (response.ok) {
-                        const data = await response.json();
-                        setContratsNonSigner(data)
-                    } else {
-                        generateAlert()
-                    }
-                }else {
-                    const response = await putcompanyContracts(user.id, user.token,"Automne", year)
-                    if (response.ok) {
-                        const data = await response.json();
-                        setContratsNonSigner(data)
-                    } else {
-                        generateAlert()
-                    }
+                const response = await putcompanyContracts(user.id, user.token, "Hiver", nextYear)
+                if (response.ok) {
+                    const data = await response.json();
+                    setContratsNonSigner(data)
+                } else {
+                    generateAlert()
                 }
-
             } catch {
                 generateAlert()
             }
         }
-       fetchCompanyContracts()
-    },[])
+        fetchCompanyContracts()
+    }, [])
 
     async function getEntente(contratId: number): Promise<void> {
         setIsSigner(true)
         setContratId(contratId)
     }
 
-    async function signer():Promise<void>{
+    async function signer(): Promise<void> {
         setIsSigner(false)
         try {
-            const response = await putCompanySignatureContract(user.token,user.id, contratId )
+            const response = await putCompanySignatureContract(user.token, user.id, contratId)
             if (response.ok) {
                 alert("Félicitations vous avez signé le contrat")
             } else {
@@ -60,7 +46,8 @@ const SignerEntenteDeStage = ({user}: { user: IUser }): JSX.Element => {
             generateAlert()
         }
     }
-    if(isSigner){
+
+    if (isSigner) {
         return (
             <Container className="min-vh-100 bg-white p-0">
                 <div className="bg-dark p-2">
@@ -110,7 +97,7 @@ const SignerEntenteDeStage = ({user}: { user: IUser }): JSX.Element => {
                                         <td>{contrat.companySignatureDate}</td>
                                         <td>
                                             <Button className="btn btn-warning"
-                                                    onClick={async () => await getEntente(contrat.contractId) }>Signer</Button>
+                                                    onClick={async () => await getEntente(contrat.contractId)}>Signer</Button>
                                         </td>
                                     </tr>
                                 );
