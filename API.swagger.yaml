@@ -1339,13 +1339,18 @@ paths:
                       type: string
         403:
           description: Token invalide ou expiré
-  /companyContracts/{companyId}:
+  /companyContracts/{companyId}_{session}:
     put:
       summary: Renvoie les contracts qui appartient à la compagnie (Doit avoir un token Company)
       parameters:
         - in: path
           name: compagnyId
           description: id de la compagnie
+          type: string
+          required: true
+        - in: path
+          name: session
+          description: la période où le stage aura lieu
           type: string
           required: true
         - in: body
