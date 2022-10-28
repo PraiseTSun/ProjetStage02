@@ -173,9 +173,8 @@ public class CompanyService {
 
         List<StageContractOutDTO> contracts = new ArrayList<>();
 
-        List<StageContract> all = stageContractRepository.findByCompanyId(companyId);
-        all.stream()
-                .filter(stageContract -> stageContract.getSession() == session)
+        stageContractRepository.findByCompanyId(companyId).stream()
+                .filter(stageContract -> stageContract.getSession().equals(session))
                 .forEach(stageContract -> contracts.add(new StageContractOutDTO(stageContract)));
 
         return contracts;

@@ -1505,7 +1505,7 @@ public class RootControllerTest {
     void testGetCompanyContractsHappyDay() throws Exception {
         when(companyService.getContracts(anyLong(), anyString())).thenReturn(contracts);
 
-        mockMvc.perform(put("/companyContracts/{companyId}", 1, Offre.currentSession())
+        mockMvc.perform(put("/companyContracts/{companyId}_{session}", 1, Offre.currentSession())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(jsonTokenDTO.write(token).getJson()))
                 .andExpect(status().isOk())
@@ -1516,7 +1516,7 @@ public class RootControllerTest {
     void testGetCompanyContractsNotFound() throws Exception {
         when(companyService.getContracts(anyLong(), anyString())).thenThrow(new NonExistentEntityException());
 
-        mockMvc.perform(put("/companyContracts/{companyId}", 1)
+        mockMvc.perform(put("/companyContracts/{companyId}_{session}", 1, Offre.currentSession())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(jsonTokenDTO.write(token).getJson()))
                 .andExpect(status().isNotFound());
@@ -1526,7 +1526,7 @@ public class RootControllerTest {
     void testGetCompanyContractsTokenInvalid() throws Exception {
         when(authService.getToken(any(), any())).thenThrow(new InvalidTokenException());
 
-        mockMvc.perform(put("/companyContracts/{companyId}", 1)
+        mockMvc.perform(put("/companyContracts/{companyId}_{session}", 1, Offre.currentSession())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(jsonTokenDTO.write(token).getJson()))
                 .andExpect(status().isForbidden());
