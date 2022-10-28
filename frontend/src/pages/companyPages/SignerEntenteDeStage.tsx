@@ -2,27 +2,39 @@ import React, {useEffect, useState} from "react";
 import {Button, Col, Container, Row, Table} from "react-bootstrap";
 import {Link} from "react-router-dom";
 import IUser from "../../models/IUser";
-import {
-    putcompanyContracts,
-    putCompanySignatureContract
-} from "../../services/gestionnaireServices/GestionnaireFetchService";
 import {generateAlert} from "../../services/universalServices/UniversalUtilService";
 import {Viewer} from "@react-pdf-viewer/core";
+import {putcompanyContracts, putCompanySignatureContract} from "../../services/companyServices/CompanyFetchService";
 
 const SignerEntenteDeStage = ({user}: { user: IUser }): JSX.Element => {
     const [contratsNonSigner, setContratsNonSigner] = useState<any[]>([])
     const [isSigner, setIsSigner] = useState(false)
     const [contratId, setContratId] = useState(0)
+    const mois :number = new Date().getMonth()+1;
+    const year: number = new Date().getFullYear()
+    console.log(new Date().getMonth())
+    console.log(year)
     useEffect(()=>{
         const fetchCompanyContracts = async () => {
             try {
-                const response = await putcompanyContracts(user.id, user.token)
-                if (response.ok) {
-                    const data = await response.json();
-                    setContratsNonSigner(data)
-                } else {
-                    generateAlert()
+                if(mois > 6){
+                    const response = await putcompanyContracts(user.id, user.token,"Hiver" , (year +1))
+                    if (response.ok) {
+                        const data = await response.json();
+                        setContratsNonSigner(data)
+                    } else {
+                        generateAlert()
+                    }
+                }else {
+                    const response = await putcompanyContracts(user.id, user.token,"Automne", year)
+                    if (response.ok) {
+                        const data = await response.json();
+                        setContratsNonSigner(data)
+                    } else {
+                        generateAlert()
+                    }
                 }
+
             } catch {
                 generateAlert()
             }
