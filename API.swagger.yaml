@@ -1379,6 +1379,10 @@ paths:
                   type: string
                 companySignatureDate:
                   type: string
+                studentSignature:
+                  type: string
+                studentSignatureDate:
+                  type: string
         403:
           description: Token invalide ou expiré
         404:
@@ -1388,14 +1392,14 @@ paths:
       summary: Revoie l'entente de stage signé par la compagnie et l'étudiant s'il a déjà signé (Doit avoir un token Company)
       parameters:
         - in: body
-          name: CompanySignatureInDTO
+          name: SignatureInDTO
           description: La dto contenant la signature de la compagnie
           schema:
             type: object
             properties:
               token:
                 type: string
-              companyId:
+              userId:
                 type: number
               contractId:
                 type: number
@@ -1415,3 +1419,83 @@ paths:
           description: La compagnie n'existe pas ou le contract n'existe pas
         409:
           description: Le contract n'appartient pas à la compagnie
+  /studentContracts/{studentId}_{session}:
+    put:
+      summary: Renvoie les contracts qui appartient à l'étudiant (Doit avoir un token Student)
+      parameters:
+        - in: path
+          name: studentId
+          description: id de l'étudiant
+          type: string
+          required: true
+        - in: path
+          name: session
+          description: la période où le stage aura lieu
+          type: string
+          required: true
+        - in: body
+          name: token
+          description: Token valide de l'étudiant
+          schema:
+            type: object
+            properties:
+              token:
+                type: string
+      produces:
+        - application/json
+      responses:
+        200:
+          description: Renvoie les contracts qui appartient à l'étudiant
+          schema:
+            type: array
+            items:
+              type: object
+              properties:
+                contractId:
+                  type: number
+                description:
+                  type: string
+                companySignature:
+                  type: string
+                companySignatureDate:
+                  type: string
+                studentSignature:
+                  type: string
+                studentSignatureDate:
+                  type: string
+        403:
+          description: Token invalide ou expiré
+        404:
+          description: L'étudiant n'existe pas
+  /studentSignatureContract:
+    put:
+      summary: Revoie l'entente de stage signé par l'étudiant et la compagnie s'il a déjà signé (Doit avoir un token Company)
+      parameters:
+        - in: body
+          name: SignatureInDTO
+          description: La dto contenant la signature de l'étudiant
+          schema:
+            type: object
+            properties:
+              token:
+                type: string
+              userId:
+                type: number
+              contractId:
+                type: number
+              signature:
+                type: array
+                items:
+                  type: number
+          required: true
+      produces:
+        - application/json
+      responses:
+        200:
+          description: Revoie l'entente de stage signé par l'étudiant et la compagnie s'il a déjà signé
+        403:
+          description: Token invalide ou expiré
+        404:
+          description: L'étudiant n'existe pas ou le contract n'existe pas
+        409:
+          description: Le contract n'appartient pas à l'étudiant
