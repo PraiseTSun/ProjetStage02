@@ -32,4 +32,6 @@ public class StageContract {
     private String description;
     private byte[] companySignature;
     private LocalDateTime companySignatureDate;
+    private byte[] studentSignature;
+    private LocalDateTime studentSignatureDate;
 }

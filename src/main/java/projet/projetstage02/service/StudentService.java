@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import projet.projetstage02.DTO.*;
 import projet.projetstage02.exception.AlreadyExistingPostulation;
+import projet.projetstage02.exception.InvalidOwnershipException;
 import projet.projetstage02.exception.NonExistentEntityException;
 import projet.projetstage02.model.*;
 import projet.projetstage02.repository.*;
@@ -203,5 +204,25 @@ public class StudentService {
                 .forEach(stageContract -> contracts.add(new StageContractOutDTO(stageContract)));
 
         return contracts;
+    }
+
+    public StageContractOutDTO addSignatureToContract(SignatureInDTO signature) throws NonExistentEntityException, InvalidOwnershipException {
+        Optional<Student> studentOpt = studentRepository.findById(signature.getUserId());
+        if(studentOpt.isEmpty()) throw new NonExistentEntityException();
+
+        Optional<StageContract> stageContractOpt = stageContractRepository.findById(signature.getContractId());
+        if (stageContractOpt.isEmpty()) throw new NonExistentEntityException();
+
+        Student student = studentOpt.get();
+        StageContract stageContract = stageContractOpt.get();
+
+        if(student.getId() != stageContract.getStudentId())
+            throw new InvalidOwnershipException();
+
+        stageContract.setStudentSignature(signature.getSignature());
+        stageContract.setStudentSignatureDate(LocalDateTime.now());
+        stageContractRepository.save(stageContract);
+
+        return new StageContractOutDTO(stageContract);
     }
 }

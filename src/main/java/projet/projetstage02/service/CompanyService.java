@@ -162,8 +162,6 @@ public class CompanyService {
         stageContract.setCompanySignatureDate(LocalDateTime.now());
         stageContractRepository.save(stageContract);
 
-
-
         return new StageContractOutDTO(stageContract);
     }
 
