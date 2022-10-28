@@ -1218,7 +1218,7 @@ paths:
         - application/json
       responses:
         200:
-          description: Renvoie la liste des étudiant pour l'offre
+          description: Renvoie la confirmation de l'acceptation
           schema:
             properties:
               id:
