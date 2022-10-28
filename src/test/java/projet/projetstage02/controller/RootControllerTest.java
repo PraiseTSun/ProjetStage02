@@ -186,6 +186,7 @@ public class RootControllerTest {
                 .companyId(6L)
                 .description("description")
                 .companySignature(byteToString(new byte[]{0,1,2,3,4,5,6,7,8,9}))
+                .studentSignature(byteToString(new byte[]{0,1,2,3,4,5,6,7,8,9}))
                 .build();
 
         signatureInDTO = SignatureInDTO.builder()
@@ -1440,47 +1441,6 @@ public class RootControllerTest {
     }
 
     @Test
-    void testCompanyContractSignatureHappyDay() throws Exception {
-        when(companyService.addSignatureToContract(any())).thenReturn(stageContractOutDTO);
-
-        mockMvc.perform(put("/companySignatureContract")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(jsonSignatureDTO.write(signatureInDTO).getJson()))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.companySignature", is(byteToString(signatureInDTO.getSignature()))));
-    }
-
-    @Test
-    void testCompanyContractSignatureNotFound() throws Exception {
-        when(companyService.addSignatureToContract(any())).thenThrow(new NonExistentEntityException());
-
-        mockMvc.perform(put("/companySignatureContract")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(jsonSignatureDTO.write(signatureInDTO).getJson()))
-                .andExpect(status().isNotFound());
-    }
-
-    @Test
-    void testCompanyContractSignatureConflict() throws Exception {
-        when(companyService.addSignatureToContract(any())).thenThrow(new InvalidOwnershipException());
-
-        mockMvc.perform(put("/companySignatureContract")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(jsonSignatureDTO.write(signatureInDTO).getJson()))
-                .andExpect(status().isConflict());
-    }
-
-    @Test
-    void testCompanyContractSignatureInvalidToken() throws Exception {
-        when(authService.getToken(any(), any())).thenThrow(new InvalidTokenException());
-
-        mockMvc.perform(put("/companySignatureContract")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(jsonSignatureDTO.write(signatureInDTO).getJson()))
-                .andExpect(status().isForbidden());
-    }
-
-    @Test
     void testGetUnvalidatedAcceptationsHappyDay() throws Exception {
         when(gestionnaireService.getUnvalidatedAcceptation()).thenReturn(acceptationsDTO);
 
@@ -1562,4 +1522,87 @@ public class RootControllerTest {
                         .content(jsonTokenDTO.write(token).getJson()))
                 .andExpect(status().isForbidden());
     }
+
+    @Test
+    void testCompanyContractSignatureHappyDay() throws Exception {
+        when(companyService.addSignatureToContract(any())).thenReturn(stageContractOutDTO);
+
+        mockMvc.perform(put("/companySignatureContract")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(jsonSignatureDTO.write(signatureInDTO).getJson()))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.companySignature", is(byteToString(signatureInDTO.getSignature()))));
+    }
+
+    @Test
+    void testCompanyContractSignatureNotFound() throws Exception {
+        when(companyService.addSignatureToContract(any())).thenThrow(new NonExistentEntityException());
+
+        mockMvc.perform(put("/companySignatureContract")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(jsonSignatureDTO.write(signatureInDTO).getJson()))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    void testCompanyContractSignatureConflict() throws Exception {
+        when(companyService.addSignatureToContract(any())).thenThrow(new InvalidOwnershipException());
+
+        mockMvc.perform(put("/companySignatureContract")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(jsonSignatureDTO.write(signatureInDTO).getJson()))
+                .andExpect(status().isConflict());
+    }
+
+    @Test
+    void testCompanyContractSignatureInvalidToken() throws Exception {
+        when(authService.getToken(any(), any())).thenThrow(new InvalidTokenException());
+
+        mockMvc.perform(put("/companySignatureContract")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(jsonSignatureDTO.write(signatureInDTO).getJson()))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    void testStudentContractSignatureHappyDay() throws Exception {
+        when(studentService.addSignatureToContract(any())).thenReturn(stageContractOutDTO);
+
+        mockMvc.perform(put("/studentSignatureContract")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(jsonSignatureDTO.write(signatureInDTO).getJson()))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.studentSignature", is(byteToString(signatureInDTO.getSignature()))));
+    }
+
+    @Test
+    void testStudentContractSignatureNotFound() throws Exception {
+        when(studentService.addSignatureToContract(any())).thenThrow(new NonExistentEntityException());
+
+        mockMvc.perform(put("/studentSignatureContract")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(jsonSignatureDTO.write(signatureInDTO).getJson()))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    void testStudentContractSignatureConflict() throws Exception {
+        when(studentService.addSignatureToContract(any())).thenThrow(new InvalidOwnershipException());
+
+        mockMvc.perform(put("/studentSignatureContract")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(jsonSignatureDTO.write(signatureInDTO).getJson()))
+                .andExpect(status().isConflict());
+    }
+
+    @Test
+    void testStudentContractSignatureInvalidToken() throws Exception {
+        when(authService.getToken(any(), any())).thenThrow(new InvalidTokenException());
+
+        mockMvc.perform(put("/studentSignatureContract")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(jsonSignatureDTO.write(signatureInDTO).getJson()))
+                .andExpect(status().isForbidden());
+    }
+
 }
