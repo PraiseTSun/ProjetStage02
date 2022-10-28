@@ -80,6 +80,7 @@ const SignerEntenteDeStage = ({user}: { user: IUser }): JSX.Element => {
                             <tr>
                                 <th>First Name</th>
                                 <th>Last Name</th>
+                                <th>Session</th>
                                 <th>Description</th>
                                 <th>Company Signature</th>
                                 <th>Company Signature Date</th>
@@ -92,6 +93,7 @@ const SignerEntenteDeStage = ({user}: { user: IUser }): JSX.Element => {
                                     <tr key={index}>
                                         <td>{user.firstName}</td>
                                         <td>{user.lastName}</td>
+                                        <td>{contrat.session}</td>
                                         <td>{contrat.description}</td>
                                         <td>{contrat.companySignature}</td>
                                         <td>{contrat.companySignatureDate}</td>
