@@ -428,20 +428,23 @@ public class CompanyServiceTest {
         when(companyRepository.findById(anyLong())).thenReturn(Optional.of(duffBeer));
         StageContract contractValid = StageContract.builder()
                 .id(1L).studentId(1L).offerId(1L).companyId(duffBeer.getId()).companySignature(new byte[0])
+                .session(Offre.currentSession()).description("").companySignatureDate(LocalDateTime.now()).build();
+        StageContract contractInvalid1 = StageContract.builder()
+                .id(1L).studentId(1L).offerId(1L).companyId(duffBeer.getId()).companySignature(new byte[0]).session("Hiver 2000")
                 .description("").companySignatureDate(LocalDateTime.now()).build();
-        StageContract contractInvalid = StageContract.builder()
-                .id(1L).studentId(1L).offerId(1L).companyId(0L).companySignature(new byte[0])
+        StageContract contractInvalid2 = StageContract.builder()
+                .id(1L).studentId(1L).offerId(1L).companyId(duffBeer.getId()).companySignature(new byte[0]).session("Hiver 1997")
                 .description("").companySignatureDate(LocalDateTime.now()).build();
-
-        when(stageContractRepository.findAll()).thenReturn(
+        when(stageContractRepository.findByCompanyId(anyLong())).thenReturn(
                 new ArrayList<>(){{
                     add(contractValid);
-                    add(contractInvalid);
+                    add(contractInvalid1);
                     add(contractValid);
+                    add(contractInvalid2);
                 }}
         );
 
-        List<StageContractOutDTO> contracts = companyService.getContracts(duffBeer.getId());
+        List<StageContractOutDTO> contracts = companyService.getContracts(duffBeer.getId(), Offre.currentSession());
 
         assertThat(contracts.size()).isEqualTo(2);
     }
@@ -451,7 +454,7 @@ public class CompanyServiceTest {
         when(companyRepository.findById(anyLong())).thenReturn(Optional.empty());
 
         try {
-            companyService.getContracts(1L);
+            companyService.getContracts(1L, "");
         } catch (NonExistentEntityException e) {
             return;
         }

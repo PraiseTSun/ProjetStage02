@@ -17,6 +17,7 @@ public class StageContractOutDTO {
     private long studentId;
     private long offerId;
     private long companyId;
+    private String session;
     private String description;
     private String companySignature;
     private String companySignatureDate;
@@ -26,6 +27,7 @@ public class StageContractOutDTO {
         studentId = contact.getStudentId();
         offerId = contact.getOfferId();
         companyId = contact.getCompanyId();
+        session = contact.getSession();
         description = contact.getDescription();
         companySignature = byteToString(contact.getCompanySignature());
         companySignatureDate = contact.getCompanySignatureDate() == null ? "" : contact.getCompanySignatureDate().toString();

@@ -14,6 +14,7 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import projet.projetstage02.DTO.*;
 import projet.projetstage02.exception.*;
 import projet.projetstage02.model.AbstractUser.Department;
+import projet.projetstage02.model.Offre;
 import projet.projetstage02.model.Token;
 import projet.projetstage02.service.AuthService;
 import projet.projetstage02.service.CompanyService;
@@ -1502,9 +1503,9 @@ public class RootControllerTest {
 
     @Test
     void testGetCompanyContractsHappyDay() throws Exception {
-        when(companyService.getContracts(anyLong())).thenReturn(contracts);
+        when(companyService.getContracts(anyLong(), anyString())).thenReturn(contracts);
 
-        mockMvc.perform(put("/companyContracts/{companyId}", 1)
+        mockMvc.perform(put("/companyContracts/{companyId}_{session}", 1, Offre.currentSession())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(jsonTokenDTO.write(token).getJson()))
                 .andExpect(status().isOk())
@@ -1513,9 +1514,9 @@ public class RootControllerTest {
 
     @Test
     void testGetCompanyContractsNotFound() throws Exception {
-        when(companyService.getContracts(anyLong())).thenThrow(new NonExistentEntityException());
+        when(companyService.getContracts(anyLong(), anyString())).thenThrow(new NonExistentEntityException());
 
-        mockMvc.perform(put("/companyContracts/{companyId}", 1)
+        mockMvc.perform(put("/companyContracts/{companyId}_{session}", 1, Offre.currentSession())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(jsonTokenDTO.write(token).getJson()))
                 .andExpect(status().isNotFound());
@@ -1525,7 +1526,7 @@ public class RootControllerTest {
     void testGetCompanyContractsTokenInvalid() throws Exception {
         when(authService.getToken(any(), any())).thenThrow(new InvalidTokenException());
 
-        mockMvc.perform(put("/companyContracts/{companyId}", 1)
+        mockMvc.perform(put("/companyContracts/{companyId}_{session}", 1, Offre.currentSession())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(jsonTokenDTO.write(token).getJson()))
                 .andExpect(status().isForbidden());
