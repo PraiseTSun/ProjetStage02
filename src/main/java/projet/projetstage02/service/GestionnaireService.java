@@ -13,7 +13,6 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.regex.Pattern;
 
 import static projet.projetstage02.utils.ByteConverter.byteToString;
 import static projet.projetstage02.utils.TimeUtil.*;
@@ -110,8 +109,8 @@ public class GestionnaireService {
         offreRepository.findAll().stream().
                 filter(offre ->
                         !offre.isValide() && isRightSession(offre.getSession(), getNextYear()))
-                            .forEach(offre ->
-                                        offres.add(new OffreDTO(offre)));
+                .forEach(offre ->
+                        offres.add(new OffreDTO(offre)));
         offres.forEach(offre -> offre.setPdf(new byte[0]));
         return offres;
     }
@@ -121,20 +120,12 @@ public class GestionnaireService {
         offreRepository.findAll().stream().
                 filter(offre ->
                         offre.isValide() && isRightSession(offre.getSession(), year))
-                            .forEach(offre ->
-                                        offres.add(new OffreDTO(offre)));
+                .forEach(offre ->
+                        offres.add(new OffreDTO(offre)));
         offres.forEach(offre -> offre.setPdf(new byte[0]));
         return offres;
     }
 
-    private boolean isRightSession(String session, int year) {
-        if (session == null) {
-            return false;
-        }
-        Pattern regexp = Pattern.compile("^Hiver (\\d{4})$");
-        return (regexp.matcher(session).matches())
-                && ("Hiver " + year).equals(session);
-    }
 
     public OffreDTO validateOfferById(Long id) throws NonExistentOfferExeption, ExpiredSessionException {
 
@@ -265,18 +256,18 @@ public class GestionnaireService {
                 && !deleteUnconfirmedGestionnaire(email);
     }
 
-    public StageContractOutDTO createStageContract (StageContractInDTO contract)
+    public StageContractOutDTO createStageContract(StageContractInDTO contract)
             throws NonExistentEntityException, NonExistentOfferExeption, AlreadyExistingStageContractException {
         Optional<Student> studentOpt = studentRepository.findById(contract.getStudentId());
-        if(studentOpt.isEmpty()) throw new NonExistentEntityException();
+        if (studentOpt.isEmpty()) throw new NonExistentEntityException();
         Student student = studentOpt.get();
 
         Optional<Offre> offerOpt = offreRepository.findById(contract.getOfferId());
-        if(offerOpt.isEmpty()) throw new NonExistentOfferExeption();
+        if (offerOpt.isEmpty()) throw new NonExistentOfferExeption();
         Offre offer = offerOpt.get();
 
         Optional<Company> companyOpt = companyRepository.findById(offer.getIdCompagnie());
-        if(companyOpt.isEmpty()) throw new NonExistentEntityException();
+        if (companyOpt.isEmpty()) throw new NonExistentEntityException();
         Company company = companyOpt.get();
 
         String description = company.getCompanyName() + " a accepté " + student.getFirstName() + " "
@@ -306,7 +297,7 @@ public class GestionnaireService {
         return new StageContractOutDTO(stageContractOpt.get());
     }
 
-    public UnvalidatedAcceptationsDTO getUnvalidatedAcceptation(){
+    public UnvalidatedAcceptationsDTO getUnvalidatedAcceptation() {
         UnvalidatedAcceptationsDTO unvalidatedAcceptationsDTO = new UnvalidatedAcceptationsDTO();
 
         List<ApplicationAcceptation> applications = applicationAcceptationRepository.findAll();

@@ -7,5 +7,6 @@ export default interface IOffer {
     salaire: string,
     department: string,
     adresse: string,
-    token: string
+    token: string,
+    companyId: string
 }
