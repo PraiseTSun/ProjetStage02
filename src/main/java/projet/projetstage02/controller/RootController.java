@@ -730,7 +730,7 @@ public class RootController {
 
     @PostMapping("/createStageContract")
     public ResponseEntity<StageContractOutDTO> createStageContract
-            (@Valid StageContractInDTO stageContractInDTO){
+            (@Valid @RequestBody StageContractInDTO stageContractInDTO) {
         logger.log(Level.INFO, "Post /createStageContract entered with StageContractInDTO: " + stageContractInDTO);
 
         try {

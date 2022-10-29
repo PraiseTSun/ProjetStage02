@@ -3,7 +3,10 @@ import {Button, Col, Container, Row, Table} from "react-bootstrap";
 import PageHeader from "../../components/universalComponents/PageHeader";
 import React, {useCallback, useEffect, useState} from "react";
 import IAcceptation from "../../models/IAcceptation";
-import {putUnvalidatedAcceptations} from "../../services/gestionnaireServices/GestionnaireFetchService";
+import {
+    postCreateStageContract,
+    putUnvalidatedAcceptations
+} from "../../services/gestionnaireServices/GestionnaireFetchService";
 import {generateAlert} from "../../services/universalServices/UniversalUtilService";
 
 const UnvalidatedAcceptationsPage = ({connectedUser}: { connectedUser: IUser }): JSX.Element => {
@@ -28,6 +31,21 @@ const UnvalidatedAcceptationsPage = ({connectedUser}: { connectedUser: IUser }):
         fetchAcceptations();
     }, [fetchAcceptations, connectedUser])
 
+    const validateAcceptation = async (studentId: string, offerId: string) => {
+        try {
+            const response: Response = await postCreateStageContract(studentId, offerId, connectedUser.token);
+
+            if (response.ok) {
+                setAcceptations(acceptations.filter(acceptation =>
+                    acceptation.offerId !== offerId && acceptation.studentId !== studentId));
+            } else {
+                generateAlert()
+            }
+        } catch {
+            generateAlert()
+        }
+    }
+
     return (
         <Container className="vh-100">
             <PageHeader title="Acceptations non validées"/>
@@ -47,7 +65,7 @@ const UnvalidatedAcceptationsPage = ({connectedUser}: { connectedUser: IUser }):
                         {acceptations.length === 0
                             ? <tr>
                                 <td colSpan={5}>
-                                    <p className="h1">Aucun étudiant accepté</p>
+                                    <p className="h1">Aucun étudiant à approuver</p>
                                 </td>
                             </tr>
                             : acceptations.map((acceptation, index) => {
@@ -57,7 +75,9 @@ const UnvalidatedAcceptationsPage = ({connectedUser}: { connectedUser: IUser }):
                                         <td>{acceptation.employFullName}</td>
                                         <td>{acceptation.position}</td>
                                         <td>{acceptation.companyName}</td>
-                                        <td><Button variant="success">Approuver</Button></td>
+                                        <td><Button variant="success" onClick={async () => {
+                                            await validateAcceptation(acceptation.studentId, acceptation.offerId)
+                                        }}>Approuver</Button></td>
                                     </tr>
                                 );
                             })}
