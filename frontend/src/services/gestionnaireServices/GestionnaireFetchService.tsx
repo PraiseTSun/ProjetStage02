@@ -163,6 +163,17 @@ export const putUnvalidatedStudents = (token: string): Promise<Response> => {
     })
 }
 
+export const putUnvalidatedAcceptations = (token: string): Promise<Response> => {
+    return fetch("http://localhost:8080/unvalidatedAcceptations", {
+        method: "PUT",
+        headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({token: token})
+    })
+}
+
 export const postCreateGestionnaire = (firstName: string,
                                        lastName: string,
                                        email: string,
