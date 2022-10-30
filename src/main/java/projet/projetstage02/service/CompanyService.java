@@ -12,6 +12,7 @@ import projet.projetstage02.model.*;
 import projet.projetstage02.repository.*;
 
 import java.sql.Timestamp;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -159,6 +160,7 @@ public class CompanyService {
             throw new InvalidOwnershipException();
 
         stageContract.setCompanySignature(signature.getSignature());
+        stageContract.setCompanySignatureDate(LocalDateTime.now());
         stageContractRepository.save(stageContract);
 
         return new StageContractOutDTO(stageContract);
@@ -198,5 +200,18 @@ public class CompanyService {
         byte[] cv = studentOpt.get().getCv();
         String cvConvert = Arrays.toString(cv).replaceAll("\\s+", "");
         return new PdfOutDTO(studentOpt.get().getId(), cvConvert);
+    }
+
+    public List<StageContractOutDTO> getContracts(long companyId, String session) throws NonExistentEntityException {
+        Optional<Company> companyOpt = companyRepository.findById(companyId);
+        if(companyOpt.isEmpty()) throw new NonExistentEntityException();
+
+        List<StageContractOutDTO> contracts = new ArrayList<>();
+
+        stageContractRepository.findByCompanyId(companyId).stream()
+                .filter(stageContract -> stageContract.getSession().equals(session))
+                .forEach(stageContract -> contracts.add(new StageContractOutDTO(stageContract)));
+
+        return contracts;
     }
 }

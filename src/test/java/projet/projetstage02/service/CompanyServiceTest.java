@@ -16,6 +16,7 @@ import projet.projetstage02.exception.NonExistentOfferExeption;
 import projet.projetstage02.model.*;
 import projet.projetstage02.repository.*;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HexFormat;
 import java.util.List;
@@ -390,7 +391,7 @@ public class CompanyServiceTest {
         StageContractOutDTO dto = companyService.addSignatureToContract(signatureInDTO);
 
         assertThat(dto.getCompanyId()).isEqualTo(duffBeer.getId());
-        assertThat(dto.getId()).isEqualTo(stageContract.getId());
+        assertThat(dto.getContractId()).isEqualTo(stageContract.getId());
         assertThat(dto.getCompanySignature()).isEqualTo(byteToString(signatureInDTO.getSignature()));
     }
 
@@ -552,5 +553,43 @@ public class CompanyServiceTest {
             return;
         }
         PathCompiler.fail("NonExistentUserException not caught");
+    }
+
+    @Test
+    void testGetContractHappyDay() throws NonExistentEntityException {
+        when(companyRepository.findById(anyLong())).thenReturn(Optional.of(duffBeer));
+        StageContract contractValid = StageContract.builder()
+                .id(1L).studentId(1L).offerId(1L).companyId(duffBeer.getId()).companySignature(new byte[0])
+                .session(Offre.currentSession()).description("").companySignatureDate(LocalDateTime.now()).build();
+        StageContract contractInvalid1 = StageContract.builder()
+                .id(1L).studentId(1L).offerId(1L).companyId(duffBeer.getId()).companySignature(new byte[0]).session("Hiver 2000")
+                .description("").companySignatureDate(LocalDateTime.now()).build();
+        StageContract contractInvalid2 = StageContract.builder()
+                .id(1L).studentId(1L).offerId(1L).companyId(duffBeer.getId()).companySignature(new byte[0]).session("Hiver 1997")
+                .description("").companySignatureDate(LocalDateTime.now()).build();
+        when(stageContractRepository.findByCompanyId(anyLong())).thenReturn(
+                new ArrayList<>(){{
+                    add(contractValid);
+                    add(contractInvalid1);
+                    add(contractValid);
+                    add(contractInvalid2);
+                }}
+        );
+
+        List<StageContractOutDTO> contracts = companyService.getContracts(duffBeer.getId(), Offre.currentSession());
+
+        assertThat(contracts.size()).isEqualTo(2);
+    }
+
+    @Test
+    void testGetContractsNotFound(){
+        when(companyRepository.findById(anyLong())).thenReturn(Optional.empty());
+
+        try {
+            companyService.getContracts(1L, "");
+        } catch (NonExistentEntityException e) {
+            return;
+        }
+        fail("Fail to catch the NonExistentEntityException");
     }
 }

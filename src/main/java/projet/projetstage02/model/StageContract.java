@@ -7,6 +7,8 @@ import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 import javax.validation.constraints.Min;
+import javax.validation.constraints.Pattern;
+import java.time.LocalDateTime;
 
 @Entity
 @Data
@@ -24,6 +26,11 @@ public class StageContract {
     private Long offerId;
     @Min(1)
     private Long companyId;
+    @Pattern(regexp = "^Hiver (\\d{4})$")
+    private String session;
     private String description;
     private byte[] companySignature;
+    private LocalDateTime companySignatureDate;
+    private byte[] studentSignature;
+    private LocalDateTime studentSignatureDate;
 }
