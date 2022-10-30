@@ -813,11 +813,11 @@ public class RootController {
     @PutMapping("/studentContracts/{studentId}_{session}")
     public ResponseEntity<List<StageContractOutDTO>> getStudentContracts
             (@PathVariable String studentId, @PathVariable String session, @RequestBody TokenDTO tokenId) {
-        logger.log(Level.INFO, "Put /studentContracts/{studentId}_{session} entered with companyId: " + studentId
+        logger.log(Level.INFO, "Put /studentContracts/{studentId}_{session} entered with studentId: " + studentId
                 + " with the session: " + session);
 
         try {
-            authService.getToken(tokenId.getToken(), COMPANY);
+            authService.getToken(tokenId.getToken(), STUDENT);
             List<StageContractOutDTO> contracts = studentService.getContracts(Long.parseLong(studentId), session);
             logger.log(Level.INFO, "Put /studentContracts/{studentId}_{session} sent 200 response");
             return ResponseEntity.ok(contracts);

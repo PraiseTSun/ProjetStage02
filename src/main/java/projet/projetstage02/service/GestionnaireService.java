@@ -285,6 +285,7 @@ public class GestionnaireService {
                 .session(offer.getSession())
                 .description(description)
                 .companySignature(new byte[0])
+                .studentSignature(new byte[0])
                 .build();
 
         stageContractRepository.save(stageContract);
