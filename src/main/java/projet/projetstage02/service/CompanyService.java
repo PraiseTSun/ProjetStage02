@@ -146,17 +146,16 @@ public class CompanyService {
         if (offreRepository.findById(offerId).isEmpty()) {
             throw new NonExistentOfferExeption();
         }
-        List<Application> applications = applicationRepository.findByOfferId(offerId);
+
         List<StudentDTO> studentDTOS = new ArrayList<>();
-        applications.stream().map(Application::getStudentId).forEach(id -> {
-            Optional<Student> optionnal = studentRepository.findById(id);
-            if (optionnal.isEmpty()) {
-                return;
-            }
-            Student student = optionnal.get();
-            studentDTOS.add(new StudentDTO(student));
-        });
-        return OfferApplicationDTO.builder().applicants(studentDTOS).build();
+        applicationRepository.findByOfferId(offerId).stream()
+                .map(Application::getStudentId)
+                .forEach(id -> {
+                    Optional<Student> studentOpt = studentRepository.findById(id);
+                    if (studentOpt.isEmpty()) return;
+                    studentDTOS.add(new StudentDTO(studentOpt.get()));
+                });
+        return new OfferApplicationDTO(studentDTOS);
     }
 
     public List<OffreDTO> getValidatedOffers(long id) {

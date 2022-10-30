@@ -1357,8 +1357,8 @@ public class RootControllerTest {
 
     @Test
     void testGetApplicationsForOfferHappyDay() throws Exception {
-
         when(companyService.getStudentsForOffer(anyLong())).thenReturn(offerApplicationDTO);
+
         mockMvc.perform(put("/offer/{id}/applications", 1)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(jsonTokenDTO.write(token).getJson()))
@@ -1368,8 +1368,8 @@ public class RootControllerTest {
 
     @Test
     void testGetApplicationsForOfferNotFound() throws Exception {
-
         when(companyService.getStudentsForOffer(anyLong())).thenThrow(new NonExistentOfferExeption());
+
         mockMvc.perform(put("/offer/{id}/applications", 1)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(jsonTokenDTO.write(token).getJson()))
@@ -1378,8 +1378,8 @@ public class RootControllerTest {
 
     @Test
     void testGetApplicationsForOfferForbidden() throws Exception {
-
         when(authService.getToken(any(), any())).thenThrow(new InvalidTokenException());
+
         mockMvc.perform(put("/offer/{id}/applications", 1)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(jsonTokenDTO.write(token).getJson()))
@@ -1388,8 +1388,8 @@ public class RootControllerTest {
 
     @Test
     void testGetStatusValidationCVHappyDay() throws Exception {
-
         when(studentService.getStudentCvStatus(anyLong())).thenReturn(cvStatusDTO);
+
         mockMvc.perform(put("/getStatutValidationCV/{id}", 1)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(jsonTokenDTO.write(token).getJson()))
@@ -1399,8 +1399,8 @@ public class RootControllerTest {
 
     @Test
     void testGetStatusValidationCVForbidden() throws Exception {
-
         when(authService.getToken(any(), any())).thenThrow(new InvalidTokenException());
+
         mockMvc.perform(put("/getStatutValidationCV/{id}", 1)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(jsonTokenDTO.write(token).getJson()))
@@ -1409,8 +1409,8 @@ public class RootControllerTest {
 
     @Test
     void testGetStatusValidationCVNotFound() throws Exception {
-
         when(studentService.getStudentCvStatus(anyLong())).thenThrow(new NonExistentEntityException());
+
         mockMvc.perform(put("/getStatutValidationCV/{id}", 1)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(jsonTokenDTO.write(token).getJson()))
@@ -1419,8 +1419,8 @@ public class RootControllerTest {
 
     @Test
     void testGetCompanyOffersHappyDay() throws Exception {
-
         when(companyService.getValidatedOffers(anyLong())).thenReturn(List.of(duffOffre));
+
         mockMvc.perform(put("/company/validatedOffers/{id}", 1)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(jsonTokenDTO.write(token).getJson()))
@@ -1431,6 +1431,7 @@ public class RootControllerTest {
     @Test
     void testGetCompanyOffersForbidden() throws Exception {
         when(authService.getToken(any(), any())).thenThrow(new InvalidTokenException());
+
         mockMvc.perform(put("/company/validatedOffers/{id}", 1)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(jsonTokenDTO.write(token).getJson()))

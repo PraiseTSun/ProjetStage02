@@ -361,43 +361,40 @@ public class CompanyServiceTest {
     @Test
     void testGetApplicantsForOfferHappyDay() throws NonExistentOfferExeption {
         // Arrange
-        Application application1 = Application.builder().studentId(1L).build();
-        Application application2 = Application.builder().studentId(2L).build();
-        Application application3 = Application.builder().studentId(3L).build();
-        Application application4 = Application.builder().studentId(4L).build();
-        Application application5 = Application.builder().studentId(5L).build();
         when(offreRepository.findById(anyLong())).thenReturn(Optional.of(duffBeerOffer));
-        when(applicationRepository.findByOfferId(anyLong())).thenReturn(List.of(application1,
-                application2,
-                application3,
-                application4,
-                application5));
+        when(applicationRepository.findByOfferId(anyLong())).thenReturn(new ArrayList<>(){{
+            add(Application.builder().studentId(1L).build());
+            add(Application.builder().studentId(2L).build());
+            add(Application.builder().studentId(3L).build());
+            add(Application.builder().studentId(4L).build());
+            add(Application.builder().studentId(5L).build());
+        }});
 
         when(studentRepository.findById(anyLong())).thenReturn(Optional.of(bart));
         // Act
         OfferApplicationDTO studentsForOffer = companyService.getStudentsForOffer(1L);
+
+        // Assert
         assertThat(studentsForOffer.getApplicants().size()).isEqualTo(5);
     }
 
     @Test
     void testGetApplicantsForOfferNotFull() throws NonExistentOfferExeption {
         // Arrange
-        Application application1 = Application.builder().studentId(1L).build();
-        Application application2 = Application.builder().build();
-        Application application3 = Application.builder().studentId(3L).build();
-        Application application4 = Application.builder().build();
-        Application application5 = Application.builder().studentId(5L).build();
         when(offreRepository.findById(anyLong())).thenReturn(Optional.of(duffBeerOffer));
-        List<Application> applications = List.of(application1,
-                application2,
-                application3,
-                application4,
-                application5);
-        when(applicationRepository.findByOfferId(anyLong())).thenReturn(applications);
-
+        when(applicationRepository.findByOfferId(anyLong())).thenReturn(new ArrayList<>(){{
+            add(Application.builder().studentId(1L).build());
+            add(Application.builder().build());
+            add(Application.builder().studentId(3L).build());
+            add(Application.builder().build());
+            add(Application.builder().studentId(5L).build());
+        }});
         when(studentRepository.findById(anyLong())).thenReturn(Optional.of(bart));
+
         // Act
         OfferApplicationDTO studentsForOffer = companyService.getStudentsForOffer(1L);
+
+        // Assert
         assertThat(studentsForOffer.getApplicants().size()).isEqualTo(3);
     }
 
@@ -405,12 +402,14 @@ public class CompanyServiceTest {
     void testGetApplicantsForOfferNonExistentOffer() {
         // Arrange
         when(offreRepository.findById(anyLong())).thenReturn(Optional.empty());
+
         // Act
         try {
             companyService.getStudentsForOffer(1L);
         } catch (NonExistentOfferExeption e) {
             return;
         }
+
         fail("NonExistentOfferExeption not thrown");
     }
 
@@ -419,28 +418,35 @@ public class CompanyServiceTest {
         // Arrange
         when(offreRepository.findById(anyLong())).thenReturn(Optional.of(duffBeerOffer));
         when(applicationRepository.findByOfferId(anyLong())).thenReturn(new ArrayList<>());
+
         // Act
         OfferApplicationDTO studentsForOffer = companyService.getStudentsForOffer(1L);
+
+        // Assert
         assertThat(studentsForOffer.getApplicants().size()).isEqualTo(0);
     }
 
     @Test
     void testGetOffersForCompanyHappyDay() {
         // Arrange
-        when(offreRepository.findAllByIdCompagnie(anyLong()))
-                .thenReturn(List.of(duffBeerOffer));
+        when(offreRepository.findAllByIdCompagnie(anyLong())).thenReturn(List.of(duffBeerOffer));
+
         // Act
         List<OffreDTO> validatedOffers = companyService.getValidatedOffers(1L);
+
+        // Assert
         assertThat(validatedOffers.size()).isEqualTo(1);
     }
 
     @Test
     void testGetOffersForCompanyEmpty() {
         // Arrange
-        when(offreRepository.findAllByIdCompagnie(anyLong()))
-                .thenReturn(new ArrayList<>());
+        when(offreRepository.findAllByIdCompagnie(anyLong())).thenReturn(new ArrayList<>());
+
         // Act
         List<OffreDTO> validatedOffers = companyService.getValidatedOffers(1L);
+
+        // Assert
         assertThat(validatedOffers.size()).isEqualTo(0);
     }
 }
