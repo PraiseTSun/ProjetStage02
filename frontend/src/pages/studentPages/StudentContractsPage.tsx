@@ -24,7 +24,7 @@ const StudentContractsPage = ({connectedUser}: { connectedUser: IUser }): JSX.El
         } catch {
             generateAlert()
         }
-    }, [connectedUser]);
+    }, [connectedUser, nextYear]);
 
     useEffect(() => {
         fetchContracts();
