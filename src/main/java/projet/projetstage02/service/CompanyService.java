@@ -2,10 +2,7 @@ package projet.projetstage02.service;
 
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
-import projet.projetstage02.DTO.ApplicationAcceptationDTO;
-import projet.projetstage02.DTO.CompanyDTO;
-import projet.projetstage02.DTO.OfferAcceptedStudentsDTO;
-import projet.projetstage02.DTO.OffreInDTO;
+import projet.projetstage02.DTO.*;
 import projet.projetstage02.exception.AlreadyExistingAcceptationException;
 import projet.projetstage02.exception.NonExistentEntityException;
 import projet.projetstage02.exception.NonExistentOfferExeption;
@@ -150,25 +147,25 @@ public class CompanyService {
             throw new NonExistentOfferExeption();
         }
 
-        List<StudentDTO> studentDTOS = new ArrayList<>();
+        List<StudentOutDTO> studentDTOS = new ArrayList<>();
         applicationRepository.findByOfferId(offerId).stream()
                 .map(Application::getStudentId)
                 .forEach(id -> {
                     Optional<Student> studentOpt = studentRepository.findById(id);
                     if (studentOpt.isEmpty()) return;
-                    studentDTOS.add(new StudentDTO(studentOpt.get()));
+                    studentDTOS.add(new StudentOutDTO(studentOpt.get()));
                 });
         return new OfferApplicationDTO(studentDTOS);
     }
 
-    public List<OffreDTO> getValidatedOffers(long id) {
-        List<OffreDTO> offres = new ArrayList<>();
+    public List<OffreOutDTO> getValidatedOffers(long id) {
+        List<OffreOutDTO> offres = new ArrayList<>();
         offreRepository.findAllByIdCompagnie(id).stream().
                 filter(offre ->
                         offre.isValide() && isRightSession(offre.getSession(), getNextYear()))
                 .forEach(offre ->
-                        offres.add(new OffreDTO(offre)));
-        offres.forEach(offre -> offre.setPdf(new byte[0]));
+                        offres.add(new OffreOutDTO(offre)));
+        offres.forEach(offre -> offre.setPdf("[]"));
         return offres;
     }
 }

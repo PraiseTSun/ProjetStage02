@@ -6,10 +6,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import projet.projetstage02.DTO.ApplicationAcceptationDTO;
-import projet.projetstage02.DTO.CompanyDTO;
-import projet.projetstage02.DTO.OfferAcceptedStudentsDTO;
-import projet.projetstage02.DTO.OffreInDTO;
+import projet.projetstage02.DTO.*;
 import projet.projetstage02.exception.AlreadyExistingAcceptationException;
 import projet.projetstage02.exception.NonExistentEntityException;
 import projet.projetstage02.exception.NonExistentOfferExeption;
@@ -365,7 +362,7 @@ public class CompanyServiceTest {
     void testGetApplicantsForOfferHappyDay() throws NonExistentOfferExeption {
         // Arrange
         when(offreRepository.findById(anyLong())).thenReturn(Optional.of(duffBeerOffer));
-        when(applicationRepository.findByOfferId(anyLong())).thenReturn(new ArrayList<>(){{
+        when(applicationRepository.findByOfferId(anyLong())).thenReturn(new ArrayList<>() {{
             add(Application.builder().studentId(1L).build());
             add(Application.builder().studentId(2L).build());
             add(Application.builder().studentId(3L).build());
@@ -385,7 +382,7 @@ public class CompanyServiceTest {
     void testGetApplicantsForOfferNotFull() throws NonExistentOfferExeption {
         // Arrange
         when(offreRepository.findById(anyLong())).thenReturn(Optional.of(duffBeerOffer));
-        when(applicationRepository.findByOfferId(anyLong())).thenReturn(new ArrayList<>(){{
+        when(applicationRepository.findByOfferId(anyLong())).thenReturn(new ArrayList<>() {{
             add(Application.builder().studentId(1L).build());
             add(Application.builder().build());
             add(Application.builder().studentId(3L).build());
@@ -435,7 +432,7 @@ public class CompanyServiceTest {
         when(offreRepository.findAllByIdCompagnie(anyLong())).thenReturn(List.of(duffBeerOffer));
 
         // Act
-        List<OffreDTO> validatedOffers = companyService.getValidatedOffers(1L);
+        List<OffreOutDTO> validatedOffers = companyService.getValidatedOffers(1L);
 
         // Assert
         assertThat(validatedOffers.size()).isEqualTo(1);
@@ -447,7 +444,7 @@ public class CompanyServiceTest {
         when(offreRepository.findAllByIdCompagnie(anyLong())).thenReturn(new ArrayList<>());
 
         // Act
-        List<OffreDTO> validatedOffers = companyService.getValidatedOffers(1L);
+        List<OffreOutDTO> validatedOffers = companyService.getValidatedOffers(1L);
 
         // Assert
         assertThat(validatedOffers.size()).isEqualTo(0);

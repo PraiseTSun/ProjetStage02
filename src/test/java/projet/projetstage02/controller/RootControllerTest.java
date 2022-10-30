@@ -191,9 +191,9 @@ public class RootControllerTest {
                 .build();
 
         offerApplicationDTO = OfferApplicationDTO.builder().applicants(List.of(
-                StudentDTO.builder().build(),
-                StudentDTO.builder().build(),
-                StudentDTO.builder().build()
+                StudentOutDTO.builder().build(),
+                StudentOutDTO.builder().build(),
+                StudentOutDTO.builder().build()
         )).build();
 
         cvStatusDTO = CvStatusDTO.builder()
@@ -1441,7 +1441,7 @@ public class RootControllerTest {
 
     @Test
     void testGetCompanyOffersHappyDay() throws Exception {
-        when(companyService.getValidatedOffers(anyLong())).thenReturn(List.of(duffOffre));
+        when(companyService.getValidatedOffers(anyLong())).thenReturn(List.of(duffOffreOut));
 
         mockMvc.perform(put("/company/validatedOffers/{id}", 1)
                         .contentType(MediaType.APPLICATION_JSON)
