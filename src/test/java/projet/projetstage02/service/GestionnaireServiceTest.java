@@ -282,7 +282,7 @@ public class GestionnaireServiceTest {
                 Offre.builder().session("Hiver 2023").department(Informatique).build()
         );
         when(offreRepository.findAll()).thenReturn(offers);
-        final List<OffreDTO> offersDto = service.getUnvalidatedOffers();
+        final List<OffreOutDTO> offersDto = service.getUnvalidatedOffers();
 
         assertThat(offersDto).hasSize(2);
     }
@@ -297,9 +297,9 @@ public class GestionnaireServiceTest {
                 Offre.builder().session("Hiver 2023").valide(true).department(Informatique).build()
         );
         when(offreRepository.findAll()).thenReturn(offers);
-        final List<OffreDTO> offers2022 = service.getValidatedOffers(2022);
-        final List<OffreDTO> offers2023 = service.getValidatedOffers(2023);
-        final List<OffreDTO> offers2010 = service.getValidatedOffers(2010);
+        final List<OffreOutDTO> offers2022 = service.getValidatedOffers(2022);
+        final List<OffreOutDTO> offers2023 = service.getValidatedOffers(2023);
+        final List<OffreOutDTO> offers2010 = service.getValidatedOffers(2010);
 
         assertThat(offers2022).hasSize(1);
         assertThat(offers2023).hasSize(1);
@@ -331,7 +331,7 @@ public class GestionnaireServiceTest {
         when(offreRepository.findAll()).thenReturn(offres);
 
         // Act
-        final List<OffreDTO> noneValidateOffers = service.getUnvalidatedOffers();
+        final List<OffreOutDTO> noneValidateOffers = service.getUnvalidatedOffers();
 
         // Assert
         assertThat(noneValidateOffers.size()).isEqualTo(2);
@@ -343,10 +343,10 @@ public class GestionnaireServiceTest {
         when(offreRepository.findById(anyLong())).thenReturn(Optional.of(offreTest));
 
         // Act
-        final OffreDTO offreDTO = service.validateOfferById(1L);
+        final OffreOutDTO offreInDTO = service.validateOfferById(1L);
 
         // Assert
-        assertThat(offreDTO.isValide()).isTrue();
+        assertThat(offreInDTO.isValide()).isTrue();
     }
 
     @Test
@@ -435,7 +435,7 @@ public class GestionnaireServiceTest {
         when(studentRepository.findAll()).thenReturn(students);
 
         // Act
-        List<StudentDTO> unvalidatedStudents = service.getUnvalidatedStudents();
+        List<StudentOutDTO> unvalidatedStudents = service.getUnvalidatedStudents();
 
         // Assert
         assertThat(unvalidatedStudents.size()).isEqualTo(2);
@@ -561,7 +561,7 @@ public class GestionnaireServiceTest {
         when(studentRepository.findAll()).thenReturn(students);
 
         // Act
-        List<StudentDTO> unvalidatedStudentCV = service.getUnvalidatedCVStudents();
+        List<StudentOutDTO> unvalidatedStudentCV = service.getUnvalidatedCVStudents();
         // Assert
         assertThat(unvalidatedStudentCV.get(0).getEmail()).isEqualTo(studentTest.getEmail());
         assertThat(unvalidatedStudentCV.get(0).getFirstName()).isEqualTo(studentTest.getFirstName());
@@ -578,12 +578,12 @@ public class GestionnaireServiceTest {
         when(studentRepository.findById(anyLong())).thenReturn(Optional.of(studentTest));
 
         // Act
-        StudentDTO studentDTO = service.validateStudentCV(1L);
+        StudentOutDTO studentDTO = service.validateStudentCV(1L);
 
         // Assert
         assertThat(studentDTO.getFirstName()).isEqualTo(studentTest.getFirstName());
-        assertThat(studentDTO.getCv()).isEqualTo(new byte[0]);
-        assertThat(studentDTO.getCvToValidate()).isEmpty();
+        assertThat(studentDTO.getCv()).isEqualTo("[]");
+        assertThat(studentDTO.getCvToValidate()).isEqualTo("[]");
     }
 
     @Test
@@ -625,11 +625,11 @@ public class GestionnaireServiceTest {
         when(studentRepository.findById(anyLong())).thenReturn(Optional.of(studentTest));
 
         // Act
-        StudentDTO studentDTO = service.removeStudentCvValidation(1L, "Refused");
+        StudentOutDTO studentDTO = service.removeStudentCvValidation(1L, "Refused");
 
         // Assert
         assertThat(studentDTO.getEmail()).isEqualTo(studentTest.getEmail());
-        assertThat(studentDTO.getCvToValidate()).isEmpty();
+        assertThat(studentDTO.getCvToValidate()).isEqualTo("[]");
         assertThat(cvStatus.getRefusalMessage()).isEqualTo("Refused");
         assertThat(cvStatus.getStatus()).isEqualTo("REFUSED");
     }

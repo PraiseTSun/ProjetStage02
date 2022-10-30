@@ -6,7 +6,10 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import projet.projetstage02.DTO.*;
+import projet.projetstage02.DTO.ApplicationAcceptationDTO;
+import projet.projetstage02.DTO.CompanyDTO;
+import projet.projetstage02.DTO.OfferAcceptedStudentsDTO;
+import projet.projetstage02.DTO.OffreInDTO;
 import projet.projetstage02.exception.AlreadyExistingAcceptationException;
 import projet.projetstage02.exception.NonExistentEntityException;
 import projet.projetstage02.exception.NonExistentOfferExeption;
@@ -45,7 +48,7 @@ public class CompanyServiceTest {
     ApplicationRepository applicationRepository;
 
     Company duffBeer;
-    OffreDTO duffBeerOffreDTO;
+    OffreInDTO duffBeerOffreInDTO;
     Student bart;
     Offre duffBeerOffer;
     ApplicationAcceptation applicationAcceptation;
@@ -62,7 +65,7 @@ public class CompanyServiceTest {
                 AbstractUser.Department.Transport,
                 "Duff Beer");
 
-        duffBeerOffreDTO = OffreDTO.builder()
+        duffBeerOffreInDTO = OffreInDTO.builder()
                 .adresse("653 Duff Street")
                 .department(AbstractUser.Department.Transport.departement)
                 .heureParSemaine(40)
@@ -207,10 +210,10 @@ public class CompanyServiceTest {
     @Test
     void createOffreTest() {
         // Arrange
-        when(offreRepository.save(any())).thenReturn(duffBeerOffreDTO.toModel());
+        when(offreRepository.save(any())).thenReturn(duffBeerOffreInDTO.toModel());
 
         // Act
-        companyService.createOffre(duffBeerOffreDTO);
+        companyService.createOffre(duffBeerOffreInDTO);
 
         // Assert
         verify(offreRepository, times(1)).save(any());
