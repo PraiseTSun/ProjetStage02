@@ -754,7 +754,7 @@ public class RootController {
     }
 
     @PutMapping("/unvalidatedAcceptations")
-    public ResponseEntity<UnvalidatedAcceptationsDTO> getUnvalidatedAcceptations(@RequestBody TokenDTO tokenId){
+    public ResponseEntity<UnvalidatedAcceptationsDTO> getUnvalidatedAcceptations(@RequestBody TokenDTO tokenId) {
         logger.log(Level.INFO, "Put /unvalidatedAcceptations");
 
         try {
@@ -772,7 +772,7 @@ public class RootController {
     public ResponseEntity<List<StageContractOutDTO>> getCompanyContracts
             (@PathVariable String companyId, @PathVariable String session, @RequestBody TokenDTO tokenId) {
         logger.log(Level.INFO, "Put /companyContracts/{companyId}_{session} entered with companyId: " + companyId
-            + " with the session: " + session);
+                + " with the session: " + session);
 
         try {
             authService.getToken(tokenId.getToken(), COMPANY);
@@ -809,6 +809,7 @@ public class RootController {
             return ResponseEntity.status(CONFLICT).build();
         }
     }
+
     @PutMapping("/studentContracts/{studentId}_{session}")
     public ResponseEntity<List<StageContractOutDTO>> getStudentContracts
             (@PathVariable String studentId, @PathVariable String session, @RequestBody TokenDTO tokenId) {
@@ -831,7 +832,7 @@ public class RootController {
 
     @PutMapping("/studentSignatureContract")
     public ResponseEntity<StageContractOutDTO> studentContractSignature
-            (@RequestBody SignatureInDTO signatureInDTO){
+            (@RequestBody SignatureInDTO signatureInDTO) {
         logger.log(Level.INFO, "Put /studentSignatureContract entered with SignatureInDTO: " + signatureInDTO);
 
         try {
@@ -851,20 +852,6 @@ public class RootController {
         }
     }
 
-    @PutMapping("/unvalidatedAcceptations")
-    public ResponseEntity<UnvalidatedAcceptationsDTO> getUnvalidatedAcceptations(@RequestBody TokenDTO tokenId) {
-        logger.log(Level.INFO, "Put /unvalidatedAcceptations");
-
-        try {
-            authService.getToken(tokenId.getToken(), GESTIONNAIRE);
-            UnvalidatedAcceptationsDTO dto = gestionnaireService.getUnvalidatedAcceptation();
-            logger.log(Level.INFO, "Put /unvalidatedAcceptations sent request 200 : " + dto);
-            return ResponseEntity.ok(dto);
-        } catch (InvalidTokenException e) {
-            logger.log(Level.INFO, "Put /unvalidatedAcceptations sent request 403");
-            return ResponseEntity.status(FORBIDDEN).build();
-        }
-    }
 
     @PutMapping("/offer/{id}/applications")
     public ResponseEntity<OfferApplicationDTO> getStudentForOffer
