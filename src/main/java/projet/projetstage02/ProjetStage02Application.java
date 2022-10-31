@@ -84,6 +84,7 @@ public class ProjetStage02Application implements CommandLineRunner {
                 .adresse("123 Joe Road")
                 .department(Department.Informatique.departement)
                 .heureParSemaine(40)
+                .companyId(company.getId())
                 .salaire(40)
                 .session("Hiver 2023")
                 .nomDeCompagnie("Bell")
@@ -115,6 +116,7 @@ public class ProjetStage02Application implements CommandLineRunner {
                         .session("Hiver 2023")
                         .adresse("My Home")
                         .pdf(TEST_PDF)
+                        .companyId(company.getId())
                         .token("notoken")
                         .valide(false)
                         .build()
@@ -129,6 +131,7 @@ public class ProjetStage02Application implements CommandLineRunner {
                         .heureParSemaine(36)
                         .salaire(15)
                         .session("Hiver 2023")
+                        .companyId(company.getId())
                         .adresse("33 My Home")
                         .pdf(TEST_PDF)
                         .token("notoken")
@@ -137,6 +140,8 @@ public class ProjetStage02Application implements CommandLineRunner {
         );
         gestionnaireService.validateStudent(student.getId());
         gestionnaireService.validateStudent(student2.getId());
+        gestionnaireService.validateCompany(company.getId());
+        gestionnaireService.validateStudentCV(student.getId());
         System.out.println(studentService.getStudentById(1L));
         System.out.println(companyService.getCompanyById(2L));
         System.out.println(gestionnaireService.getGestionnaireById(3L));

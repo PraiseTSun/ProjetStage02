@@ -1,5 +1,7 @@
 package projet.projetstage02.service;
 
+import com.jayway.jsonpath.internal.path.PathCompiler;
+import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -16,6 +18,7 @@ import projet.projetstage02.repository.*;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.HexFormat;
 import java.util.List;
 import java.util.Optional;
 
@@ -45,6 +48,9 @@ public class CompanyServiceTest {
     @Mock
     ApplicationAcceptationRepository applicationAcceptationRepository;
 
+    @Mock
+    ApplicationRepository applicationRepository;
+
     Company duffBeer;
     OffreDTO duffBeerOffreDTO;
     Student bart;
@@ -52,6 +58,8 @@ public class CompanyServiceTest {
     ApplicationAcceptation applicationAcceptation;
     StageContract stageContract;
     SignatureInDTO signatureInDTO;
+
+    OfferApplicationDTO offerApplicationDTO;
 
     @BeforeEach
     void setup() {
@@ -68,6 +76,7 @@ public class CompanyServiceTest {
                 .adresse("653 Duff Street")
                 .department(AbstractUser.Department.Transport.departement)
                 .heureParSemaine(40)
+                .session("Hiver 2023")
                 .position("Delivery Guy")
                 .nomDeCompagnie("Duff beer")
                 .pdf(new byte[0])
@@ -91,7 +100,8 @@ public class CompanyServiceTest {
                 .heureParSemaine(69)
                 .adresse("Somewhere")
                 .valide(true)
-                .pdf(new byte[] { 1, 2, 3, 4, 5, 6, 7, 8, 9 })
+                .pdf(new byte[]{1, 2, 3, 4, 5, 6, 7, 8, 9})
+                .session("Hiver 2023")
                 .build();
 
         applicationAcceptation = ApplicationAcceptation.builder()
@@ -114,8 +124,9 @@ public class CompanyServiceTest {
         signatureInDTO = SignatureInDTO.builder()
                 .userId(duffBeer.getId())
                 .contractId(stageContract.getId())
-                .signature(new byte[]{0,1,2,3,4,5,6,7,8,9})
+                .signature(new byte[]{0, 1, 2, 3, 4, 5, 6, 7, 8, 9})
                 .build();
+        offerApplicationDTO = OfferApplicationDTO.builder().build();
     }
 
     @Test
@@ -149,7 +160,7 @@ public class CompanyServiceTest {
     }
 
     @Test
-    void getCompanyByEmailAndPasswordHappyDayTest() throws NonExistentEntityException{
+    void getCompanyByEmailAndPasswordHappyDayTest() throws NonExistentEntityException {
         // Arrange
         when(companyRepository.findByEmailAndPassword(
                 "duff.beer@springfield.com",
@@ -296,9 +307,10 @@ public class CompanyServiceTest {
         // Act
         try {
             companyService.saveStudentApplicationAccepted(1L, 2L);
-        } catch (NonExistentEntityException e){
+        } catch (NonExistentEntityException e) {
             return;
-        }catch (Exception e) {}
+        } catch (Exception e) {
+        }
         // Assert
         fail("NonExistentEntityException not thrown");
     }
@@ -312,9 +324,10 @@ public class CompanyServiceTest {
         // Act
         try {
             companyService.saveStudentApplicationAccepted(1L, 2L);
-        } catch (NonExistentOfferExeption e){
+        } catch (NonExistentOfferExeption e) {
             return;
-        }catch (Exception e) {}
+        } catch (Exception e) {
+        }
         // Assert
         fail("NonExistentOfferException not thrown");
     }
@@ -330,9 +343,10 @@ public class CompanyServiceTest {
         // Act
         try {
             companyService.saveStudentApplicationAccepted(1L, 2L);
-        } catch (AlreadyExistingAcceptationException e){
+        } catch (AlreadyExistingAcceptationException e) {
             return;
-        }catch (Exception e) {}
+        } catch (Exception e) {
+        }
         // Assert
         fail("AlreadyExistingAcceptationException not thrown");
     }
@@ -340,7 +354,7 @@ public class CompanyServiceTest {
     @Test
     void testGetAcceptedStudentForOfferHappyDay() throws NonExistentOfferExeption {
         // Arrange
-        List<ApplicationAcceptation> applications = new ArrayList<>(){{
+        List<ApplicationAcceptation> applications = new ArrayList<>() {{
             add(ApplicationAcceptation.builder().offerId(duffBeerOffer.getId()).studentId(bart.getId()).build());
             add(ApplicationAcceptation.builder().offerId(0L).studentId(bart.getId()).build());
         }};
@@ -370,7 +384,7 @@ public class CompanyServiceTest {
     }
 
     @Test
-    void testAddSignatureToContractHappyDay() throws Exception{
+    void testAddSignatureToContractHappyDay() throws Exception {
         when(companyRepository.findById(anyLong())).thenReturn(Optional.of(duffBeer));
         when(stageContractRepository.findById(anyLong())).thenReturn(Optional.of(stageContract));
 
@@ -382,7 +396,7 @@ public class CompanyServiceTest {
     }
 
     @Test
-    void testAddSignatureToContractOwnershipConflict(){
+    void testAddSignatureToContractOwnershipConflict() {
         duffBeer.setId(99L);
         when(companyRepository.findById(anyLong())).thenReturn(Optional.of(duffBeer));
         when(stageContractRepository.findById(anyLong())).thenReturn(Optional.of(stageContract));
@@ -391,26 +405,28 @@ public class CompanyServiceTest {
             companyService.addSignatureToContract(signatureInDTO);
         } catch (InvalidOwnershipException e) {
             return;
-        } catch (Exception e) {}
+        } catch (Exception e) {
+        }
 
         fail("Fail to catch the InvalidOwnershipException!");
     }
 
     @Test
-    void testAddSignatureToContractCompanyNotFound(){
+    void testAddSignatureToContractCompanyNotFound() {
         when(companyRepository.findById(anyLong())).thenReturn(Optional.empty());
 
         try {
             companyService.addSignatureToContract(signatureInDTO);
         } catch (NonExistentEntityException e) {
             return;
-        } catch (Exception e) {}
+        } catch (Exception e) {
+        }
 
         fail("Fail to catch the NonExistentEntityException!");
     }
 
     @Test
-    void testAddSignatureToContractNotFound(){
+    void testAddSignatureToContractNotFound() {
         when(companyRepository.findById(anyLong())).thenReturn(Optional.of(duffBeer));
         when(stageContractRepository.findById(anyLong())).thenReturn(Optional.empty());
 
@@ -418,9 +434,125 @@ public class CompanyServiceTest {
             companyService.addSignatureToContract(signatureInDTO);
         } catch (NonExistentEntityException e) {
             return;
-        } catch (Exception e) {}
+        } catch (Exception e) {
+        }
 
         fail("Fail to catch the NonExistentEntityException!");
+    }
+
+    @Test
+    void testGetApplicantsForOfferHappyDay() throws NonExistentOfferExeption {
+        // Arrange
+        Application application1 = Application.builder().studentId(1L).build();
+        Application application2 = Application.builder().studentId(2L).build();
+        Application application3 = Application.builder().studentId(3L).build();
+        Application application4 = Application.builder().studentId(4L).build();
+        Application application5 = Application.builder().studentId(5L).build();
+        when(offreRepository.findById(anyLong())).thenReturn(Optional.of(duffBeerOffer));
+        when(applicationRepository.findByOfferId(anyLong())).thenReturn(List.of(application1,
+                application2,
+                application3,
+                application4,
+                application5));
+
+        when(studentRepository.findById(anyLong())).thenReturn(Optional.of(bart));
+        // Act
+        OfferApplicationDTO studentsForOffer = companyService.getStudentsForOffer(1L);
+        assertThat(studentsForOffer.getApplicants().size()).isEqualTo(5);
+    }
+
+    @Test
+    void testGetApplicantsForOfferNotFull() throws NonExistentOfferExeption {
+        // Arrange
+        Application application1 = Application.builder().studentId(1L).build();
+        Application application2 = Application.builder().build();
+        Application application3 = Application.builder().studentId(3L).build();
+        Application application4 = Application.builder().build();
+        Application application5 = Application.builder().studentId(5L).build();
+        when(offreRepository.findById(anyLong())).thenReturn(Optional.of(duffBeerOffer));
+        List<Application> applications = List.of(application1,
+                application2,
+                application3,
+                application4,
+                application5);
+        when(applicationRepository.findByOfferId(anyLong())).thenReturn(applications);
+
+        when(studentRepository.findById(anyLong())).thenReturn(Optional.of(bart));
+        // Act
+        OfferApplicationDTO studentsForOffer = companyService.getStudentsForOffer(1L);
+        assertThat(studentsForOffer.getApplicants().size()).isEqualTo(3);
+    }
+
+    @Test
+    void testGetApplicantsForOfferNonExistentOffer() {
+        // Arrange
+        when(offreRepository.findById(anyLong())).thenReturn(Optional.empty());
+        // Act
+        try {
+            companyService.getStudentsForOffer(1L);
+        } catch (NonExistentOfferExeption e) {
+            return;
+        }
+        fail("NonExistentOfferExeption not thrown");
+    }
+
+    @Test
+    void testGetApplicantsForOfferEmpty() throws NonExistentOfferExeption {
+        // Arrange
+        when(offreRepository.findById(anyLong())).thenReturn(Optional.of(duffBeerOffer));
+        when(applicationRepository.findByOfferId(anyLong())).thenReturn(new ArrayList<>());
+        // Act
+        OfferApplicationDTO studentsForOffer = companyService.getStudentsForOffer(1L);
+        assertThat(studentsForOffer.getApplicants().size()).isEqualTo(0);
+    }
+
+    @Test
+    void testGetOffersForCompanyHappyDay() {
+        // Arrange
+        when(offreRepository.findAllByIdCompagnie(anyLong()))
+                .thenReturn(List.of(duffBeerOffer));
+        // Act
+        List<OffreDTO> validatedOffers = companyService.getValidatedOffers(1L);
+        assertThat(validatedOffers.size()).isEqualTo(1);
+    }
+
+    @Test
+    void testGetOffersForCompanyEmpty() {
+        // Arrange
+        when(offreRepository.findAllByIdCompagnie(anyLong()))
+                .thenReturn(new ArrayList<>());
+        // Act
+        List<OffreDTO> validatedOffers = companyService.getValidatedOffers(1L);
+        assertThat(validatedOffers.size()).isEqualTo(0);
+    }
+
+    @Test
+    void testGetStudentCvToValidateSuccess() throws NonExistentEntityException {
+        // Arrange
+        String result = "[72,101,108,108,111,32,87,111,114,100]";
+        byte[] stored = HexFormat.of().parseHex("48656c6c6f20576f7264");
+        bart.setCv(stored);
+        when(studentRepository.findById(anyLong())).thenReturn(Optional.of(bart));
+
+        // Act
+        PdfOutDTO cv = companyService.getStudentCv(1L);
+
+        //
+        Assertions.assertThat(cv.getPdf()).isEqualTo(result);
+    }
+
+    @Test
+    void testGetStudentCvToValidateNotFound() {
+        // Arrange
+        when(studentRepository.findById(anyLong())).thenReturn(Optional.empty());
+
+        // Act
+        try {
+            companyService.getStudentCv(1L);
+        } catch (NonExistentEntityException e) {
+            return;
+        }
+        PathCompiler.fail("NonExistentUserException not caught");
     }
 
     @Test

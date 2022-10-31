@@ -34,7 +34,8 @@ const OffreSoumissionPage = ({user}: { user: IUser }): JSX.Element => {
                 department: department,
                 heureParSemaine: hoursPerWeek.toString(),
                 nomDeCompagnie: companyName,
-                token: user.token
+                token: user.token,
+                companyId: user.id
             })
 
             if (response.ok) {

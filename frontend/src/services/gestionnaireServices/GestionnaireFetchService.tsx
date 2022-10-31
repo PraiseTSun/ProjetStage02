@@ -108,7 +108,7 @@ export const putUnvalidatedCvStudents = (token: string): Promise<Response> => {
     });
 }
 
-export const putStudentCv = (studentId: string, token: string): Promise<Response> => {
+export const putStudentUnvalidatedCv = (studentId: string, token: string): Promise<Response> => {
     return fetch("http://localhost:8080/studentCv/" + studentId, {
         method: "PUT",
         headers: {
@@ -160,6 +160,27 @@ export const putUnvalidatedStudents = (token: string): Promise<Response> => {
             'Content-Type': 'application/json',
         },
         body: JSON.stringify({token: token})
+    })
+}
+
+export const putUnvalidatedAcceptations = (token: string): Promise<Response> => {
+    return fetch("http://localhost:8080/unvalidatedAcceptations", {
+        method: "PUT",
+        headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({token: token})
+    })
+}
+
+export const postCreateStageContract = (studentId: string, offerId: string, token: string): Promise<Response> => {
+    return fetch("http://localhost:8080/createStageContract", {
+        method: "POST",
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({token: token, offerId: offerId, studentId: studentId})
     })
 }
 

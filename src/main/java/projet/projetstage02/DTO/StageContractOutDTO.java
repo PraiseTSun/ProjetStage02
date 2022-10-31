@@ -21,7 +21,8 @@ public class StageContractOutDTO {
     private String description;
     private String companySignature;
     private String companySignatureDate;
-
+    private String studentSignature;
+    private String studentSignatureDate;
     public StageContractOutDTO (StageContract contact){
         contractId = contact.getId();
         studentId = contact.getStudentId();
@@ -31,5 +32,7 @@ public class StageContractOutDTO {
         description = contact.getDescription();
         companySignature = byteToString(contact.getCompanySignature());
         companySignatureDate = contact.getCompanySignatureDate() == null ? "" : contact.getCompanySignatureDate().toString();
+        studentSignature = byteToString(contact.getStudentSignature());
+        studentSignatureDate = contact.getStudentSignatureDate() == null ? "" : contact.getStudentSignatureDate().toString();
     }
 }

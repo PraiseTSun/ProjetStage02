@@ -5,7 +5,7 @@ import IUser from "../../models/IUser";
 import {Viewer} from '@react-pdf-viewer/core';
 import {
     putRefuseCv,
-    putStudentCv,
+    putStudentUnvalidatedCv,
     putUnvalidatedCvStudents,
     putValidateCv
 } from "../../services/gestionnaireServices/GestionnaireFetchService";
@@ -53,7 +53,7 @@ const StudentCvValidationPage = ({connectedUser}:
 
     async function getPDF(studentId: number): Promise<void> {
         try {
-            const response = await putStudentCv(studentId.toString(), connectedUser.token)
+            const response = await putStudentUnvalidatedCv(studentId.toString(), connectedUser.token)
             if (response.ok) {
                 const data = await response.json();
                 setPDF(new Uint8Array(JSON.parse(data.pdf)));
