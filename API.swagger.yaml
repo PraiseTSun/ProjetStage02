@@ -1391,13 +1391,19 @@ paths:
               integration:
                 type: string
               tempsReelConsacre:
-                type: boolean
+                type: string
               environementTravail:
                 type: string
               climatTravail:
                 type: string
               milieuDeStage:
                 type: string
+              heureTotalPremierMois:
+                type: number
+              heureTotalDeuxiemeMois:
+                type: number
+              heureTotalTroisiemeMois:
+                type: number
               communicationAvecSuperviser:
                 type: string
               equipementFourni:
