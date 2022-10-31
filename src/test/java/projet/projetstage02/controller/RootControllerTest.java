@@ -34,7 +34,6 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static projet.projetstage02.model.Token.UserTypes.*;
-import static projet.projetstage02.utils.ByteConverter.byteToString;
 import static projet.projetstage02.utils.TimeUtil.currentTimestamp;
 
 @ExtendWith(MockitoExtension.class)
@@ -182,21 +181,21 @@ public class RootControllerTest {
                 .offerId(8L)
                 .build();
 
+        signatureInDTO = SignatureInDTO.builder()
+                .token(token.getToken())
+                .contractId(10L)
+                .userId(11L)
+                .signature("")
+                .build();
+
         stageContractOutDTO = StageContractOutDTO.builder()
                 .contractId(9L)
                 .studentId(7L)
                 .offerId(8L)
                 .companyId(6L)
                 .description("description")
-                .companySignature(byteToString(new byte[]{0,1,2,3,4,5,6,7,8,9}))
-                .studentSignature(byteToString(new byte[]{0,1,2,3,4,5,6,7,8,9}))
-                .build();
-
-        signatureInDTO = SignatureInDTO.builder()
-                .token(token.getToken())
-                .contractId(10L)
-                .userId(11L)
-                .signature(new byte[]{0, 1, 2, 3, 4, 5, 6, 7, 8, 9})
+                .companySignature(signatureInDTO.getSignature())
+                .studentSignature(signatureInDTO.getSignature())
                 .build();
 
         acceptationsDTO = new UnvalidatedAcceptationsDTO();
@@ -220,7 +219,7 @@ public class RootControllerTest {
                 .refusalMessage("")
                 .build();
 
-        contracts = new ArrayList<>(){{
+        contracts = new ArrayList<>() {{
             add(stageContractOutDTO);
             add(stageContractOutDTO);
             add(stageContractOutDTO);
@@ -1482,7 +1481,7 @@ public class RootControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(jsonTokenDTO.write(token).getJson()))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.size()",is(3)));
+                .andExpect(jsonPath("$.size()", is(3)));
     }
 
     @Test
@@ -1513,7 +1512,7 @@ public class RootControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(jsonTokenDTO.write(token).getJson()))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.size()",is(3)));
+                .andExpect(jsonPath("$.size()", is(3)));
     }
 
     @Test
@@ -1544,7 +1543,7 @@ public class RootControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(jsonSignatureDTO.write(signatureInDTO).getJson()))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.companySignature", is(byteToString(signatureInDTO.getSignature()))));
+                .andExpect(jsonPath("$.companySignature", is(signatureInDTO.getSignature())));
     }
 
     @Test
@@ -1585,7 +1584,7 @@ public class RootControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(jsonSignatureDTO.write(signatureInDTO).getJson()))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.studentSignature", is(byteToString(signatureInDTO.getSignature()))));
+                .andExpect(jsonPath("$.studentSignature", is(signatureInDTO.getSignature())));
     }
 
     @Test

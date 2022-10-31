@@ -284,8 +284,8 @@ public class GestionnaireService {
                 .companyId(company.getId())
                 .session(offer.getSession())
                 .description(description)
-                .companySignature(new byte[0])
-                .studentSignature(new byte[0])
+                .companySignature("")
+                .studentSignature("")
                 .build();
 
         stageContractRepository.save(stageContract);
