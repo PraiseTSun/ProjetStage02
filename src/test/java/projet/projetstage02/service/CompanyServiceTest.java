@@ -108,13 +108,13 @@ public class CompanyServiceTest {
                 .offerId(duffBeerOffer.getId())
                 .companyId(duffBeer.getId())
                 .description("Do a better job than Homer Simpson")
-                .companySignature(new byte[0])
+                .companySignature("Winner")
                 .build();
 
         signatureInDTO = SignatureInDTO.builder()
                 .userId(duffBeer.getId())
                 .contractId(stageContract.getId())
-                .signature(new byte[]{0,1,2,3,4,5,6,7,8,9})
+                .signature("Winner")
                 .build();
     }
 
@@ -378,7 +378,7 @@ public class CompanyServiceTest {
 
         assertThat(dto.getCompanyId()).isEqualTo(duffBeer.getId());
         assertThat(dto.getContractId()).isEqualTo(stageContract.getId());
-        assertThat(dto.getCompanySignature()).isEqualTo(byteToString(signatureInDTO.getSignature()));
+        assertThat(dto.getCompanySignature()).isEqualTo(signatureInDTO.getSignature());
     }
 
     @Test
@@ -427,13 +427,13 @@ public class CompanyServiceTest {
     void testGetContractHappyDay() throws NonExistentEntityException {
         when(companyRepository.findById(anyLong())).thenReturn(Optional.of(duffBeer));
         StageContract contractValid = StageContract.builder()
-                .id(1L).studentId(1L).offerId(1L).companyId(duffBeer.getId()).companySignature(new byte[0])
+                .id(1L).studentId(1L).offerId(1L).companyId(duffBeer.getId()).companySignature("")
                 .session(Offre.currentSession()).description("").companySignatureDate(LocalDateTime.now()).build();
         StageContract contractInvalid1 = StageContract.builder()
-                .id(1L).studentId(1L).offerId(1L).companyId(duffBeer.getId()).companySignature(new byte[0]).session("Hiver 2000")
+                .id(1L).studentId(1L).offerId(1L).companyId(duffBeer.getId()).companySignature("").session("Hiver 2000")
                 .description("").companySignatureDate(LocalDateTime.now()).build();
         StageContract contractInvalid2 = StageContract.builder()
-                .id(1L).studentId(1L).offerId(1L).companyId(duffBeer.getId()).companySignature(new byte[0]).session("Hiver 1997")
+                .id(1L).studentId(1L).offerId(1L).companyId(duffBeer.getId()).companySignature("").session("Hiver 1997")
                 .description("").companySignatureDate(LocalDateTime.now()).build();
         when(stageContractRepository.findByCompanyId(anyLong())).thenReturn(
                 new ArrayList<>(){{

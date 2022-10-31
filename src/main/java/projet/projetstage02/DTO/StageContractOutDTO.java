@@ -30,9 +30,9 @@ public class StageContractOutDTO {
         companyId = contact.getCompanyId();
         session = contact.getSession();
         description = contact.getDescription();
-        companySignature = byteToString(contact.getCompanySignature());
+        companySignature = contact.getCompanySignature();
         companySignatureDate = contact.getCompanySignatureDate() == null ? "" : contact.getCompanySignatureDate().toString();
-        studentSignature = byteToString(contact.getStudentSignature());
+        studentSignature = contact.getStudentSignature();
         studentSignatureDate = contact.getStudentSignatureDate() == null ? "" : contact.getStudentSignatureDate().toString();
     }
 }
