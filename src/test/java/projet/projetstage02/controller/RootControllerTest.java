@@ -1459,4 +1459,40 @@ public class RootControllerTest {
                         .content(jsonTokenDTO.write(token).getJson()))
                 .andExpect(status().isForbidden());
     }
+
+    @Test
+    void testGetStudentCvToValidateCompanyHappyDay() throws Exception {
+        when(authService.getToken(any(), any())).thenReturn(Token.builder().userId(1).build());
+        PdfOutDTO cv = new PdfOutDTO(1L, "[96,17,69]");
+        when(companyService.getStudentCv(anyLong())).thenReturn(cv);
+
+        mockMvc.perform(put("/company/studentCv/{studentId}", 1L)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(jsonTokenDTO.write(token).getJson()))
+                .andExpect(jsonPath("$.pdf", is("[96,17,69]")))
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    void testGetStudentCvToValidateCompanyNotFound() throws Exception {
+        when(authService.getToken(any(), any())).thenReturn(Token.builder().userId(1).build());
+        doThrow(new NonExistentEntityException()).
+                when(companyService).getStudentCv(anyLong());
+
+        mockMvc.perform(put("/company/studentCv/{studentId}", 1L)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(jsonTokenDTO.write(token).getJson()))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    void testGetStudentCvToValidateCompanyInvalidToken() throws Exception {
+        when(authService.getToken(any(), any())).thenThrow(new InvalidTokenException());
+
+        mockMvc.perform(put("/company/studentCv/{studentId}", 1L)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(jsonTokenDTO.write(token).getJson()))
+                .andExpect(status().isForbidden());
+    }
+
 }

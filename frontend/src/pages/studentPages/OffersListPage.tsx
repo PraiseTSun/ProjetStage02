@@ -124,7 +124,7 @@ const OffersListPage = ({connectedUser}:
                             <th>Salaire</th>
                             <th>Adresse</th>
                             <th>Offre</th>
-                            <th></th>
+                            <th>Appliquer</th>
                         </tr>
                         </thead>
                         <tbody className="bg-light">
@@ -142,13 +142,15 @@ const OffersListPage = ({connectedUser}:
                                     <td>
                                         {connectedUser.cv === null &&
                                             <p className="h4 text-danger">Vous n'avez pas de CV</p>}
-                                        {connectedUser.cv !== null && studentApplys.offersId.includes(offer.id) &&
-                                            <p className="h4 text-success">Déjà Postulé</p>}
-                                        {connectedUser.cv !== null && !studentApplys.offersId.includes(offer.id) &&
-                                            <Button
-                                                className="btn btn-success" onClick={async () => {
-                                                await applyToOffer(offer.id)
-                                            }}>Postuler</Button>}
+                                        {connectedUser.cv !== null &&
+                                            <>
+                                                {studentApplys.offersId.includes(offer.id) &&
+                                                    <p className="h4 text-success">Déjà Postulé</p>}
+                                                <Button disabled={studentApplys.offersId.includes(offer.id)}
+                                                        className="btn btn-success" onClick={async () => {
+                                                    await applyToOffer(offer.id)
+                                                }}>Postuler</Button>
+                                            </>}
                                     </td>
                                 </tr>
                             );
