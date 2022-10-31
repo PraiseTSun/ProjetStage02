@@ -761,4 +761,24 @@ public class RootController {
             return ResponseEntity.status(FORBIDDEN).build();
         }
     }
+
+    @PutMapping("/evaluateStage/{applicationId}/getInfo")
+    public ResponseEntity<EvaluationInfoDTO> getEvaluateStageInfo
+            (@PathVariable long applicationId, @RequestBody TokenDTO tokenId) {
+        try {
+            logger.log(Level.INFO, "put /evaluateStage/id/getInfo entered with id : " + applicationId);
+            authService.getToken(tokenId.getToken(), GESTIONNAIRE);
+            EvaluationInfoDTO evaluationInfoDTO = gestionnaireService.getEvaluationInfoForApplication(applicationId);
+            logger.log(Level.INFO, "PutMapping: /evaluateStage/id/getInfo sent 200 response");
+            return ResponseEntity.ok(evaluationInfoDTO);
+        } catch (InvalidTokenException e) {
+            logger.log(Level.INFO, "PutMapping: /evaluateStage/id/getInfo sent 403 response");
+            return ResponseEntity.status(FORBIDDEN).build();
+        } catch (NonExistentEntityException | NonExistentOfferExeption e) {
+            logger.log(Level.INFO, "PutMapping: /evaluateStage/id/getInfo sent 404 response");
+            return ResponseEntity.notFound().build();
+        }
+    }
+
+
 }

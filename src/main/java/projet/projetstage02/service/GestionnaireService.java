@@ -30,6 +30,8 @@ public class GestionnaireService {
     private final CvStatusRepository cvStatusRepository;
     private final OffreRepository offreRepository;
 
+    private final ApplicationRepository applicationRepository;
+
     public long saveGestionnaire(String firstname, String lastname, String email, String password) {
         GestionnaireDTO dto = GestionnaireDTO.builder()
                 .firstName(firstname)
@@ -256,5 +258,30 @@ public class GestionnaireService {
     public boolean isGestionnaireInvalid(String email) throws NonExistentEntityException {
         return !isEmailUnique(email)
                 && !deleteUnconfirmedGestionnaire(email);
+    }
+
+
+    public EvaluationInfoDTO getEvaluationInfoForApplication(long offreId) throws NonExistentOfferExeption, NonExistentEntityException {
+        Optional<Application> optional = applicationRepository.findById(offreId);
+        if (optional.isEmpty()) {
+            throw new NonExistentEntityException();
+        }
+        Application application = optional.get();
+        Optional<Offre> offreOptional = offreRepository.findById(application.getOfferId());
+        if (offreOptional.isEmpty()) {
+            throw new NonExistentOfferExeption();
+        }
+        Offre offre = offreOptional.get();
+        Optional<Student> optionalStudent = studentRepository.findById(application.getStudentId());
+        if (optionalStudent.isEmpty()) {
+            throw new NonExistentEntityException();
+        }
+        Student student = optionalStudent.get();
+        Optional<Company> optionalCompany = companyRepository.findById(offre.getIdCompagnie());
+        if (optionalCompany.isEmpty()) {
+            throw new NonExistentEntityException();
+        }
+        Company company = optionalCompany.get();
+        return new EvaluationInfoDTO(company, offre, student);
     }
 }
