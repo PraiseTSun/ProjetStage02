@@ -531,8 +531,22 @@ public class RootController {
             logger.log(Level.INFO, "PutMapping: /studentCv sent 404 response");
             return ResponseEntity.notFound().build();
         } catch (InvalidTokenException e) {
+            return ResponseEntity.status(FORBIDDEN).build();
+        }
+    }
+
+    @PutMapping("/company/studentCv/{studentId}")
+    private ResponseEntity<PdfOutDTO> getCvAsCompany(@PathVariable long studentId, @RequestBody TokenDTO tokenId) {
+        try {
+            authService.getToken(tokenId.getToken(), COMPANY);
+            PdfOutDTO cv = companyService.getStudentCv(studentId);
+            logger.log(Level.INFO, "PutMapping: /studentCv sent 200 response");
+            return ResponseEntity.ok(cv);
+        } catch (InvalidTokenException ex) {
             logger.log(Level.INFO, "PutMapping: /studentCv sent 403 response");
             return ResponseEntity.status(FORBIDDEN).build();
+        } catch (NonExistentEntityException ex) {
+            return ResponseEntity.notFound().build();
         }
     }
 

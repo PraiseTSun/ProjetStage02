@@ -4,9 +4,8 @@ import {Button, Col, Container, Row, Table} from "react-bootstrap";
 import PageHeader from "../../components/universalComponents/PageHeader";
 import IOffer from "../../models/IOffer";
 import {generateAlert} from "../../services/universalServices/UniversalUtilService";
-import {putCompanyOffers, putOfferApplications} from "../../services/companyServices/CompanyFetchService";
+import {putCompanyOffers, putOfferApplications, putStudentCv} from "../../services/companyServices/CompanyFetchService";
 import {Viewer} from "@react-pdf-viewer/core";
-import {putStudentCv} from "../../services/gestionnaireServices/GestionnaireFetchService";
 
 const CompanyOffersPage = ({connectedUser}: { connectedUser: IUser }): JSX.Element => {
     const [offers, setOffers] = useState<IOffer[]>([]);
@@ -37,8 +36,8 @@ const CompanyOffersPage = ({connectedUser}: { connectedUser: IUser }): JSX.Eleme
             const response: Response = await putOfferApplications(offerId, connectedUser.token);
 
             if (response.ok) {
-                const data: IUser[] = await response.json();
-                setStudents(data);
+                const data = await response.json();
+                setStudents(data.applicants);
             } else {
                 generateAlert()
             }
@@ -119,10 +118,10 @@ const CompanyOffersPage = ({connectedUser}: { connectedUser: IUser }): JSX.Eleme
                             </tr>
                             </thead>
                             <tbody>
-                            {students!.length === 0 &&
+                            {students.length === 0 &&
                                 <td colSpan={3}><h1>Aucun applicants</h1></td>
                             }
-                            {students!.length !== 0 &&
+                            {students.length !== 0 &&
                                 students!.map((student, index) => {
                                     return (
                                         <tr key={index}>
