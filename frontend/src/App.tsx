@@ -107,8 +107,7 @@ function App() {
                         <Route path="/uploaderCV" element={<StudentCvUploadPage connectedUser={connectedUser}/>}/>
                         <Route path="*"
                                element={<h1 className="min-vh-100 text-center text-white display-1 min-vh-100">404 -
-                                   Page pas
-                                   trouvé</h1>}/>
+                                   Page pas trouvé</h1>}/>
                     </Routes>
                 </BrowserRouter>
             </Container>

@@ -108,7 +108,7 @@ export const putUnvalidatedCvStudents = (token: string): Promise<Response> => {
     });
 }
 
-export const putStudentCv = (studentId: string, token: string): Promise<Response> => {
+export const putStudentUnvalidatedCv = (studentId: string, token: string): Promise<Response> => {
     return fetch("http://localhost:8080/studentCv/" + studentId, {
         method: "PUT",
         headers: {

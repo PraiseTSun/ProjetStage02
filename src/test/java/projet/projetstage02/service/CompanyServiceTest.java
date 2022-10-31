@@ -1,5 +1,7 @@
 package projet.projetstage02.service;
 
+import com.jayway.jsonpath.internal.path.PathCompiler;
+import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -14,6 +16,7 @@ import projet.projetstage02.model.*;
 import projet.projetstage02.repository.*;
 
 import java.util.ArrayList;
+import java.util.HexFormat;
 import java.util.List;
 import java.util.Optional;
 
@@ -448,5 +451,34 @@ public class CompanyServiceTest {
 
         // Assert
         assertThat(validatedOffers.size()).isEqualTo(0);
+    }
+
+    @Test
+    void testGetStudentCvToValidateSuccess() throws NonExistentEntityException {
+        // Arrange
+        String result = "[72,101,108,108,111,32,87,111,114,100]";
+        byte[] stored = HexFormat.of().parseHex("48656c6c6f20576f7264");
+        bart.setCv(stored);
+        when(studentRepository.findById(anyLong())).thenReturn(Optional.of(bart));
+
+        // Act
+        PdfOutDTO cv = companyService.getStudentCv(1L);
+
+        //
+        Assertions.assertThat(cv.getPdf()).isEqualTo(result);
+    }
+
+    @Test
+    void testGetStudentCvToValidateNotFound() {
+        // Arrange
+        when(studentRepository.findById(anyLong())).thenReturn(Optional.empty());
+
+        // Act
+        try {
+            companyService.getStudentCv(1L);
+        } catch (NonExistentEntityException e) {
+            return;
+        }
+        PathCompiler.fail("NonExistentUserException not caught");
     }
 }
