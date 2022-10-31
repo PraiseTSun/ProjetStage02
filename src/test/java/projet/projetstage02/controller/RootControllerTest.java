@@ -179,20 +179,20 @@ public class RootControllerTest {
                 .offerId(8L)
                 .build();
 
+        signatureInDTO = SignatureInDTO.builder()
+                .token(token.getToken())
+                .contractId(10L)
+                .userId(11L)
+                .signature("Winner")
+                .build();
+
         stageContractOutDTO = StageContractOutDTO.builder()
                 .contractId(9L)
                 .studentId(7L)
                 .offerId(8L)
                 .companyId(6L)
                 .description("description")
-                .companySignature(byteToString(new byte[]{0,1,2,3,4,5,6,7,8,9}))
-                .build();
-
-        signatureInDTO = SignatureInDTO.builder()
-                .token(token.getToken())
-                .contractId(10L)
-                .userId(11L)
-                .signature(new byte[]{0,1,2,3,4,5,6,7,8,9})
+                .companySignature(signatureInDTO.getSignature())
                 .build();
 
         acceptationsDTO = new UnvalidatedAcceptationsDTO();
@@ -1447,7 +1447,7 @@ public class RootControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(jsonSignatureDTO.write(signatureInDTO).getJson()))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.companySignature", is(byteToString(signatureInDTO.getSignature()))));
+                .andExpect(jsonPath("$.companySignature", is(signatureInDTO.getSignature())));
     }
 
     @Test
