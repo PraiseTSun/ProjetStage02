@@ -63,3 +63,17 @@ export const putStudentContracts = (studentId: string, session: string, token: s
         })
     });
 }
+
+export const putStudentSignatureContract =
+    (studentId: string, contractId: string, signature: string, token: string): Promise<Response> => {
+        return fetch("http://localhost:8080/studentSignatureContract", {
+            method: "PUT",
+            headers: {"Content-Type": "application/json"},
+            body: JSON.stringify({
+                userId: studentId,
+                contractId: contractId,
+                signature: signature,
+                token: token
+            })
+        });
+    }

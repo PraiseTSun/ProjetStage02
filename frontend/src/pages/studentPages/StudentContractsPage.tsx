@@ -3,7 +3,7 @@ import {Button, Col, Container, Row, Table} from "react-bootstrap";
 import React, {useCallback, useEffect, useState} from "react";
 import PageHeader from "../../components/universalComponents/PageHeader";
 import IContract from "../../models/IContract";
-import {putStudentContracts} from "../../services/studentServices/StudentFetchService";
+import {putStudentContracts, putStudentSignatureContract} from "../../services/studentServices/StudentFetchService";
 import {generateAlert} from "../../services/universalServices/UniversalUtilService";
 import SignaturePad from "react-signature-canvas"
 
@@ -11,6 +11,7 @@ const StudentContractsPage = ({connectedUser}: { connectedUser: IUser }): JSX.El
     const nextYear = new Date().getFullYear() + 1
     const [signing, setSigning] = useState<boolean>(false);
     const [contrats, setContrats] = useState<IContract[]>([]);
+    const [lastSelectedContract, setLastSelectedContract] = useState<IContract>();
     let sigPad: SignaturePad | null
 
     const fetchContracts = useCallback(async () => {
@@ -32,6 +33,26 @@ const StudentContractsPage = ({connectedUser}: { connectedUser: IUser }): JSX.El
         fetchContracts();
     }, [fetchContracts, connectedUser])
 
+    const signContract = async (signature: string): Promise<void> => {
+        try {
+            const response: Response = await
+                putStudentSignatureContract(connectedUser.id,
+                    lastSelectedContract!.contractId,
+                    signature,
+                    connectedUser.token)
+
+            if (response.ok) {
+                contrats[contrats.indexOf(lastSelectedContract!)].studentSignature = signature;
+                setContrats([...contrats])
+                setSigning(false)
+            } else {
+                generateAlert()
+            }
+
+        } catch {
+            generateAlert()
+        }
+    }
 
     if (signing) {
         return (
@@ -45,11 +66,7 @@ const StudentContractsPage = ({connectedUser}: { connectedUser: IUser }): JSX.El
                         if (sigPad!.isEmpty()) {
                             alert("Vous devez signer!")
                         } else {
-                            sigPad?.getCanvas().toBlob((blob) => {
-                                blob?.arrayBuffer().then((data) => {
-                                    console.log(new Uint8Array(data));
-                                })
-                            })
+                            signContract(sigPad!.toDataURL())
                         }
                     }}>Signer</Button></Col>
                 </Row>
@@ -88,16 +105,17 @@ const StudentContractsPage = ({connectedUser}: { connectedUser: IUser }): JSX.El
                                     <p className="h1">Aucun contrats</p>
                                 </td>
                             </tr>
-                            : contrats.map((contrat, index) => {
+                            : contrats.map((contract, index) => {
                                 return (
                                     <tr key={index}>
-                                        <td>{contrat.description}</td>
+                                        <td>{contract.description}</td>
                                         <td>
-                                            {contrat.studentSignature.length > 2 ?
+                                            {contract.studentSignature.length > 0 ?
                                                 <p className="text-success">Vous avez signé</p> :
                                                 <p className="text-danger">Vous n'avez pas signé!</p>}
-                                            <Button disabled={contrat.studentSignature.length > 2}
+                                            <Button disabled={contract.studentSignature.length > 0}
                                                     onClick={() => {
+                                                        setLastSelectedContract(contract);
                                                         setSigning(true)
                                                     }}>Signer</Button>
                                         </td>
