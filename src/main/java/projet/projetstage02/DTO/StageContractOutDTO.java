@@ -32,7 +32,7 @@ public class StageContractOutDTO {
         description = contact.getDescription();
         companySignature = contact.getCompanySignature();
         companySignatureDate = contact.getCompanySignatureDate() == null ? "" : contact.getCompanySignatureDate().toString();
-        studentSignature = byteToString(contact.getStudentSignature());
+        studentSignature = contact.getStudentSignature();
         studentSignatureDate = contact.getStudentSignatureDate() == null ? "" : contact.getStudentSignatureDate().toString();
     }
 }

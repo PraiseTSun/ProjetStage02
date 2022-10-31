@@ -91,13 +91,13 @@ public class StudentServiceTest {
                 .offerId(duffOffer.getId())
                 .companyId(99L)
                 .description("Do a better job than Homer Simpson")
-                .companySignature(new byte[0])
+                .companySignature("")
                 .build();
 
         signatureInDTO = SignatureInDTO.builder()
                 .userId(bart.getId())
                 .contractId(stageContract.getId())
-                .signature(new byte[]{0,1,2,3,4,5,6,7,8,9})
+                .signature("")
                 .build();
     }
 
@@ -513,13 +513,13 @@ public class StudentServiceTest {
     void testGetContractHappyDay() throws NonExistentEntityException {
         when(studentRepository.findById(anyLong())).thenReturn(Optional.of(bart));
         StageContract contractValid = StageContract.builder()
-                .id(1L).studentId(1L).offerId(1L).companyId(bart.getId()).companySignature(new byte[0])
+                .id(1L).studentId(1L).offerId(1L).companyId(bart.getId()).companySignature("")
                 .session(Offre.currentSession()).description("").companySignatureDate(LocalDateTime.now()).build();
         StageContract contractInvalid1 = StageContract.builder()
-                .id(1L).studentId(1L).offerId(1L).companyId(bart.getId()).companySignature(new byte[0]).session("Hiver 2000")
+                .id(1L).studentId(1L).offerId(1L).companyId(bart.getId()).companySignature("").session("Hiver 2000")
                 .description("").companySignatureDate(LocalDateTime.now()).build();
         StageContract contractInvalid2 = StageContract.builder()
-                .id(1L).studentId(1L).offerId(1L).companyId(bart.getId()).companySignature(new byte[0]).session("Hiver 1997")
+                .id(1L).studentId(1L).offerId(1L).companyId(bart.getId()).companySignature("").session("Hiver 1997")
                 .description("").companySignatureDate(LocalDateTime.now()).build();
         when(stageContractRepository.findByStudentId(anyLong())).thenReturn(
                 new ArrayList<>(){{
@@ -556,7 +556,7 @@ public class StudentServiceTest {
 
         assertThat(dto.getStudentId()).isEqualTo(bart.getId());
         assertThat(dto.getContractId()).isEqualTo(stageContract.getId());
-        assertThat(dto.getStudentSignature()).isEqualTo(byteToString(signatureInDTO.getSignature()));
+        assertThat(dto.getStudentSignature()).isEqualTo(signatureInDTO.getSignature());
     }
 
     @Test

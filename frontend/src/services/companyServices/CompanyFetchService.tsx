@@ -22,7 +22,7 @@ export const putcompanyContracts = (companyId: string, token: string, saison: st
 }
 
 
-export const putCompanySignatureContract = (token: string, companyId: string, contratId : number, signature : Array<number>): Promise<Response> => {
+export const putCompanySignatureContract = (token: string, companyId: string, contratId : number, signature : string): Promise<Response> => {
     console.log("signature dans put : " + signature)
     return fetch(`http://localhost:8080/companySignatureContract`, {
         method: "PUT",
@@ -30,7 +30,7 @@ export const putCompanySignatureContract = (token: string, companyId: string, co
             'Accept': 'application/json',
             'Content-Type': 'application/json',
         },
-        body: JSON.stringify({token: token, companyId: Number(companyId), stageContractId: contratId,signature })
+        body: JSON.stringify({token: token, userId: Number(companyId), contractId: contratId,signature : signature})
     })
 }
 

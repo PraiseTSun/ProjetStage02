@@ -36,13 +36,20 @@ const SignerEntenteDeStage = ({user}: { user: IUser }): JSX.Element => {
         setContratId(contratId)
     }
 
-    async function signer(signature : Array<number>): Promise<void> {
+    async function signer(signature: string): Promise<void> {
         console.log("dans la fonction signer : " + signature)
         console.log()
         setIsSigner(false)
         try {
             const response = await putCompanySignatureContract(user.token, user.id, contratId, signature)
             if (response.ok) {
+                contratsNonSigner.forEach(contrat =>{
+                    if(contrat.contractId === contratId){
+                        contrat.companySignature = signature;
+                        return;
+                    }
+                })
+                setContratsNonSigner([...contratsNonSigner])
                 alert("Félicitations vous avez signé le contrat")
             } else {
                 generateAlert()
@@ -64,12 +71,8 @@ const SignerEntenteDeStage = ({user}: { user: IUser }): JSX.Element => {
                         if (sigPad!.isEmpty()) {
                             alert("Vous devez signer!")
                         } else {
-                            sigPad?.getCanvas().toBlob((blob) => {
-                                blob?.arrayBuffer().then( (data) => {
-                                    signer( Array.from(new Uint8Array(data)));
-                                    console.log(Array.from(new Uint8Array(data)));
-                                })
-                            })
+                            console.log()
+                            signer(sigPad!.toDataURL())
                         }
                     }}>Signer</Button></Col>
                 </Row>
@@ -109,8 +112,6 @@ const SignerEntenteDeStage = ({user}: { user: IUser }): JSX.Element => {
                                 <th>Last Name</th>
                                 <th>Session</th>
                                 <th>Description</th>
-                                <th>Company Signature</th>
-                                <th>Company Signature Date</th>
                                 <th>Ententes</th>
                             </tr>
                             </thead>
@@ -122,12 +123,15 @@ const SignerEntenteDeStage = ({user}: { user: IUser }): JSX.Element => {
                                         <td>{user.lastName}</td>
                                         <td>{contrat.session}</td>
                                         <td>{contrat.description}</td>
-                                        <td>{contrat.companySignature}</td>
-                                        <td>{contrat.companySignatureDate}</td>
-                                        <td>
-                                            <Button className="btn btn-warning"
-                                                    onClick={async () => await getEntente(contrat.contractId)}>Signer</Button>
-                                        </td>
+                                        <td>{
+                                            contrat.companySignature.length > 0 ?
+                                                <p>Déjà signé</p>
+                                                :
+
+                                                <Button className="btn btn-warning"
+                                                        onClick={async () => await getEntente(contrat.contractId)}>Signer</Button>
+
+                                        }</td>
                                     </tr>
                                 );
                             })}

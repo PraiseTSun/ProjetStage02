@@ -196,6 +196,7 @@ public class RootControllerTest {
                 .companyId(6L)
                 .description("description")
                 .companySignature(signatureInDTO.getSignature())
+                .studentSignature(signatureInDTO.getSignature())
                 .build();
 
         acceptationsDTO = new UnvalidatedAcceptationsDTO();
@@ -1584,7 +1585,7 @@ public class RootControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(jsonSignatureDTO.write(signatureInDTO).getJson()))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.studentSignature", is(byteToString(signatureInDTO.getSignature()))));
+                .andExpect(jsonPath("$.studentSignature", is(signatureInDTO.getSignature())));
     }
 
     @Test
