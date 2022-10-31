@@ -29,8 +29,10 @@ public class StageContract {
     @Pattern(regexp = "^Hiver (\\d{4})$")
     private String session;
     private String description;
+    @Lob
     private byte[] companySignature;
     private LocalDateTime companySignatureDate;
+    @Lob
     private byte[] studentSignature;
     private LocalDateTime studentSignatureDate;
 }

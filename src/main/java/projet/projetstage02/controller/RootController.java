@@ -836,7 +836,7 @@ public class RootController {
         logger.log(Level.INFO, "Put /studentSignatureContract entered with SignatureInDTO: " + signatureInDTO);
 
         try {
-            authService.getToken(signatureInDTO.getToken(), COMPANY);
+            authService.getToken(signatureInDTO.getToken(), STUDENT);
             StageContractOutDTO dto = studentService.addSignatureToContract(signatureInDTO);
             logger.log(Level.INFO, "Put /studentSignatureContract sent request 200 : " + dto);
             return ResponseEntity.ok(dto);
