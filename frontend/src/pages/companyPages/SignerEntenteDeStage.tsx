@@ -3,21 +3,22 @@ import {Button, Col, Container, Row, Table} from "react-bootstrap";
 import {Link} from "react-router-dom";
 import IUser from "../../models/IUser";
 import {generateAlert} from "../../services/universalServices/UniversalUtilService";
-import {Viewer} from "@react-pdf-viewer/core";
 import {putcompanyContracts, putCompanySignatureContract} from "../../services/companyServices/CompanyFetchService";
+import SignaturePad from "react-signature-canvas";
 
 const SignerEntenteDeStage = ({user}: { user: IUser }): JSX.Element => {
     const [contratsNonSigner, setContratsNonSigner] = useState<any[]>([])
     const [isSigner, setIsSigner] = useState(false)
     const [contratId, setContratId] = useState(0)
     const nextYear: number = new Date().getFullYear() + 1
+    let sigPad: SignaturePad | null
+    const [signature, setSignature] = useState<any>([])
     useEffect(() => {
         const fetchCompanyContracts = async () => {
             try {
                 const response = await putcompanyContracts(user.id, user.token, "Hiver", nextYear)
                 if (response.ok) {
                     const data = await response.json();
-                    console.log(data)
                     setContratsNonSigner(data)
                 } else {
                     generateAlert()
@@ -37,7 +38,7 @@ const SignerEntenteDeStage = ({user}: { user: IUser }): JSX.Element => {
     async function signer(): Promise<void> {
         setIsSigner(false)
         try {
-            const response = await putCompanySignatureContract(user.token, user.id, contratId)
+            const response = await putCompanySignatureContract(user.token, user.id, contratId, signature)
             if (response.ok) {
                 alert("Félicitations vous avez signé le contrat")
             } else {
@@ -50,15 +51,37 @@ const SignerEntenteDeStage = ({user}: { user: IUser }): JSX.Element => {
 
     if (isSigner) {
         return (
-            <Container className="min-vh-100 bg-white p-0">
-                <div className="bg-dark p-2">
-                    <Button className="Btn btn-primary" onClick={async () => await signer()}>
-                        Fermer
-                    </Button>
-                </div>
-                <div>
-                    <Viewer fileUrl={""}/>
-                </div>
+            <Container className="vh-100">
+                <Row className="bg-dark p-2">
+                    <Col sm={1}><Button variant="danger" onClick={() => {
+                        setIsSigner(false)
+                    }}>Fermer</Button></Col>
+                    <Col sm={10}></Col>
+                    <Col sm={1}><Button variant="success" onClick={() => {
+                        if (sigPad!.isEmpty()) {
+                            alert("Vous devez signer!")
+                        } else {
+                            sigPad?.getCanvas().toBlob((blob) => {
+                                blob?.arrayBuffer().then((data) => {
+                                    setSignature(new Uint8Array(data));
+                                    signer();
+                                    console.log(new Uint8Array(data));
+                                })
+                            })
+                        }
+                    }}>Signer</Button></Col>
+                </Row>
+                <Row>
+                    <Col sm={4} className="mx-auto mt-3">
+                        <SignaturePad canvasProps={{width: 500, height: 200, className: 'border border-5 bg-light'}}
+                                      ref={(ref) => {
+                                          sigPad = ref
+                                      }}/>
+                        <Button onClick={() => {
+                            sigPad!.clear()
+                        }}>Recommencer</Button>
+                    </Col>
+                </Row>
             </Container>
         );
     }

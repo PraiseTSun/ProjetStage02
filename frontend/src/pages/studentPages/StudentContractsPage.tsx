@@ -45,8 +45,8 @@ const StudentContractsPage = ({connectedUser}: { connectedUser: IUser }): JSX.El
                         if (sigPad!.isEmpty()) {
                             alert("Vous devez signer!")
                         } else {
-                            sigPad?.getCanvas().toBlob((blob) => {
-                                blob?.arrayBuffer().then((data) => {
+                            sigPad?.getCanvas().toBlob((blob:any) => {
+                                blob?.arrayBuffer().then((data:any) => {
                                     console.log(new Uint8Array(data));
                                 })
                             })
