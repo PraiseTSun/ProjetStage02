@@ -2,22 +2,13 @@ package projet.projetstage02.service;
 
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
-import projet.projetstage02.DTO.ApplicationAcceptationDTO;
-import projet.projetstage02.DTO.CompanyDTO;
-import projet.projetstage02.DTO.OfferAcceptedStudentsDTO;
-import projet.projetstage02.DTO.OffreDTO;
+import projet.projetstage02.DTO.*;
 import projet.projetstage02.exception.AlreadyExistingAcceptationException;
 import projet.projetstage02.exception.NonExistentEntityException;
 import projet.projetstage02.exception.NonExistentOfferExeption;
 import projet.projetstage02.model.AbstractUser.Department;
-import projet.projetstage02.model.ApplicationAcceptation;
-import projet.projetstage02.model.Company;
-import projet.projetstage02.model.Offre;
-import projet.projetstage02.model.Student;
-import projet.projetstage02.repository.ApplicationAcceptationRepository;
-import projet.projetstage02.repository.CompanyRepository;
-import projet.projetstage02.repository.OffreRepository;
-import projet.projetstage02.repository.StudentRepository;
+import projet.projetstage02.model.*;
+import projet.projetstage02.repository.*;
 
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
@@ -25,8 +16,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import static projet.projetstage02.utils.TimeUtil.MILLI_SECOND_DAY;
-import static projet.projetstage02.utils.TimeUtil.currentTimestamp;
+import static projet.projetstage02.utils.TimeUtil.*;
 
 @Service
 @AllArgsConstructor
@@ -35,18 +25,19 @@ public class CompanyService {
     private final OffreRepository offreRepository;
     private final StudentRepository studentRepository;
     private final ApplicationAcceptationRepository applicationAcceptationRepository;
+    private final ApplicationRepository applicationRepository;
 
-    public long createOffre(OffreDTO offreDTO) {
+    public long createOffre(OffreInDTO offreInDTO) {
         Offre offre = Offre.builder()
-                .nomDeCompagnie(offreDTO.getNomDeCompagnie())
-                .idCompagnie(offreDTO.getCompanyId())
-                .department(Department.getDepartment(offreDTO.getDepartment()))
-                .position(offreDTO.getPosition())
-                .heureParSemaine(offreDTO.getHeureParSemaine())
-                .salaire(offreDTO.getSalaire())
-                .session(offreDTO.getSession())
-                .adresse(offreDTO.getAdresse())
-                .pdf(offreDTO.getPdf())
+                .nomDeCompagnie(offreInDTO.getNomDeCompagnie())
+                .idCompagnie(offreInDTO.getCompanyId())
+                .department(Department.getDepartment(offreInDTO.getDepartment()))
+                .position(offreInDTO.getPosition())
+                .heureParSemaine(offreInDTO.getHeureParSemaine())
+                .salaire(offreInDTO.getSalaire())
+                .session(offreInDTO.getSession())
+                .adresse(offreInDTO.getAdresse())
+                .pdf(offreInDTO.getPdf())
                 .build();
 
         return offreRepository.save(offre).getId();
@@ -149,5 +140,32 @@ public class CompanyService {
                 .offerId(offre.getId())
                 .studentsId(studentsId)
                 .build();
+    }
+
+    public OfferApplicationDTO getStudentsForOffer(long offerId) throws NonExistentOfferExeption {
+        if (offreRepository.findById(offerId).isEmpty()) {
+            throw new NonExistentOfferExeption();
+        }
+
+        List<StudentOutDTO> studentDTOS = new ArrayList<>();
+        applicationRepository.findByOfferId(offerId).stream()
+                .map(Application::getStudentId)
+                .forEach(id -> {
+                    Optional<Student> studentOpt = studentRepository.findById(id);
+                    if (studentOpt.isEmpty()) return;
+                    studentDTOS.add(new StudentOutDTO(studentOpt.get()));
+                });
+        return new OfferApplicationDTO(studentDTOS);
+    }
+
+    public List<OffreOutDTO> getValidatedOffers(long id) {
+        List<OffreOutDTO> offres = new ArrayList<>();
+        offreRepository.findAllByIdCompagnie(id).stream().
+                filter(offre ->
+                        offre.isValide() && isRightSession(offre.getSession(), getNextYear()))
+                .forEach(offre ->
+                        offres.add(new OffreOutDTO(offre)));
+        offres.forEach(offre -> offre.setPdf("[]"));
+        return offres;
     }
 }
