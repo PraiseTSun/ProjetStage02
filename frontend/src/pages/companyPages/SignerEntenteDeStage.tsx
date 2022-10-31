@@ -12,7 +12,8 @@ const SignerEntenteDeStage = ({user}: { user: IUser }): JSX.Element => {
     const [contratId, setContratId] = useState(0)
     const nextYear: number = new Date().getFullYear() + 1
     let sigPad: SignaturePad | null
-    const [signature, setSignature] = useState<any>([])
+    const [signature, setSignature] = useState<Uint8Array>(new Uint8Array([]))
+
     useEffect(() => {
         const fetchCompanyContracts = async () => {
             try {
@@ -35,7 +36,9 @@ const SignerEntenteDeStage = ({user}: { user: IUser }): JSX.Element => {
         setContratId(contratId)
     }
 
-    async function signer(): Promise<void> {
+    async function signer(signature : Array<number>): Promise<void> {
+        console.log("dans la fonction signer : " + signature)
+        console.log()
         setIsSigner(false)
         try {
             const response = await putCompanySignatureContract(user.token, user.id, contratId, signature)
@@ -62,10 +65,9 @@ const SignerEntenteDeStage = ({user}: { user: IUser }): JSX.Element => {
                             alert("Vous devez signer!")
                         } else {
                             sigPad?.getCanvas().toBlob((blob) => {
-                                blob?.arrayBuffer().then((data) => {
-                                    setSignature(new Uint8Array(data));
-                                    signer();
-                                    console.log(new Uint8Array(data));
+                                blob?.arrayBuffer().then( (data) => {
+                                    signer( Array.from(new Uint8Array(data)));
+                                    console.log(Array.from(new Uint8Array(data)));
                                 })
                             })
                         }
