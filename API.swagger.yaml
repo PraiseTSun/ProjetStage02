@@ -1413,9 +1413,7 @@ paths:
               commentaires:
                 type: string
               signature:
-                type: array
-                items:
-                  type: number
+                type: number
               dateSignature:
                 type: string
       produces:
