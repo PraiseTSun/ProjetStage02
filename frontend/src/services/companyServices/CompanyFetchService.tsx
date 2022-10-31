@@ -40,3 +40,25 @@ export const putOfferApplications = (offerId: string, token: string): Promise<Re
         body: JSON.stringify({"token": token})
     });
 }
+
+export const putStudentAcceptation = (offerId: string, studentId: string, token: string): Promise<Response> => {
+    return fetch(`http://localhost:8080/studentAcceptation/${offerId}_${studentId}`, {
+        method: "PUT",
+        headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({"token": token})
+    });
+}
+
+export const putAcceptedStudentsForOffer = (offerId: string, token: string): Promise<Response> => {
+    return fetch(`http://localhost:8080/getAcceptedStudentsForOffer/${offerId}`, {
+        method: "PUT",
+        headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({"token": token})
+    });
+}

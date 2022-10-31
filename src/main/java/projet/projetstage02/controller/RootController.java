@@ -701,8 +701,11 @@ public class RootController {
         } catch (AlreadyExistingAcceptationException e) {
             logger.log(Level.INFO, "Put /studentAcceptation/{offerId}_{studentId} sent 409 response");
             return ResponseEntity.status(CONFLICT).build();
-        } catch (Exception e) {
+        } catch (NonExistentEntityException e) {
             logger.log(Level.INFO, "Put /studentAcceptation/{offerId}_{studentId} sent 404 response");
+            return ResponseEntity.notFound().build();
+        } catch (NonExistentOfferExeption e) {
+            logger.log(Level.INFO, "Put /studentAcceptation/{offerId}_{studentId} sent 404 response : ");
             return ResponseEntity.notFound().build();
         }
     }
