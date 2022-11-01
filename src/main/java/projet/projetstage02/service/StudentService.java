@@ -129,7 +129,7 @@ public class StudentService {
         if (offerOpt.isEmpty())
             throw new NonExistentEntityException();
         Offre offre = offerOpt.get();
-        String cv = Arrays.toString(offre.getPdf()).replaceAll("\\s+", "");
+        String cv = byteToString(offre.getPdf());
         return new PdfOutDTO(offre.getId(), cv);
     }
 

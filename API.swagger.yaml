@@ -1315,13 +1315,143 @@ paths:
                   type: boolean
         403:
           description: Token invalide
-  /evaluateStage/{offreId}/getInfo:
+  /createStageContract:
+    post:
+      summary: Céer un entente de stage (Doit avoir un token gestionnaire)
+      parameters:
+        - in: body
+          name: StageContractInDTO
+          description: dto de StageContract en input
+          schema:
+            type: object
+            properties:
+              token:
+                type: string
+              studentId:
+                type: number
+              offerId:
+                type: number
+      produces:
+        - application/json
+      responses:
+        200:
+          description: L'entante de stage a été créé
+        403:
+          description: Token invalide ou expiré
+        404:
+          description: L'étudiant avec cet id n'existe pas ou l'offre avec cette id n'existe pas
+        409:
+          description: L'entante de stage existe déjà
+  /unvalidatedAcceptations:
+    put:
+      summary: Renvoi la liste des postulations acceptées (Doit avoir un token gestionnaire)
+      parameters:
+        - in: body
+          name: token
+          description: Token valide du Gestionnaire
+          schema:
+            type: object
+            properties:
+              token:
+                type: string
+      produces:
+        - application/json
+      responses:
+        200:
+          description: Renvoi la liste des postulations acceptées
+          schema:
+            properties:
+              applications:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    studentId:
+                      type: number
+                    offerId:
+                      type: number
+                    employFullName:
+                      type: string
+                    companyName:
+                      type: string
+                    studentFullName:
+                      type: string
+                    position:
+                      type: string
+        403:
+          description: Token invalide ou expiré
+  /companyContracts/{companyId}:
+    put:
+      summary: Renvoie les contracts qui appartient à la compagnie (Doit avoir un token Company)
+      parameters:
+        - in: path
+          name: compagnyId
+          description: id de la compagnie
+          type: string
+          required: true
+        - in: body
+          name: token
+          description: Token valide de la compagnie
+          schema:
+            type: object
+            properties:
+              token:
+                type: string
+      produces:
+        - application/json
+      responses:
+        200:
+          description: Renvoie les contracts qui appartient à la compagnie
+        403:
+          description: Token invalide ou expiré
+        404:
+          description: La compagnie n'existe pas
+  /companySignatureContract:
+    put:
+      summary: Revoie l'entente de stage signé par la compagnie et l'étudiant s'il a déjà signé (Doit avoir un token Company)
+      parameters:
+        - in: body
+          name: CompanySignatureInDTO
+          description: La dto contenant la signature de la compagnie
+          schema:
+            type: object
+            properties:
+              companyId:
+                type: number
+              stageContractId:
+                type: number
+              signature:
+                type: array
+                items:
+                  type: number
+          required: true
+        - in: body
+          name: token
+          description: Token valide de la compagnie
+          schema:
+            type: object
+            properties:
+              token:
+                type: string
+      produces:
+        - application/json
+      responses:
+        200:
+          description: Revoie l'entente de stage signé par la compagnie et l'étudiant s'il a déjà signé
+        403:
+          description: Token invalide ou expiré
+        404:
+          description: La compagnie n'existe pas ou le contract n'existe pas
+        409:
+          description: Le contract n'appartient pas à la compagnie
+
+  /evaluateStage/{contractId}/getInfo:
     put:
       summary: Revoie les informations necessaires pour l'évaluation (Doit avoir un token Gestionnaire)
       parameters:
         - in: path
           name: id
-          description: id de l'offre
+          description: id de l'entente de stage
           type: number
           required: true
         - in: body

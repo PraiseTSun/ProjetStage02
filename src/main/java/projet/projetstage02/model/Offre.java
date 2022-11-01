@@ -44,6 +44,8 @@ public class Offre {
     private int salaire;
 
     @NotBlank
+    private String dateStage;
+    @NotBlank
     @Size(min = 2)
     private String adresse;
     private boolean valide;

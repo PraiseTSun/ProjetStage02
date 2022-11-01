@@ -23,7 +23,6 @@ import projet.projetstage02.service.StudentService;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import static org.hamcrest.core.Is.is;
@@ -63,6 +62,7 @@ public class RootControllerTest {
     JacksonTester<TokenDTO> jsonTokenDTO;
     JacksonTester<CvRefusalDTO> jsonCvRefusalDTO;
     JacksonTester<PdfDTO> jsonPdfDTO;
+    JacksonTester<SignatureInDTO> jsonSignatureDTO;
 
     StudentInDTO bart;
     StudentOutDTO bartOut;
@@ -79,6 +79,10 @@ public class RootControllerTest {
     ApplicationListDTO bartApplys;
     ApplicationAcceptationDTO applicationDTO;
     OfferAcceptedStudentsDTO acceptedStudentsDTO;
+    StageContractInDTO stageContractInDTO;
+    StageContractOutDTO stageContractOutDTO;
+    SignatureInDTO signatureInDTO;
+    ContractsDTO contractsDTO;
     OfferApplicationDTO offerApplicationDTO;
 
     CvStatusDTO cvStatusDTO;
@@ -167,7 +171,7 @@ public class RootControllerTest {
 
         bartApplys = ApplicationListDTO.builder()
                 .studentId(bart.getId())
-                .offersId(Arrays.asList(duffOffre.getId()))
+                .offersId(List.of(duffOffre.getId()))
                 .build();
 
         cvRefusalDTO = CvRefusalDTO.builder()
@@ -200,6 +204,30 @@ public class RootControllerTest {
                 .status("ACCEPTED")
                 .refusalMessage("")
                 .build();
+
+        stageContractInDTO = StageContractInDTO.builder()
+                .studentId(7L)
+                .offerId(8L)
+                .build();
+
+        stageContractOutDTO = StageContractOutDTO.builder()
+                .id(9L)
+                .studentId(7L)
+                .offerId(8L)
+                .companyId(6L)
+                .description("description")
+                .companySignature(byteToString(new byte[]{0, 1, 2, 3, 4, 5, 6, 7, 8, 9}))
+                .build();
+
+        signatureInDTO = SignatureInDTO.builder()
+                .token(token.getToken())
+                .contractId(10L)
+                .userId(11L)
+                .signature(byteToString(new byte[]{0, 1, 2, 3, 4, 5, 6, 7, 8, 9}))
+                .build();
+
+        contractsDTO = new ContractsDTO();
+        contractsDTO.add(stageContractOutDTO);
     }
 
     @Test
@@ -1495,4 +1523,118 @@ public class RootControllerTest {
                 .andExpect(status().isForbidden());
     }
 
+
+    @Test
+    void testCreateStageContactHappyDay() throws Exception {
+        when(gestionnaireService.createStageContract(any())).thenReturn(stageContractOutDTO);
+
+        mockMvc.perform(post("/createStageContract")
+                        .contentType(MediaType.APPLICATION_JSON)
+//                        .content(jsonStageDTO.write(stageContractInDTO).getJson())
+                        .content(jsonTokenDTO.write(token).getJson()))
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.id", is((int) stageContractOutDTO.getId())));
+    }
+
+    @Test
+    void testCreateStageContactUserNotFound() throws Exception {
+        when(gestionnaireService.createStageContract(any())).thenThrow(new NonExistentEntityException());
+
+        mockMvc.perform(post("/createStageContract", stageContractInDTO)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(jsonTokenDTO.write(token).getJson()))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    void testCreateStageContactOfferNotFound() throws Exception {
+        when(gestionnaireService.createStageContract(any())).thenThrow(new NonExistentOfferExeption());
+
+        mockMvc.perform(post("/createStageContract", stageContractInDTO)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(jsonTokenDTO.write(token).getJson()))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    void testCreateStageContactConflict() throws Exception {
+        when(gestionnaireService.createStageContract(any())).thenThrow(new AlreadyExistingStageContractException());
+
+        mockMvc.perform(post("/createStageContract", stageContractInDTO)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(jsonTokenDTO.write(token).getJson()))
+                .andExpect(status().isConflict());
+    }
+
+    @Test
+    void testCreateStageContactInvalidToken() throws Exception {
+        when(authService.getToken(any(), any())).thenThrow(new InvalidTokenException());
+
+        mockMvc.perform(post("/createStageContract", stageContractInDTO)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(jsonTokenDTO.write(token).getJson()))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    void testCompanyContractSignatureHappyDay() throws Exception {
+        when(companyService.addSignatureToContract(any())).thenReturn(stageContractOutDTO);
+
+        mockMvc.perform(put("/companySignatureContract")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(jsonSignatureDTO.write(signatureInDTO).getJson()))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.companySignature", is(signatureInDTO.getSignature())));
+    }
+
+    @Test
+    void testCompanyContractSignatureNotFound() throws Exception {
+        when(companyService.addSignatureToContract(any())).thenThrow(new NonExistentEntityException());
+
+        mockMvc.perform(put("/companySignatureContract")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(jsonSignatureDTO.write(signatureInDTO).getJson()))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    void testCompanyContractSignatureConflict() throws Exception {
+        when(companyService.addSignatureToContract(any())).thenThrow(new InvalidOwnershipException());
+
+        mockMvc.perform(put("/companySignatureContract")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(jsonSignatureDTO.write(signatureInDTO).getJson()))
+                .andExpect(status().isConflict());
+    }
+
+    @Test
+    void testCompanyContractSignatureInvalidToken() throws Exception {
+        when(authService.getToken(any(), any())).thenThrow(new InvalidTokenException());
+
+        mockMvc.perform(put("/companySignatureContract")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(jsonSignatureDTO.write(signatureInDTO).getJson()))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    void testGetUnvalidatedAcceptationsHappyDay() throws Exception {
+        when(gestionnaireService.getContractsToCreate()).thenReturn(contractsDTO);
+
+        mockMvc.perform(put("/contractsToCreate")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(jsonTokenDTO.write(token).getJson()))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.applications.size()", is(1)));
+    }
+
+    @Test
+    void testGetUnvalidatedAcceptationsInvalidToken() throws Exception {
+        when(authService.getToken(any(), any())).thenThrow(new InvalidTokenException());
+
+        mockMvc.perform(put("/contractsToCreate")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(jsonTokenDTO.write(token).getJson()))
+                .andExpect(status().isForbidden());
+    }
 }
