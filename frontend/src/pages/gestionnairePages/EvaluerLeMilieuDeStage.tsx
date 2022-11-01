@@ -14,9 +14,10 @@ import {
 
 const EvaluerLeMilieuDeStage = ({user}: { user: IUser }): JSX.Element => {
     const [contrats, setContrats] = useState<IOffer[]>([]);
-    const [afficheFormulaire, setAfficheFormuaire] = useState(false)
-    const [waiting, setWaiting] = useState(false);
-    const [validated, setValidated] = useState(false);
+    const [afficheFormulaire, setAfficheFormuaire] = useState<boolean>(false)
+    const [waiting, setWaiting] = useState<boolean>(false);
+    const [validated, setValidated] = useState<boolean>(false);
+    const [showSignature, setShowSignature] = useState<boolean>(false);
     // varialbles pour formulaire la partie identification de l'entreprise
     const [infosContrat, setInfosContrat] = useState<InfoDuContrat>({
         adresse: "",
@@ -171,6 +172,38 @@ const EvaluerLeMilieuDeStage = ({user}: { user: IUser }): JSX.Element => {
             </div>
         );
     }
+
+    // if (showSignature) {
+    //     return (
+    //         <Container className="vh-100">
+    //             <Row className="bg-dark p-2">
+    //                 <Col sm={1}><Button variant="danger" onClick={() => {
+    //                     setShowSignature(false)
+    //                 }}>Fermer</Button></Col>
+    //                 <Col sm={10}></Col>
+    //                 <Col sm={1}><Button variant="success" onClick={() => {
+    //                     if (sigPad!.isEmpty()) {
+    //                         alert("Vous devez signer!")
+    //                     } else {
+    //                         signer(sigPad!.toDataURL())
+    //                     }
+    //                 }}>Signer</Button></Col>
+    //             </Row>
+    //             <Row>
+    //                 <Col sm={4} className="mx-auto mt-3">
+    //                     <SignaturePad canvasProps={{width: 500, height: 200, className: 'border border-5 bg-light'}}
+    //                                   ref={(ref) => {
+    //                                       sigPad = ref
+    //                                   }}/>
+    //                     <Button onClick={() => {
+    //                         sigPad!.clear()
+    //                     }}>Recommencer</Button>
+    //                 </Col>
+    //             </Row>
+    //         </Container>
+    //     );
+    // }
+    //
     if (afficheFormulaire) {
         return (
             <Container className="min-vh-100">
@@ -619,12 +652,9 @@ const EvaluerLeMilieuDeStage = ({user}: { user: IUser }): JSX.Element => {
                                     <Row className="mt-3">
                                         <Col>
                                             <Form.Group>
-                                                <Form.Control type="text" minLength={6} required value={signature}
-                                                              onChange={e => setSignature(e.target.value)}></Form.Control>
                                                 <Form.Label className="fw-bold h5">Signature de l'enseignant responsable
                                                     du stagiaire</Form.Label>
-                                                <Form.Control.Feedback type="invalid">Champ
-                                                    requis</Form.Control.Feedback>
+                                                <Button onClick={()=>{setShowSignature(true)}}>Signer</Button>
                                             </Form.Group>
                                         </Col>
                                         <Col>
