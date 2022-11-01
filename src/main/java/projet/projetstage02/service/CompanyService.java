@@ -164,11 +164,17 @@ public class CompanyService {
         return new StageContractOutDTO(stageContract);
     }
 
-    public OfferApplicationDTO getStudentsForOffer(long offerId) throws NonExistentOfferExeption {
-        if (offreRepository.findById(offerId).isEmpty()) {
+    public OfferApplicationDTO getStudentsForOffer(long offerId) throws NonExistentOfferExeption, NonExistentEntityException {
+        Optional<Offre> optionalOffre = offreRepository.findById(offerId);
+        if (optionalOffre.isEmpty()) {
             throw new NonExistentOfferExeption();
         }
-
+        Offre offre = optionalOffre.get();
+        Optional<Company> optionalCompany = companyRepository.findById(offre.getIdCompagnie());
+        if (optionalCompany.isEmpty()) {
+            throw new NonExistentEntityException();
+        }
+        Company company = optionalCompany.get();
         List<StudentOutDTO> studentDTOS = new ArrayList<>();
         applicationRepository.findByOfferId(offerId).stream()
                 .map(Application::getStudentId)
@@ -177,7 +183,11 @@ public class CompanyService {
                     if (studentOpt.isEmpty()) return;
                     studentDTOS.add(new StudentOutDTO(studentOpt.get()));
                 });
-        return new OfferApplicationDTO(studentDTOS);
+
+        List<StudentOutDTO> toReturn = studentDTOS.stream()
+                .filter(student -> stageContractRepository.findByStudentIdAndCompanyIdAndOfferId(offerId, student.getId(), company.getId()).isEmpty())
+                .toList();
+        return new OfferApplicationDTO(toReturn);
     }
 
     public List<OffreOutDTO> getValidatedOffers(long id) {

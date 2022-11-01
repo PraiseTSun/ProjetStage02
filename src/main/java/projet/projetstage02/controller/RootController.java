@@ -799,7 +799,7 @@ public class RootController {
         } catch (InvalidTokenException e) {
             logger.log(Level.INFO, "/offer/{id}/applications sent 403 response");
             return ResponseEntity.status(FORBIDDEN).build();
-        } catch (NonExistentOfferExeption e) {
+        } catch (NonExistentOfferExeption | NonExistentEntityException e) {
             logger.log(Level.INFO, "/offer/{id}/applications sent 404 response");
             return ResponseEntity.notFound().build();
         }
