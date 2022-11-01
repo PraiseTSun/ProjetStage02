@@ -32,8 +32,10 @@ public class StageContract {
     @Lob
     private String companySignature;
     private LocalDateTime companySignatureDate;
+    @Lob
     private String gestionnaireSignature;
     private LocalDateTime gestionnaireSignatureDate;
+    @Lob
     private String studentSignature;
     private LocalDateTime studentSignatureDate;
 }
