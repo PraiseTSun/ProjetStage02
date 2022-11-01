@@ -84,6 +84,7 @@ public class GestionnaireServiceTest {
                 .position("Stagiaire test backend")
                 .heureParSemaine(40)
                 .salaire(40)
+                .dateStage("2021-01-01")
                 .session(Offre.currentSession())
                 .adresse("69 shitty street")
                 .pdf(new byte[0])
@@ -829,4 +830,87 @@ public class GestionnaireServiceTest {
 
         assertThat(dto.size()).isEqualTo(3);
     }
+
+
+    @Test
+    void testGetEvalInfoHappyDay() throws NonExistentOfferExeption, NonExistentEntityException {
+        when(studentRepository.findById(anyLong())).thenReturn(Optional.of(studentTest));
+        when(offreRepository.findById(anyLong())).thenReturn(Optional.of(offerTest));
+        when(companyRepository.findById(anyLong())).thenReturn(Optional.of(companyTest));
+        when(stageContractRepository.findById(anyLong())).thenReturn(Optional.of(stageContract));
+
+        EvaluationInfoDTO dto = gestionnaireService.getEvaluationInfoForContract(1L);
+
+        assertThat(dto.getAdresse()).isEqualTo(offerTest.getAdresse());
+        assertThat(dto.getNomCompagnie()).isEqualTo(companyTest.getCompanyName());
+        assertThat(dto.getPrenomEtudiant()).isEqualTo(studentTest.getFirstName());
+        assertThat(dto.getNomEtudiant()).isEqualTo(studentTest.getLastName());
+        assertThat(dto.getSalaire()).isEqualTo(offerTest.getSalaire());
+        assertThat(dto.getPoste()).isEqualTo(offerTest.getPosition());
+        assertThat(dto.getAdresse()).isEqualTo(offerTest.getAdresse());
+        assertThat(dto.getDateStage()).isEqualTo(offerTest.getDateStage());
+        assertThat(dto.getEmailCompagnie()).isEqualTo(companyTest.getEmail());
+        assertThat(dto.getEmailEtudiant()).isEqualTo(studentTest.getEmail());
+        assertThat(dto.getDepartement()).isEqualTo(offerTest.getDepartment().departement);
+        assertThat(dto.getHeureParSemaine()).isEqualTo(offerTest.getHeureParSemaine());
+        assertThat(dto.getPrenomContact()).isEqualTo(companyTest.getFirstName());
+        assertThat(dto.getNomContact()).isEqualTo(companyTest.getLastName());
+        assertThat(dto.getSession()).isEqualTo(offerTest.getSession());
+    }
+
+    @Test
+    void testGetEvalInfoContractNotFound() throws NonExistentOfferExeption {
+        when(stageContractRepository.findById(anyLong())).thenReturn(Optional.empty());
+
+        try {
+            gestionnaireService.getEvaluationInfoForContract(1L);
+        } catch (NonExistentEntityException e) {
+            return;
+        }
+        fail("NonExistentEntityException not thrown");
+    }
+
+    @Test
+    void testGetEvalInfoOfferNotFound() throws NonExistentEntityException {
+        when(offreRepository.findById(anyLong())).thenReturn(Optional.empty());
+        when(stageContractRepository.findById(anyLong())).thenReturn(Optional.of(stageContract));
+
+        try {
+            gestionnaireService.getEvaluationInfoForContract(1L);
+        } catch (NonExistentOfferExeption e) {
+            return;
+        }
+        fail("NonExistentEntityException not thrown");
+    }
+
+    @Test
+    void testGetEvalInfoStudentNotFound() throws NonExistentOfferExeption {
+        when(stageContractRepository.findById(anyLong())).thenReturn(Optional.of(stageContract));
+        when(offreRepository.findById(anyLong())).thenReturn(Optional.of(offerTest));
+        when(studentRepository.findById(anyLong())).thenReturn(Optional.empty());
+
+        try {
+            gestionnaireService.getEvaluationInfoForContract(1L);
+        } catch (NonExistentEntityException e) {
+            return;
+        }
+        fail("NonExistentEntityException not thrown");
+    }
+
+    @Test
+    void testGetEvalInfoCompanyNotFound() throws NonExistentOfferExeption {
+        when(stageContractRepository.findById(anyLong())).thenReturn(Optional.of(stageContract));
+        when(offreRepository.findById(anyLong())).thenReturn(Optional.of(offerTest));
+        when(studentRepository.findById(anyLong())).thenReturn(Optional.of(studentTest));
+        when(companyRepository.findById(anyLong())).thenReturn(Optional.empty());
+
+        try {
+            gestionnaireService.getEvaluationInfoForContract(1L);
+        } catch (NonExistentEntityException e) {
+            return;
+        }
+        fail("NonExistentEntityException not thrown");
+    }
+
+
 }

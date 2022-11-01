@@ -63,6 +63,7 @@ public class RootControllerTest {
     JacksonTester<CvRefusalDTO> jsonCvRefusalDTO;
     JacksonTester<PdfDTO> jsonPdfDTO;
     JacksonTester<SignatureInDTO> jsonSignatureDTO;
+    JacksonTester<EvaluationInfoDTO> jsonEvaluationInfoDTO;
 
     StudentInDTO bart;
     StudentOutDTO bartOut;
@@ -86,6 +87,7 @@ public class RootControllerTest {
     OfferApplicationDTO offerApplicationDTO;
 
     CvStatusDTO cvStatusDTO;
+    EvaluationInfoDTO evalInfoDTO;
 
     // https://thepracticaldeveloper.com/guide-spring-boot-controller-tests/
     @BeforeEach
@@ -134,6 +136,7 @@ public class RootControllerTest {
                 .position("Delivery Guy")
                 .heureParSemaine(40)
                 .salaire(40)
+                .dateStage("2021-05-01")
                 .session("Hiver 2022")
                 .adresse("654 Duff Street")
                 .pdf(new byte[0])
@@ -228,6 +231,9 @@ public class RootControllerTest {
 
         contractsDTO = new ContractsDTO();
         contractsDTO.add(stageContractOutDTO);
+
+        evalInfoDTO = new EvaluationInfoDTO(duffBeer.toModel(), duffOffre.toModel(), bart.toModel());
+
     }
 
     @Test
@@ -1637,4 +1643,26 @@ public class RootControllerTest {
                         .content(jsonTokenDTO.write(token).getJson()))
                 .andExpect(status().isForbidden());
     }
+
+    @Test
+    void testGetEvaluationInfoHappyDay() throws Exception {
+        when(gestionnaireService.getEvaluationInfoForContract(anyLong())).thenReturn(evalInfoDTO);
+
+        mockMvc.perform(put("/evaluateStage/{contractId}/getInfo", 1L)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(jsonTokenDTO.write(token).getJson()))
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.nomCompagnie", is(duffBeer.getCompanyName())));
+    }
+
+    @Test
+    void testGetEvaluationInfoNotFound() throws Exception {
+        when(gestionnaireService.getEvaluationInfoForContract(anyLong())).thenThrow(new NonExistentEntityException());
+
+        mockMvc.perform(put("/evaluateStage/{contractId}/getInfo", 1L)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(jsonTokenDTO.write(token).getJson()))
+                .andExpect(status().isNotFound());
+    }
+
 }
