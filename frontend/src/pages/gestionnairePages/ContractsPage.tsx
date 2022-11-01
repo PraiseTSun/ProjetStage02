@@ -15,7 +15,7 @@ const ContractsPage = ({connectedUser}: { connectedUser: IUser }): JSX.Element =
 
             if (response.ok) {
                 const data: any = await response.json();
-                setAcceptations(data.applications);
+                setAcceptations(data.contracts);
             } else {
                 generateAlert()
             }
