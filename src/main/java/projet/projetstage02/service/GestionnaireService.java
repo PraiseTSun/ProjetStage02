@@ -364,4 +364,8 @@ public class GestionnaireService {
         Company company = optionalCompany.get();
         return new EvaluationInfoDTO(company, offre, student);
     }
+
+    public void evaluateStage(EvaluationDTO evaluationInDTO) {
+
+    }
 }
