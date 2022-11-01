@@ -1516,6 +1516,8 @@ paths:
           schema:
             type: object
             properties:
+              contractId:
+                type: number
               tachesAnnoncees:
                 type: string
               integration:
@@ -1551,5 +1553,55 @@ paths:
       responses:
         201:
           description: Pas de problème
+        403:
+          description: Token invalide ou expiré
+  /getContracts:
+    put:
+      summary: Renvoie la liste des ententes (Doit avoir un token Gestionnaire)
+      parameters:
+        - in: body
+          name: token
+          description: Token valide du gestionnaire
+          schema:
+            type: object
+            properties:
+              token:
+                type: string
+      produces:
+        - application/json
+      responses:
+        200:
+          description: Renvoie la liste des ententes
+          schema:
+            properties:
+              contracts:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: number
+                    studentId:
+                      type: number
+                    offerId:
+                      type: number
+                    companyId:
+                      type: number
+                    employFullName:
+                      type: string
+                    companyName:
+                      type: string
+                    studentFullName:
+                      type: string
+                    position:
+                      type: string
+                    description:
+                      type: string
+                    companySignature:
+                      type: string
+                    gestionnaireSignature:
+                      type: string
+                    studentSignature:
+                      type: string
         403:
           description: Token invalide ou expiré
