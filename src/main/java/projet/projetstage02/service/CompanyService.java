@@ -37,6 +37,7 @@ public class CompanyService {
                 .department(Department.getDepartment(offreInDTO.getDepartment()))
                 .position(offreInDTO.getPosition())
                 .heureParSemaine(offreInDTO.getHeureParSemaine())
+                .dateStage(offreInDTO.getDateStage())
                 .salaire(offreInDTO.getSalaire())
                 .session(offreInDTO.getSession())
                 .adresse(offreInDTO.getAdresse())
