@@ -13,6 +13,8 @@ import javax.validation.constraints.Size;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+//todo reorganize dtos in different folders
+
 public abstract class AbstractUserDTO<T> {
     protected long id = 0;
     @NotBlank

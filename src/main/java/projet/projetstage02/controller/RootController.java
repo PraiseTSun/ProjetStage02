@@ -807,6 +807,7 @@ public class RootController {
     }
 
     @PutMapping("/company/validatedOffers/{id}")
+    //todo replace tokens with @RequestHeader("Authorization") String token
     public ResponseEntity<List<OffreOutDTO>> getValidatedOffers
             (@PathVariable long id, @RequestBody TokenDTO tokenId) {
         try {
@@ -839,5 +840,34 @@ public class RootController {
         }
     }
 
+    //Todo create endpoint and page to see an evaluation and print it to pdf
+    @PostMapping("/evaluateStage/{token}")
+    public ResponseEntity<?> evaluateStage
+    (@PathVariable String token, @RequestBody EvaluationInDTO evaluationInDTO) {
+        try {
+            logger.log(Level.INFO, "put /evaluateStage/id entered with id : " + token);
+            authService.getToken(token, GESTIONNAIRE);
+            gestionnaireService.evaluateStage(evaluationInDTO);
+            logger.log(Level.INFO, "PutMapping: /evaluateStage/id sent 201 response");
+            return ResponseEntity.status(CREATED).build();
+        } catch (InvalidTokenException e) {
+            logger.log(Level.INFO, "PutMapping: /evaluateStage/id sent 403 response");
+            return ResponseEntity.status(FORBIDDEN).build();
+        }
+    }
+
+    @PutMapping("/getContracts")
+    public ResponseEntity<ContractsDTO> getAllContracts(@RequestBody TokenDTO tokenId) {
+        logger.log(Level.INFO, "Put /getContracts");
+        try {
+            authService.getToken(tokenId.getToken(), GESTIONNAIRE);
+            ContractsDTO dto = gestionnaireService.getContracts();
+            logger.log(Level.INFO, "Put /getContracts sent request 200 : " + dto);
+            return ResponseEntity.ok(dto);
+        } catch (InvalidTokenException e) {
+            logger.log(Level.INFO, "Put /getContracts sent request 403");
+            return ResponseEntity.status(FORBIDDEN).build();
+        }
+    }
 
 }

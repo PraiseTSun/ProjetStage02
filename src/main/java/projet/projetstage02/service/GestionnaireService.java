@@ -29,6 +29,7 @@ public class GestionnaireService {
     private final ApplicationAcceptationRepository applicationAcceptationRepository;
 
     private final ApplicationRepository applicationRepository;
+    private final EvaluationRepository evaluationRepository;
 
     public long saveGestionnaire(String firstname, String lastname, String email, String password) {
         GestionnaireDTO dto = GestionnaireDTO.builder()
@@ -363,5 +364,15 @@ public class GestionnaireService {
         }
         Company company = optionalCompany.get();
         return new EvaluationInfoDTO(company, offre, student);
+    }
+
+    public void evaluateStage(EvaluationInDTO evaluationInDTO) {
+        evaluationRepository.save(new Evaluation(evaluationInDTO));
+    }
+
+    public ContractsDTO getContracts() {
+        List<StageContractOutDTO> contracts = new ArrayList<>();
+        stageContractRepository.findAll().forEach(stageContract -> contracts.add(new StageContractOutDTO(stageContract)));
+        return ContractsDTO.builder().contracts(contracts).build();
     }
 }

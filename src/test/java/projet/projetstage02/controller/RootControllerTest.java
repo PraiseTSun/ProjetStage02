@@ -63,7 +63,7 @@ public class RootControllerTest {
     JacksonTester<CvRefusalDTO> jsonCvRefusalDTO;
     JacksonTester<PdfDTO> jsonPdfDTO;
     JacksonTester<SignatureInDTO> jsonSignatureDTO;
-    JacksonTester<EvaluationInfoDTO> jsonEvaluationInfoDTO;
+    JacksonTester<EvaluationInDTO> jsonEvalInDTO;
 
     StudentInDTO bart;
     StudentOutDTO bartOut;
@@ -88,6 +88,7 @@ public class RootControllerTest {
 
     CvStatusDTO cvStatusDTO;
     EvaluationInfoDTO evalInfoDTO;
+    EvaluationInDTO evalInDTO;
 
     // https://thepracticaldeveloper.com/guide-spring-boot-controller-tests/
     @BeforeEach
@@ -231,9 +232,28 @@ public class RootControllerTest {
 
         contractsDTO = new ContractsDTO();
         contractsDTO.add(stageContractOutDTO);
+        contractsDTO.add(stageContractOutDTO);
 
         evalInfoDTO = new EvaluationInfoDTO(duffBeer.toModel(), duffOffre.toModel(), bart.toModel());
 
+        evalInDTO = EvaluationInDTO.builder()
+                .climatTravail("Plutôt en accord")
+                .commentaires("Plutôt en accord")
+                .communicationAvecSuperviser("Plutôt en accord")
+                .contractId(1L)
+                .dateSignature("2021-05-01")
+                .environementTravail("Plutôt en accord")
+                .equipementFourni("Plutôt en accord")
+                .heureTotalDeuxiemeMois(23)
+                .heureTotalPremierMois(23)
+                .heureTotalTroisiemeMois(23)
+                .integration("Plutôt en accord")
+                .milieuDeStage("Plutôt en accord")
+                .tachesAnnonces("Plutôt en accord")
+                .volumeDeTravail("Plutôt en accord")
+                .tempsReelConsacre("Plutôt en accord")
+                .signature(byteToString(new byte[]{0, 1, 2, 3, 4, 5, 6, 7, 8, 9}))
+                .build();
     }
 
     @Test
@@ -1631,7 +1651,7 @@ public class RootControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(jsonTokenDTO.write(token).getJson()))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.applications.size()", is(1)));
+                .andExpect(jsonPath("$.contracts.size()", is(2)));
     }
 
     @Test
@@ -1665,4 +1685,35 @@ public class RootControllerTest {
                 .andExpect(status().isNotFound());
     }
 
+    @Test
+    void testEvaluateStageHappyDay() throws Exception {
+        doNothing().when(gestionnaireService).evaluateStage(any());
+        mockMvc.perform(post("/evaluateStage/{token}", token.getToken())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(jsonEvalInDTO.write(evalInDTO).getJson()))
+                .andExpect(status().isCreated());
+    }
+
+    @Test
+    void testGetAllContractsHappyDay() throws Exception {
+        when(gestionnaireService.getContracts()).thenReturn(contractsDTO);
+
+        mockMvc.perform(put("/getContracts")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(jsonTokenDTO.write(token).getJson()))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.contracts.size()", is(2)));
+    }
+
+    @Test
+    void testGetAllContractsEmpty() throws Exception {
+        contractsDTO.setContracts(new ArrayList<>());
+        when(gestionnaireService.getContracts()).thenReturn(contractsDTO);
+
+        mockMvc.perform(put("/getContracts")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(jsonTokenDTO.write(token).getJson()))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.contracts.size()", is(0)));
+    }
 }

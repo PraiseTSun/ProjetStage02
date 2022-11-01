@@ -19,6 +19,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.*;
 import static projet.projetstage02.model.AbstractUser.Department.Informatique;
+import static projet.projetstage02.utils.ByteConverter.byteToString;
 import static projet.projetstage02.utils.TimeUtil.currentTimestamp;
 
 @ExtendWith(MockitoExtension.class)
@@ -39,7 +40,8 @@ public class GestionnaireServiceTest {
     private StageContractRepository stageContractRepository;
     @Mock
     private ApplicationAcceptationRepository applicationAcceptationRepository;
-
+    @Mock
+    private EvaluationRepository evaluationRepository;
 
     private Gestionnaire gestionnaireTest;
     private Company companyTest;
@@ -48,6 +50,7 @@ public class GestionnaireServiceTest {
     private CvStatus cvStatus;
     private StageContract stageContract;
     private ApplicationAcceptation applicationAcceptationTest;
+    private EvaluationInDTO evalInDTO;
 
     private StageContractInDTO stageContractInDTO;
 
@@ -112,6 +115,27 @@ public class GestionnaireServiceTest {
                 .offerId(offerTest.getId())
                 .companyName(companyTest.getCompanyName())
                 .build();
+
+        evalInDTO = EvaluationInDTO.builder()
+                .climatTravail("Plutôt en accord")
+                .commentaires("Plutôt en accord")
+                .communicationAvecSuperviser("Plutôt en accord")
+                .contractId(1L)
+                .dateSignature("2021-05-01")
+                .environementTravail("Plutôt en accord")
+                .equipementFourni("Plutôt en accord")
+                .heureTotalDeuxiemeMois(23)
+                .heureTotalPremierMois(23)
+                .heureTotalTroisiemeMois(23)
+                .integration("Plutôt en accord")
+                .milieuDeStage("Plutôt en accord")
+                .tachesAnnonces("Plutôt en accord")
+                .volumeDeTravail("Plutôt en accord")
+                .tempsReelConsacre("Plutôt en accord")
+                .signature(byteToString(new byte[]{0, 1, 2, 3, 4, 5, 6, 7, 8, 9}))
+                .build();
+
+       
     }
 
     @Test
@@ -912,5 +936,28 @@ public class GestionnaireServiceTest {
         fail("NonExistentEntityException not thrown");
     }
 
+    @Test
+    void testEvaluateStageHappyDay() {
+        gestionnaireService.evaluateStage(evalInDTO);
+        verify(evaluationRepository, times(1)).save(any());
+    }
 
+    @Test
+    void testGetContractsHappyDay() {
+        when(stageContractRepository.findAll()).thenReturn(List.of(stageContract, stageContract, stageContract));
+
+        ContractsDTO dto = gestionnaireService.getContracts();
+
+        assertThat(dto.size()).isEqualTo(3);
+        assertThat(dto.getContracts().get(0)).isEqualTo(new StageContractOutDTO(stageContract));
+    }
+
+    @Test
+    void testGetContractsEmpty() {
+        when(stageContractRepository.findAll()).thenReturn(new ArrayList<>());
+
+        ContractsDTO dto = gestionnaireService.getContracts();
+
+        assertThat(dto.size()).isEqualTo(0);
+    }
 }
