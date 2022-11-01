@@ -123,7 +123,7 @@ public class CompanyService {
         applicationAcceptationRepository.save(application);
 
         applicationOpt = applicationAcceptationRepository.findByOfferIdAndStudentId(offerId, studentId);
-
+        if (applicationOpt.isEmpty()) throw new NonExistentEntityException();
         return new ApplicationAcceptationDTO(applicationOpt.get());
     }
 
