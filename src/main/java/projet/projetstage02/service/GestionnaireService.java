@@ -29,6 +29,7 @@ public class GestionnaireService {
     private final ApplicationAcceptationRepository applicationAcceptationRepository;
 
     private final ApplicationRepository applicationRepository;
+    private final EvaluationRepository evaluationRepository;
 
     public long saveGestionnaire(String firstname, String lastname, String email, String password) {
         GestionnaireDTO dto = GestionnaireDTO.builder()
@@ -365,8 +366,7 @@ public class GestionnaireService {
         return new EvaluationInfoDTO(company, offre, student);
     }
 
-    public void evaluateStage(EvaluationDTO evaluationInDTO) {
-        evaluationInDTO.getContractId();
-
+    public void evaluateStage(EvaluationInDTO evaluationInDTO) {
+        evaluationRepository.save(new Evaluation(evaluationInDTO));
     }
 }

@@ -840,9 +840,10 @@ public class RootController {
         }
     }
 
+    //Todo create endpoint and page to see an evaluation and print it to pdf
     @PostMapping("/evaluateStage/{token}")
     public ResponseEntity<?> evaluateStage
-            (@PathVariable String token, @RequestBody EvaluationDTO evaluationInDTO) {
+    (@PathVariable String token, @RequestBody EvaluationInDTO evaluationInDTO) {
         try {
             logger.log(Level.INFO, "put /evaluateStage/id entered with id : " + token);
             authService.getToken(token, GESTIONNAIRE);
@@ -852,9 +853,6 @@ public class RootController {
         } catch (InvalidTokenException e) {
             logger.log(Level.INFO, "PutMapping: /evaluateStage/id sent 403 response");
             return ResponseEntity.status(FORBIDDEN).build();
-        } catch (NonExistentEntityException | NonExistentOfferExeption e) {
-            logger.log(Level.INFO, "PutMapping: /evaluateStage/id sent 404 response");
-            return ResponseEntity.notFound().build();
         }
     }
 
