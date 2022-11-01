@@ -1539,4 +1539,4 @@ paths:
         404:
           description: L'étudiant n'existe pas ou le contract n'existe pas
         409:
-          description: Le contract n'appartient pas à l'étudiant
+          description: Le contrat n'appartient pas à l'étudiant

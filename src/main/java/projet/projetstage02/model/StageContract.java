@@ -26,9 +26,9 @@ public class StageContract {
     private String session;
     @Min(0)
     private long studentId;
-    @Min(0)
+    @Min(1)
     private long offerId;
-    @Min(0)
+    @Min(1)
     private long companyId;
     private String description;
     private String companySignature;
