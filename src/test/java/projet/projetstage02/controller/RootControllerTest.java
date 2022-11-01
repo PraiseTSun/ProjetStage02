@@ -20,11 +20,9 @@ import projet.projetstage02.service.CompanyService;
 import projet.projetstage02.service.GestionnaireService;
 import projet.projetstage02.service.StudentService;
 
-import java.io.IOException;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import static org.hamcrest.core.Is.is;
@@ -84,7 +82,7 @@ public class RootControllerTest {
     StageContractInDTO stageContractInDTO;
     StageContractOutDTO stageContractOutDTO;
     SignatureInDTO signatureInDTO;
-    UnvalidatedAcceptationsDTO acceptationsDTO;
+    ContractsDTO contractsDTO;
     OfferApplicationDTO offerApplicationDTO;
 
     CvStatusDTO cvStatusDTO;
@@ -173,7 +171,7 @@ public class RootControllerTest {
 
         bartApplys = ApplicationListDTO.builder()
                 .studentId(bart.getId())
-                .offersId(Arrays.asList(duffOffre.getId()))
+                .offersId(List.of(duffOffre.getId()))
                 .build();
 
         cvRefusalDTO = CvRefusalDTO.builder()
@@ -218,26 +216,18 @@ public class RootControllerTest {
                 .offerId(8L)
                 .companyId(6L)
                 .description("description")
-                .companySignature(byteToString(new byte[]{0,1,2,3,4,5,6,7,8,9}))
+                .companySignature(byteToString(new byte[]{0, 1, 2, 3, 4, 5, 6, 7, 8, 9}))
                 .build();
 
         signatureInDTO = SignatureInDTO.builder()
                 .token(token.getToken())
                 .contractId(10L)
                 .userId(11L)
-                .signature(new byte[]{0,1,2,3,4,5,6,7,8,9})
+                .signature(byteToString(new byte[]{0, 1, 2, 3, 4, 5, 6, 7, 8, 9}))
                 .build();
 
-        acceptationsDTO = new UnvalidatedAcceptationsDTO();
-        acceptationsDTO.add(UnvalidatedAcceptationDTO.builder()
-                .employFullName("Bob Marley")
-                .companyName("Bell")
-                .studentId(1L)
-                .studentFullName("Samir Badi")
-                .offerId(2L)
-                .position("Smoking weed")
-                .build()
-        );
+        contractsDTO = new ContractsDTO();
+        contractsDTO.add(stageContractOutDTO);
     }
 
     @Test
@@ -1594,7 +1584,7 @@ public class RootControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(jsonSignatureDTO.write(signatureInDTO).getJson()))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.companySignature", is(byteToString(signatureInDTO.getSignature()))));
+                .andExpect(jsonPath("$.companySignature", is(signatureInDTO.getSignature())));
     }
 
     @Test
@@ -1629,9 +1619,9 @@ public class RootControllerTest {
 
     @Test
     void testGetUnvalidatedAcceptationsHappyDay() throws Exception {
-        when(gestionnaireService.getUnvalidatedAcceptation()).thenReturn(acceptationsDTO);
+        when(gestionnaireService.getContracts()).thenReturn(contractsDTO);
 
-        mockMvc.perform(put("/unvalidatedAcceptations")
+        mockMvc.perform(put("/contracts")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(jsonTokenDTO.write(token).getJson()))
                 .andExpect(status().isOk())
@@ -1642,7 +1632,7 @@ public class RootControllerTest {
     void testGetUnvalidatedAcceptationsInvalidToken() throws Exception {
         when(authService.getToken(any(), any())).thenThrow(new InvalidTokenException());
 
-        mockMvc.perform(put("/unvalidatedAcceptations")
+        mockMvc.perform(put("/contracts")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(jsonTokenDTO.write(token).getJson()))
                 .andExpect(status().isForbidden());

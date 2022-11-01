@@ -733,8 +733,9 @@ public class GestionnaireServiceTest {
         when(applicationAcceptationRepository.findByOfferIdAndStudentId(anyLong(), anyLong()))
                 .thenReturn(Optional.of(applicationAcceptationTest));
         when(stageContractRepository.findByStudentIdAndCompanyIdAndOfferId(anyLong(), anyLong(), anyLong()))
-                .thenReturn(Optional.empty(), Optional.of(stageContract));
+                .thenReturn(Optional.empty());
 
+        when(stageContractRepository.save(any())).thenReturn(stageContract);
         // Act
         StageContractOutDTO dto = gestionnaireService.createStageContract(stageContractInDTO);
 
@@ -815,16 +816,16 @@ public class GestionnaireServiceTest {
 
     @Test
     void testGetUnvalidatedAcceptationHappyDay() {
-        when(applicationAcceptationRepository.findAll()).thenReturn(new ArrayList<>() {{
-            add(applicationAcceptationTest);
-            add(applicationAcceptationTest);
-            add(applicationAcceptationTest);
+        when(stageContractRepository.findAll()).thenReturn(new ArrayList<>() {{
+            add(stageContract);
+            add(stageContract);
+            add(stageContract);
         }});
         when(offreRepository.findById(anyLong())).thenReturn(Optional.of(offerTest));
         when(companyRepository.findById(anyLong())).thenReturn(Optional.of(companyTest));
         when(studentRepository.findById(anyLong())).thenReturn(Optional.of(studentTest));
 
-        UnvalidatedAcceptationsDTO dto = gestionnaireService.getUnvalidatedAcceptation();
+        ContractsDTO dto = gestionnaireService.getContracts();
 
         assertThat(dto.size()).isEqualTo(3);
     }

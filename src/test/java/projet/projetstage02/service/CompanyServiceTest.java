@@ -117,13 +117,13 @@ public class CompanyServiceTest {
                 .offerId(duffBeerOffer.getId())
                 .companyId(duffBeer.getId())
                 .description("Do a better job than Homer Simpson")
-                .companySignature(new byte[0])
+                .companySignature(byteToString(new byte[0]))
                 .build();
 
         signatureInDTO = SignatureInDTO.builder()
                 .userId(duffBeer.getId())
                 .contractId(stageContract.getId())
-                .signature(new byte[]{0,1,2,3,4,5,6,7,8,9})
+                .signature(byteToString(new byte[]{0, 1, 2, 3, 4, 5, 6, 7, 8, 9}))
                 .build();
 
         offerApplicationDTO = OfferApplicationDTO.builder().build();
@@ -309,7 +309,7 @@ public class CompanyServiceTest {
             companyService.saveStudentApplicationAccepted(1L, 2L);
         } catch (NonExistentEntityException e) {
             return;
-        } catch (Exception e) {
+        } catch (Exception ignored) {
         }
         // Assert
         fail("NonExistentEntityException not thrown");
@@ -326,7 +326,7 @@ public class CompanyServiceTest {
             companyService.saveStudentApplicationAccepted(1L, 2L);
         } catch (NonExistentOfferExeption e) {
             return;
-        } catch (Exception e) {
+        } catch (Exception ignored) {
         }
         // Assert
         fail("NonExistentOfferException not thrown");
@@ -345,7 +345,7 @@ public class CompanyServiceTest {
             companyService.saveStudentApplicationAccepted(1L, 2L);
         } catch (AlreadyExistingAcceptationException e) {
             return;
-        } catch (Exception e) {
+        } catch (Exception ignored) {
         }
         // Assert
         fail("AlreadyExistingAcceptationException not thrown");
@@ -384,7 +384,7 @@ public class CompanyServiceTest {
     }
 
     @Test
-    void testAddSignatureToContractHappyDay() throws Exception{
+    void testAddSignatureToContractHappyDay() throws Exception {
         when(companyRepository.findById(anyLong())).thenReturn(Optional.of(duffBeer));
         when(stageContractRepository.findById(anyLong())).thenReturn(Optional.of(stageContract));
 
@@ -392,11 +392,11 @@ public class CompanyServiceTest {
 
         assertThat(dto.getCompanyId()).isEqualTo(duffBeer.getId());
         assertThat(dto.getId()).isEqualTo(stageContract.getId());
-        assertThat(dto.getCompanySignature()).isEqualTo(byteToString(signatureInDTO.getSignature()));
+        assertThat(dto.getCompanySignature()).isEqualTo(signatureInDTO.getSignature());
     }
 
     @Test
-    void testAddSignatureToContractOwnershipConflict(){
+    void testAddSignatureToContractOwnershipConflict() {
         duffBeer.setId(99L);
         when(companyRepository.findById(anyLong())).thenReturn(Optional.of(duffBeer));
         when(stageContractRepository.findById(anyLong())).thenReturn(Optional.of(stageContract));
@@ -405,26 +405,28 @@ public class CompanyServiceTest {
             companyService.addSignatureToContract(signatureInDTO);
         } catch (InvalidOwnershipException e) {
             return;
-        } catch (Exception e) {}
+        } catch (Exception ignored) {
+        }
 
         fail("Fail to catch the InvalidOwnershipException!");
     }
 
     @Test
-    void testAddSignatureToContractCompanyNotFound(){
+    void testAddSignatureToContractCompanyNotFound() {
         when(companyRepository.findById(anyLong())).thenReturn(Optional.empty());
 
         try {
             companyService.addSignatureToContract(signatureInDTO);
         } catch (NonExistentEntityException e) {
             return;
-        } catch (Exception e) {}
+        } catch (Exception ignored) {
+        }
 
         fail("Fail to catch the NonExistentEntityException!");
     }
 
     @Test
-    void testAddSignatureToContractNotFound(){
+    void testAddSignatureToContractNotFound() {
         when(companyRepository.findById(anyLong())).thenReturn(Optional.of(duffBeer));
         when(stageContractRepository.findById(anyLong())).thenReturn(Optional.empty());
 
@@ -432,7 +434,8 @@ public class CompanyServiceTest {
             companyService.addSignatureToContract(signatureInDTO);
         } catch (NonExistentEntityException e) {
             return;
-        } catch (Exception e) {}
+        } catch (Exception ignored) {
+        }
 
         fail("Fail to catch the NonExistentEntityException!");
     }
