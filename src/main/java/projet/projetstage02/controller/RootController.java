@@ -820,13 +820,13 @@ public class RootController {
         }
     }
 
-    @PutMapping("/evaluateStage/{applicationId}/getInfo")
+    @PutMapping("/evaluateStage/{contractId}/getInfo")
     public ResponseEntity<EvaluationInfoDTO> getEvaluateStageInfo
-            (@PathVariable long applicationId, @RequestBody TokenDTO tokenId) {
+            (@PathVariable long contractId, @RequestBody TokenDTO tokenId) {
         try {
-            logger.log(Level.INFO, "put /evaluateStage/id/getInfo entered with id : " + applicationId);
+            logger.log(Level.INFO, "put /evaluateStage/id/getInfo entered with id : " + contractId);
             authService.getToken(tokenId.getToken(), GESTIONNAIRE);
-            EvaluationInfoDTO evaluationInfoDTO = gestionnaireService.getEvaluationInfoForApplication(applicationId);
+            EvaluationInfoDTO evaluationInfoDTO = gestionnaireService.getEvaluationInfoForApplication(contractId);
             logger.log(Level.INFO, "PutMapping: /evaluateStage/id/getInfo sent 200 response");
             return ResponseEntity.ok(evaluationInfoDTO);
         } catch (InvalidTokenException e) {

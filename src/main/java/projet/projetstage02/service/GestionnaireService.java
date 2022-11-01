@@ -341,23 +341,23 @@ public class GestionnaireService {
     }
 
 
-    public EvaluationInfoDTO getEvaluationInfoForApplication(long offreId) throws NonExistentOfferExeption, NonExistentEntityException {
-        Optional<Application> optional = applicationRepository.findById(offreId);
+    public EvaluationInfoDTO getEvaluationInfoForApplication(long contractId) throws NonExistentOfferExeption, NonExistentEntityException {
+        Optional<StageContract> optional = stageContractRepository.findById(contractId);
         if (optional.isEmpty()) {
             throw new NonExistentEntityException();
         }
-        Application application = optional.get();
-        Optional<Offre> offreOptional = offreRepository.findById(application.getOfferId());
+        StageContract stageContract = optional.get();
+        Optional<Offre> offreOptional = offreRepository.findById(stageContract.getOfferId());
         if (offreOptional.isEmpty()) {
             throw new NonExistentOfferExeption();
         }
         Offre offre = offreOptional.get();
-        Optional<Student> optionalStudent = studentRepository.findById(application.getStudentId());
+        Optional<Student> optionalStudent = studentRepository.findById(stageContract.getStudentId());
         if (optionalStudent.isEmpty()) {
             throw new NonExistentEntityException();
         }
         Student student = optionalStudent.get();
-        Optional<Company> optionalCompany = companyRepository.findById(offre.getIdCompagnie());
+        Optional<Company> optionalCompany = companyRepository.findById(stageContract.getCompanyId());
         if (optionalCompany.isEmpty()) {
             throw new NonExistentEntityException();
         }
