@@ -3,18 +3,15 @@ import {Button, Col, Container, Row, Table} from "react-bootstrap";
 import PageHeader from "../../components/universalComponents/PageHeader";
 import React, {useCallback, useEffect, useState} from "react";
 import IAcceptation from "../../models/IAcceptation";
-import {
-    postCreateStageContract,
-    putUnvalidatedAcceptations
-} from "../../services/gestionnaireServices/GestionnaireFetchService";
+import {postCreateStageContract, putGetContracts} from "../../services/gestionnaireServices/GestionnaireFetchService";
 import {generateAlert} from "../../services/universalServices/UniversalUtilService";
 
-const UnvalidatedAcceptationsPage = ({connectedUser}: { connectedUser: IUser }): JSX.Element => {
+const ContractsPage = ({connectedUser}: { connectedUser: IUser }): JSX.Element => {
     const [acceptations, setAcceptations] = useState<IAcceptation[]>([]);
 
     const fetchAcceptations = useCallback(async () => {
         try {
-            const response: Response = await putUnvalidatedAcceptations(connectedUser.token);
+            const response: Response = await putGetContracts(connectedUser.token);
 
             if (response.ok) {
                 const data: any = await response.json();
@@ -48,7 +45,7 @@ const UnvalidatedAcceptationsPage = ({connectedUser}: { connectedUser: IUser }):
 
     return (
         <Container className="vh-100">
-            <PageHeader title="Acceptations non validées"/>
+            <PageHeader title="Ententes à créer"/>
             <Row>
                 <Col className="bg-light p-0" style={{height: 400}}>
                     <Table className="text-center" hover>
@@ -65,7 +62,7 @@ const UnvalidatedAcceptationsPage = ({connectedUser}: { connectedUser: IUser }):
                         {acceptations.length === 0
                             ? <tr>
                                 <td colSpan={5}>
-                                    <p className="h1">Aucun étudiant à approuver</p>
+                                    <p className="h1">Aucune entente a créer</p>
                                 </td>
                             </tr>
                             : acceptations.map((acceptation, index) => {
@@ -89,4 +86,4 @@ const UnvalidatedAcceptationsPage = ({connectedUser}: { connectedUser: IUser }):
     );
 }
 
-export default UnvalidatedAcceptationsPage;
+export default ContractsPage;

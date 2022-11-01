@@ -16,7 +16,7 @@ import StudentCvUploadPage from './pages/studentPages/StudentCvUploadPage';
 import {putUserType} from "./services/universalServices/UniversalFetchService";
 import OfferHistoryPage from "./pages/gestionnairePages/OfferHistoryPage";
 import CompanyOffersPage from "./pages/companyPages/CompanyOffersPage";
-import UnvalidatedAcceptationsPage from "./pages/gestionnairePages/UnvalidatedAcceptationsPage";
+import ContractsPage from "./pages/gestionnairePages/ContractsPage";
 
 export const LOCAL_STORAGE_KEY = "MASSI_BEST_PROGRAMMER_PROJET_STAGE_02_CURRENT_CONNECTED_USER"
 export const emptyUser: IUser = {
@@ -137,7 +137,7 @@ function App() {
                                element={<GestionnaireDashboard deconnexion={deconnexion} user={connectedUser}/>}/>
                         <Route path="/userValidation" element={<UserValidation connectedUser={connectedUser}/>}/>
                         <Route path="/acceptationsValidation"
-                               element={<UnvalidatedAcceptationsPage connectedUser={connectedUser}/>}/>
+                               element={<ContractsPage connectedUser={connectedUser}/>}/>
                         <Route path="/cvValidation"
                                element={<StudentCvValidationPage connectedUser={connectedUser}/>}/>
                         <Route path="/offerHistory"
