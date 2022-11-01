@@ -1218,7 +1218,7 @@ paths:
         - application/json
       responses:
         200:
-          description: Renvoie la liste des étudiant pour l'offre
+          description: Renvoie la confirmation de l'acceptation
           schema:
             properties:
               id:
@@ -1274,6 +1274,47 @@ paths:
           description: Token invalide ou expiré
         404:
           description: L'offre avec cet id n'existe pas
+  /validatedOffers/{id}:
+    put:
+      summary: Recevoir la listes des offres validées pour une session
+      parameters:
+        - in: path
+          name: id
+          description: id de la compagnie
+          type: number
+          required: true
+        - in: body
+          name: token
+          description: Token valide de la compagnie
+          schema:
+            type: object
+            properties:
+              token:
+                type: string
+      produces:
+        - application/json
+      responses:
+        200:
+          description: Liste des offres validés pour une compagnie
+          schema:
+            type: array
+            items:
+              type: object
+              properties:
+                id:
+                  type: number
+                department:
+                  type: string
+                salaire:
+                  type: string
+                position:
+                  type: string
+                heureParSemaine:
+                  type: string
+                adresse:
+                  type: boolean
+        403:
+          description: Token invalide
   /createStageContract:
     post:
       summary: Céer un entante de stage (Doit avoir un token gestionnaire)
