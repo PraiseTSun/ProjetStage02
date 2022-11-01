@@ -1,5 +1,4 @@
 import IOffer from "../../models/IOffer";
-import {useState} from "react";
 
 export const postCreateOffre = (offer: IOffer): Promise<Response> => {
     return fetch("http://localhost:8080/createOffre", {
@@ -21,9 +20,8 @@ export const putcompanyContracts = (companyId: string, token: string, saison: st
     })
 }
 
-
 export const putCompanySignatureContract = (token: string, companyId: string, contratId : number, signature : string): Promise<Response> => {
-    console.log("signature dans put : " + signature)
+
     return fetch(`http://localhost:8080/companySignatureContract`, {
         method: "PUT",
         headers: {
