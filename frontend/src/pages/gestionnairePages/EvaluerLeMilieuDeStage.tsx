@@ -8,7 +8,7 @@ import PageHeader from "../../components/universalComponents/PageHeader";
 import {generateAlert} from "../../services/universalServices/UniversalUtilService";
 import InfoDuContrat from "../../models/InfoDuContrat";
 import {
-    postEvaluationStage,
+    postEvaluationStage, putContrats,
     putInfoContratPourEvaluateStage
 } from "../../services/gestionnaireServices/GestionnaireFetchService";
 
@@ -57,10 +57,27 @@ const EvaluerLeMilieuDeStage = ({user}: { user: IUser }): JSX.Element => {
     const [signature, setSignature] = useState("")
     const [dateSignature, setDateSignature] = useState("")
 
+    useEffect(()=>{
+
+        const fetchContracts = async (): Promise<void> => {
+            try {
+                const response: Response = await putContrats(user.token);
+
+                if (response.ok) {
+                    const data = await response.json()
+                    setContrats(data)
+                } else {
+                    generateAlert()
+                }
+            } catch {
+                generateAlert()
+            }
+        }
+    })
+
     const fetchContractParId = async (contractId: number): Promise<void> => {
         try {
             const response: Response = await putInfoContratPourEvaluateStage(contractId, user.token);
-
             if (response.ok) {
                 const data = await response.json()
                 setInfosContrat(data)

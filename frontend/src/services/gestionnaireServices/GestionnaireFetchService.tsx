@@ -236,3 +236,15 @@ export const postEvaluationStage = (token: string,
         })
     });
 }
+
+export const putContrats = (token: string) :Promise<Response> => {
+    return fetch(`http://localhost:8080/getContracts`, {
+        method: 'PUT',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            "token": token
+        })
+    });
+}
