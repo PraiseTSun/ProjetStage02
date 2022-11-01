@@ -856,4 +856,18 @@ public class RootController {
         }
     }
 
+    @PutMapping("/getContracts")
+    public ResponseEntity<ContractsDTO> getAllContracts(@RequestBody TokenDTO tokenId) {
+        logger.log(Level.INFO, "Put /getContracts");
+        try {
+            authService.getToken(tokenId.getToken(), GESTIONNAIRE);
+            ContractsDTO dto = gestionnaireService.getContracts();
+            logger.log(Level.INFO, "Put /getContracts sent request 200 : " + dto);
+            return ResponseEntity.ok(dto);
+        } catch (InvalidTokenException e) {
+            logger.log(Level.INFO, "Put /getContracts sent request 403");
+            return ResponseEntity.status(FORBIDDEN).build();
+        }
+    }
+
 }
