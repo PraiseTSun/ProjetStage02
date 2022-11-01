@@ -6,20 +6,26 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import javax.validation.constraints.Min;
 
 @Entity
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-//TODO rename to AcceptedApplication
-public class ApplicationAcceptation {
+public class StageContract {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "id", nullable = false)
-    private Long id;
+    private long id;
+    @Min(0)
     private long studentId;
-    private String studentName;
+    @Min(0)
     private long offerId;
-    private String companyName;
+    @Min(0)
+    private long companyId;
+    private String description;
+    private String companySignature;
+    private String gestionnaireSignature;
+    private String studentSignature;
 }

@@ -3,10 +3,7 @@ package projet.projetstage02.service;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import projet.projetstage02.DTO.*;
-import projet.projetstage02.exception.ExpiredSessionException;
-import projet.projetstage02.exception.InvalidStatusException;
-import projet.projetstage02.exception.NonExistentEntityException;
-import projet.projetstage02.exception.NonExistentOfferExeption;
+import projet.projetstage02.exception.*;
 import projet.projetstage02.model.*;
 import projet.projetstage02.repository.*;
 
@@ -14,7 +11,6 @@ import javax.validation.constraints.NotNull;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
@@ -29,6 +25,8 @@ public class GestionnaireService {
     private final StudentRepository studentRepository;
     private final CvStatusRepository cvStatusRepository;
     private final OffreRepository offreRepository;
+    private final StageContractRepository stageContractRepository;
+    private final ApplicationAcceptationRepository applicationAcceptationRepository;
 
     private final ApplicationRepository applicationRepository;
 
@@ -171,7 +169,7 @@ public class GestionnaireService {
 
     public PdfOutDTO getOffrePdfById(long id) throws NonExistentOfferExeption {
         @NotNull byte[] offer = getOffer(id).getPdf();
-        String offreString = Arrays.toString(offer).replaceAll("\\s+", "");
+        String offreString = byteToString(offer);
         return PdfOutDTO.builder().pdf(offreString).build();
     }
 
@@ -239,7 +237,7 @@ public class GestionnaireService {
         Optional<Student> studentOpt = studentRepository.findById(studentId);
         if (studentOpt.isEmpty()) throw new NonExistentEntityException();
         byte[] cv = studentOpt.get().getCvToValidate();
-        String cvConvert = Arrays.toString(cv).replaceAll("\\s+", "");
+        String cvConvert = byteToString(cv);
         return new PdfOutDTO(studentOpt.get().getId(), cvConvert);
     }
 
@@ -258,6 +256,88 @@ public class GestionnaireService {
     public boolean isGestionnaireInvalid(String email) throws NonExistentEntityException {
         return !isEmailUnique(email)
                 && !deleteUnconfirmedGestionnaire(email);
+    }
+
+    public StageContractOutDTO createStageContract(StageContractInDTO contract)
+            throws NonExistentEntityException, NonExistentOfferExeption, AlreadyExistingStageContractException {
+        Optional<Student> studentOpt = studentRepository.findById(contract.getStudentId());
+        if (studentOpt.isEmpty()) throw new NonExistentEntityException();
+        Student student = studentOpt.get();
+
+        Optional<Offre> offerOpt = offreRepository.findById(contract.getOfferId());
+        if (offerOpt.isEmpty()) throw new NonExistentOfferExeption();
+        Offre offer = offerOpt.get();
+
+        Optional<Company> companyOpt = companyRepository.findById(offer.getIdCompagnie());
+        if (companyOpt.isEmpty()) throw new NonExistentEntityException();
+        Company company = companyOpt.get();
+
+        String description = getContractDescription(student, offer, company);
+
+        Optional<StageContract> stageContractOpt
+                = stageContractRepository.findByStudentIdAndCompanyIdAndOfferId(student.getId(), company.getId(), offer.getId());
+        if (stageContractOpt.isPresent()) throw new AlreadyExistingStageContractException();
+
+        StageContract stageContract = StageContract.builder()
+                .studentId(student.getId())
+                .offerId(offer.getId())
+                .companyId(company.getId())
+                .description(description)
+                .build();
+
+        StageContract save = stageContractRepository.save(stageContract);
+        stageContract.setId(save.getId());
+        Optional<ApplicationAcceptation> application
+                = applicationAcceptationRepository.findByOfferIdAndStudentId(offer.getId(), student.getId());
+        if (application.isEmpty()) throw new NonExistentEntityException();
+        applicationAcceptationRepository.delete(application.get());
+        return new StageContractOutDTO(stageContract);
+    }
+
+    private String getContractDescription(Student student, Offre offer, Company company) {
+        return company.getCompanyName() + " a accepté " + student.getFirstName() + " "
+                + student.getLastName() + " Pour le role de " + offer.getPosition() + " pour la session "
+                + offer.getSession() + ".";
+    }
+
+    public ContractsDTO getContractsToCreate() {
+        ContractsDTO contractsDTO = new ContractsDTO();
+
+        List<ApplicationAcceptation> all = applicationAcceptationRepository.findAll();
+        all
+                .forEach(application -> {
+
+                    Optional<Offre> offerOpt = offreRepository.findById(application.getOfferId());
+                    if (offerOpt.isEmpty()) return;
+                    Offre offer = offerOpt.get();
+                    Optional<Company> companyOpt = companyRepository.findById(offer.getIdCompagnie());
+                    if (companyOpt.isEmpty()) return;
+                    Optional<Student> studentOpt = studentRepository.findById(application.getStudentId());
+                    if (studentOpt.isEmpty()) return;
+
+                    Student student = studentOpt.get();
+                    Company company = companyOpt.get();
+                    Offre offre = offerOpt.get();
+
+                    StageContractOutDTO stageContractOutDTO = StageContractOutDTO.builder()
+                            .companyId(company.getId())
+                            .offerId(offre.getId())
+                            .description(getContractDescription(student, offre, company))
+                            .companyName(company.getCompanyName())
+                            .position(offre.getPosition())
+                            .employFullName(company.getFirstName() + " " + company.getLastName())
+                            .studentId(student.getId())
+                            .studentFullName(student.getFirstName() + " " + student.getLastName())
+                            .build();
+
+                    stageContractOutDTO.setEmployFullName(company.getFirstName() + " " + company.getLastName());
+                    stageContractOutDTO.setStudentFullName(student.getFirstName() + " " + student.getLastName());
+                    stageContractOutDTO.setPosition(offre.getPosition());
+                    stageContractOutDTO.setCompanyName(company.getCompanyName());
+
+                    contractsDTO.add(stageContractOutDTO);
+                });
+        return contractsDTO;
     }
 
 

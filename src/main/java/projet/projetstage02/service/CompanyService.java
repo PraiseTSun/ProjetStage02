@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import projet.projetstage02.DTO.*;
 import projet.projetstage02.exception.AlreadyExistingAcceptationException;
+import projet.projetstage02.exception.InvalidOwnershipException;
 import projet.projetstage02.exception.NonExistentEntityException;
 import projet.projetstage02.exception.NonExistentOfferExeption;
 import projet.projetstage02.model.AbstractUser.Department;
@@ -27,6 +28,7 @@ public class CompanyService {
     private final StudentRepository studentRepository;
     private final ApplicationAcceptationRepository applicationAcceptationRepository;
     private final ApplicationRepository applicationRepository;
+    private final StageContractRepository stageContractRepository;
 
     public long createOffre(OffreInDTO offreInDTO) {
         Offre offre = Offre.builder()
@@ -121,7 +123,7 @@ public class CompanyService {
         applicationAcceptationRepository.save(application);
 
         applicationOpt = applicationAcceptationRepository.findByOfferIdAndStudentId(offerId, studentId);
-
+        if (applicationOpt.isEmpty()) throw new NonExistentEntityException();
         return new ApplicationAcceptationDTO(applicationOpt.get());
     }
 
@@ -143,11 +145,36 @@ public class CompanyService {
                 .build();
     }
 
-    public OfferApplicationDTO getStudentsForOffer(long offerId) throws NonExistentOfferExeption {
-        if (offreRepository.findById(offerId).isEmpty()) {
+    public StageContractOutDTO addSignatureToContract(SignatureInDTO signature) throws NonExistentEntityException, InvalidOwnershipException {
+        Optional<Company> companyOpt = companyRepository.findById(signature.getUserId());
+        if (companyOpt.isEmpty()) throw new NonExistentEntityException();
+
+        Optional<StageContract> stageContractOpt = stageContractRepository.findById(signature.getContractId());
+        if (stageContractOpt.isEmpty()) throw new NonExistentEntityException();
+
+        Company company = companyOpt.get();
+        StageContract stageContract = stageContractOpt.get();
+
+        if (company.getId() != stageContract.getCompanyId())
+            throw new InvalidOwnershipException();
+
+        stageContract.setCompanySignature(signature.getSignature());
+        stageContractRepository.save(stageContract);
+
+        return new StageContractOutDTO(stageContract);
+    }
+
+    public OfferApplicationDTO getStudentsForOffer(long offerId) throws NonExistentOfferExeption, NonExistentEntityException {
+        Optional<Offre> optionalOffre = offreRepository.findById(offerId);
+        if (optionalOffre.isEmpty()) {
             throw new NonExistentOfferExeption();
         }
-
+        Offre offre = optionalOffre.get();
+        Optional<Company> optionalCompany = companyRepository.findById(offre.getIdCompagnie());
+        if (optionalCompany.isEmpty()) {
+            throw new NonExistentEntityException();
+        }
+        Company company = optionalCompany.get();
         List<StudentOutDTO> studentDTOS = new ArrayList<>();
         applicationRepository.findByOfferId(offerId).stream()
                 .map(Application::getStudentId)
@@ -156,7 +183,11 @@ public class CompanyService {
                     if (studentOpt.isEmpty()) return;
                     studentDTOS.add(new StudentOutDTO(studentOpt.get()));
                 });
-        return new OfferApplicationDTO(studentDTOS);
+
+        List<StudentOutDTO> toReturn = studentDTOS.stream()
+                .filter(student -> stageContractRepository.findByStudentIdAndCompanyIdAndOfferId(student.getId(), company.getId(), offerId).isEmpty())
+                .toList();
+        return new OfferApplicationDTO(toReturn);
     }
 
     public List<OffreOutDTO> getValidatedOffers(long id) {
