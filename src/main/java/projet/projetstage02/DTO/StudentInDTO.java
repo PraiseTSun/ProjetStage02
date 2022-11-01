@@ -15,7 +15,7 @@ import javax.validation.constraints.Pattern;
 @AllArgsConstructor
 @SuperBuilder
 @ToString(callSuper = true)
-public class StudentDTO extends AbstractUserDTO<Student> {
+public class StudentInDTO extends AbstractUserDTO<Student> {
     @NotBlank
     @Pattern(regexp = ("Techniques de linformatique|Techniques de la logistique du transport"))
     private String department;
@@ -24,7 +24,7 @@ public class StudentDTO extends AbstractUserDTO<Student> {
     @Lob
     private byte[] cvToValidate;
 
-    public StudentDTO(Student student) {
+    public StudentInDTO(Student student) {
         id = student.getId();
         firstName = student.getFirstName();
         lastName = student.getLastName();

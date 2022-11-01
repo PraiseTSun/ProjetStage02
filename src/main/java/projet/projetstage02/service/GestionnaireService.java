@@ -104,30 +104,30 @@ public class GestionnaireService {
         return offreOpt.get();
     }
 
-    public List<OffreDTO> getUnvalidatedOffers() {
-        List<OffreDTO> offres = new ArrayList<>();
+    public List<OffreOutDTO> getUnvalidatedOffers() {
+        List<OffreOutDTO> offres = new ArrayList<>();
         offreRepository.findAll().stream().
                 filter(offre ->
                         !offre.isValide() && isRightSession(offre.getSession(), getNextYear()))
                 .forEach(offre ->
-                        offres.add(new OffreDTO(offre)));
-        offres.forEach(offre -> offre.setPdf(new byte[0]));
+                        offres.add(new OffreOutDTO(offre)));
+        offres.forEach(offre -> offre.setPdf(byteToString(new byte[0])));
         return offres;
     }
 
-    public List<OffreDTO> getValidatedOffers(int year) {
-        List<OffreDTO> offres = new ArrayList<>();
+    public List<OffreOutDTO> getValidatedOffers(int year) {
+        List<OffreOutDTO> offres = new ArrayList<>();
         offreRepository.findAll().stream().
                 filter(offre ->
                         offre.isValide() && isRightSession(offre.getSession(), year))
                 .forEach(offre ->
-                        offres.add(new OffreDTO(offre)));
-        offres.forEach(offre -> offre.setPdf(new byte[0]));
+                        offres.add(new OffreOutDTO(offre)));
+        offres.forEach(offre -> offre.setPdf(byteToString(new byte[0])));
         return offres;
     }
 
 
-    public OffreDTO validateOfferById(Long id) throws NonExistentOfferExeption, ExpiredSessionException {
+    public OffreOutDTO validateOfferById(Long id) throws NonExistentOfferExeption, ExpiredSessionException {
 
         Offre offre = getOffer(id);
         if (!isRightSession(offre.getSession(), getNextYear())) {
@@ -136,21 +136,21 @@ public class GestionnaireService {
         offre.setValide(true);
         offreRepository.save(offre);
 
-        return new OffreDTO(offre);
+        return new OffreOutDTO(offre);
     }
 
     public void removeOfferById(long id) throws NonExistentOfferExeption {
         offreRepository.delete(getOffer(id));
     }
 
-    public List<StudentDTO> getUnvalidatedStudents() {
-        List<StudentDTO> unvalidatedStudentDTOs = new ArrayList<>();
+    public List<StudentOutDTO> getUnvalidatedStudents() {
+        List<StudentOutDTO> unvalidatedStudentDTOs = new ArrayList<>();
         studentRepository.findAll().stream()
                 .filter(student ->
                         student.isEmailConfirmed() && !student.isConfirm()
                 )
                 .forEach(student ->
-                        unvalidatedStudentDTOs.add(new StudentDTO(student)));
+                        unvalidatedStudentDTOs.add(new StudentOutDTO(student)));
         return unvalidatedStudentDTOs;
     }
 
@@ -171,8 +171,8 @@ public class GestionnaireService {
         return PdfOutDTO.builder().pdf(offreString).build();
     }
 
-    public List<StudentDTO> getUnvalidatedCVStudents() {
-        List<StudentDTO> studentDTOS = new ArrayList<>();
+    public List<StudentOutDTO> getUnvalidatedCVStudents() {
+        List<StudentOutDTO> studentDTOS = new ArrayList<>();
 
         studentRepository.findAll().stream()
                 .filter(student ->
@@ -181,9 +181,9 @@ public class GestionnaireService {
                                 && student.isConfirm()
                 )
                 .forEach(student -> {
-                    StudentDTO dto = new StudentDTO(student);
+                    StudentOutDTO dto = new StudentOutDTO(student);
                     dto.setPassword("");
-                    dto.setCv(new byte[0]);
+                    dto.setCv("");
 
                     studentDTOS.add(dto);
                 });
@@ -191,7 +191,7 @@ public class GestionnaireService {
         return studentDTOS;
     }
 
-    public StudentDTO validateStudentCV(long id) throws NonExistentEntityException, InvalidStatusException {
+    public StudentOutDTO validateStudentCV(long id) throws NonExistentEntityException, InvalidStatusException {
         Optional<Student> studentOpt = studentRepository.findById(id);
         if (studentOpt.isEmpty()) throw new NonExistentEntityException();
         Student student = studentOpt.get();
@@ -209,10 +209,10 @@ public class GestionnaireService {
         student.setCvToValidate(new byte[0]);
         studentRepository.save(student);
         cvStatusRepository.save(cvStatus);
-        return new StudentDTO(student);
+        return new StudentOutDTO(student);
     }
 
-    public StudentDTO removeStudentCvValidation(long id, String refusalReason) throws NonExistentEntityException, InvalidStatusException {
+    public StudentOutDTO removeStudentCvValidation(long id, String refusalReason) throws NonExistentEntityException, InvalidStatusException {
         Optional<Student> studentOpt = studentRepository.findById(id);
         if (studentOpt.isEmpty()) throw new NonExistentEntityException();
         Optional<CvStatus> cvStatusOpt = cvStatusRepository.findById(id);
@@ -228,7 +228,7 @@ public class GestionnaireService {
         Student student = studentOpt.get();
         student.setCvToValidate(new byte[0]);
         studentRepository.save(student);
-        return new StudentDTO(student);
+        return new StudentOutDTO(student);
     }
 
     public PdfOutDTO getStudentCvToValidate(long studentId) throws NonExistentEntityException {
@@ -270,9 +270,7 @@ public class GestionnaireService {
         if (companyOpt.isEmpty()) throw new NonExistentEntityException();
         Company company = companyOpt.get();
 
-        String description = company.getCompanyName() + " a accepté " + student.getFirstName() + " "
-                + student.getLastName() + " en tant que " + offer.getPosition() + " pour la session "
-                + offer.getSession() + ".";
+        String description = getContractDescription(student, offer, company);
 
         Optional<StageContract> stageContractOpt
                 = stageContractRepository.findByStudentIdAndCompanyIdAndOfferId(student.getId(), company.getId(), offer.getId());
@@ -288,44 +286,58 @@ public class GestionnaireService {
                 .studentSignature("")
                 .build();
 
-        stageContractRepository.save(stageContract);
+        StageContract save = stageContractRepository.save(stageContract);
+        stageContract.setId(save.getId());
         Optional<ApplicationAcceptation> application
                 = applicationAcceptationRepository.findByOfferIdAndStudentId(offer.getId(), student.getId());
+        if (application.isEmpty()) throw new NonExistentEntityException();
         applicationAcceptationRepository.delete(application.get());
-
-        stageContractOpt
-                = stageContractRepository.findByStudentIdAndCompanyIdAndOfferId(student.getId(), company.getId(), offer.getId());
-
-        return new StageContractOutDTO(stageContractOpt.get());
+        return new StageContractOutDTO(stageContract);
     }
 
-    public UnvalidatedAcceptationsDTO getUnvalidatedAcceptation() {
-        UnvalidatedAcceptationsDTO unvalidatedAcceptationsDTO = new UnvalidatedAcceptationsDTO();
+    private String getContractDescription(Student student, Offre offer, Company company) {
+        return company.getCompanyName() + " a accepté " + student.getFirstName() + " "
+                + student.getLastName() + " Pour le role de " + offer.getPosition() + " pour la session "
+                + offer.getSession() + ".";
+    }
 
-        List<ApplicationAcceptation> applications = applicationAcceptationRepository.findAll();
-        applications.stream()
-                .forEach(applicationAcceptation -> {
-                    Optional<Offre> offerOpt = offreRepository.findById(applicationAcceptation.getOfferId());
+    public ContractsDTO getContractsToCreate() {
+        ContractsDTO contractsDTO = new ContractsDTO();
+
+        List<ApplicationAcceptation> all = applicationAcceptationRepository.findAll();
+        all
+                .forEach(application -> {
+
+                    Optional<Offre> offerOpt = offreRepository.findById(application.getOfferId());
+                    if (offerOpt.isEmpty()) return;
                     Offre offer = offerOpt.get();
-
                     Optional<Company> companyOpt = companyRepository.findById(offer.getIdCompagnie());
-                    Company company = companyOpt.get();
+                    if (companyOpt.isEmpty()) return;
+                    Optional<Student> studentOpt = studentRepository.findById(application.getStudentId());
+                    if (studentOpt.isEmpty()) return;
 
-                    Optional<Student> studentOpt = studentRepository.findById(applicationAcceptation.getStudentId());
                     Student student = studentOpt.get();
+                    Company company = companyOpt.get();
+                    Offre offre = offerOpt.get();
 
-                    unvalidatedAcceptationsDTO.add(
-                            UnvalidatedAcceptationDTO.builder()
-                                    .employFullName(company.getFirstName() + " " + company.getLastName())
-                                    .companyName(company.getCompanyName())
-                                    .studentId(student.getId())
-                                    .studentFullName(student.getFirstName() + " " + student.getLastName())
-                                    .offerId(offer.getId())
-                                    .position(offer.getPosition())
-                                    .build()
-                    );
+                    StageContractOutDTO stageContractOutDTO = StageContractOutDTO.builder()
+                            .companyId(company.getId())
+                            .offerId(offre.getId())
+                            .description(getContractDescription(student, offre, company))
+                            .companyName(company.getCompanyName())
+                            .position(offre.getPosition())
+                            .employFullName(company.getFirstName() + " " + company.getLastName())
+                            .studentId(student.getId())
+                            .studentFullName(student.getFirstName() + " " + student.getLastName())
+                            .build();
+
+                    stageContractOutDTO.setEmployFullName(company.getFirstName() + " " + company.getLastName());
+                    stageContractOutDTO.setStudentFullName(student.getFirstName() + " " + student.getLastName());
+                    stageContractOutDTO.setPosition(offre.getPosition());
+                    stageContractOutDTO.setCompanyName(company.getCompanyName());
+
+                    contractsDTO.add(stageContractOutDTO);
                 });
-
-        return unvalidatedAcceptationsDTO;
+        return contractsDTO;
     }
 }

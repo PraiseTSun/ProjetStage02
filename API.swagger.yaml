@@ -1313,6 +1313,8 @@ paths:
                   type: string
                 adresse:
                   type: boolean
+        403:
+          description: Token invalide
   /createStageContract:
     post:
       summary: Céer un entante de stage (Doit avoir un token gestionnaire)
