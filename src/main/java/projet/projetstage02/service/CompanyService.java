@@ -165,42 +165,6 @@ public class CompanyService {
         return new StageContractOutDTO(stageContract);
     }
 
-    public OfferApplicationDTO getStudentsForOffer(long offerId) throws NonExistentOfferExeption {
-        if (offreRepository.findById(offerId).isEmpty()) {
-            throw new NonExistentOfferExeption();
-        }
-        List<Application> applications = applicationRepository.findByOfferId(offerId);
-        List<StudentDTO> studentDTOS = new ArrayList<>();
-        applications.stream().map(Application::getStudentId).forEach(id -> {
-            Optional<Student> optionnal = studentRepository.findById(id);
-            if (optionnal.isEmpty()) {
-                return;
-            }
-            Student student = optionnal.get();
-            studentDTOS.add(new StudentDTO(student));
-        });
-        return OfferApplicationDTO.builder().applicants(studentDTOS).build();
-    }
-
-    public List<OffreDTO> getValidatedOffers(long id) {
-        List<OffreDTO> offres = new ArrayList<>();
-        offreRepository.findAllByIdCompagnie(id).stream().
-                filter(offre ->
-                        offre.isValide() && isRightSession(offre.getSession(), getNextYear()))
-                .forEach(offre ->
-                        offres.add(new OffreDTO(offre)));
-        offres.forEach(offre -> offre.setPdf(new byte[0]));
-        return offres;
-    }
-
-    public PdfOutDTO getStudentCv(long studentId) throws NonExistentEntityException {
-        Optional<Student> studentOpt = studentRepository.findById(studentId);
-        if (studentOpt.isEmpty()) throw new NonExistentEntityException();
-        byte[] cv = studentOpt.get().getCv();
-        String cvConvert = Arrays.toString(cv).replaceAll("\\s+", "");
-        return new PdfOutDTO(studentOpt.get().getId(), cvConvert);
-    }
-
     public OfferApplicationDTO getStudentsForOffer(long offerId) throws NonExistentOfferExeption, NonExistentEntityException {
         Optional<Offre> optionalOffre = offreRepository.findById(offerId);
         if (optionalOffre.isEmpty()) {
@@ -227,6 +191,16 @@ public class CompanyService {
         return new OfferApplicationDTO(toReturn);
     }
 
+
+    public PdfOutDTO getStudentCv(long studentId) throws NonExistentEntityException {
+        Optional<Student> studentOpt = studentRepository.findById(studentId);
+        if (studentOpt.isEmpty()) throw new NonExistentEntityException();
+        byte[] cv = studentOpt.get().getCv();
+        String cvConvert = Arrays.toString(cv).replaceAll("\\s+", "");
+        return new PdfOutDTO(studentOpt.get().getId(), cvConvert);
+    }
+
+
     public List<OffreOutDTO> getValidatedOffers(long id) {
         List<OffreOutDTO> offres = new ArrayList<>();
         offreRepository.findAllByIdCompagnie(id).stream().
@@ -238,13 +212,6 @@ public class CompanyService {
         return offres;
     }
 
-    public PdfOutDTO getStudentCv(long studentId) throws NonExistentEntityException {
-        Optional<Student> studentOpt = studentRepository.findById(studentId);
-        if (studentOpt.isEmpty()) throw new NonExistentEntityException();
-        byte[] cv = studentOpt.get().getCv();
-        String cvConvert = Arrays.toString(cv).replaceAll("\\s+", "");
-        return new PdfOutDTO(studentOpt.get().getId(), cvConvert);
-    }
 
     public ContractsDTO getContracts(long companyId, String session) throws NonExistentEntityException {
         Optional<Company> companyOpt = companyRepository.findById(companyId);
