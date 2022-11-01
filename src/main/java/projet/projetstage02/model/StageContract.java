@@ -10,6 +10,7 @@ import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Pattern;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import javax.validation.constraints.Min;
 
 @Entity
 @Data
@@ -20,13 +21,20 @@ public class StageContract {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "id", nullable = false)
-    private Long id;
-    private Long studentId;
-    private Long offerId;
-    private Long companyId;
+    private long id;
     @Pattern(regexp = "^Hiver (\\d{4})$")
     private String session;
+    @Min(0)
+    private long studentId;
+    @Min(0)
+    private long offerId;
+    @Min(0)
+    private long companyId;
     private String description;
     private String companySignature;
     private LocalDateTime companySignatureDate;
+    private String gestionnaireSignature;
+    private LocalDateTime gestionnaireSignatureDate;
+    private String studentSignature;
+    private LocalDateTime studentSignatureDate;
 }

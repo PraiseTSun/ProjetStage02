@@ -7,19 +7,19 @@ import projet.projetstage02.exception.AlreadyExistingAcceptationException;
 import projet.projetstage02.exception.InvalidOwnershipException;
 import projet.projetstage02.exception.NonExistentEntityException;
 import projet.projetstage02.exception.NonExistentOfferExeption;
-import projet.projetstage02.model.*;
 import projet.projetstage02.model.AbstractUser.Department;
+import projet.projetstage02.model.*;
 import projet.projetstage02.repository.*;
 
 import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
-import static projet.projetstage02.utils.TimeUtil.MILLI_SECOND_DAY;
-import static projet.projetstage02.utils.TimeUtil.currentTimestamp;
+import static projet.projetstage02.utils.TimeUtil.*;
 
 @Service
 @AllArgsConstructor
@@ -28,19 +28,20 @@ public class CompanyService {
     private final OffreRepository offreRepository;
     private final StudentRepository studentRepository;
     private final ApplicationAcceptationRepository applicationAcceptationRepository;
+    private final ApplicationRepository applicationRepository;
     private final StageContractRepository stageContractRepository;
 
-    public long createOffre(OffreDTO offreDTO) {
+    public long createOffre(OffreInDTO offreInDTO) {
         Offre offre = Offre.builder()
-                .nomDeCompagnie(offreDTO.getNomDeCompagnie())
-                .idCompagnie(offreDTO.getCompanyId())
-                .department(Department.getDepartment(offreDTO.getDepartment()))
-                .position(offreDTO.getPosition())
-                .heureParSemaine(offreDTO.getHeureParSemaine())
-                .salaire(offreDTO.getSalaire())
-                .session(offreDTO.getSession())
-                .adresse(offreDTO.getAdresse())
-                .pdf(offreDTO.getPdf())
+                .nomDeCompagnie(offreInDTO.getNomDeCompagnie())
+                .idCompagnie(offreInDTO.getCompanyId())
+                .department(Department.getDepartment(offreInDTO.getDepartment()))
+                .position(offreInDTO.getPosition())
+                .heureParSemaine(offreInDTO.getHeureParSemaine())
+                .salaire(offreInDTO.getSalaire())
+                .session(offreInDTO.getSession())
+                .adresse(offreInDTO.getAdresse())
+                .pdf(offreInDTO.getPdf())
                 .build();
 
         return offreRepository.save(offre).getId();
@@ -123,7 +124,7 @@ public class CompanyService {
         applicationAcceptationRepository.save(application);
 
         applicationOpt = applicationAcceptationRepository.findByOfferIdAndStudentId(offerId, studentId);
-
+        if (applicationOpt.isEmpty()) throw new NonExistentEntityException();
         return new ApplicationAcceptationDTO(applicationOpt.get());
     }
 
@@ -147,7 +148,7 @@ public class CompanyService {
 
     public StageContractOutDTO addSignatureToContract(SignatureInDTO signature) throws NonExistentEntityException, InvalidOwnershipException {
         Optional<Company> companyOpt = companyRepository.findById(signature.getUserId());
-        if(companyOpt.isEmpty()) throw new NonExistentEntityException();
+        if (companyOpt.isEmpty()) throw new NonExistentEntityException();
 
         Optional<StageContract> stageContractOpt = stageContractRepository.findById(signature.getContractId());
         if (stageContractOpt.isEmpty()) throw new NonExistentEntityException();
@@ -155,7 +156,7 @@ public class CompanyService {
         Company company = companyOpt.get();
         StageContract stageContract = stageContractOpt.get();
 
-        if(company.getId() != stageContract.getCompanyId())
+        if (company.getId() != stageContract.getCompanyId())
             throw new InvalidOwnershipException();
 
         stageContract.setCompanySignature(signature.getSignature());
@@ -165,6 +166,51 @@ public class CompanyService {
 
 
         return new StageContractOutDTO(stageContract);
+    }
+
+    public OfferApplicationDTO getStudentsForOffer(long offerId) throws NonExistentOfferExeption, NonExistentEntityException {
+        Optional<Offre> optionalOffre = offreRepository.findById(offerId);
+        if (optionalOffre.isEmpty()) {
+            throw new NonExistentOfferExeption();
+        }
+        Offre offre = optionalOffre.get();
+        Optional<Company> optionalCompany = companyRepository.findById(offre.getIdCompagnie());
+        if (optionalCompany.isEmpty()) {
+            throw new NonExistentEntityException();
+        }
+        Company company = optionalCompany.get();
+        List<StudentOutDTO> studentDTOS = new ArrayList<>();
+        applicationRepository.findByOfferId(offerId).stream()
+                .map(Application::getStudentId)
+                .forEach(id -> {
+                    Optional<Student> studentOpt = studentRepository.findById(id);
+                    if (studentOpt.isEmpty()) return;
+                    studentDTOS.add(new StudentOutDTO(studentOpt.get()));
+                });
+
+        List<StudentOutDTO> toReturn = studentDTOS.stream()
+                .filter(student -> stageContractRepository.findByStudentIdAndCompanyIdAndOfferId(student.getId(), company.getId(), offerId).isEmpty())
+                .toList();
+        return new OfferApplicationDTO(toReturn);
+    }
+
+    public List<OffreOutDTO> getValidatedOffers(long id) {
+        List<OffreOutDTO> offres = new ArrayList<>();
+        offreRepository.findAllByIdCompagnie(id).stream().
+                filter(offre ->
+                        offre.isValide() && isRightSession(offre.getSession(), getNextYear()))
+                .forEach(offre ->
+                        offres.add(new OffreOutDTO(offre)));
+        offres.forEach(offre -> offre.setPdf("[]"));
+        return offres;
+    }
+
+    public PdfOutDTO getStudentCv(long studentId) throws NonExistentEntityException {
+        Optional<Student> studentOpt = studentRepository.findById(studentId);
+        if (studentOpt.isEmpty()) throw new NonExistentEntityException();
+        byte[] cv = studentOpt.get().getCv();
+        String cvConvert = Arrays.toString(cv).replaceAll("\\s+", "");
+        return new PdfOutDTO(studentOpt.get().getId(), cvConvert);
     }
 
     public List<StageContractOutDTO> getContracts(long companyId, String session) throws NonExistentEntityException {
