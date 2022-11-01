@@ -23,7 +23,8 @@ import static projet.projetstage02.utils.TimeUtil.currentTimestamp;
 
 @ExtendWith(MockitoExtension.class)
 public class GestionnaireServiceTest {
-
+    @InjectMocks
+    private GestionnaireService gestionnaireService;
     @Mock
     private GestionnaireRepository gestionnaireRepository;
     @Mock
@@ -38,8 +39,7 @@ public class GestionnaireServiceTest {
     private StageContractRepository stageContractRepository;
     @Mock
     private ApplicationAcceptationRepository applicationAcceptationRepository;
-    @InjectMocks
-    private GestionnaireService gestionnaireService;
+
 
     private Gestionnaire gestionnaireTest;
     private Company companyTest;
@@ -311,7 +311,7 @@ public class GestionnaireServiceTest {
                 Offre.builder().session("Hiver 2023").department(Informatique).build()
         );
         when(offreRepository.findAll()).thenReturn(offers);
-        final List<OffreOutDTO> offersDto = service.getUnvalidatedOffers();
+        final List<OffreOutDTO> offersDto = gestionnaireService.getUnvalidatedOffers();
 
         assertThat(offersDto).hasSize(2);
     }
@@ -326,9 +326,9 @@ public class GestionnaireServiceTest {
                 Offre.builder().session("Hiver 2023").valide(true).department(Informatique).build()
         );
         when(offreRepository.findAll()).thenReturn(offers);
-        final List<OffreOutDTO> offers2022 = service.getValidatedOffers(2022);
-        final List<OffreOutDTO> offers2023 = service.getValidatedOffers(2023);
-        final List<OffreOutDTO> offers2010 = service.getValidatedOffers(2010);
+        final List<OffreOutDTO> offers2022 = gestionnaireService.getValidatedOffers(2022);
+        final List<OffreOutDTO> offers2023 = gestionnaireService.getValidatedOffers(2023);
+        final List<OffreOutDTO> offers2010 = gestionnaireService.getValidatedOffers(2010);
 
         assertThat(offers2022).hasSize(1);
         assertThat(offers2023).hasSize(1);
@@ -360,7 +360,7 @@ public class GestionnaireServiceTest {
         when(offreRepository.findAll()).thenReturn(offres);
 
         // Act
-        final List<OffreOutDTO> noneValidateOffers = service.getUnvalidatedOffers();
+        final List<OffreOutDTO> noneValidateOffers = gestionnaireService.getUnvalidatedOffers();
 
         // Assert
         assertThat(noneValidateOffers.size()).isEqualTo(2);
@@ -372,7 +372,7 @@ public class GestionnaireServiceTest {
         when(offreRepository.findById(anyLong())).thenReturn(Optional.of(offerTest));
 
         // Act
-        final OffreOutDTO offreInDTO = service.validateOfferById(1L);
+        final OffreOutDTO offreInDTO = gestionnaireService.validateOfferById(1L);
 
         // Assert
         assertThat(offreInDTO.isValide()).isTrue();
@@ -760,7 +760,8 @@ public class GestionnaireServiceTest {
             gestionnaireService.createStageContract(stageContractInDTO);
         } catch (AlreadyExistingStageContractException e) {
             return;
-        } catch (Exception e) {}
+        } catch (Exception ignored) {
+        }
         fail("Failed to catch the error AlreadyExistingStageContractException!");
     }
 
@@ -776,7 +777,8 @@ public class GestionnaireServiceTest {
             gestionnaireService.createStageContract(stageContractInDTO);
         } catch (NonExistentEntityException e) {
             return;
-        } catch (Exception e) {}
+        } catch (Exception ignored) {
+        }
         fail("Failed to catch the error NonExistentEntityException!");
     }
 
@@ -791,7 +793,8 @@ public class GestionnaireServiceTest {
             gestionnaireService.createStageContract(stageContractInDTO);
         } catch (NonExistentOfferExeption e) {
             return;
-        } catch (Exception e) {}
+        } catch (Exception ignored) {
+        }
         fail("Failed to catch the error NonExistentOfferExeption!");
     }
 
@@ -805,13 +808,14 @@ public class GestionnaireServiceTest {
             gestionnaireService.createStageContract(stageContractInDTO);
         } catch (NonExistentEntityException e) {
             return;
-        } catch (Exception e) {}
+        } catch (Exception ignored) {
+        }
         fail("Failed to catch the error NonExistentEntityException!");
     }
 
     @Test
-    void testGetUnvalidatedAcceptationHappyDay(){
-        when(applicationAcceptationRepository.findAll()).thenReturn(new ArrayList<>(){{
+    void testGetUnvalidatedAcceptationHappyDay() {
+        when(applicationAcceptationRepository.findAll()).thenReturn(new ArrayList<>() {{
             add(applicationAcceptationTest);
             add(applicationAcceptationTest);
             add(applicationAcceptationTest);
