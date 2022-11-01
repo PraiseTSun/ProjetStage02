@@ -93,7 +93,6 @@ const StudentContractsPage = ({connectedUser}: { connectedUser: IUser }): JSX.El
                     <Table className="text-center" hover>
                         <thead className="bg-primary text-white">
                         <tr>
-                            {/* TODO NEED MORE STUFF */}
                             <th>Description</th>
                             <th>Status de signature</th>
                         </tr>
