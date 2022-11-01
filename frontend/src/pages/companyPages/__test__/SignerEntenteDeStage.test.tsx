@@ -2,7 +2,7 @@ import IUser from "../../../models/IUser";
 import {act, fireEvent, render, screen} from "@testing-library/react";
 import {BrowserRouter} from "react-router-dom";
 import React from "react";
-import SignerEntenteDeStage from "../SignerEntenteDeStage";
+import SignerEntenteDeStageParCompagnie from "../SignerEntenteDeStageParCompagnie";
 
 describe("SignerEntenteDeStagePageTests", () => {
     let company: IUser
@@ -48,7 +48,7 @@ describe("SignerEntenteDeStagePageTests", () => {
         window.IntersectionObserver = jest.fn().mockImplementation(intersectionObserverMock);
 
         await act(async () => {
-            render(<SignerEntenteDeStage user={company}/>, {wrapper: BrowserRouter});
+            render(<SignerEntenteDeStageParCompagnie user={company}/>, {wrapper: BrowserRouter});
         });
     });
 

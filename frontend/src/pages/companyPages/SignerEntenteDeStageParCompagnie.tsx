@@ -5,8 +5,9 @@ import IUser from "../../models/IUser";
 import {generateAlert} from "../../services/universalServices/UniversalUtilService";
 import {putcompanyContracts, putCompanySignatureContract} from "../../services/companyServices/CompanyFetchService";
 import SignaturePad from "react-signature-canvas";
+import PageHeader from "../../components/universalComponents/PageHeader";
 
-const SignerEntenteDeStage = ({user}: { user: IUser }): JSX.Element => {
+const SignerEntenteDeStageParCompagnie = ({user}: { user: IUser }): JSX.Element => {
     const [contratsNonSigner, setContratsNonSigner] = useState<any[]>([])
     const [isSigner, setIsSigner] = useState(false)
     const [contratId, setContratId] = useState(0)
@@ -37,8 +38,6 @@ const SignerEntenteDeStage = ({user}: { user: IUser }): JSX.Element => {
     }
 
     async function signer(signature: string): Promise<void> {
-        console.log("dans la fonction signer : " + signature)
-        console.log()
         setIsSigner(false)
         try {
             const response = await putCompanySignatureContract(user.token, user.id, contratId, signature)
@@ -94,23 +93,12 @@ const SignerEntenteDeStage = ({user}: { user: IUser }): JSX.Element => {
     return (
         <Container className="d-flex justify-content-center">
             <Col>
-                <Row>
-                    <Col sm={2}>
-                        <Link to="/" className="btn btn-primary mt-1">Home</Link>
-                    </Col>
-                    <Col sm={8} className="text-center pt-2">
-                        <h1 className="fw-bold text-white display-3 pb-2">Signer Entente De Stage</h1>
-                    </Col>
-                    <Col sm={2}></Col>
-                </Row>
+                <PageHeader title={"Signer Entente De Stage"}></PageHeader>
                 <Row className="mt-5">
                     <Col className="bg-light p-0">
                         <Table className="text-center table table-bordered" hover>
                             <thead className="bg-primary">
                             <tr className="text-white">
-                                <th>First Name</th>
-                                <th>Last Name</th>
-                                <th>Session</th>
                                 <th>Description</th>
                                 <th>Ententes</th>
                             </tr>
@@ -119,9 +107,6 @@ const SignerEntenteDeStage = ({user}: { user: IUser }): JSX.Element => {
                             {contratsNonSigner.map((contrat, index) => {
                                 return (
                                     <tr key={index}>
-                                        <td>{user.firstName}</td>
-                                        <td>{user.lastName}</td>
-                                        <td>{contrat.session}</td>
                                         <td>{contrat.description}</td>
                                         <td>{
                                             contrat.companySignature.length > 0 ?
@@ -144,4 +129,4 @@ const SignerEntenteDeStage = ({user}: { user: IUser }): JSX.Element => {
     )
 }
 
-export default SignerEntenteDeStage
+export default SignerEntenteDeStageParCompagnie

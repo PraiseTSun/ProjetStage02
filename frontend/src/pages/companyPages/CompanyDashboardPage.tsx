@@ -2,7 +2,6 @@ import React from "react";
 import {Button, Row} from "react-bootstrap";
 import IUser from "../../models/IUser";
 import {Link} from 'react-router-dom';
-import SignerEntenteDeStage from "./SignerEntenteDeStage";
 
 const CompanyDashboard = ({user, deconnexion}: { user: IUser, deconnexion: Function }): JSX.Element => {
 
@@ -16,7 +15,7 @@ const CompanyDashboard = ({user, deconnexion}: { user: IUser, deconnexion: Funct
                       className="btn btn-primary">Soumettre une offre de stage</Link>
                 <Link to="/myOffers"
                       className="btn btn-primary mt-3">Mes offres</Link>
-                <Link to="/SignerEntenteDeStage"
+                <Link to="/SignerEntenteDeStageParCompagnie"
                       className="btn btn-primary mt-3">Signer l'entente de stage</Link>
             </Row>
         </>
