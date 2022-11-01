@@ -232,6 +232,7 @@ public class RootControllerTest {
 
         contractsDTO = new ContractsDTO();
         contractsDTO.add(stageContractOutDTO);
+        contractsDTO.add(stageContractOutDTO);
 
         evalInfoDTO = new EvaluationInfoDTO(duffBeer.toModel(), duffOffre.toModel(), bart.toModel());
 
@@ -1650,7 +1651,7 @@ public class RootControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(jsonTokenDTO.write(token).getJson()))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.applications.size()", is(1)));
+                .andExpect(jsonPath("$.contracts.size()", is(2)));
     }
 
     @Test
@@ -1691,5 +1692,28 @@ public class RootControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(jsonEvalInDTO.write(evalInDTO).getJson()))
                 .andExpect(status().isCreated());
+    }
+
+    @Test
+    void testGetAllContractsHappyDay() throws Exception {
+        when(gestionnaireService.getContracts()).thenReturn(contractsDTO);
+
+        mockMvc.perform(put("/getContracts")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(jsonTokenDTO.write(token).getJson()))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.contracts.size()", is(2)));
+    }
+
+    @Test
+    void testGetAllContractsEmpty() throws Exception {
+        contractsDTO.setContracts(new ArrayList<>());
+        when(gestionnaireService.getContracts()).thenReturn(contractsDTO);
+
+        mockMvc.perform(put("/getContracts")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(jsonTokenDTO.write(token).getJson()))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.contracts.size()", is(0)));
     }
 }
