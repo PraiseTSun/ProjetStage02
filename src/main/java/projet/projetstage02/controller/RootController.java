@@ -751,30 +751,15 @@ public class RootController {
         }
     }
 
-    @PutMapping("/unvalidatedAcceptations")
-    public ResponseEntity<UnvalidatedAcceptationsDTO> getUnvalidatedAcceptations(@RequestBody TokenDTO tokenId){
-        logger.log(Level.INFO, "Put /unvalidatedAcceptations");
-
-        try {
-            authService.getToken(tokenId.getToken(), GESTIONNAIRE);
-            UnvalidatedAcceptationsDTO dto = gestionnaireService.getUnvalidatedAcceptation();
-            logger.log(Level.INFO, "Put /unvalidatedAcceptations sent request 200 : " + dto);
-            return ResponseEntity.ok(dto);
-        } catch (InvalidTokenException e) {
-            logger.log(Level.INFO, "Put /unvalidatedAcceptations sent request 403");
-            return ResponseEntity.status(FORBIDDEN).build();
-        }
-    }
-
     @PutMapping("/companyContracts/{companyId}_{session}")
-    public ResponseEntity<List<StageContractOutDTO>> getCompanyContracts
+    public ResponseEntity<ContractsDTO> getCompanyContracts
             (@PathVariable String companyId, @PathVariable String session, @RequestBody TokenDTO tokenId) {
         logger.log(Level.INFO, "Put /companyContracts/{companyId} entered with companyId: " + companyId
-            + " with the session: " + session);
+                + " with the session: " + session);
 
         try {
             authService.getToken(tokenId.getToken(), COMPANY);
-            List<StageContractOutDTO> contracts = companyService.getContracts(Long.parseLong(companyId), session);
+            ContractsDTO contracts = companyService.getContracts(Long.parseLong(companyId), session);
             logger.log(Level.INFO, "Put /companyContracts/{companyId} sent 200 response");
             return ResponseEntity.ok(contracts);
         } catch (NonExistentEntityException e) {

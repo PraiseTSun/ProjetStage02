@@ -12,7 +12,6 @@ import projet.projetstage02.model.*;
 import projet.projetstage02.repository.*;
 
 import java.sql.Timestamp;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -164,7 +163,6 @@ public class CompanyService {
         stageContractRepository.save(stageContract);
 
 
-
         return new StageContractOutDTO(stageContract);
     }
 
@@ -213,9 +211,9 @@ public class CompanyService {
         return new PdfOutDTO(studentOpt.get().getId(), cvConvert);
     }
 
-    public List<StageContractOutDTO> getContracts(long companyId, String session) throws NonExistentEntityException {
+    public ContractsDTO getContracts(long companyId, String session) throws NonExistentEntityException {
         Optional<Company> companyOpt = companyRepository.findById(companyId);
-        if(companyOpt.isEmpty()) throw new NonExistentEntityException();
+        if (companyOpt.isEmpty()) throw new NonExistentEntityException();
 
         List<StageContractOutDTO> contracts = new ArrayList<>();
 
@@ -223,6 +221,6 @@ public class CompanyService {
                 .filter(stageContract -> stageContract.getSession().equals(session))
                 .forEach(stageContract -> contracts.add(new StageContractOutDTO(stageContract)));
 
-        return contracts;
+        return ContractsDTO.builder().applications(contracts).build();
     }
 }

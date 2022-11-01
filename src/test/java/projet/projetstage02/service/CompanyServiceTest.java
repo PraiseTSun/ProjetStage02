@@ -26,7 +26,6 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.assertj.core.api.Fail.fail;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
-import static projet.projetstage02.utils.ByteConverter.byteToString;
 import static projet.projetstage02.utils.TimeUtil.currentTimestamp;
 
 @ExtendWith(MockitoExtension.class)
@@ -595,7 +594,7 @@ public class CompanyServiceTest {
                 .id(1L).studentId(1L).offerId(1L).companyId(duffBeer.getId()).companySignature("").session("Hiver 1997")
                 .description("").companySignatureDate(LocalDateTime.now()).build();
         when(stageContractRepository.findByCompanyId(anyLong())).thenReturn(
-                new ArrayList<>(){{
+                new ArrayList<>() {{
                     add(contractValid);
                     add(contractInvalid1);
                     add(contractValid);
@@ -603,13 +602,13 @@ public class CompanyServiceTest {
                 }}
         );
 
-        List<StageContractOutDTO> contracts = companyService.getContracts(duffBeer.getId(), Offre.currentSession());
+        ContractsDTO contracts = companyService.getContracts(duffBeer.getId(), Offre.currentSession());
 
         assertThat(contracts.size()).isEqualTo(2);
     }
 
     @Test
-    void testGetContractsNotFound(){
+    void testGetContractsNotFound() {
         when(companyRepository.findById(anyLong())).thenReturn(Optional.empty());
 
         try {

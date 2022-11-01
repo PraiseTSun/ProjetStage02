@@ -88,7 +88,6 @@ public class RootControllerTest {
 
     CvStatusDTO cvStatusDTO;
 
-    List<StageContractOutDTO> contracts;
 
     // https://thepracticaldeveloper.com/guide-spring-boot-controller-tests/
     @BeforeEach
@@ -1642,13 +1641,13 @@ public class RootControllerTest {
 
     @Test
     void testGetCompanyContractsHappyDay() throws Exception {
-        when(companyService.getContracts(anyLong(), anyString())).thenReturn(contracts);
+        when(companyService.getContracts(anyLong(), anyString())).thenReturn(contractsDTO);
 
         mockMvc.perform(put("/companyContracts/{companyId}_{session}", 1, Offre.currentSession())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(jsonTokenDTO.write(token).getJson()))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.size()",is(3)));
+                .andExpect(jsonPath("$.size()", is(1)));
     }
 
     @Test

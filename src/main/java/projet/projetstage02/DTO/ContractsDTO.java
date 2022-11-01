@@ -1,11 +1,15 @@
 package projet.projetstage02.DTO;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 
 import java.util.ArrayList;
 import java.util.List;
 
 @Data
+@Builder
+@AllArgsConstructor
 public class ContractsDTO {
     private List<StageContractOutDTO> applications;
 
