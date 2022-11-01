@@ -1543,7 +1543,7 @@ paths:
               commentaires:
                 type: string
               signature:
-                type: number
+                type: string
               dateSignature:
                 type: string
       produces:
