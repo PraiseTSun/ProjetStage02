@@ -55,7 +55,7 @@ const ContractsPage = ({connectedUser}: { connectedUser: IUser }): JSX.Element =
                             <th>Employé</th>
                             <th>Position</th>
                             <th>Compagnie</th>
-                            <th>Approuver</th>
+                            <th>Créer</th>
                         </tr>
                         </thead>
                         <tbody className="bg-light">
@@ -74,7 +74,7 @@ const ContractsPage = ({connectedUser}: { connectedUser: IUser }): JSX.Element =
                                         <td>{acceptation.companyName}</td>
                                         <td><Button variant="success" onClick={async () => {
                                             await validateAcceptation(acceptation.studentId, acceptation.offerId)
-                                        }}>Approuver</Button></td>
+                                        }}>Créer</Button></td>
                                     </tr>
                                 );
                             })}
