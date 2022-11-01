@@ -807,6 +807,7 @@ public class RootController {
     }
 
     @PutMapping("/company/validatedOffers/{id}")
+    //todo replace tokens with @RequestHeader("Authorization") String token
     public ResponseEntity<List<OffreOutDTO>> getValidatedOffers
             (@PathVariable long id, @RequestBody TokenDTO tokenId) {
         try {

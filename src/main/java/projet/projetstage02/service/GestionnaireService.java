@@ -366,6 +366,7 @@ public class GestionnaireService {
     }
 
     public void evaluateStage(EvaluationDTO evaluationInDTO) {
+        evaluationInDTO.getContractId();
 
     }
 }
