@@ -1317,7 +1317,7 @@ paths:
           description: Token invalide
   /createStageContract:
     post:
-      summary: Céer un entante de stage (Doit avoir un token gestionnaire)
+      summary: Céer un entente de stage (Doit avoir un token gestionnaire)
       parameters:
         - in: body
           name: StageContractInDTO
@@ -1445,13 +1445,13 @@ paths:
         409:
           description: Le contract n'appartient pas à la compagnie
 
-  /evaluateStage/{offreId}/getInfo:
+  /evaluateStage/{contractId}/getInfo:
     put:
       summary: Revoie les informations necessaires pour l'évaluation (Doit avoir un token Gestionnaire)
       parameters:
         - in: path
           name: id
-          description: id de l'offre
+          description: id de l'entente de stage
           type: number
           required: true
         - in: body
