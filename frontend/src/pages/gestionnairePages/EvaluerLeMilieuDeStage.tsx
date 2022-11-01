@@ -11,6 +11,7 @@ import {
     postEvaluationStage, putContrats,
     putInfoContratPourEvaluateStage
 } from "../../services/gestionnaireServices/GestionnaireFetchService";
+import SignaturePad from "react-signature-canvas";
 
 const EvaluerLeMilieuDeStage = ({user}: { user: IUser }): JSX.Element => {
     const [contrats, setContrats] = useState<IOffer[]>([]);
@@ -18,6 +19,7 @@ const EvaluerLeMilieuDeStage = ({user}: { user: IUser }): JSX.Element => {
     const [waiting, setWaiting] = useState<boolean>(false);
     const [validated, setValidated] = useState<boolean>(false);
     const [showSignature, setShowSignature] = useState<boolean>(false);
+    let sigPad: SignaturePad | null
     // varialbles pour formulaire la partie identification de l'entreprise
     const [infosContrat, setInfosContrat] = useState<InfoDuContrat>({
         adresse: "",
@@ -173,37 +175,37 @@ const EvaluerLeMilieuDeStage = ({user}: { user: IUser }): JSX.Element => {
         );
     }
 
-    // if (showSignature) {
-    //     return (
-    //         <Container className="vh-100">
-    //             <Row className="bg-dark p-2">
-    //                 <Col sm={1}><Button variant="danger" onClick={() => {
-    //                     setShowSignature(false)
-    //                 }}>Fermer</Button></Col>
-    //                 <Col sm={10}></Col>
-    //                 <Col sm={1}><Button variant="success" onClick={() => {
-    //                     if (sigPad!.isEmpty()) {
-    //                         alert("Vous devez signer!")
-    //                     } else {
-    //                         signer(sigPad!.toDataURL())
-    //                     }
-    //                 }}>Signer</Button></Col>
-    //             </Row>
-    //             <Row>
-    //                 <Col sm={4} className="mx-auto mt-3">
-    //                     <SignaturePad canvasProps={{width: 500, height: 200, className: 'border border-5 bg-light'}}
-    //                                   ref={(ref) => {
-    //                                       sigPad = ref
-    //                                   }}/>
-    //                     <Button onClick={() => {
-    //                         sigPad!.clear()
-    //                     }}>Recommencer</Button>
-    //                 </Col>
-    //             </Row>
-    //         </Container>
-    //     );
-    // }
-    //
+    if (showSignature) {
+        return (
+            <Container className="vh-100">
+                <Row className="bg-dark p-2">
+                    <Col sm={1}><Button variant="danger" onClick={() => {
+                        setShowSignature(false)
+                    }}>Fermer</Button></Col>
+                    <Col sm={10}></Col>
+                    <Col sm={1}><Button variant="success" onClick={() => {
+                        if (sigPad!.isEmpty()) {
+                            alert("Vous devez signer!")
+                        } else {
+                            setSignature(sigPad!.toDataURL())
+                        }
+                    }}>Signer</Button></Col>
+                </Row>
+                <Row>
+                    <Col sm={4} className="mx-auto mt-3">
+                        <SignaturePad canvasProps={{width: 500, height: 200, className: 'border border-5 bg-light'}}
+                                      ref={(ref) => {
+                                          sigPad = ref
+                                      }}/>
+                        <Button onClick={() => {
+                            sigPad!.clear()
+                        }}>Recommencer</Button>
+                    </Col>
+                </Row>
+            </Container>
+        );
+    }
+
     if (afficheFormulaire) {
         return (
             <Container className="min-vh-100">
