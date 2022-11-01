@@ -341,7 +341,7 @@ public class GestionnaireService {
     }
 
 
-    public EvaluationInfoDTO getEvaluationInfoForApplication(long contractId) throws NonExistentOfferExeption, NonExistentEntityException {
+    public EvaluationInfoDTO getEvaluationInfoForContract(long contractId) throws NonExistentOfferExeption, NonExistentEntityException {
         Optional<StageContract> optional = stageContractRepository.findById(contractId);
         if (optional.isEmpty()) {
             throw new NonExistentEntityException();

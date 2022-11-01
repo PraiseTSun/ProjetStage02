@@ -42,7 +42,7 @@ public class Offre {
     @Min(15)
     @Max(999)
     private int salaire;
-
+    //todo: add in front end
     @NotBlank
     private String dateStage;
     @NotBlank
