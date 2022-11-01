@@ -773,17 +773,16 @@ public class RootController {
         }
     }
 
-    @PutMapping("/unvalidatedAcceptations")
-    public ResponseEntity<UnvalidatedAcceptationsDTO> getUnvalidatedAcceptations(@RequestBody TokenDTO tokenId) {
-        logger.log(Level.INFO, "Put /unvalidatedAcceptations");
-
+    @PutMapping("/contracts")
+    public ResponseEntity<ContractsDTO> getContracts(@RequestBody TokenDTO tokenId) {
+        logger.log(Level.INFO, "Put /contracts");
         try {
             authService.getToken(tokenId.getToken(), GESTIONNAIRE);
-            UnvalidatedAcceptationsDTO dto = gestionnaireService.getUnvalidatedAcceptation();
-            logger.log(Level.INFO, "Put /unvalidatedAcceptations sent request 200 : " + dto);
+            ContractsDTO dto = gestionnaireService.getContracts();
+            logger.log(Level.INFO, "Put /contracts sent request 200 : " + dto);
             return ResponseEntity.ok(dto);
         } catch (InvalidTokenException e) {
-            logger.log(Level.INFO, "Put /unvalidatedAcceptations sent request 403");
+            logger.log(Level.INFO, "Put /contracts sent request 403");
             return ResponseEntity.status(FORBIDDEN).build();
         }
     }

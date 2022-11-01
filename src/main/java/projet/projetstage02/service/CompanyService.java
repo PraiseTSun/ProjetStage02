@@ -7,7 +7,6 @@ import projet.projetstage02.exception.AlreadyExistingAcceptationException;
 import projet.projetstage02.exception.InvalidOwnershipException;
 import projet.projetstage02.exception.NonExistentEntityException;
 import projet.projetstage02.exception.NonExistentOfferExeption;
-import projet.projetstage02.model.*;
 import projet.projetstage02.model.AbstractUser.Department;
 import projet.projetstage02.model.*;
 import projet.projetstage02.repository.*;
@@ -148,7 +147,7 @@ public class CompanyService {
 
     public StageContractOutDTO addSignatureToContract(SignatureInDTO signature) throws NonExistentEntityException, InvalidOwnershipException {
         Optional<Company> companyOpt = companyRepository.findById(signature.getUserId());
-        if(companyOpt.isEmpty()) throw new NonExistentEntityException();
+        if (companyOpt.isEmpty()) throw new NonExistentEntityException();
 
         Optional<StageContract> stageContractOpt = stageContractRepository.findById(signature.getContractId());
         if (stageContractOpt.isEmpty()) throw new NonExistentEntityException();
@@ -156,7 +155,7 @@ public class CompanyService {
         Company company = companyOpt.get();
         StageContract stageContract = stageContractOpt.get();
 
-        if(company.getId() != stageContract.getCompanyId())
+        if (company.getId() != stageContract.getCompanyId())
             throw new InvalidOwnershipException();
 
         stageContract.setCompanySignature(signature.getSignature());

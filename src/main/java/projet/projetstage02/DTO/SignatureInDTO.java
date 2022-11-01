@@ -13,5 +13,5 @@ public class SignatureInDTO {
     private String token;
     private long userId;
     private long contractId;
-    private byte[] signature;
+    private String signature;
 }

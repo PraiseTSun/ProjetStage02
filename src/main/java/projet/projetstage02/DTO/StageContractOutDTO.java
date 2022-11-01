@@ -15,6 +15,10 @@ public class StageContractOutDTO {
     private long studentId;
     private long offerId;
     private long companyId;
+    private String employFullName;
+    private String companyName;
+    private String studentFullName;
+    private String position;
     private String description;
     private String companySignature;
     private String gestionnaireSignature;
