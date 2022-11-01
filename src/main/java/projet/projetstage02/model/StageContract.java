@@ -6,7 +6,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
-import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.Min;
 
 @Entity
 @Data
@@ -17,13 +17,15 @@ public class StageContract {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "id", nullable = false)
-    private Long id;
-    @NotBlank
-    private Long studentId;
-    @NotBlank
-    private Long offerId;
-    @NotBlank
-    private Long companyId;
+    private long id;
+    @Min(0)
+    private long studentId;
+    @Min(0)
+    private long offerId;
+    @Min(0)
+    private long companyId;
     private String description;
-    private byte[] companySignature;
+    private String companySignature;
+    private String gestionnaireSignature;
+    private String studentSignature;
 }

@@ -739,10 +739,7 @@ public class RootController {
             StageContractOutDTO dto = gestionnaireService.createStageContract(stageContractInDTO);
             logger.log(Level.INFO, "Post /createStageContract sent request 201 : " + dto);
             return ResponseEntity.status(CREATED).body(dto);
-        } catch (NonExistentEntityException e) {
-            logger.log(Level.INFO, "Post /createStageContract sent request 404");
-            return ResponseEntity.notFound().build();
-        } catch (NonExistentOfferExeption e) {
+        } catch (NonExistentEntityException | NonExistentOfferExeption e) {
             logger.log(Level.INFO, "Post /createStageContract sent request 404");
             return ResponseEntity.notFound().build();
         } catch (AlreadyExistingStageContractException e) {

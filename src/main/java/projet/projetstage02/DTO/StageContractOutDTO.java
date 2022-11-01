@@ -6,8 +6,6 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import projet.projetstage02.model.StageContract;
 
-import static projet.projetstage02.utils.ByteConverter.byteToString;
-
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -19,13 +17,18 @@ public class StageContractOutDTO {
     private long companyId;
     private String description;
     private String companySignature;
+    private String gestionnaireSignature;
+    private String studentSignature;
 
-    public StageContractOutDTO (StageContract contact){
-        id = contact.getId();
-        studentId = contact.getStudentId();
-        offerId = contact.getOfferId();
-        companyId = contact.getCompanyId();
-        description = contact.getDescription();
-        companySignature = byteToString(contact.getCompanySignature());
+    public StageContractOutDTO(StageContract stageContract) {
+        this.id = stageContract.getId();
+        this.studentId = stageContract.getStudentId();
+        this.offerId = stageContract.getOfferId();
+        this.companyId = stageContract.getCompanyId();
+        this.description = stageContract.getDescription();
+        this.companySignature = stageContract.getCompanySignature();
+        this.gestionnaireSignature = stageContract.getGestionnaireSignature();
+        this.studentSignature = stageContract.getStudentSignature();
     }
+
 }

@@ -256,22 +256,22 @@ public class GestionnaireService {
                 && !deleteUnconfirmedGestionnaire(email);
     }
 
-    public StageContractOutDTO createStageContract (StageContractInDTO contract)
+    public StageContractOutDTO createStageContract(StageContractInDTO contract)
             throws NonExistentEntityException, NonExistentOfferExeption, AlreadyExistingStageContractException {
         Optional<Student> studentOpt = studentRepository.findById(contract.getStudentId());
-        if(studentOpt.isEmpty()) throw new NonExistentEntityException();
+        if (studentOpt.isEmpty()) throw new NonExistentEntityException();
         Student student = studentOpt.get();
 
         Optional<Offre> offerOpt = offreRepository.findById(contract.getOfferId());
-        if(offerOpt.isEmpty()) throw new NonExistentOfferExeption();
+        if (offerOpt.isEmpty()) throw new NonExistentOfferExeption();
         Offre offer = offerOpt.get();
 
         Optional<Company> companyOpt = companyRepository.findById(offer.getIdCompagnie());
-        if(companyOpt.isEmpty()) throw new NonExistentEntityException();
+        if (companyOpt.isEmpty()) throw new NonExistentEntityException();
         Company company = companyOpt.get();
 
         String description = company.getCompanyName() + " a accepté " + student.getFirstName() + " "
-                + student.getLastName() + " en tant que " + offer.getPosition() + " pour la session "
+                + student.getLastName() + " Pour le role de " + offer.getPosition() + " pour la session "
                 + offer.getSession() + ".";
 
         Optional<StageContract> stageContractOpt
@@ -283,33 +283,32 @@ public class GestionnaireService {
                 .offerId(offer.getId())
                 .companyId(company.getId())
                 .description(description)
-                .companySignature(new byte[0])
                 .build();
 
-        stageContractRepository.save(stageContract);
+        stageContract = stageContractRepository.save(stageContract);
         Optional<ApplicationAcceptation> application
                 = applicationAcceptationRepository.findByOfferIdAndStudentId(offer.getId(), student.getId());
+        if (application.isEmpty()) throw new NonExistentEntityException();
         applicationAcceptationRepository.delete(application.get());
-
-        stageContractOpt
-                = stageContractRepository.findByStudentIdAndCompanyIdAndOfferId(student.getId(), company.getId(), offer.getId());
-
-        return new StageContractOutDTO(stageContractOpt.get());
+        return new StageContractOutDTO(stageContract);
     }
 
-    public UnvalidatedAcceptationsDTO getUnvalidatedAcceptation(){
+    public UnvalidatedAcceptationsDTO getUnvalidatedAcceptation() {
         UnvalidatedAcceptationsDTO unvalidatedAcceptationsDTO = new UnvalidatedAcceptationsDTO();
 
         List<ApplicationAcceptation> applications = applicationAcceptationRepository.findAll();
-        applications.stream()
+        applications
                 .forEach(applicationAcceptation -> {
                     Optional<Offre> offerOpt = offreRepository.findById(applicationAcceptation.getOfferId());
+                    if (offerOpt.isEmpty()) return;
                     Offre offer = offerOpt.get();
 
                     Optional<Company> companyOpt = companyRepository.findById(offer.getIdCompagnie());
+                    if (companyOpt.isEmpty()) return;
                     Company company = companyOpt.get();
 
                     Optional<Student> studentOpt = studentRepository.findById(applicationAcceptation.getStudentId());
+                    if (studentOpt.isEmpty()) return;
                     Student student = studentOpt.get();
 
                     unvalidatedAcceptationsDTO.add(
