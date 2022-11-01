@@ -6,11 +6,9 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
-import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.Min;
 import javax.validation.constraints.Pattern;
 import java.time.LocalDateTime;
-import java.time.LocalTime;
-import javax.validation.constraints.Min;
 
 @Entity
 @Data
@@ -31,10 +29,13 @@ public class StageContract {
     @Min(0)
     private long companyId;
     private String description;
+    @Lob
     private String companySignature;
     private LocalDateTime companySignatureDate;
+    @Lob
     private String gestionnaireSignature;
     private LocalDateTime gestionnaireSignatureDate;
+    @Lob
     private String studentSignature;
     private LocalDateTime studentSignatureDate;
 }
