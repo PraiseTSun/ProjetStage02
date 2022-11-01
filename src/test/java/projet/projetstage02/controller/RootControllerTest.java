@@ -1621,7 +1621,7 @@ public class RootControllerTest {
     void testGetUnvalidatedAcceptationsHappyDay() throws Exception {
         when(gestionnaireService.getContractsToCreate()).thenReturn(contractsDTO);
 
-        mockMvc.perform(put("/contracts")
+        mockMvc.perform(put("/contractsToCreate")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(jsonTokenDTO.write(token).getJson()))
                 .andExpect(status().isOk())
@@ -1632,7 +1632,7 @@ public class RootControllerTest {
     void testGetUnvalidatedAcceptationsInvalidToken() throws Exception {
         when(authService.getToken(any(), any())).thenThrow(new InvalidTokenException());
 
-        mockMvc.perform(put("/contracts")
+        mockMvc.perform(put("/contractsToCreate")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(jsonTokenDTO.write(token).getJson()))
                 .andExpect(status().isForbidden());

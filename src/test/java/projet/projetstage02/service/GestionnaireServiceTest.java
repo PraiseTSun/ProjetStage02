@@ -816,10 +816,10 @@ public class GestionnaireServiceTest {
 
     @Test
     void testGetUnvalidatedAcceptationHappyDay() {
-        when(stageContractRepository.findAll()).thenReturn(new ArrayList<>() {{
-            add(stageContract);
-            add(stageContract);
-            add(stageContract);
+        when(applicationAcceptationRepository.findAll()).thenReturn(new ArrayList<>() {{
+            add(applicationAcceptationTest);
+            add(applicationAcceptationTest);
+            add(applicationAcceptationTest);
         }});
         when(offreRepository.findById(anyLong())).thenReturn(Optional.of(offerTest));
         when(companyRepository.findById(anyLong())).thenReturn(Optional.of(companyTest));
