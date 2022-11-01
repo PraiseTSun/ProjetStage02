@@ -445,8 +445,8 @@ public class CompanyServiceTest {
         // Arrange
         when(companyRepository.findById(anyLong())).thenReturn(Optional.of(duffBeer));
         when(offreRepository.findById(anyLong())).thenReturn(Optional.of(duffBeerOffer));
-        when(stageContractRepository.findByStudentIdAndCompanyIdAndOfferId(eq(1L), anyLong(), anyLong()))
-                .thenReturn(Optional.of(stageContract), Optional.empty(), Optional.of(stageContract), Optional.empty());
+        when(stageContractRepository.findByStudentIdAndCompanyIdAndOfferId(anyLong(), anyLong(), anyLong()))
+                .thenReturn(Optional.of(stageContract), Optional.empty());
         when(applicationRepository.findByOfferId(anyLong())).thenReturn(new ArrayList<>() {{
             add(Application.builder().studentId(1L).build());
             add(Application.builder().studentId(2L).build());
@@ -460,7 +460,7 @@ public class CompanyServiceTest {
         OfferApplicationDTO studentsForOffer = companyService.getStudentsForOffer(1L);
 
         // Assert
-        assertThat(studentsForOffer.getApplicants().size()).isEqualTo(3);
+        assertThat(studentsForOffer.getApplicants().size()).isEqualTo(4);
     }
 
     @Test

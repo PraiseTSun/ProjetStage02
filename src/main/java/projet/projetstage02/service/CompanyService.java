@@ -185,7 +185,7 @@ public class CompanyService {
                 });
 
         List<StudentOutDTO> toReturn = studentDTOS.stream()
-                .filter(student -> stageContractRepository.findByStudentIdAndCompanyIdAndOfferId(offerId, student.getId(), company.getId()).isEmpty())
+                .filter(student -> stageContractRepository.findByStudentIdAndCompanyIdAndOfferId(student.getId(), company.getId(), offerId).isEmpty())
                 .toList();
         return new OfferApplicationDTO(toReturn);
     }
