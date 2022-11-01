@@ -441,9 +441,12 @@ public class CompanyServiceTest {
     }
 
     @Test
-    void testGetApplicantsForOfferHappyDay() throws NonExistentOfferExeption {
+    void testGetApplicantsForOfferHappyDay() throws NonExistentOfferExeption, NonExistentEntityException {
         // Arrange
+        when(companyRepository.findById(anyLong())).thenReturn(Optional.of(duffBeer));
         when(offreRepository.findById(anyLong())).thenReturn(Optional.of(duffBeerOffer));
+        when(stageContractRepository.findByStudentIdAndCompanyIdAndOfferId(eq(1L), anyLong(), anyLong()))
+                .thenReturn(Optional.of(stageContract), Optional.empty(), Optional.of(stageContract), Optional.empty());
         when(applicationRepository.findByOfferId(anyLong())).thenReturn(new ArrayList<>() {{
             add(Application.builder().studentId(1L).build());
             add(Application.builder().studentId(2L).build());
@@ -457,12 +460,13 @@ public class CompanyServiceTest {
         OfferApplicationDTO studentsForOffer = companyService.getStudentsForOffer(1L);
 
         // Assert
-        assertThat(studentsForOffer.getApplicants().size()).isEqualTo(5);
+        assertThat(studentsForOffer.getApplicants().size()).isEqualTo(3);
     }
 
     @Test
-    void testGetApplicantsForOfferNotFull() throws NonExistentOfferExeption {
+    void testGetApplicantsForOfferNotFull() throws NonExistentOfferExeption, NonExistentEntityException {
         // Arrange
+        when(companyRepository.findById(anyLong())).thenReturn(Optional.of(duffBeer));
         when(offreRepository.findById(anyLong())).thenReturn(Optional.of(duffBeerOffer));
         when(applicationRepository.findByOfferId(anyLong())).thenReturn(new ArrayList<>() {{
             add(Application.builder().studentId(1L).build());
@@ -481,7 +485,7 @@ public class CompanyServiceTest {
     }
 
     @Test
-    void testGetApplicantsForOfferNonExistentOffer() {
+    void testGetApplicantsForOfferNonExistentOffer() throws NonExistentEntityException {
         // Arrange
         when(offreRepository.findById(anyLong())).thenReturn(Optional.empty());
 
@@ -496,9 +500,25 @@ public class CompanyServiceTest {
     }
 
     @Test
-    void testGetApplicantsForOfferEmpty() throws NonExistentOfferExeption {
+    void testGetApplicantsForOfferNonExistentEntity() throws NonExistentOfferExeption {
         // Arrange
         when(offreRepository.findById(anyLong())).thenReturn(Optional.of(duffBeerOffer));
+
+        // Act
+        try {
+            companyService.getStudentsForOffer(1L);
+        } catch (NonExistentEntityException e) {
+            return;
+        }
+
+        fail("NonExistentEntityExeption not thrown");
+    }
+
+    @Test
+    void testGetApplicantsForOfferEmpty() throws NonExistentOfferExeption, NonExistentEntityException {
+        // Arrange
+        when(offreRepository.findById(anyLong())).thenReturn(Optional.of(duffBeerOffer));
+        when(companyRepository.findById(anyLong())).thenReturn(Optional.of(duffBeer));
         when(applicationRepository.findByOfferId(anyLong())).thenReturn(new ArrayList<>());
 
         // Act
