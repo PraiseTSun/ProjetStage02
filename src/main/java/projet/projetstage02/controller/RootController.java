@@ -729,11 +729,11 @@ public class RootController {
         }
     }
 
+    //todo replace .log with .info
     @PostMapping("/createStageContract")
     public ResponseEntity<StageContractOutDTO> createStageContract
-            (@Valid StageContractInDTO stageContractInDTO){
+    (@Valid StageContractInDTO stageContractInDTO) {
         logger.log(Level.INFO, "Post /createStageContract entered with StageContractInDTO: " + stageContractInDTO);
-
         try {
             authService.getToken(stageContractInDTO.getToken(), GESTIONNAIRE);
             StageContractOutDTO dto = gestionnaireService.createStageContract(stageContractInDTO);
@@ -748,7 +748,7 @@ public class RootController {
         } catch (AlreadyExistingStageContractException e) {
             logger.log(Level.INFO, "Post /createStageContract sent request 409");
             return ResponseEntity.status(CONFLICT).build();
-        }catch (InvalidTokenException e) {
+        } catch (InvalidTokenException e) {
             logger.log(Level.INFO, "Post /createStageContract sent request 403");
             return ResponseEntity.status(FORBIDDEN).build();
         }
@@ -756,7 +756,7 @@ public class RootController {
 
     @PutMapping("/companySignatureContract")
     public ResponseEntity<StageContractOutDTO> companyContractSignature
-            (@RequestBody SignatureInDTO signatureInDTO){
+            (@RequestBody SignatureInDTO signatureInDTO) {
         logger.log(Level.INFO, "Put /companySignatureContract entered with SignatureInDTO: " + signatureInDTO);
 
         try {
@@ -777,7 +777,7 @@ public class RootController {
     }
 
     @PutMapping("/unvalidatedAcceptations")
-    public ResponseEntity<UnvalidatedAcceptationsDTO> getUnvalidatedAcceptations(@RequestBody TokenDTO tokenId){
+    public ResponseEntity<UnvalidatedAcceptationsDTO> getUnvalidatedAcceptations(@RequestBody TokenDTO tokenId) {
         logger.log(Level.INFO, "Put /unvalidatedAcceptations");
 
         try {
