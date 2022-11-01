@@ -143,6 +143,17 @@ public class ProjetStage02Application implements CommandLineRunner {
         gestionnaireService.validateCompany(company.getId());
         gestionnaireService.validateStudentCV(student.getId());
         studentService.createPostulation(student.getId(), offreId);
+        studentService.createPostulation(student2.getId(), offreId);
+        companyService.saveStudentApplicationAccepted(offreId, student.getId());
+        companyService.saveStudentApplicationAccepted(offreId, student2.getId());
+        gestionnaireService.createStageContract(StageContractInDTO.builder()
+                .offerId(offreId)
+                .studentId(1L)
+                .build());
+        gestionnaireService.createStageContract(StageContractInDTO.builder()
+                .offerId(offreId)
+                .studentId(student2.getId())
+                .build());
         System.out.println(studentService.getStudentById(1L));
         System.out.println(companyService.getCompanyById(2L));
         System.out.println(gestionnaireService.getGestionnaireById(3L));
