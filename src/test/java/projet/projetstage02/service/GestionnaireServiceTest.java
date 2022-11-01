@@ -825,7 +825,7 @@ public class GestionnaireServiceTest {
         when(companyRepository.findById(anyLong())).thenReturn(Optional.of(companyTest));
         when(studentRepository.findById(anyLong())).thenReturn(Optional.of(studentTest));
 
-        ContractsDTO dto = gestionnaireService.getContracts();
+        ContractsDTO dto = gestionnaireService.getContractsToCreate();
 
         assertThat(dto.size()).isEqualTo(3);
     }

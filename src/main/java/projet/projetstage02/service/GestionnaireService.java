@@ -270,9 +270,7 @@ public class GestionnaireService {
         if (companyOpt.isEmpty()) throw new NonExistentEntityException();
         Company company = companyOpt.get();
 
-        String description = company.getCompanyName() + " a accepté " + student.getFirstName() + " "
-                + student.getLastName() + " Pour le role de " + offer.getPosition() + " pour la session "
-                + offer.getSession() + ".";
+        String description = getContractDescription(student, offer, company);
 
         Optional<StageContract> stageContractOpt
                 = stageContractRepository.findByStudentIdAndCompanyIdAndOfferId(student.getId(), company.getId(), offer.getId());
@@ -294,25 +292,41 @@ public class GestionnaireService {
         return new StageContractOutDTO(stageContract);
     }
 
-    public ContractsDTO getContracts() {
+    private String getContractDescription(Student student, Offre offer, Company company) {
+        return company.getCompanyName() + " a accepté " + student.getFirstName() + " "
+                + student.getLastName() + " Pour le role de " + offer.getPosition() + " pour la session "
+                + offer.getSession() + ".";
+    }
+
+    public ContractsDTO getContractsToCreate() {
         ContractsDTO contractsDTO = new ContractsDTO();
 
-        List<StageContract> contracts = stageContractRepository.findAll();
-        contracts
-                .forEach(contract -> {
+        List<ApplicationAcceptation> all = applicationAcceptationRepository.findAll();
+        all
+                .forEach(application -> {
 
-                    Optional<Offre> offerOpt = offreRepository.findById(contract.getOfferId());
+                    Optional<Offre> offerOpt = offreRepository.findById(application.getOfferId());
                     if (offerOpt.isEmpty()) return;
-                    Optional<Company> companyOpt = companyRepository.findById(contract.getCompanyId());
+                    Offre offer = offerOpt.get();
+                    Optional<Company> companyOpt = companyRepository.findById(offer.getIdCompagnie());
                     if (companyOpt.isEmpty()) return;
-                    Optional<Student> studentOpt = studentRepository.findById(contract.getStudentId());
+                    Optional<Student> studentOpt = studentRepository.findById(application.getStudentId());
                     if (studentOpt.isEmpty()) return;
 
                     Student student = studentOpt.get();
                     Company company = companyOpt.get();
                     Offre offre = offerOpt.get();
 
-                    StageContractOutDTO stageContractOutDTO = new StageContractOutDTO(contract);
+                    StageContractOutDTO stageContractOutDTO = StageContractOutDTO.builder()
+                            .companyId(company.getId())
+                            .offerId(offre.getId())
+                            .description(getContractDescription(student, offre, company))
+                            .companyName(company.getCompanyName())
+                            .position(offre.getPosition())
+                            .employFullName(company.getFirstName() + " " + company.getLastName())
+                            .studentId(student.getId())
+                            .studentFullName(student.getFirstName() + " " + student.getLastName())
+                            .build();
 
                     stageContractOutDTO.setEmployFullName(company.getFirstName() + " " + company.getLastName());
                     stageContractOutDTO.setStudentFullName(student.getFirstName() + " " + student.getLastName());

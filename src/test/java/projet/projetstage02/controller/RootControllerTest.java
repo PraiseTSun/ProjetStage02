@@ -1619,7 +1619,7 @@ public class RootControllerTest {
 
     @Test
     void testGetUnvalidatedAcceptationsHappyDay() throws Exception {
-        when(gestionnaireService.getContracts()).thenReturn(contractsDTO);
+        when(gestionnaireService.getContractsToCreate()).thenReturn(contractsDTO);
 
         mockMvc.perform(put("/contracts")
                         .contentType(MediaType.APPLICATION_JSON)
