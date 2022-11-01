@@ -49,7 +49,7 @@ public class StageContractOutDTO {
         this.studentSignatureDate =
                 stageContract.getStudentSignatureDate() == null
                         ? ""
-                        : stageContract.getGestionnaireSignatureDate().toString();
+                        : stageContract.getStudentSignatureDate().toString();
 
     }
 
