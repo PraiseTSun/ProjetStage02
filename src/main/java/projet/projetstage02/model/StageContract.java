@@ -17,13 +17,15 @@ public class StageContract {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "id", nullable = false)
-    private Long id;
+    private long id;
     @Min(1)
-    private Long studentId;
+    private long studentId;
     @Min(1)
-    private Long offerId;
+    private long offerId;
     @Min(1)
-    private Long companyId;
+    private long companyId;
     private String description;
-    private byte[] companySignature;
+    private String companySignature;
+    private String gestionnaireSignature;
+    private String studentSignature;
 }

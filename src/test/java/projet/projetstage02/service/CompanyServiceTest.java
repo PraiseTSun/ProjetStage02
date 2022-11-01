@@ -51,7 +51,7 @@ public class CompanyServiceTest {
     ApplicationRepository applicationRepository;
 
     Company duffBeer;
-    OffreDTO duffBeerOffreDTO;
+    OffreInDTO duffBeerOffreInDTO;
     Student bart;
     Offre duffBeerOffer;
     ApplicationAcceptation applicationAcceptation;
@@ -71,7 +71,7 @@ public class CompanyServiceTest {
                 "Duff Beer");
         duffBeer.setId(4L);
 
-        duffBeerOffreDTO = OffreDTO.builder()
+        duffBeerOffreInDTO = OffreInDTO.builder()
                 .adresse("653 Duff Street")
                 .department(AbstractUser.Department.Transport.departement)
                 .heureParSemaine(40)
@@ -117,14 +117,15 @@ public class CompanyServiceTest {
                 .offerId(duffBeerOffer.getId())
                 .companyId(duffBeer.getId())
                 .description("Do a better job than Homer Simpson")
-                .companySignature(new byte[0])
+                .companySignature(byteToString(new byte[0]))
                 .build();
 
         signatureInDTO = SignatureInDTO.builder()
                 .userId(duffBeer.getId())
                 .contractId(stageContract.getId())
-                .signature(new byte[]{0, 1, 2, 3, 4, 5, 6, 7, 8, 9})
+                .signature(byteToString(new byte[]{0, 1, 2, 3, 4, 5, 6, 7, 8, 9}))
                 .build();
+
         offerApplicationDTO = OfferApplicationDTO.builder().build();
     }
 
@@ -231,10 +232,10 @@ public class CompanyServiceTest {
     @Test
     void createOffreTest() {
         // Arrange
-        when(offreRepository.save(any())).thenReturn(duffBeerOffreDTO.toModel());
+        when(offreRepository.save(any())).thenReturn(duffBeerOffreInDTO.toModel());
 
         // Act
-        companyService.createOffre(duffBeerOffreDTO);
+        companyService.createOffre(duffBeerOffreInDTO);
 
         // Assert
         verify(offreRepository, times(1)).save(any());
@@ -308,7 +309,7 @@ public class CompanyServiceTest {
             companyService.saveStudentApplicationAccepted(1L, 2L);
         } catch (NonExistentEntityException e) {
             return;
-        } catch (Exception e) {
+        } catch (Exception ignored) {
         }
         // Assert
         fail("NonExistentEntityException not thrown");
@@ -325,7 +326,7 @@ public class CompanyServiceTest {
             companyService.saveStudentApplicationAccepted(1L, 2L);
         } catch (NonExistentOfferExeption e) {
             return;
-        } catch (Exception e) {
+        } catch (Exception ignored) {
         }
         // Assert
         fail("NonExistentOfferException not thrown");
@@ -344,7 +345,7 @@ public class CompanyServiceTest {
             companyService.saveStudentApplicationAccepted(1L, 2L);
         } catch (AlreadyExistingAcceptationException e) {
             return;
-        } catch (Exception e) {
+        } catch (Exception ignored) {
         }
         // Assert
         fail("AlreadyExistingAcceptationException not thrown");
@@ -391,7 +392,7 @@ public class CompanyServiceTest {
 
         assertThat(dto.getCompanyId()).isEqualTo(duffBeer.getId());
         assertThat(dto.getId()).isEqualTo(stageContract.getId());
-        assertThat(dto.getCompanySignature()).isEqualTo(byteToString(signatureInDTO.getSignature()));
+        assertThat(dto.getCompanySignature()).isEqualTo(signatureInDTO.getSignature());
     }
 
     @Test
@@ -404,7 +405,7 @@ public class CompanyServiceTest {
             companyService.addSignatureToContract(signatureInDTO);
         } catch (InvalidOwnershipException e) {
             return;
-        } catch (Exception e) {
+        } catch (Exception ignored) {
         }
 
         fail("Fail to catch the InvalidOwnershipException!");
@@ -418,7 +419,7 @@ public class CompanyServiceTest {
             companyService.addSignatureToContract(signatureInDTO);
         } catch (NonExistentEntityException e) {
             return;
-        } catch (Exception e) {
+        } catch (Exception ignored) {
         }
 
         fail("Fail to catch the NonExistentEntityException!");
@@ -433,7 +434,7 @@ public class CompanyServiceTest {
             companyService.addSignatureToContract(signatureInDTO);
         } catch (NonExistentEntityException e) {
             return;
-        } catch (Exception e) {
+        } catch (Exception ignored) {
         }
 
         fail("Fail to catch the NonExistentEntityException!");
@@ -442,43 +443,40 @@ public class CompanyServiceTest {
     @Test
     void testGetApplicantsForOfferHappyDay() throws NonExistentOfferExeption {
         // Arrange
-        Application application1 = Application.builder().studentId(1L).build();
-        Application application2 = Application.builder().studentId(2L).build();
-        Application application3 = Application.builder().studentId(3L).build();
-        Application application4 = Application.builder().studentId(4L).build();
-        Application application5 = Application.builder().studentId(5L).build();
         when(offreRepository.findById(anyLong())).thenReturn(Optional.of(duffBeerOffer));
-        when(applicationRepository.findByOfferId(anyLong())).thenReturn(List.of(application1,
-                application2,
-                application3,
-                application4,
-                application5));
+        when(applicationRepository.findByOfferId(anyLong())).thenReturn(new ArrayList<>() {{
+            add(Application.builder().studentId(1L).build());
+            add(Application.builder().studentId(2L).build());
+            add(Application.builder().studentId(3L).build());
+            add(Application.builder().studentId(4L).build());
+            add(Application.builder().studentId(5L).build());
+        }});
 
         when(studentRepository.findById(anyLong())).thenReturn(Optional.of(bart));
         // Act
         OfferApplicationDTO studentsForOffer = companyService.getStudentsForOffer(1L);
+
+        // Assert
         assertThat(studentsForOffer.getApplicants().size()).isEqualTo(5);
     }
 
     @Test
     void testGetApplicantsForOfferNotFull() throws NonExistentOfferExeption {
         // Arrange
-        Application application1 = Application.builder().studentId(1L).build();
-        Application application2 = Application.builder().build();
-        Application application3 = Application.builder().studentId(3L).build();
-        Application application4 = Application.builder().build();
-        Application application5 = Application.builder().studentId(5L).build();
         when(offreRepository.findById(anyLong())).thenReturn(Optional.of(duffBeerOffer));
-        List<Application> applications = List.of(application1,
-                application2,
-                application3,
-                application4,
-                application5);
-        when(applicationRepository.findByOfferId(anyLong())).thenReturn(applications);
-
+        when(applicationRepository.findByOfferId(anyLong())).thenReturn(new ArrayList<>() {{
+            add(Application.builder().studentId(1L).build());
+            add(Application.builder().build());
+            add(Application.builder().studentId(3L).build());
+            add(Application.builder().build());
+            add(Application.builder().studentId(5L).build());
+        }});
         when(studentRepository.findById(anyLong())).thenReturn(Optional.of(bart));
+
         // Act
         OfferApplicationDTO studentsForOffer = companyService.getStudentsForOffer(1L);
+
+        // Assert
         assertThat(studentsForOffer.getApplicants().size()).isEqualTo(3);
     }
 
@@ -486,12 +484,14 @@ public class CompanyServiceTest {
     void testGetApplicantsForOfferNonExistentOffer() {
         // Arrange
         when(offreRepository.findById(anyLong())).thenReturn(Optional.empty());
+
         // Act
         try {
             companyService.getStudentsForOffer(1L);
         } catch (NonExistentOfferExeption e) {
             return;
         }
+
         fail("NonExistentOfferExeption not thrown");
     }
 
@@ -500,28 +500,35 @@ public class CompanyServiceTest {
         // Arrange
         when(offreRepository.findById(anyLong())).thenReturn(Optional.of(duffBeerOffer));
         when(applicationRepository.findByOfferId(anyLong())).thenReturn(new ArrayList<>());
+
         // Act
         OfferApplicationDTO studentsForOffer = companyService.getStudentsForOffer(1L);
+
+        // Assert
         assertThat(studentsForOffer.getApplicants().size()).isEqualTo(0);
     }
 
     @Test
     void testGetOffersForCompanyHappyDay() {
         // Arrange
-        when(offreRepository.findAllByIdCompagnie(anyLong()))
-                .thenReturn(List.of(duffBeerOffer));
+        when(offreRepository.findAllByIdCompagnie(anyLong())).thenReturn(List.of(duffBeerOffer));
+
         // Act
-        List<OffreDTO> validatedOffers = companyService.getValidatedOffers(1L);
+        List<OffreOutDTO> validatedOffers = companyService.getValidatedOffers(1L);
+
+        // Assert
         assertThat(validatedOffers.size()).isEqualTo(1);
     }
 
     @Test
     void testGetOffersForCompanyEmpty() {
         // Arrange
-        when(offreRepository.findAllByIdCompagnie(anyLong()))
-                .thenReturn(new ArrayList<>());
+        when(offreRepository.findAllByIdCompagnie(anyLong())).thenReturn(new ArrayList<>());
+
         // Act
-        List<OffreDTO> validatedOffers = companyService.getValidatedOffers(1L);
+        List<OffreOutDTO> validatedOffers = companyService.getValidatedOffers(1L);
+
+        // Assert
         assertThat(validatedOffers.size()).isEqualTo(0);
     }
 

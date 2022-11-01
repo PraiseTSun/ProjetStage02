@@ -27,20 +27,20 @@ public class CompanyService {
     private final OffreRepository offreRepository;
     private final StudentRepository studentRepository;
     private final ApplicationAcceptationRepository applicationAcceptationRepository;
-    private final StageContractRepository stageContractRepository;
     private final ApplicationRepository applicationRepository;
+    private final StageContractRepository stageContractRepository;
 
-    public long createOffre(OffreDTO offreDTO) {
+    public long createOffre(OffreInDTO offreInDTO) {
         Offre offre = Offre.builder()
-                .nomDeCompagnie(offreDTO.getNomDeCompagnie())
-                .idCompagnie(offreDTO.getCompanyId())
-                .department(Department.getDepartment(offreDTO.getDepartment()))
-                .position(offreDTO.getPosition())
-                .heureParSemaine(offreDTO.getHeureParSemaine())
-                .salaire(offreDTO.getSalaire())
-                .session(offreDTO.getSession())
-                .adresse(offreDTO.getAdresse())
-                .pdf(offreDTO.getPdf())
+                .nomDeCompagnie(offreInDTO.getNomDeCompagnie())
+                .idCompagnie(offreInDTO.getCompanyId())
+                .department(Department.getDepartment(offreInDTO.getDepartment()))
+                .position(offreInDTO.getPosition())
+                .heureParSemaine(offreInDTO.getHeureParSemaine())
+                .salaire(offreInDTO.getSalaire())
+                .session(offreInDTO.getSession())
+                .adresse(offreInDTO.getAdresse())
+                .pdf(offreInDTO.getPdf())
                 .build();
 
         return offreRepository.save(offre).getId();
@@ -123,7 +123,7 @@ public class CompanyService {
         applicationAcceptationRepository.save(application);
 
         applicationOpt = applicationAcceptationRepository.findByOfferIdAndStudentId(offerId, studentId);
-
+        if (applicationOpt.isEmpty()) throw new NonExistentEntityException();
         return new ApplicationAcceptationDTO(applicationOpt.get());
     }
 
@@ -168,27 +168,26 @@ public class CompanyService {
         if (offreRepository.findById(offerId).isEmpty()) {
             throw new NonExistentOfferExeption();
         }
-        List<Application> applications = applicationRepository.findByOfferId(offerId);
-        List<StudentDTO> studentDTOS = new ArrayList<>();
-        applications.stream().map(Application::getStudentId).forEach(id -> {
-            Optional<Student> optionnal = studentRepository.findById(id);
-            if (optionnal.isEmpty()) {
-                return;
-            }
-            Student student = optionnal.get();
-            studentDTOS.add(new StudentDTO(student));
-        });
-        return OfferApplicationDTO.builder().applicants(studentDTOS).build();
+
+        List<StudentOutDTO> studentDTOS = new ArrayList<>();
+        applicationRepository.findByOfferId(offerId).stream()
+                .map(Application::getStudentId)
+                .forEach(id -> {
+                    Optional<Student> studentOpt = studentRepository.findById(id);
+                    if (studentOpt.isEmpty()) return;
+                    studentDTOS.add(new StudentOutDTO(studentOpt.get()));
+                });
+        return new OfferApplicationDTO(studentDTOS);
     }
 
-    public List<OffreDTO> getValidatedOffers(long id) {
-        List<OffreDTO> offres = new ArrayList<>();
+    public List<OffreOutDTO> getValidatedOffers(long id) {
+        List<OffreOutDTO> offres = new ArrayList<>();
         offreRepository.findAllByIdCompagnie(id).stream().
                 filter(offre ->
                         offre.isValide() && isRightSession(offre.getSession(), getNextYear()))
                 .forEach(offre ->
-                        offres.add(new OffreDTO(offre)));
-        offres.forEach(offre -> offre.setPdf(new byte[0]));
+                        offres.add(new OffreOutDTO(offre)));
+        offres.forEach(offre -> offre.setPdf("[]"));
         return offres;
     }
 

@@ -12,5 +12,5 @@ import java.util.List;
 @NoArgsConstructor
 @Builder
 public class OfferApplicationDTO {
-    List<StudentDTO> applicants;
+    List<StudentOutDTO> applicants;
 }

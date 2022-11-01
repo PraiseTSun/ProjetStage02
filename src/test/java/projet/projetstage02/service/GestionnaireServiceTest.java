@@ -23,7 +23,8 @@ import static projet.projetstage02.utils.TimeUtil.currentTimestamp;
 
 @ExtendWith(MockitoExtension.class)
 public class GestionnaireServiceTest {
-
+    @InjectMocks
+    private GestionnaireService gestionnaireService;
     @Mock
     private GestionnaireRepository gestionnaireRepository;
     @Mock
@@ -38,8 +39,7 @@ public class GestionnaireServiceTest {
     private StageContractRepository stageContractRepository;
     @Mock
     private ApplicationAcceptationRepository applicationAcceptationRepository;
-    @InjectMocks
-    private GestionnaireService gestionnaireService;
+
 
     private Gestionnaire gestionnaireTest;
     private Company companyTest;
@@ -311,7 +311,7 @@ public class GestionnaireServiceTest {
                 Offre.builder().session("Hiver 2023").department(Informatique).build()
         );
         when(offreRepository.findAll()).thenReturn(offers);
-        final List<OffreDTO> offersDto = gestionnaireService.getUnvalidatedOffers();
+        final List<OffreOutDTO> offersDto = gestionnaireService.getUnvalidatedOffers();
 
         assertThat(offersDto).hasSize(2);
     }
@@ -326,9 +326,9 @@ public class GestionnaireServiceTest {
                 Offre.builder().session("Hiver 2023").valide(true).department(Informatique).build()
         );
         when(offreRepository.findAll()).thenReturn(offers);
-        final List<OffreDTO> offers2022 = gestionnaireService.getValidatedOffers(2022);
-        final List<OffreDTO> offers2023 = gestionnaireService.getValidatedOffers(2023);
-        final List<OffreDTO> offers2010 = gestionnaireService.getValidatedOffers(2010);
+        final List<OffreOutDTO> offers2022 = gestionnaireService.getValidatedOffers(2022);
+        final List<OffreOutDTO> offers2023 = gestionnaireService.getValidatedOffers(2023);
+        final List<OffreOutDTO> offers2010 = gestionnaireService.getValidatedOffers(2010);
 
         assertThat(offers2022).hasSize(1);
         assertThat(offers2023).hasSize(1);
@@ -360,7 +360,7 @@ public class GestionnaireServiceTest {
         when(offreRepository.findAll()).thenReturn(offres);
 
         // Act
-        final List<OffreDTO> noneValidateOffers = gestionnaireService.getUnvalidatedOffers();
+        final List<OffreOutDTO> noneValidateOffers = gestionnaireService.getUnvalidatedOffers();
 
         // Assert
         assertThat(noneValidateOffers.size()).isEqualTo(2);
@@ -372,10 +372,10 @@ public class GestionnaireServiceTest {
         when(offreRepository.findById(anyLong())).thenReturn(Optional.of(offerTest));
 
         // Act
-        final OffreDTO offreDTO = gestionnaireService.validateOfferById(1L);
+        final OffreOutDTO offreInDTO = gestionnaireService.validateOfferById(1L);
 
         // Assert
-        assertThat(offreDTO.isValide()).isTrue();
+        assertThat(offreInDTO.isValide()).isTrue();
     }
 
     @Test
@@ -464,7 +464,7 @@ public class GestionnaireServiceTest {
         when(studentRepository.findAll()).thenReturn(students);
 
         // Act
-        List<StudentDTO> unvalidatedStudents = gestionnaireService.getUnvalidatedStudents();
+        List<StudentOutDTO> unvalidatedStudents = gestionnaireService.getUnvalidatedStudents();
 
         // Assert
         assertThat(unvalidatedStudents.size()).isEqualTo(2);
@@ -590,7 +590,7 @@ public class GestionnaireServiceTest {
         when(studentRepository.findAll()).thenReturn(students);
 
         // Act
-        List<StudentDTO> unvalidatedStudentCV = gestionnaireService.getUnvalidatedCVStudents();
+        List<StudentOutDTO> unvalidatedStudentCV = gestionnaireService.getUnvalidatedCVStudents();
         // Assert
         assertThat(unvalidatedStudentCV.get(0).getEmail()).isEqualTo(studentTest.getEmail());
         assertThat(unvalidatedStudentCV.get(0).getFirstName()).isEqualTo(studentTest.getFirstName());
@@ -607,12 +607,12 @@ public class GestionnaireServiceTest {
         when(studentRepository.findById(anyLong())).thenReturn(Optional.of(studentTest));
 
         // Act
-        StudentDTO studentDTO = gestionnaireService.validateStudentCV(1L);
+        StudentOutDTO studentDTO = gestionnaireService.validateStudentCV(1L);
 
         // Assert
         assertThat(studentDTO.getFirstName()).isEqualTo(studentTest.getFirstName());
-        assertThat(studentDTO.getCv()).isEqualTo(new byte[0]);
-        assertThat(studentDTO.getCvToValidate()).isEmpty();
+        assertThat(studentDTO.getCv()).isEqualTo("[]");
+        assertThat(studentDTO.getCvToValidate()).isEqualTo("[]");
     }
 
     @Test
@@ -654,11 +654,11 @@ public class GestionnaireServiceTest {
         when(studentRepository.findById(anyLong())).thenReturn(Optional.of(studentTest));
 
         // Act
-        StudentDTO studentDTO = gestionnaireService.removeStudentCvValidation(1L, "Refused");
+        StudentOutDTO studentDTO = gestionnaireService.removeStudentCvValidation(1L, "Refused");
 
         // Assert
         assertThat(studentDTO.getEmail()).isEqualTo(studentTest.getEmail());
-        assertThat(studentDTO.getCvToValidate()).isEmpty();
+        assertThat(studentDTO.getCvToValidate()).isEqualTo("[]");
         assertThat(cvStatus.getRefusalMessage()).isEqualTo("Refused");
         assertThat(cvStatus.getStatus()).isEqualTo("REFUSED");
     }
@@ -733,8 +733,9 @@ public class GestionnaireServiceTest {
         when(applicationAcceptationRepository.findByOfferIdAndStudentId(anyLong(), anyLong()))
                 .thenReturn(Optional.of(applicationAcceptationTest));
         when(stageContractRepository.findByStudentIdAndCompanyIdAndOfferId(anyLong(), anyLong(), anyLong()))
-                .thenReturn(Optional.empty(), Optional.of(stageContract));
+                .thenReturn(Optional.empty());
 
+        when(stageContractRepository.save(any())).thenReturn(stageContract);
         // Act
         StageContractOutDTO dto = gestionnaireService.createStageContract(stageContractInDTO);
 
@@ -760,7 +761,8 @@ public class GestionnaireServiceTest {
             gestionnaireService.createStageContract(stageContractInDTO);
         } catch (AlreadyExistingStageContractException e) {
             return;
-        } catch (Exception e) {}
+        } catch (Exception ignored) {
+        }
         fail("Failed to catch the error AlreadyExistingStageContractException!");
     }
 
@@ -776,7 +778,8 @@ public class GestionnaireServiceTest {
             gestionnaireService.createStageContract(stageContractInDTO);
         } catch (NonExistentEntityException e) {
             return;
-        } catch (Exception e) {}
+        } catch (Exception ignored) {
+        }
         fail("Failed to catch the error NonExistentEntityException!");
     }
 
@@ -791,7 +794,8 @@ public class GestionnaireServiceTest {
             gestionnaireService.createStageContract(stageContractInDTO);
         } catch (NonExistentOfferExeption e) {
             return;
-        } catch (Exception e) {}
+        } catch (Exception ignored) {
+        }
         fail("Failed to catch the error NonExistentOfferExeption!");
     }
 
@@ -799,28 +803,29 @@ public class GestionnaireServiceTest {
     void testCreateStageContractStudentNotFound() {
         // Arrange
         when(studentRepository.findById(anyLong())).thenReturn(Optional.empty());
-        
+
         // Act
         try {
             gestionnaireService.createStageContract(stageContractInDTO);
         } catch (NonExistentEntityException e) {
             return;
-        } catch (Exception e) {}
+        } catch (Exception ignored) {
+        }
         fail("Failed to catch the error NonExistentEntityException!");
     }
 
     @Test
-    void testGetUnvalidatedAcceptationHappyDay(){
-        when(applicationAcceptationRepository.findAll()).thenReturn(new ArrayList<>(){{
-            add(applicationAcceptationTest);
-            add(applicationAcceptationTest);
-            add(applicationAcceptationTest);
+    void testGetUnvalidatedAcceptationHappyDay() {
+        when(stageContractRepository.findAll()).thenReturn(new ArrayList<>() {{
+            add(stageContract);
+            add(stageContract);
+            add(stageContract);
         }});
         when(offreRepository.findById(anyLong())).thenReturn(Optional.of(offerTest));
         when(companyRepository.findById(anyLong())).thenReturn(Optional.of(companyTest));
         when(studentRepository.findById(anyLong())).thenReturn(Optional.of(studentTest));
 
-        UnvalidatedAcceptationsDTO dto = gestionnaireService.getUnvalidatedAcceptation();
+        ContractsDTO dto = gestionnaireService.getContracts();
 
         assertThat(dto.size()).isEqualTo(3);
     }
