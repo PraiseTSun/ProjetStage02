@@ -1624,16 +1624,6 @@ public class RootControllerTest {
     }
 
     @Test
-    void testCompanyContractSignatureConflict() throws Exception {
-        when(companyService.addSignatureToContract(any())).thenThrow(new InvalidOwnershipException());
-
-        mockMvc.perform(put("/companySignatureContract")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(jsonSignatureDTO.write(signatureInDTO).getJson()))
-                .andExpect(status().isConflict());
-    }
-
-    @Test
     void testCompanyContractSignatureInvalidToken() throws Exception {
         when(authService.getToken(any(), any())).thenThrow(new InvalidTokenException());
 

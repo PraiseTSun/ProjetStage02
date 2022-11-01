@@ -25,7 +25,10 @@ public class StageContract {
     @Min(0)
     private long companyId;
     private String description;
-    private String companySignature;
-    private String gestionnaireSignature;
-    private String studentSignature;
+    @Builder.Default()
+    private String companySignature = "";
+    @Builder.Default()
+    private String gestionnaireSignature = "";
+    @Builder.Default()
+    private String studentSignature = "";
 }
