@@ -1,6 +1,5 @@
 import React, {useEffect, useState} from "react";
 import {Button, Col, Container, Row, Table} from "react-bootstrap";
-import {Link} from "react-router-dom";
 import IUser from "../../models/IUser";
 import {generateAlert} from "../../services/universalServices/UniversalUtilService";
 import {putcompanyContracts, putCompanySignatureContract} from "../../services/companyServices/CompanyFetchService";
@@ -21,7 +20,7 @@ const SignerEntenteDeStageParCompagnie = ({user}: { user: IUser }): JSX.Element 
                 const response = await putcompanyContracts(user.id, user.token, "Hiver", nextYear)
                 if (response.ok) {
                     const data = await response.json();
-                    setContratsNonSigner(data)
+                    setContratsNonSigner(data.applications)
                 } else {
                     generateAlert()
                 }
@@ -42,8 +41,8 @@ const SignerEntenteDeStageParCompagnie = ({user}: { user: IUser }): JSX.Element 
         try {
             const response = await putCompanySignatureContract(user.token, user.id, contratId, signature)
             if (response.ok) {
-                contratsNonSigner.forEach(contrat =>{
-                    if(contrat.contractId === contratId){
+                contratsNonSigner.forEach(contrat => {
+                    if (contrat.contractId === contratId) {
                         contrat.companySignature = signature;
                         return;
                     }
