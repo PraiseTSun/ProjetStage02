@@ -182,3 +182,57 @@ export const postCreateGestionnaire = (firstName: string,
         })
     });
 }
+
+export const putInfoContratPourEvaluateStage = (contratId : number, token: string) :Promise<Response> => {
+    return fetch(`http://localhost:8080/evaluateStage/${contratId}/getInfo`, {
+        method: 'PUT',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            "id": contratId,
+            "token": token
+        })
+    });
+}
+
+export const postEvaluationStage = (token: string,
+                                    tachesAnnoncees : string,
+                                    integration: string,
+                                    tempsReelConsacre: string,
+                                    environementTravail: string,
+                                    climatTravail: string,
+                                    milieuDeStage:string,
+                                    heureTotalPremierMois: number,
+                                    heureTotalDeuxiemeMois: number,
+                                    heureTotalTroisiemeMois: number,
+                                    communicationAvecSuperviser: string,
+                                    equipementFourni: string,
+                                    volumeDeTravail: string,
+                                    commentaires: string,
+                                    signature: string,
+                                    dateSignature: string) :Promise<Response> => {
+    return fetch(`http://localhost:8080/evaluateStage/${token}`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            "tachesAnnoncees": tachesAnnoncees,
+            "integration": integration,
+            "tempsReelConsacre": tempsReelConsacre,
+            "environementTravail": environementTravail,
+            "climatTravail": climatTravail,
+            "milieuDeStage": milieuDeStage,
+            "heureTotalPremierMois": heureTotalPremierMois,
+            "heureTotalDeuxiemeMois": heureTotalDeuxiemeMois,
+            "heureTotalTroisiemeMois": heureTotalTroisiemeMois,
+            "communicationAvecSuperviser": communicationAvecSuperviser,
+            "equipementFourni": equipementFourni,
+            "volumeDeTravail": volumeDeTravail,
+            "commentaires": commentaires,
+            "signature" :signature,
+            "dateSignature": dateSignature
+        })
+    });
+}
