@@ -26,6 +26,7 @@ import static org.springframework.http.HttpStatus.*;
 import static projet.projetstage02.model.Token.UserTypes.*;
 import static projet.projetstage02.utils.TimeUtil.*;
 
+//todo: split this class into multiple controllers
 @RestController
 @AllArgsConstructor
 @CrossOrigin(origins = "http://localhost:3000")
@@ -826,9 +827,9 @@ public class RootController {
         try {
             logger.log(Level.INFO, "put /evaluateStage/id/getInfo entered with id : " + contractId);
             authService.getToken(tokenId.getToken(), GESTIONNAIRE);
-            EvaluationInfoDTO evaluationInfoDTO = gestionnaireService.getEvaluationInfoForApplication(contractId);
-            logger.log(Level.INFO, "PutMapping: /evaluateStage/id/getInfo sent 200 response");
-            return ResponseEntity.ok(evaluationInfoDTO);
+            EvaluationInfoDTO evaluationInfoDTO = gestionnaireService.getEvaluationInfoForContract(contractId);
+            logger.log(Level.INFO, "PutMapping: /evaluateStage/id/getInfo sent 201 response");
+            return ResponseEntity.status(CREATED).body(evaluationInfoDTO);
         } catch (InvalidTokenException e) {
             logger.log(Level.INFO, "PutMapping: /evaluateStage/id/getInfo sent 403 response");
             return ResponseEntity.status(FORBIDDEN).build();
