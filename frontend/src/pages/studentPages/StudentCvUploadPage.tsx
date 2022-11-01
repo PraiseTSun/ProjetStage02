@@ -18,8 +18,7 @@ const StudentCvUploadPage = ({connectedUser}: { connectedUser: IUser }) => {
     const [validated, setValidated] = useState<boolean>(false);
     const [cv, setCv] = useState<number[]>([0])
     const [isChoisi, setIsChoisi] = useState<boolean>(false)
-    const [cvStatus, setCvStatus] = useState(statusCV)
-    // const [z, setCvCourant] = useState<Uint8Array>(new Uint8Array(JSON.parse(connectedUser.cvToValidate)));
+    const [cvStatus, setCvStatus] = useState<CvStatus>(statusCV)
     const [showCV, setShowCV] = useState<boolean>(false)
     const [showCvToValidate, setShowCvToValidate] = useState<boolean>(false)
 
@@ -88,9 +87,6 @@ const StudentCvUploadPage = ({connectedUser}: { connectedUser: IUser }) => {
             alert("Il y a pas de CV a valider courant, svp envoyez votre CV")
             return ;
         }
-        // const enc = new TextEncoder(); // always utf-8
-        // console.log(connectedUser.cv)
-        // setCvCourant(new Uint8Array(JSON.parse(data.pdf)));
         setShowCV(true);
 
     }
