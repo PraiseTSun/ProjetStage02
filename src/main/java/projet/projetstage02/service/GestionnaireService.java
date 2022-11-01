@@ -28,6 +28,9 @@ public class GestionnaireService {
     private final StageContractRepository stageContractRepository;
     private final ApplicationAcceptationRepository applicationAcceptationRepository;
 
+    private final ApplicationRepository applicationRepository;
+    private final EvaluationRepository evaluationRepository;
+
     public long saveGestionnaire(String firstname, String lastname, String email, String password) {
         GestionnaireDTO dto = GestionnaireDTO.builder()
                 .firstName(firstname)
@@ -270,8 +273,6 @@ public class GestionnaireService {
         if (companyOpt.isEmpty()) throw new NonExistentEntityException();
         Company company = companyOpt.get();
 
-        String description = getContractDescription(student, offer, company);
-
         Optional<StageContract> stageContractOpt
                 = stageContractRepository.findByStudentIdAndCompanyIdAndOfferId(student.getId(), company.getId(), offer.getId());
         if (stageContractOpt.isPresent()) throw new AlreadyExistingStageContractException();
@@ -280,15 +281,14 @@ public class GestionnaireService {
                 .studentId(student.getId())
                 .offerId(offer.getId())
                 .companyId(company.getId())
-                .description(description)
+                .description(getContractDescription(student, offer, company))
                 .build();
 
-        StageContract save = stageContractRepository.save(stageContract);
-        stageContract.setId(save.getId());
         Optional<ApplicationAcceptation> application
                 = applicationAcceptationRepository.findByOfferIdAndStudentId(offer.getId(), student.getId());
         if (application.isEmpty()) throw new NonExistentEntityException();
         applicationAcceptationRepository.delete(application.get());
+        stageContract = stageContractRepository.save(stageContract);
         return new StageContractOutDTO(stageContract);
     }
 
@@ -336,5 +336,40 @@ public class GestionnaireService {
                     contractsDTO.add(stageContractOutDTO);
                 });
         return contractsDTO;
+    }
+
+
+    public EvaluationInfoDTO getEvaluationInfoForContract(long contractId) throws NonExistentOfferExeption, NonExistentEntityException {
+        Optional<StageContract> optional = stageContractRepository.findById(contractId);
+        if (optional.isEmpty()) {
+            throw new NonExistentEntityException();
+        }
+        StageContract stageContract = optional.get();
+        Optional<Offre> offreOptional = offreRepository.findById(stageContract.getOfferId());
+        if (offreOptional.isEmpty()) {
+            throw new NonExistentOfferExeption();
+        }
+        Offre offre = offreOptional.get();
+        Optional<Student> optionalStudent = studentRepository.findById(stageContract.getStudentId());
+        if (optionalStudent.isEmpty()) {
+            throw new NonExistentEntityException();
+        }
+        Student student = optionalStudent.get();
+        Optional<Company> optionalCompany = companyRepository.findById(stageContract.getCompanyId());
+        if (optionalCompany.isEmpty()) {
+            throw new NonExistentEntityException();
+        }
+        Company company = optionalCompany.get();
+        return new EvaluationInfoDTO(company, offre, student);
+    }
+
+    public void evaluateStage(EvaluationInDTO evaluationInDTO) {
+        evaluationRepository.save(new Evaluation(evaluationInDTO));
+    }
+
+    public ContractsDTO getContracts() {
+        List<StageContractOutDTO> contracts = new ArrayList<>();
+        stageContractRepository.findAll().forEach(stageContract -> contracts.add(new StageContractOutDTO(stageContract)));
+        return ContractsDTO.builder().contracts(contracts).build();
     }
 }

@@ -1317,7 +1317,7 @@ paths:
           description: Token invalide
   /createStageContract:
     post:
-      summary: Céer un entante de stage (Doit avoir un token gestionnaire)
+      summary: Céer un entente de stage (Doit avoir un token gestionnaire)
       parameters:
         - in: body
           name: StageContractInDTO
@@ -1444,3 +1444,164 @@ paths:
           description: La compagnie n'existe pas ou le contract n'existe pas
         409:
           description: Le contract n'appartient pas à la compagnie
+
+  /evaluateStage/{contractId}/getInfo:
+    put:
+      summary: Revoie les informations necessaires pour l'évaluation (Doit avoir un token Gestionnaire)
+      parameters:
+        - in: path
+          name: id
+          description: id de l'entente de stage
+          type: number
+          required: true
+        - in: body
+          name: token
+          description: Token valide du gestionnaire
+          schema:
+            type: object
+            properties:
+              token:
+                type: string
+      produces:
+        - application/json
+      responses:
+        201:
+          description: Renvoie les informations sur l'offre, la compagnie et l'étudiant
+          schema:
+            properties:
+              session:
+                type: string
+              dateStage:
+                type: string
+              poste:
+                type: string
+              salaire:
+                type: number
+              heuresParSemaine:
+                type: number
+              departement:
+                type: string
+              nomCompagnie:
+                type: string
+              nomContact:
+                type: string
+              prenomContact:
+                type: string
+              emailCompagnie:
+                type: string
+              adresse:
+                type: string
+              nomEtudiant:
+                type: string
+              prenomEtudiant:
+                type: string
+              emailEtudiant:
+                type: string
+        403:
+          description: Token invalide ou expiré
+        404:
+          description: L'offre avec cet id n'existe pas
+  /evaluateStage/{token}:
+    post:
+      summary: Reçois le formulaire d'évaluation (Doit avoir un token Gestionnaire)
+      parameters:
+        - in: path
+          name: token
+          description: token du gestionnaire
+          type: string
+          required: true
+        - in: body
+          name: evaluation
+          description: evaluation du millieu de stage
+          schema:
+            type: object
+            properties:
+              contractId:
+                type: number
+              tachesAnnoncees:
+                type: string
+              integration:
+                type: string
+              tempsReelConsacre:
+                type: string
+              environementTravail:
+                type: string
+              climatTravail:
+                type: string
+              milieuDeStage:
+                type: string
+              heureTotalPremierMois:
+                type: number
+              heureTotalDeuxiemeMois:
+                type: number
+              heureTotalTroisiemeMois:
+                type: number
+              communicationAvecSuperviser:
+                type: string
+              equipementFourni:
+                type: string
+              volumeDeTravail:
+                type: string
+              commentaires:
+                type: string
+              signature:
+                type: string
+              dateSignature:
+                type: string
+      produces:
+        - application/json
+      responses:
+        201:
+          description: Pas de problème
+        403:
+          description: Token invalide ou expiré
+  /getContracts:
+    put:
+      summary: Renvoie la liste des ententes (Doit avoir un token Gestionnaire)
+      parameters:
+        - in: body
+          name: token
+          description: Token valide du gestionnaire
+          schema:
+            type: object
+            properties:
+              token:
+                type: string
+      produces:
+        - application/json
+      responses:
+        200:
+          description: Renvoie la liste des ententes
+          schema:
+            properties:
+              contracts:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: number
+                    studentId:
+                      type: number
+                    offerId:
+                      type: number
+                    companyId:
+                      type: number
+                    employFullName:
+                      type: string
+                    companyName:
+                      type: string
+                    studentFullName:
+                      type: string
+                    position:
+                      type: string
+                    description:
+                      type: string
+                    companySignature:
+                      type: string
+                    gestionnaireSignature:
+                      type: string
+                    studentSignature:
+                      type: string
+        403:
+          description: Token invalide ou expiré

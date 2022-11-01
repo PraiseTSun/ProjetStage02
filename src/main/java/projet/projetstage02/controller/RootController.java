@@ -26,6 +26,7 @@ import static org.springframework.http.HttpStatus.*;
 import static projet.projetstage02.model.Token.UserTypes.*;
 import static projet.projetstage02.utils.TimeUtil.*;
 
+//todo: split this class into multiple controllers
 @RestController
 @AllArgsConstructor
 @CrossOrigin(origins = "http://localhost:3000")
@@ -732,7 +733,7 @@ public class RootController {
     //todo replace .log with .info
     @PostMapping("/createStageContract")
     public ResponseEntity<StageContractOutDTO> createStageContract
-            (@Valid @RequestBody StageContractInDTO stageContractInDTO) {
+    (@Valid @RequestBody StageContractInDTO stageContractInDTO) {
         logger.log(Level.INFO, "Post /createStageContract entered with StageContractInDTO: " + stageContractInDTO);
         try {
             authService.getToken(stageContractInDTO.getToken(), GESTIONNAIRE);
@@ -753,7 +754,7 @@ public class RootController {
 
     @PutMapping("/companySignatureContract")
     public ResponseEntity<StageContractOutDTO> companyContractSignature
-            (@RequestBody SignatureInDTO signatureInDTO) {
+            (@Valid @RequestBody SignatureInDTO signatureInDTO) {
         logger.log(Level.INFO, "Put /companySignatureContract entered with SignatureInDTO: " + signatureInDTO);
 
         try {
@@ -764,15 +765,13 @@ public class RootController {
         } catch (NonExistentEntityException e) {
             logger.log(Level.INFO, "Put /companySignatureContract sent request 404");
             return ResponseEntity.notFound().build();
-        } catch (InvalidTokenException e) {
+        } catch (InvalidTokenException | InvalidOwnershipException e) {
             logger.log(Level.INFO, "Put /companySignatureContract sent request 403");
             return ResponseEntity.status(FORBIDDEN).build();
-        } catch (InvalidOwnershipException e) {
-            logger.log(Level.INFO, "Put /companySignatureContract sent request 409");
-            return ResponseEntity.status(CONFLICT).build();
         }
     }
 
+    //Todo replace contractsDTO with list of stageContract
     @PutMapping("/contractsToCreate")
     public ResponseEntity<ContractsDTO> getContracts(@RequestBody TokenDTO tokenId) {
         logger.log(Level.INFO, "Put /contracts");
@@ -806,6 +805,7 @@ public class RootController {
     }
 
     @PutMapping("/company/validatedOffers/{id}")
+    //todo replace tokens with @RequestHeader("Authorization") String token
     public ResponseEntity<List<OffreOutDTO>> getValidatedOffers
             (@PathVariable long id, @RequestBody TokenDTO tokenId) {
         try {
@@ -819,4 +819,53 @@ public class RootController {
             return ResponseEntity.status(FORBIDDEN).build();
         }
     }
+
+    @PutMapping("/evaluateStage/{contractId}/getInfo")
+    public ResponseEntity<EvaluationInfoDTO> getEvaluateStageInfo
+            (@PathVariable long contractId, @RequestBody TokenDTO tokenId) {
+        try {
+            logger.log(Level.INFO, "put /evaluateStage/id/getInfo entered with id : " + contractId);
+            authService.getToken(tokenId.getToken(), GESTIONNAIRE);
+            EvaluationInfoDTO evaluationInfoDTO = gestionnaireService.getEvaluationInfoForContract(contractId);
+            logger.log(Level.INFO, "PutMapping: /evaluateStage/id/getInfo sent 201 response");
+            return ResponseEntity.status(CREATED).body(evaluationInfoDTO);
+        } catch (InvalidTokenException e) {
+            logger.log(Level.INFO, "PutMapping: /evaluateStage/id/getInfo sent 403 response");
+            return ResponseEntity.status(FORBIDDEN).build();
+        } catch (NonExistentEntityException | NonExistentOfferExeption e) {
+            logger.log(Level.INFO, "PutMapping: /evaluateStage/id/getInfo sent 404 response");
+            return ResponseEntity.notFound().build();
+        }
+    }
+
+    //Todo create endpoint and page to see an evaluation and print it to pdf
+    @PostMapping("/evaluateStage/{token}")
+    public ResponseEntity<?> evaluateStage
+    (@PathVariable String token, @RequestBody EvaluationInDTO evaluationInDTO) {
+        try {
+            logger.log(Level.INFO, "put /evaluateStage/id entered with id : " + token);
+            authService.getToken(token, GESTIONNAIRE);
+            gestionnaireService.evaluateStage(evaluationInDTO);
+            logger.log(Level.INFO, "PutMapping: /evaluateStage/id sent 201 response");
+            return ResponseEntity.status(CREATED).build();
+        } catch (InvalidTokenException e) {
+            logger.log(Level.INFO, "PutMapping: /evaluateStage/id sent 403 response");
+            return ResponseEntity.status(FORBIDDEN).build();
+        }
+    }
+
+    @PutMapping("/getContracts")
+    public ResponseEntity<ContractsDTO> getAllContracts(@RequestBody TokenDTO tokenId) {
+        logger.log(Level.INFO, "Put /getContracts");
+        try {
+            authService.getToken(tokenId.getToken(), GESTIONNAIRE);
+            ContractsDTO dto = gestionnaireService.getContracts();
+            logger.log(Level.INFO, "Put /getContracts sent request 200 : " + dto);
+            return ResponseEntity.ok(dto);
+        } catch (InvalidTokenException e) {
+            logger.log(Level.INFO, "Put /getContracts sent request 403");
+            return ResponseEntity.status(FORBIDDEN).build();
+        }
+    }
+
 }
