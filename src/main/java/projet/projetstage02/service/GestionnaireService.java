@@ -270,8 +270,6 @@ public class GestionnaireService {
         if (companyOpt.isEmpty()) throw new NonExistentEntityException();
         Company company = companyOpt.get();
 
-        String description = getContractDescription(student, offer, company);
-
         Optional<StageContract> stageContractOpt
                 = stageContractRepository.findByStudentIdAndCompanyIdAndOfferId(student.getId(), company.getId(), offer.getId());
         if (stageContractOpt.isPresent()) throw new AlreadyExistingStageContractException();
@@ -280,15 +278,14 @@ public class GestionnaireService {
                 .studentId(student.getId())
                 .offerId(offer.getId())
                 .companyId(company.getId())
-                .description(description)
+                .description(getContractDescription(student, offer, company))
                 .build();
 
-        StageContract save = stageContractRepository.save(stageContract);
-        stageContract.setId(save.getId());
         Optional<ApplicationAcceptation> application
                 = applicationAcceptationRepository.findByOfferIdAndStudentId(offer.getId(), student.getId());
         if (application.isEmpty()) throw new NonExistentEntityException();
         applicationAcceptationRepository.delete(application.get());
+        stageContract = stageContractRepository.save(stageContract);
         return new StageContractOutDTO(stageContract);
     }
 

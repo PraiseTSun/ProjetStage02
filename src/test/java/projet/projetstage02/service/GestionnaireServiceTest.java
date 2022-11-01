@@ -138,7 +138,7 @@ public class GestionnaireServiceTest {
     }
 
     @Test
-    public void testGetGestionnaireByIdSuccess() throws NonExistentEntityException {
+    public void testGetGestionnaireByIdSuccess() throws Exception {
         // Arrange
         when(gestionnaireRepository.findById(anyLong())).thenReturn(Optional.of(gestionnaireTest));
 
@@ -165,7 +165,7 @@ public class GestionnaireServiceTest {
     }
 
     @Test
-    public void testGetGestionnaireByEmailPasswordSuccess() throws NonExistentEntityException {
+    public void testGetGestionnaireByEmailPasswordSuccess() throws Exception {
         // Arrange
         when(gestionnaireRepository.findByEmailAndPassword(anyString(), anyString()))
                 .thenReturn(Optional.of(gestionnaireTest));
@@ -195,7 +195,7 @@ public class GestionnaireServiceTest {
     }
 
     @Test
-    public void testValidateCompanySuccess() throws NonExistentEntityException {
+    public void testValidateCompanySuccess() throws Exception {
         // Arrange
         when(companyRepository.findById(anyLong())).thenReturn(Optional.of(companyTest));
 
@@ -221,7 +221,7 @@ public class GestionnaireServiceTest {
     }
 
     @Test
-    public void testValidateStudentSuccess() throws NonExistentEntityException {
+    public void testValidateStudentSuccess() throws Exception {
         // Arrange
         when(studentRepository.findById(anyLong())).thenReturn(Optional.of(studentTest));
 
@@ -248,7 +248,7 @@ public class GestionnaireServiceTest {
     }
 
     @Test
-    public void testRemoveCompanySuccess() throws NonExistentEntityException {
+    public void testRemoveCompanySuccess() throws Exception {
         // Arrange
         when(companyRepository.findById(anyLong())).thenReturn(Optional.of(companyTest));
         doNothing().when(companyRepository).delete(any());
@@ -276,7 +276,7 @@ public class GestionnaireServiceTest {
     }
 
     @Test
-    public void testRemoveStudentSuccess() throws NonExistentEntityException {
+    public void testRemoveStudentSuccess() throws Exception {
         // Arrange
         when(studentRepository.findById(anyLong())).thenReturn(Optional.of(studentTest));
         doNothing().when(studentRepository).delete(any());
@@ -367,7 +367,7 @@ public class GestionnaireServiceTest {
     }
 
     @Test
-    public void testValidateOfferByIdSuccess() throws NonExistentOfferExeption, ExpiredSessionException {
+    public void testValidateOfferByIdSuccess() throws Exception {
         // Arrange
         when(offreRepository.findById(anyLong())).thenReturn(Optional.of(offerTest));
 
@@ -379,7 +379,7 @@ public class GestionnaireServiceTest {
     }
 
     @Test
-    public void testValidateOfferByIdNotFound() throws ExpiredSessionException {
+    public void testValidateOfferByIdNotFound() throws Exception {
         // Arrange
         when(offreRepository.findById(anyLong())).thenReturn(Optional.empty());
 
@@ -531,7 +531,7 @@ public class GestionnaireServiceTest {
     }
 
     @Test
-    void testInvalidGestionnaireHappyDay() throws NonExistentEntityException {
+    void testInvalidGestionnaireHappyDay() throws Exception {
         // Arrange
         gestionnaireTest.setInscriptionTimestamp(0);
         when(gestionnaireRepository.findByEmail(any())).thenReturn(Optional.of(gestionnaireTest));
@@ -599,7 +599,7 @@ public class GestionnaireServiceTest {
     }
 
     @Test
-    void testValidateStudentCVSuccess() throws NonExistentEntityException, InvalidStatusException {
+    void testValidateStudentCVSuccess() throws Exception {
         // Arrange
         studentTest.setCvToValidate(new byte[0]);
         cvStatus.setStatus("PENDING");
@@ -616,7 +616,7 @@ public class GestionnaireServiceTest {
     }
 
     @Test
-    void testValidateStudentCVNotFound() throws InvalidStatusException {
+    void testValidateStudentCVNotFound() throws Exception {
         // Arrange
         cvStatus.setStatus("PENDING");
 
@@ -630,7 +630,7 @@ public class GestionnaireServiceTest {
     }
 
     @Test
-    void testValidateStudentCVInvalidStatus() throws NonExistentEntityException {
+    void testValidateStudentCVInvalidStatus() throws Exception {
         // Arrange
         cvStatus.setStatus("ACCEPTED");
         when(cvStatusRepository.findById(anyLong())).thenReturn(Optional.of(cvStatus));
@@ -646,7 +646,7 @@ public class GestionnaireServiceTest {
     }
 
     @Test
-    void testRemoveStudentCvValidationSuccess() throws NonExistentEntityException, InvalidStatusException {
+    void testRemoveStudentCvValidationSuccess() throws Exception {
         // Arrange
         cvStatus.setStatus("PENDING");
         when(cvStatusRepository.findById(anyLong())).thenReturn(Optional.of(cvStatus));
@@ -664,7 +664,7 @@ public class GestionnaireServiceTest {
     }
 
     @Test
-    void testRemoveStudentCvValidationNotFound() throws InvalidStatusException {
+    void testRemoveStudentCvValidationNotFound() throws Exception {
         // Arrange
         cvStatus.setStatus("PENDING");
         when(studentRepository.findById(anyLong())).thenReturn(Optional.empty());
@@ -679,7 +679,7 @@ public class GestionnaireServiceTest {
     }
 
     @Test
-    void testRemoveStudentCvValidationInvalidStatus() throws NonExistentEntityException {
+    void testRemoveStudentCvValidationInvalidStatus() throws Exception {
         // Arrange
         cvStatus.setStatus("ACCEPTED");
         when(cvStatusRepository.findById(anyLong())).thenReturn(Optional.of(cvStatus));
@@ -695,7 +695,7 @@ public class GestionnaireServiceTest {
     }
 
     @Test
-    void testGetStudentCvToValidateSuccess() throws NonExistentEntityException {
+    void testGetStudentCvToValidateSuccess() throws Exception {
         // Arrange
         String result = "[72,101,108,108,111,32,87,111,114,100]";
         byte[] stored = HexFormat.of().parseHex("48656c6c6f20576f7264");
@@ -724,8 +724,7 @@ public class GestionnaireServiceTest {
     }
 
     @Test
-    void testCreateStageContractHappyDay()
-            throws NonExistentOfferExeption, NonExistentEntityException, AlreadyExistingStageContractException {
+    void testCreateStageContractHappyDay() throws Exception {
         // Arrange
         when(studentRepository.findById(anyLong())).thenReturn(Optional.of(studentTest));
         when(offreRepository.findById(anyLong())).thenReturn(Optional.of(offerTest));
