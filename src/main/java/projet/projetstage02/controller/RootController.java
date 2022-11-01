@@ -733,7 +733,7 @@ public class RootController {
     //todo replace .log with .info
     @PostMapping("/createStageContract")
     public ResponseEntity<StageContractOutDTO> createStageContract
-    (@Valid StageContractInDTO stageContractInDTO) {
+    (@Valid @RequestBody StageContractInDTO stageContractInDTO) {
         logger.log(Level.INFO, "Post /createStageContract entered with StageContractInDTO: " + stageContractInDTO);
         try {
             authService.getToken(stageContractInDTO.getToken(), GESTIONNAIRE);
@@ -754,7 +754,7 @@ public class RootController {
 
     @PutMapping("/companySignatureContract")
     public ResponseEntity<StageContractOutDTO> companyContractSignature
-            (@RequestBody SignatureInDTO signatureInDTO) {
+            (@Valid @RequestBody SignatureInDTO signatureInDTO) {
         logger.log(Level.INFO, "Put /companySignatureContract entered with SignatureInDTO: " + signatureInDTO);
 
         try {
@@ -765,15 +765,13 @@ public class RootController {
         } catch (NonExistentEntityException e) {
             logger.log(Level.INFO, "Put /companySignatureContract sent request 404");
             return ResponseEntity.notFound().build();
-        } catch (InvalidTokenException e) {
+        } catch (InvalidTokenException | InvalidOwnershipException e) {
             logger.log(Level.INFO, "Put /companySignatureContract sent request 403");
             return ResponseEntity.status(FORBIDDEN).build();
-        } catch (InvalidOwnershipException e) {
-            logger.log(Level.INFO, "Put /companySignatureContract sent request 409");
-            return ResponseEntity.status(CONFLICT).build();
         }
     }
 
+    //Todo replace contractsDTO with list of stageContract
     @PutMapping("/contractsToCreate")
     public ResponseEntity<ContractsDTO> getContracts(@RequestBody TokenDTO tokenId) {
         logger.log(Level.INFO, "Put /contracts");
