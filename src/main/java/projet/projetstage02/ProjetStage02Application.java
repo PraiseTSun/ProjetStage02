@@ -59,9 +59,9 @@ public class ProjetStage02Application implements CommandLineRunner {
     public void run(String... args) throws Exception {
         studentService.saveStudent("Samir", "Badi", "Samir@gmail.com", "cooldude",
                 AbstractUser.Department.Informatique);
-        StudentDTO student = studentService.getStudentById(1L);
+        StudentOutDTO student = studentService.getStudentById(1L);
         student.setEmailConfirmed(true);
-        studentService.saveStudent(student);
+        studentService.saveStudent(new StudentInDTO(student.toModel()));
 
         companyService.saveCompany("Bob", "Marley", "Bell", "Bob@bell.com", "bestcompany",
                 AbstractUser.Department.Informatique);
@@ -76,15 +76,16 @@ public class ProjetStage02Application implements CommandLineRunner {
 
         studentService.saveStudent("Peter", "Griffin", "peter.griffin@quahog.com", "loislois",
                 AbstractUser.Department.Informatique);
-        StudentDTO student2 = studentService.getStudentByEmailPassword("peter.griffin@quahog.com", "loislois");
+        StudentOutDTO student2 = studentService.getStudentByEmailPassword("peter.griffin@quahog.com", "loislois");
         student2.setEmailConfirmed(true);
-        studentService.saveStudent(student2);
+        studentService.saveStudent(new StudentInDTO(student2.toModel()));
 
-        long offreId = companyService.createOffre(OffreDTO.builder()
+        long offreId = companyService.createOffre(OffreInDTO.builder()
                 .adresse("123 Joe Road")
                 .department(Department.Informatique.departement)
                 .heureParSemaine(40)
                 .companyId(company.getId())
+                .dateStage("2019-05-01")
                 .salaire(40)
                 .session("Hiver 2023")
                 .nomDeCompagnie("Bell")
@@ -105,7 +106,7 @@ public class ProjetStage02Application implements CommandLineRunner {
                 .build());
 
         companyService.createOffre(
-                OffreDTO.builder()
+                OffreInDTO.builder()
                         .id(0L)
                         .nomDeCompagnie("Bell")
                         .companyId(company.getId())
@@ -113,6 +114,7 @@ public class ProjetStage02Application implements CommandLineRunner {
                         .position("Support TI")
                         .heureParSemaine(35)
                         .salaire(35)
+                        .dateStage("2019-05-01")
                         .session("Hiver 2023")
                         .adresse("My Home")
                         .pdf(TEST_PDF)
@@ -122,7 +124,7 @@ public class ProjetStage02Application implements CommandLineRunner {
                         .build()
         );
         companyService.createOffre(
-                OffreDTO.builder()
+                OffreInDTO.builder()
                         .id(0L)
                         .nomDeCompagnie("Bell")
                         .companyId(company.getId())
@@ -130,6 +132,7 @@ public class ProjetStage02Application implements CommandLineRunner {
                         .position("Support TI")
                         .heureParSemaine(36)
                         .salaire(15)
+                        .dateStage("2019-05-01")
                         .session("Hiver 2023")
                         .companyId(company.getId())
                         .adresse("33 My Home")
@@ -156,7 +159,7 @@ public class ProjetStage02Application implements CommandLineRunner {
         companyService.saveStudentApplicationAccepted(offreId, student.getId());
         companyService.saveStudentApplicationAccepted(offreId, student2.getId());
         System.out.println(gestionnaireService.createStageContract(
-            new StageContractInDTO("noToken", student.getId(), offreId)
+                new StageContractInDTO("noToken", student.getId(), offreId)
         ));
         System.out.println(gestionnaireService.createStageContract(
                 new StageContractInDTO("noToken", student2.getId(), offreId)

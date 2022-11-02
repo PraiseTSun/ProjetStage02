@@ -15,6 +15,8 @@ const CompanyDashboard = ({user, deconnexion}: { user: IUser, deconnexion: Funct
                       className="btn btn-primary">Soumettre une offre de stage</Link>
                 <Link to="/myOffers"
                       className="btn btn-primary mt-3">Mes offres</Link>
+                <Link to="/SignerEntenteDeStageParCompagnie"
+                      className="btn btn-primary mt-3">Signer l'entente de stage</Link>
             </Row>
         </>
     );

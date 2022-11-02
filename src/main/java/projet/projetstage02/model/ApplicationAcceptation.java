@@ -12,6 +12,7 @@ import javax.persistence.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+//TODO rename to AcceptedApplication
 public class ApplicationAcceptation {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)

@@ -183,7 +183,7 @@ const CompanyOffersPage = ({connectedUser}: { connectedUser: IUser }): JSX.Eleme
                                                     await hireStudent(student.id)
                                                 }}>Engager</Button>
                                                 {acceptedStudents.includes(student.id) &&
-                                                    <p className="text-primary">Déjà engagé</p>}
+                                                    <p className="text-primary">En attente du contrat</p>}
                                             </td>
                                         </tr>
                                     );

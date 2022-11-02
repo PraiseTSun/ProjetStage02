@@ -11,7 +11,7 @@ import javax.validation.constraints.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class OffreDTO {
+public class OffreInDTO {
     private long id;
 
     @NotBlank
@@ -42,6 +42,9 @@ public class OffreDTO {
     @ToString.Exclude
     private byte[] pdf;
     private String token;
+
+    @NotBlank
+    private String dateStage;
     private boolean valide;
 
     public Offre toModel() {
@@ -53,13 +56,14 @@ public class OffreDTO {
                 .position(position)
                 .heureParSemaine(heureParSemaine)
                 .salaire(salaire)
+                .dateStage(dateStage)
                 .session(session)
                 .adresse(adresse)
                 .pdf(pdf)
                 .valide(valide).build();
     }
 
-    public OffreDTO(Offre offre) {
+    public OffreInDTO(Offre offre) {
         id = offre.getId();
         companyId = offre.getIdCompagnie();
         nomDeCompagnie = offre.getNomDeCompagnie();
@@ -68,6 +72,7 @@ public class OffreDTO {
         heureParSemaine = offre.getHeureParSemaine();
         adresse = offre.getAdresse();
         salaire = offre.getSalaire();
+        dateStage = offre.getDateStage();
         session = offre.getSession();
         pdf = offre.getPdf();
         valide = offre.isValide();

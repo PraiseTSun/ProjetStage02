@@ -62,6 +62,7 @@ public class StudentServiceTest {
                 Department.Informatique);
 
         bart.setCv(new byte[0]);
+        bart.setCvToValidate(new byte[0]);
         bart.setId(2L);
 
         bartCv = PdfDTO.builder().studentId(1).pdf(new byte[0]).build();
@@ -103,11 +104,12 @@ public class StudentServiceTest {
     @Test
     void getStudentByIdHappyDayTest() throws NonExistentEntityException {
         // Arrange
+        bart.setCv(new byte[]{23, 45, 2, 13, 42});
         when(studentRepository.findById(anyLong()))
                 .thenReturn(Optional.of(bart));
 
         // Act
-        StudentDTO studentDTO = studentService.getStudentById(1L);
+        StudentOutDTO studentDTO = studentService.getStudentById(1L);
 
         // Assert
         assertThat(studentDTO.toModel()).isEqualTo(bart);
@@ -139,7 +141,7 @@ public class StudentServiceTest {
                 .thenReturn(Optional.of(bart));
 
         // Act
-        StudentDTO studentDTO = studentService
+        StudentOutDTO studentDTO = studentService
                 .getStudentByEmailPassword(
                         "bart.simpson@springfield.com",
                         "eatMyShorts");
@@ -192,7 +194,7 @@ public class StudentServiceTest {
                 .thenReturn(bart);
 
         // Act
-        studentService.saveStudent(new StudentDTO(bart));
+        studentService.saveStudent(new StudentInDTO(bart));
 
         // Assert
         verify(studentRepository, times(1)).save(any());
@@ -275,7 +277,7 @@ public class StudentServiceTest {
         when(offreRepository.findAll()).thenReturn(offres);
 
         // Act
-        List<OffreDTO> offerDTOs = studentService.getOffersByStudentDepartment(1L);
+        List<OffreOutDTO> offerDTOs = studentService.getOffersByStudentDepartment(1L);
 
         // Assert
         assertThat(offerDTOs.size()).isEqualTo(1);

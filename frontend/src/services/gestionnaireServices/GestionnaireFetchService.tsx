@@ -163,8 +163,8 @@ export const putUnvalidatedStudents = (token: string): Promise<Response> => {
     })
 }
 
-export const putUnvalidatedAcceptations = (token: string): Promise<Response> => {
-    return fetch("http://localhost:8080/unvalidatedAcceptations", {
+export const putGetContracts = (token: string): Promise<Response> => {
+    return fetch("http://localhost:8080/contractsToCreate", {
         method: "PUT",
         headers: {
             'Accept': 'application/json',
