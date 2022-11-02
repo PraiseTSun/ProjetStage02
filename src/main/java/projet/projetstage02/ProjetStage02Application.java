@@ -161,8 +161,5 @@ public class ProjetStage02Application implements CommandLineRunner {
         System.out.println(gestionnaireService.createStageContract(
                 new StageContractInDTO("noToken", student.getId(), offreId)
         ));
-        System.out.println(gestionnaireService.createStageContract(
-                new StageContractInDTO("noToken", student2.getId(), offreId)
-        ));
     }
 }
