@@ -8,7 +8,29 @@ import org.apache.logging.log4j.Logger;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import projet.projetstage02.DTO.*;
+import projet.projetstage02.dto.SignatureInDTO;
+import projet.projetstage02.dto.applications.ApplicationAcceptationDTO;
+import projet.projetstage02.dto.applications.ApplicationDTO;
+import projet.projetstage02.dto.applications.ApplicationListDTO;
+import projet.projetstage02.dto.applications.OfferApplicationDTO;
+import projet.projetstage02.dto.auth.LoginDTO;
+import projet.projetstage02.dto.auth.TokenDTO;
+import projet.projetstage02.dto.contracts.ContractsDTO;
+import projet.projetstage02.dto.contracts.StageContractInDTO;
+import projet.projetstage02.dto.contracts.StageContractOutDTO;
+import projet.projetstage02.dto.cv.CvRefusalDTO;
+import projet.projetstage02.dto.cv.CvStatusDTO;
+import projet.projetstage02.dto.evaluations.MillieuStage.MillieuStageEvaluationInDTO;
+import projet.projetstage02.dto.evaluations.MillieuStage.MillieuStageEvaluationInfoDTO;
+import projet.projetstage02.dto.offres.OfferAcceptedStudentsDTO;
+import projet.projetstage02.dto.offres.OffreInDTO;
+import projet.projetstage02.dto.offres.OffreOutDTO;
+import projet.projetstage02.dto.pdf.PdfDTO;
+import projet.projetstage02.dto.pdf.PdfOutDTO;
+import projet.projetstage02.dto.users.CompanyDTO;
+import projet.projetstage02.dto.users.GestionnaireDTO;
+import projet.projetstage02.dto.users.Students.StudentInDTO;
+import projet.projetstage02.dto.users.Students.StudentOutDTO;
 import projet.projetstage02.exception.*;
 import projet.projetstage02.model.Token;
 import projet.projetstage02.service.AuthService;
@@ -794,7 +816,7 @@ public class RootController {
     //Todo replace contractsDTO with list of stageContract
     @PutMapping("/studentContracts/{studentId}_{session}")
     public ResponseEntity<List<StageContractOutDTO>> getStudentContracts
-            (@PathVariable String studentId, @PathVariable String session, @RequestBody TokenDTO tokenId) {
+    (@PathVariable String studentId, @PathVariable String session, @RequestBody TokenDTO tokenId) {
         logger.log(Level.INFO, "Put /studentContracts/{studentId}_{session} entered with studentId: " + studentId
                 + " with the session: " + session);
 
@@ -884,14 +906,14 @@ public class RootController {
     }
 
     @PutMapping("/evaluateStage/{contractId}/getInfo")
-    public ResponseEntity<EvaluationInfoDTO> getEvaluateStageInfo
+    public ResponseEntity<MillieuStageEvaluationInfoDTO> getEvaluateStageInfo
             (@PathVariable long contractId, @RequestBody TokenDTO tokenId) {
         try {
             logger.log(Level.INFO, "put /evaluateStage/id/getInfo entered with id : " + contractId);
             authService.getToken(tokenId.getToken(), GESTIONNAIRE);
-            EvaluationInfoDTO evaluationInfoDTO = gestionnaireService.getEvaluationInfoForContract(contractId);
+            MillieuStageEvaluationInfoDTO millieuStageEvaluationInfoDTO = gestionnaireService.getEvaluationInfoForContract(contractId);
             logger.log(Level.INFO, "PutMapping: /evaluateStage/id/getInfo sent 201 response");
-            return ResponseEntity.status(CREATED).body(evaluationInfoDTO);
+            return ResponseEntity.status(CREATED).body(millieuStageEvaluationInfoDTO);
         } catch (InvalidTokenException e) {
             logger.log(Level.INFO, "PutMapping: /evaluateStage/id/getInfo sent 403 response");
             return ResponseEntity.status(FORBIDDEN).build();
@@ -904,11 +926,11 @@ public class RootController {
     //Todo create endpoint and page to see an evaluation and print it to pdf
     @PostMapping("/evaluateStage/{token}")
     public ResponseEntity<?> evaluateStage
-    (@PathVariable String token, @RequestBody EvaluationInDTO evaluationInDTO) {
+    (@PathVariable String token, @RequestBody MillieuStageEvaluationInDTO millieuStageEvaluationInDTO) {
         try {
             logger.log(Level.INFO, "put /evaluateStage/id entered with id : " + token);
             authService.getToken(token, GESTIONNAIRE);
-            gestionnaireService.evaluateStage(evaluationInDTO);
+            gestionnaireService.evaluateStage(millieuStageEvaluationInDTO);
             logger.log(Level.INFO, "PutMapping: /evaluateStage/id sent 201 response");
             return ResponseEntity.status(CREATED).build();
         } catch (InvalidTokenException e) {

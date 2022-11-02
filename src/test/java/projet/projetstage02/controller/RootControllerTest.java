@@ -11,7 +11,29 @@ import org.springframework.boot.test.json.JacksonTester;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-import projet.projetstage02.DTO.*;
+import projet.projetstage02.dto.*;
+import projet.projetstage02.dto.applications.ApplicationAcceptationDTO;
+import projet.projetstage02.dto.applications.ApplicationDTO;
+import projet.projetstage02.dto.applications.ApplicationListDTO;
+import projet.projetstage02.dto.applications.OfferApplicationDTO;
+import projet.projetstage02.dto.auth.LoginDTO;
+import projet.projetstage02.dto.auth.TokenDTO;
+import projet.projetstage02.dto.cv.CvRefusalDTO;
+import projet.projetstage02.dto.cv.CvStatusDTO;
+import projet.projetstage02.dto.contracts.ContractsDTO;
+import projet.projetstage02.dto.contracts.StageContractInDTO;
+import projet.projetstage02.dto.contracts.StageContractOutDTO;
+import projet.projetstage02.dto.evaluations.MillieuStage.MillieuStageEvaluationInDTO;
+import projet.projetstage02.dto.evaluations.MillieuStage.MillieuStageEvaluationInfoDTO;
+import projet.projetstage02.dto.offres.OfferAcceptedStudentsDTO;
+import projet.projetstage02.dto.offres.OffreInDTO;
+import projet.projetstage02.dto.offres.OffreOutDTO;
+import projet.projetstage02.dto.pdf.PdfDTO;
+import projet.projetstage02.dto.pdf.PdfOutDTO;
+import projet.projetstage02.dto.users.CompanyDTO;
+import projet.projetstage02.dto.users.GestionnaireDTO;
+import projet.projetstage02.dto.users.Students.StudentInDTO;
+import projet.projetstage02.dto.users.Students.StudentOutDTO;
 import projet.projetstage02.exception.*;
 import projet.projetstage02.model.AbstractUser.Department;
 import projet.projetstage02.model.Offre;
@@ -64,7 +86,7 @@ public class RootControllerTest {
     JacksonTester<CvRefusalDTO> jsonCvRefusalDTO;
     JacksonTester<PdfDTO> jsonPdfDTO;
     JacksonTester<SignatureInDTO> jsonSignatureDTO;
-    JacksonTester<EvaluationInDTO> jsonEvalInDTO;
+    JacksonTester<MillieuStageEvaluationInDTO> jsonEvalInDTO;
 
     StudentInDTO bart;
     StudentOutDTO bartOut;
@@ -88,8 +110,8 @@ public class RootControllerTest {
     OfferApplicationDTO offerApplicationDTO;
 
     CvStatusDTO cvStatusDTO;
-    EvaluationInfoDTO evalInfoDTO;
-    EvaluationInDTO evalInDTO;
+    MillieuStageEvaluationInfoDTO evalInfoDTO;
+    MillieuStageEvaluationInDTO evalInDTO;
 
 
     // https://thepracticaldeveloper.com/guide-spring-boot-controller-tests/
@@ -237,9 +259,9 @@ public class RootControllerTest {
         contractsDTO.add(stageContractOutDTO);
         contractsDTO.add(stageContractOutDTO);
 
-        evalInfoDTO = new EvaluationInfoDTO(duffBeer.toModel(), duffOffre.toModel(), bart.toModel());
+        evalInfoDTO = new MillieuStageEvaluationInfoDTO(duffBeer.toModel(), duffOffre.toModel(), bart.toModel());
 
-        evalInDTO = EvaluationInDTO.builder()
+        evalInDTO = MillieuStageEvaluationInDTO.builder()
                 .climatTravail("Plutôt en accord")
                 .commentaires("Plutôt en accord")
                 .communicationAvecSuperviser("Plutôt en accord")

@@ -4,7 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import projet.projetstage02.DTO.EvaluationInDTO;
+import projet.projetstage02.dto.evaluations.MillieuStage.MillieuStageEvaluationInDTO;
 
 import javax.persistence.Entity;
 import javax.persistence.Id;
@@ -63,22 +63,22 @@ public class Evaluation {
     @NotBlank
     private String dateSignature;
 
-    public Evaluation(EvaluationInDTO evaluationInDTO) {
-        contractId = evaluationInDTO.getContractId();
-        tachesAnnonces = evaluationInDTO.getTachesAnnonces();
-        integration = evaluationInDTO.getIntegration();
-        tempsReelConsacre = evaluationInDTO.getTempsReelConsacre();
-        environementTravail = evaluationInDTO.getEnvironementTravail();
-        climatTravail = evaluationInDTO.getClimatTravail();
-        milieuDeStage = evaluationInDTO.getMilieuDeStage();
-        heureTotalPremierMois = evaluationInDTO.getHeureTotalPremierMois();
-        heureTotalDeuxiemeMois = evaluationInDTO.getHeureTotalDeuxiemeMois();
-        heureTotalTroisiemeMois = evaluationInDTO.getHeureTotalTroisiemeMois();
-        communicationAvecSuperviser = evaluationInDTO.getCommunicationAvecSuperviser();
-        equipementFourni = evaluationInDTO.getEquipementFourni();
-        volumeDeTravail = evaluationInDTO.getVolumeDeTravail();
-        commentaires = evaluationInDTO.getCommentaires();
-        signature = evaluationInDTO.getSignature();
-        dateSignature = evaluationInDTO.getDateSignature();
+    public Evaluation(MillieuStageEvaluationInDTO millieuStageEvaluationInDTO) {
+        contractId = millieuStageEvaluationInDTO.getContractId();
+        tachesAnnonces = millieuStageEvaluationInDTO.getTachesAnnonces();
+        integration = millieuStageEvaluationInDTO.getIntegration();
+        tempsReelConsacre = millieuStageEvaluationInDTO.getTempsReelConsacre();
+        environementTravail = millieuStageEvaluationInDTO.getEnvironementTravail();
+        climatTravail = millieuStageEvaluationInDTO.getClimatTravail();
+        milieuDeStage = millieuStageEvaluationInDTO.getMilieuDeStage();
+        heureTotalPremierMois = millieuStageEvaluationInDTO.getHeureTotalPremierMois();
+        heureTotalDeuxiemeMois = millieuStageEvaluationInDTO.getHeureTotalDeuxiemeMois();
+        heureTotalTroisiemeMois = millieuStageEvaluationInDTO.getHeureTotalTroisiemeMois();
+        communicationAvecSuperviser = millieuStageEvaluationInDTO.getCommunicationAvecSuperviser();
+        equipementFourni = millieuStageEvaluationInDTO.getEquipementFourni();
+        volumeDeTravail = millieuStageEvaluationInDTO.getVolumeDeTravail();
+        commentaires = millieuStageEvaluationInDTO.getCommentaires();
+        signature = millieuStageEvaluationInDTO.getSignature();
+        dateSignature = millieuStageEvaluationInDTO.getDateSignature();
     }
 }

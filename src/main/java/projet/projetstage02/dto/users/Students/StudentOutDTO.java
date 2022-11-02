@@ -1,7 +1,8 @@
-package projet.projetstage02.DTO;
+package projet.projetstage02.dto.users.Students;
 
 import lombok.*;
 import lombok.experimental.SuperBuilder;
+import projet.projetstage02.dto.users.AbstractUserDTO;
 import projet.projetstage02.model.AbstractUser.Department;
 import projet.projetstage02.model.Student;
 

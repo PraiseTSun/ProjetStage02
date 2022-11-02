@@ -1,4 +1,4 @@
-package projet.projetstage02.DTO;
+package projet.projetstage02.dto.evaluations.MillieuStage;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -13,7 +13,7 @@ import javax.validation.constraints.Pattern;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class EvaluationInDTO {
+public class MillieuStageEvaluationInDTO {
     @Min(1)
     private long contractId;
     @NotBlank

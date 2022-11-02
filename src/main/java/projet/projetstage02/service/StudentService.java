@@ -2,7 +2,16 @@ package projet.projetstage02.service;
 
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
-import projet.projetstage02.DTO.*;
+import projet.projetstage02.dto.*;
+import projet.projetstage02.dto.applications.ApplicationDTO;
+import projet.projetstage02.dto.applications.ApplicationListDTO;
+import projet.projetstage02.dto.cv.CvStatusDTO;
+import projet.projetstage02.dto.contracts.StageContractOutDTO;
+import projet.projetstage02.dto.offres.OffreOutDTO;
+import projet.projetstage02.dto.pdf.PdfDTO;
+import projet.projetstage02.dto.pdf.PdfOutDTO;
+import projet.projetstage02.dto.users.Students.StudentInDTO;
+import projet.projetstage02.dto.users.Students.StudentOutDTO;
 import projet.projetstage02.exception.AlreadyExistingPostulation;
 import projet.projetstage02.exception.InvalidOwnershipException;
 import projet.projetstage02.exception.NonExistentEntityException;
@@ -12,7 +21,6 @@ import projet.projetstage02.repository.*;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
@@ -194,7 +202,7 @@ public class StudentService {
 
     public List<StageContractOutDTO> getContracts(long studentId, String session) throws NonExistentEntityException {
         Optional<Student> studentOpt = studentRepository.findById(studentId);
-        if(studentOpt.isEmpty()) throw new NonExistentEntityException();
+        if (studentOpt.isEmpty()) throw new NonExistentEntityException();
 
         List<StageContractOutDTO> contracts = new ArrayList<>();
 
@@ -208,7 +216,7 @@ public class StudentService {
 
     public StageContractOutDTO addSignatureToContract(SignatureInDTO signature) throws NonExistentEntityException, InvalidOwnershipException {
         Optional<Student> studentOpt = studentRepository.findById(signature.getUserId());
-        if(studentOpt.isEmpty()) throw new NonExistentEntityException();
+        if (studentOpt.isEmpty()) throw new NonExistentEntityException();
 
         Optional<StageContract> stageContractOpt = stageContractRepository.findById(signature.getContractId());
         if (stageContractOpt.isEmpty()) throw new NonExistentEntityException();
@@ -216,7 +224,7 @@ public class StudentService {
         Student student = studentOpt.get();
         StageContract stageContract = stageContractOpt.get();
 
-        if(student.getId() != stageContract.getStudentId())
+        if (student.getId() != stageContract.getStudentId())
             throw new InvalidOwnershipException();
 
         stageContract.setStudentSignature(signature.getSignature());

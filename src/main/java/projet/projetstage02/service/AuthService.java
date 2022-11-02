@@ -2,7 +2,7 @@ package projet.projetstage02.service;
 
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
-import projet.projetstage02.DTO.LoginDTO;
+import projet.projetstage02.dto.auth.LoginDTO;
 import projet.projetstage02.exception.InvalidTokenException;
 import projet.projetstage02.model.*;
 import projet.projetstage02.model.Token.UserTypes;
@@ -50,7 +50,7 @@ public class AuthService {
         Optional<Student> student = studentRepository.findByEmailAndPassword(
                 loginDTO.getEmail(), loginDTO.getPassword());
         validateOptional(student);
-        if(!student.get().isConfirm()){
+        if (!student.get().isConfirm()) {
             throw new InvalidTokenException();
         }
         return createToken(student.get(), STUDENT);
@@ -60,7 +60,7 @@ public class AuthService {
         Optional<Company> company = companyRepository.findByEmailAndPassword(loginDTO.getEmail(),
                 loginDTO.getPassword());
         validateOptional(company);
-        if(!company.get().isConfirm()){
+        if (!company.get().isConfirm()) {
             throw new InvalidTokenException();
         }
         return createToken(company.get(), COMPANY);
@@ -85,10 +85,10 @@ public class AuthService {
     public Token getToken(String tokenId, UserTypes userType) throws InvalidTokenException {
         try {
             Optional<Token> token = tokenRepository.findById(tokenId);
-            if (token.isEmpty() || token.get().getUserType() != userType ) {
+            if (token.isEmpty() || token.get().getUserType() != userType) {
                 throw new InvalidTokenException();
             }
-            if(currentTimestamp() - token.get().getLastCalledTimeStamp() > ONE_HOURS_MS){
+            if (currentTimestamp() - token.get().getLastCalledTimeStamp() > ONE_HOURS_MS) {
                 deleteToken(tokenId);
                 throw new InvalidTokenException();
             }

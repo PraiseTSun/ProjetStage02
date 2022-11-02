@@ -2,7 +2,17 @@ package projet.projetstage02.service;
 
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
-import projet.projetstage02.DTO.*;
+import projet.projetstage02.dto.*;
+import projet.projetstage02.dto.applications.ApplicationAcceptationDTO;
+import projet.projetstage02.dto.applications.OfferApplicationDTO;
+import projet.projetstage02.dto.contracts.ContractsDTO;
+import projet.projetstage02.dto.contracts.StageContractOutDTO;
+import projet.projetstage02.dto.offres.OfferAcceptedStudentsDTO;
+import projet.projetstage02.dto.offres.OffreInDTO;
+import projet.projetstage02.dto.offres.OffreOutDTO;
+import projet.projetstage02.dto.pdf.PdfOutDTO;
+import projet.projetstage02.dto.users.CompanyDTO;
+import projet.projetstage02.dto.users.Students.StudentOutDTO;
 import projet.projetstage02.exception.AlreadyExistingAcceptationException;
 import projet.projetstage02.exception.InvalidOwnershipException;
 import projet.projetstage02.exception.NonExistentEntityException;

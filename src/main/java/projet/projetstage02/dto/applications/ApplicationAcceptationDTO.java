@@ -1,4 +1,4 @@
-package projet.projetstage02.DTO;
+package projet.projetstage02.dto.applications;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -17,7 +17,7 @@ public class ApplicationAcceptationDTO {
     private String studentName;
     private String companyName;
 
-    public ApplicationAcceptationDTO(ApplicationAcceptation application){
+    public ApplicationAcceptationDTO(ApplicationAcceptation application) {
         id = application.getId();
         studentId = application.getStudentId();
         offerId = application.getOfferId();

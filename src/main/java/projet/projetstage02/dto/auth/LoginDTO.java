@@ -1,4 +1,4 @@
-package projet.projetstage02.DTO;
+package projet.projetstage02.dto.auth;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

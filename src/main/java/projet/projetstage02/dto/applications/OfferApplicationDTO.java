@@ -1,9 +1,10 @@
-package projet.projetstage02.DTO;
+package projet.projetstage02.dto.applications;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import projet.projetstage02.dto.users.Students.StudentOutDTO;
 
 import java.util.List;
 
@@ -12,5 +13,6 @@ import java.util.List;
 @NoArgsConstructor
 @Builder
 public class OfferApplicationDTO {
+    //todo remove this and send the list directly
     List<StudentOutDTO> applicants;
 }

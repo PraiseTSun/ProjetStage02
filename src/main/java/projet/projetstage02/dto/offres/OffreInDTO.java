@@ -1,4 +1,4 @@
-package projet.projetstage02.DTO;
+package projet.projetstage02.dto.offres;
 
 import com.sun.istack.NotNull;
 import lombok.*;

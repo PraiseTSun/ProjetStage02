@@ -2,7 +2,16 @@ package projet.projetstage02.service;
 
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
-import projet.projetstage02.DTO.*;
+import projet.projetstage02.dto.contracts.ContractsDTO;
+import projet.projetstage02.dto.contracts.StageContractInDTO;
+import projet.projetstage02.dto.contracts.StageContractOutDTO;
+import projet.projetstage02.dto.evaluations.MillieuStage.MillieuStageEvaluationInDTO;
+import projet.projetstage02.dto.evaluations.MillieuStage.MillieuStageEvaluationInfoDTO;
+import projet.projetstage02.dto.offres.OffreOutDTO;
+import projet.projetstage02.dto.pdf.PdfOutDTO;
+import projet.projetstage02.dto.users.CompanyDTO;
+import projet.projetstage02.dto.users.GestionnaireDTO;
+import projet.projetstage02.dto.users.Students.StudentOutDTO;
 import projet.projetstage02.exception.*;
 import projet.projetstage02.model.*;
 import projet.projetstage02.repository.*;
@@ -342,7 +351,7 @@ public class GestionnaireService {
     }
 
 
-    public EvaluationInfoDTO getEvaluationInfoForContract(long contractId) throws NonExistentOfferExeption, NonExistentEntityException {
+    public MillieuStageEvaluationInfoDTO getEvaluationInfoForContract(long contractId) throws NonExistentOfferExeption, NonExistentEntityException {
         Optional<StageContract> optional = stageContractRepository.findById(contractId);
         if (optional.isEmpty()) {
             throw new NonExistentEntityException();
@@ -363,11 +372,11 @@ public class GestionnaireService {
             throw new NonExistentEntityException();
         }
         Company company = optionalCompany.get();
-        return new EvaluationInfoDTO(company, offre, student);
+        return new MillieuStageEvaluationInfoDTO(company, offre, student);
     }
 
-    public void evaluateStage(EvaluationInDTO evaluationInDTO) {
-        evaluationRepository.save(new Evaluation(evaluationInDTO));
+    public void evaluateStage(MillieuStageEvaluationInDTO millieuStageEvaluationInDTO) {
+        evaluationRepository.save(new Evaluation(millieuStageEvaluationInDTO));
     }
 
     public ContractsDTO getContracts() {

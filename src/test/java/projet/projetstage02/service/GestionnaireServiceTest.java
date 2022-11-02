@@ -6,7 +6,16 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import projet.projetstage02.DTO.*;
+import projet.projetstage02.dto.contracts.ContractsDTO;
+import projet.projetstage02.dto.contracts.StageContractInDTO;
+import projet.projetstage02.dto.contracts.StageContractOutDTO;
+import projet.projetstage02.dto.evaluations.MillieuStage.MillieuStageEvaluationInDTO;
+import projet.projetstage02.dto.evaluations.MillieuStage.MillieuStageEvaluationInfoDTO;
+import projet.projetstage02.dto.offres.OffreOutDTO;
+import projet.projetstage02.dto.pdf.PdfOutDTO;
+import projet.projetstage02.dto.users.CompanyDTO;
+import projet.projetstage02.dto.users.GestionnaireDTO;
+import projet.projetstage02.dto.users.Students.StudentOutDTO;
 import projet.projetstage02.exception.*;
 import projet.projetstage02.model.*;
 import projet.projetstage02.repository.*;
@@ -50,7 +59,7 @@ public class GestionnaireServiceTest {
     private CvStatus cvStatus;
     private StageContract stageContract;
     private ApplicationAcceptation applicationAcceptationTest;
-    private EvaluationInDTO evalInDTO;
+    private MillieuStageEvaluationInDTO evalInDTO;
 
     private StageContractInDTO stageContractInDTO;
 
@@ -117,7 +126,7 @@ public class GestionnaireServiceTest {
                 .companyName(companyTest.getCompanyName())
                 .build();
 
-        evalInDTO = EvaluationInDTO.builder()
+        evalInDTO = MillieuStageEvaluationInDTO.builder()
                 .climatTravail("Plutôt en accord")
                 .commentaires("Plutôt en accord")
                 .communicationAvecSuperviser("Plutôt en accord")
@@ -136,7 +145,7 @@ public class GestionnaireServiceTest {
                 .signature(byteToString(new byte[]{0, 1, 2, 3, 4, 5, 6, 7, 8, 9}))
                 .build();
 
-       
+
     }
 
     @Test
@@ -864,7 +873,7 @@ public class GestionnaireServiceTest {
         when(companyRepository.findById(anyLong())).thenReturn(Optional.of(companyTest));
         when(stageContractRepository.findById(anyLong())).thenReturn(Optional.of(stageContract));
 
-        EvaluationInfoDTO dto = gestionnaireService.getEvaluationInfoForContract(1L);
+        MillieuStageEvaluationInfoDTO dto = gestionnaireService.getEvaluationInfoForContract(1L);
 
         assertThat(dto.getAdresse()).isEqualTo(offerTest.getAdresse());
         assertThat(dto.getNomCompagnie()).isEqualTo(companyTest.getCompanyName());
