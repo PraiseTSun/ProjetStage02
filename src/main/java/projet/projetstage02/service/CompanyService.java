@@ -220,6 +220,6 @@ public class CompanyService {
                 .filter(stageContract -> stageContract.getSession().equals(session))
                 .forEach(stageContract -> contracts.add(new StageContractOutDTO(stageContract)));
 
-        return ContractsDTO.builder().applications(contracts).build();
+        return ContractsDTO.builder().contracts(contracts).build();
     }
 }

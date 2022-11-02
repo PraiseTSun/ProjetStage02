@@ -20,7 +20,7 @@ const SignerEntenteDeStageParCompagnie = ({user}: { user: IUser }): JSX.Element 
                 const response = await putcompanyContracts(user.id, user.token, "Hiver", nextYear)
                 if (response.ok) {
                     const data = await response.json();
-                    setContratsNonSigner(data.applications)
+                    setContratsNonSigner(data.contracts)
                 } else {
                     generateAlert()
                 }
