@@ -152,7 +152,7 @@ public class RootControllerTest {
                 .salaire(40)
                 .session("Hiver 2022")
                 .adresse("654 Duff Street")
-                .pdf("pdf")
+                .pdf(byteToString(new byte[0]))
                 .build();
 
         token = TokenDTO.builder()
