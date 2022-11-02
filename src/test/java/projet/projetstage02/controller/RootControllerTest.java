@@ -33,6 +33,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static projet.projetstage02.model.Token.UserTypes.*;
+import static projet.projetstage02.utils.ByteConverter.byteToString;
 import static projet.projetstage02.utils.TimeUtil.currentTimestamp;
 
 @ExtendWith(MockitoExtension.class)
@@ -151,7 +152,7 @@ public class RootControllerTest {
                 .salaire(40)
                 .session("Hiver 2022")
                 .adresse("654 Duff Street")
-                .pdf(byteToString(new byte[0]))
+                .pdf("pdf")
                 .build();
 
         token = TokenDTO.builder()
@@ -257,11 +258,7 @@ public class RootControllerTest {
                 .signature(byteToString(new byte[]{0, 1, 2, 3, 4, 5, 6, 7, 8, 9}))
                 .build();
 
-        contracts = new ArrayList<>() {{
-            add(stageContractOutDTO);
-            add(stageContractOutDTO);
-            add(stageContractOutDTO);
-        }};
+
     }
 
     @Test
@@ -1665,11 +1662,10 @@ public class RootControllerTest {
     void testStudentContractSignatureConflict() throws Exception {
         when(studentService.addSignatureToContract(any())).thenThrow(new InvalidOwnershipException());
 
-        mockMvc.perform(put("/contractsToCreate")
+        mockMvc.perform(put("/studentSignatureContract")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(jsonTokenDTO.write(token).getJson()))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.contracts.size()", is(2)));
+                .andExpect(status().isConflict());
     }
 
     @Test
