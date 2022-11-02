@@ -11,17 +11,17 @@ import java.util.List;
 @Builder
 @AllArgsConstructor
 public class ContractsDTO {
-    private List<StageContractOutDTO> applications;
+    private List<StageContractOutDTO> contracts;
 
     public ContractsDTO() {
-        applications = new ArrayList<>();
+        contracts = new ArrayList<>();
     }
 
     public void add(StageContractOutDTO stageContractOutDTO) {
-        applications.add(stageContractOutDTO);
+        contracts.add(stageContractOutDTO);
     }
 
     public int size() {
-        return applications.size();
+        return contracts.size();
     }
 }

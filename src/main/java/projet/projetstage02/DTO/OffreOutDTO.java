@@ -45,6 +45,9 @@ public class OffreOutDTO {
     @ToString.Exclude
     private String pdf;
     private String token;
+
+    @NotBlank
+    private String dateStage;
     private boolean valide;
 
     public Offre toModel() {
@@ -57,6 +60,7 @@ public class OffreOutDTO {
                 .heureParSemaine(heureParSemaine)
                 .salaire(salaire)
                 .session(session)
+                .dateStage(dateStage)
                 .adresse(adresse)
                 .pdf(stringToBytes(pdf))
                 .valide(valide).build();
@@ -72,6 +76,7 @@ public class OffreOutDTO {
         adresse = offre.getAdresse();
         salaire = offre.getSalaire();
         session = offre.getSession();
+        dateStage = offre.getDateStage();
         pdf = byteToString(offre.getPdf());
         valide = offre.isValide();
     }

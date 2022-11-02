@@ -37,6 +37,7 @@ public class CompanyService {
                 .department(Department.getDepartment(offreInDTO.getDepartment()))
                 .position(offreInDTO.getPosition())
                 .heureParSemaine(offreInDTO.getHeureParSemaine())
+                .dateStage(offreInDTO.getDateStage())
                 .salaire(offreInDTO.getSalaire())
                 .session(offreInDTO.getSession())
                 .adresse(offreInDTO.getAdresse())
@@ -167,14 +168,10 @@ public class CompanyService {
 
     public OfferApplicationDTO getStudentsForOffer(long offerId) throws NonExistentOfferExeption, NonExistentEntityException {
         Optional<Offre> optionalOffre = offreRepository.findById(offerId);
-        if (optionalOffre.isEmpty()) {
-            throw new NonExistentOfferExeption();
-        }
+        if (optionalOffre.isEmpty()) throw new NonExistentOfferExeption();
         Offre offre = optionalOffre.get();
         Optional<Company> optionalCompany = companyRepository.findById(offre.getIdCompagnie());
-        if (optionalCompany.isEmpty()) {
-            throw new NonExistentEntityException();
-        }
+        if (optionalCompany.isEmpty()) throw new NonExistentEntityException();
         Company company = optionalCompany.get();
         List<StudentOutDTO> studentDTOS = new ArrayList<>();
         applicationRepository.findByOfferId(offerId).stream()

@@ -30,12 +30,15 @@ public class StageContract {
     private long companyId;
     private String description;
     @Lob
-    private String companySignature;
+    @Builder.Default()
+    private String companySignature = "";;
     private LocalDateTime companySignatureDate;
     @Lob
-    private String gestionnaireSignature;
+    @Builder.Default()
+    private String gestionnaireSignature = "";;
     private LocalDateTime gestionnaireSignatureDate;
     @Lob
-    private String studentSignature;
+    @Builder.Default()
+    private String studentSignature = "";;
     private LocalDateTime studentSignatureDate;
 }
