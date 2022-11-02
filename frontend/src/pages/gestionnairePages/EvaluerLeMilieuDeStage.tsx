@@ -1,25 +1,22 @@
-import React, {useEffect, useState} from "react";
+import React, { useEffect, useState } from "react";
 import IUser from "../../models/IUser";
-import {Button, Col, Container, Form, ListGroup, Row, Tab, Table} from "react-bootstrap";
-import {Link} from "react-router-dom";
-import {BeatLoader} from "react-spinners";
+import { Button, Col, Container, Form, ListGroup, Row, Tab, Table } from "react-bootstrap";
+import { Link } from "react-router-dom";
+import { BeatLoader } from "react-spinners";
 import PageHeader from "../../components/universalComponents/PageHeader";
-import {generateAlert} from "../../services/universalServices/UniversalUtilService";
+import { generateAlert } from "../../services/universalServices/UniversalUtilService";
 import InfoDuContrat from "../../models/InfoDuContrat";
 import {
     postEvaluationStage, putContrats,
     putInfoContratPourEvaluateStage
 } from "../../services/gestionnaireServices/GestionnaireFetchService";
-import SignaturePad from "react-signature-canvas";
 import IContrat from "../../models/IContrat";
 
-const EvaluerLeMilieuDeStage = ({user}: { user: IUser }): JSX.Element => {
+const EvaluerLeMilieuDeStage = ({ user }: { user: IUser }): JSX.Element => {
     const [contrats, setContrats] = useState<IContrat[]>([]);
     const [afficheFormulaire, setAfficheFormuaire] = useState<boolean>(false)
     const [waiting, setWaiting] = useState<boolean>(false);
     const [validated, setValidated] = useState<boolean>(false);
-    const [showSignature, setShowSignature] = useState<boolean>(false);
-    let sigPad: SignaturePad | null
     // varialbles pour formulaire la partie identification de l'entreprise
     const [infosContrat, setInfosContrat] = useState<InfoDuContrat>({
         adresse: "",
@@ -57,10 +54,8 @@ const EvaluerLeMilieuDeStage = ({user}: { user: IUser }): JSX.Element => {
     const [equipementFourni, setEquipementFourni] = useState("")
     const [volumeDeTravail, setVolumeDeTravail] = useState("")
     const [commentaires, setCommentaires] = useState("")
-    const [signature, setSignature] = useState("")
-    const [dateSignature, setDateSignature] = useState("")
 
-    useEffect(()=>{
+    useEffect(() => {
 
         const fetchContracts = async (): Promise<void> => {
             try {
@@ -68,7 +63,6 @@ const EvaluerLeMilieuDeStage = ({user}: { user: IUser }): JSX.Element => {
 
                 if (response.ok) {
                     const data = await response.json()
-                    console.log(data)
                     setContrats(data.contracts)
                 } else {
                     generateAlert()
@@ -78,7 +72,7 @@ const EvaluerLeMilieuDeStage = ({user}: { user: IUser }): JSX.Element => {
             }
         }
         fetchContracts()
-    },[])
+    }, [user])
 
     const fetchContractParId = async (contractId: number): Promise<void> => {
         try {
@@ -110,7 +104,7 @@ const EvaluerLeMilieuDeStage = ({user}: { user: IUser }): JSX.Element => {
             if (!tachesAnnoncees || !integration || !tempsReelConsacre || !heureTotalPremierMois || !heureTotalDeuxiemeMois
                 || !heureTotalTroisiemeMois || !environnementDeTravail || !climatDeTravail || !milieuDeStage
                 || !salaireOffert || !salaireParHeure || !communicationAvecSuperviser
-                || !equipementFourni || !volumeDeTravail || !commentaires || !signature || !dateSignature) {
+                || !equipementFourni || !volumeDeTravail || !commentaires) {
                 alert("Veuillez remplir chaque champ de  la partie l'évaluation.")
                 setWaiting(false)
                 return;
@@ -119,7 +113,7 @@ const EvaluerLeMilieuDeStage = ({user}: { user: IUser }): JSX.Element => {
             const res = await postEvaluationStage(user.token, tachesAnnoncees, integration, tempsReelConsacre,
                 environnementDeTravail, climatDeTravail, milieuDeStage, heureTotalPremierMois,
                 heureTotalDeuxiemeMois, heureTotalTroisiemeMois, communicationAvecSuperviser,
-                equipementFourni, volumeDeTravail, commentaires, signature, dateSignature);
+                equipementFourni, volumeDeTravail, commentaires);
 
             if (!res.ok) {
                 alert("La évaluation a été envoyé.");
@@ -143,7 +137,8 @@ const EvaluerLeMilieuDeStage = ({user}: { user: IUser }): JSX.Element => {
                 prenomContact: "",
                 prenomEtudiant: "",
                 salaire: 0,
-                session: ""})
+                session: ""
+            })
             setVille("")
             setTelephone("")
             setTelecopieur("")
@@ -163,8 +158,6 @@ const EvaluerLeMilieuDeStage = ({user}: { user: IUser }): JSX.Element => {
             setEquipementFourni("")
             setVolumeDeTravail("")
             setCommentaires("")
-            setSignature("")
-            setDateSignature("")
         }
         setValidated(true)
     }
@@ -172,39 +165,8 @@ const EvaluerLeMilieuDeStage = ({user}: { user: IUser }): JSX.Element => {
     if (waiting) {
         return (
             <div className="d-flex justify-content-center py-5 bg-light">
-                <BeatLoader className="text-center" color="#292b2c" size={100}/>
+                <BeatLoader className="text-center" color="#292b2c" size={100} />
             </div>
-        );
-    }
-
-    if (showSignature) {
-        return (
-            <Container className="vh-100">
-                <Row className="bg-dark p-2">
-                    <Col sm={1}><Button variant="danger" onClick={() => {
-                        setShowSignature(false)
-                    }}>Fermer</Button></Col>
-                    <Col sm={10}></Col>
-                    <Col sm={1}><Button variant="success" onClick={() => {
-                        if (sigPad!.isEmpty()) {
-                            alert("Vous devez signer!")
-                        } else {
-                            setSignature(sigPad!.toDataURL())
-                        }
-                    }}>Signer</Button></Col>
-                </Row>
-                <Row>
-                    <Col sm={4} className="mx-auto mt-3">
-                        <SignaturePad canvasProps={{width: 500, height: 200, className: 'border border-5 bg-light'}}
-                                      ref={(ref) => {
-                                          sigPad = ref
-                                      }}/>
-                        <Button onClick={() => {
-                            sigPad!.clear()
-                        }}>Recommencer</Button>
-                    </Col>
-                </Row>
-            </Container>
         );
     }
 
@@ -218,7 +180,7 @@ const EvaluerLeMilieuDeStage = ({user}: { user: IUser }): JSX.Element => {
                         }} className="btn btn-primary my-3">Page précédente</Link>
                     </Col>
                     <Col sm={8} className="text-center pt-2">
-                        <h1 className="fw-bold text-white display-3 pb-2">Évluation du milieu de stage</h1>
+                        <h1 className="fw-bold text-white display-3 pb-2">Évaluation du milieu de stage</h1>
                     </Col>
                     <Col sm={2}></Col>
                 </Row>
@@ -229,11 +191,11 @@ const EvaluerLeMilieuDeStage = ({user}: { user: IUser }): JSX.Element => {
                             IDENTIFICATION DE L'ENTREPRISE
                         </ListGroup.Item>
                         <ListGroup.Item data-testid="entrepriseInscriptionForm" action href="#stagiaire"
-                                        variant="primary">
+                            variant="primary">
                             IDENTIFICATION DU STAGIAIRE
                         </ListGroup.Item>
                         <ListGroup.Item data-testid="entrepriseInscriptionForm" action href="#evaluation"
-                                        variant="primary">
+                            variant="primary">
                             ÉVALUATION
                         </ListGroup.Item>
                     </ListGroup>
@@ -246,7 +208,7 @@ const EvaluerLeMilieuDeStage = ({user}: { user: IUser }): JSX.Element => {
                                             <Form.Group>
                                                 <Form.Label className="fw-bold h5">Nom Entreprise</Form.Label>
                                                 <Form.Control type="text" minLength={2}
-                                                              value={infosContrat?.nomCompagnie}>
+                                                    value={infosContrat?.nomCompagnie}>
                                                 </Form.Control>
                                             </Form.Group>
                                         </Col>
@@ -254,7 +216,7 @@ const EvaluerLeMilieuDeStage = ({user}: { user: IUser }): JSX.Element => {
                                             <Form.Group>
                                                 <Form.Label className="fw-bold h5">Personne Contact</Form.Label>
                                                 <Form.Control type="text"
-                                                              value={`${infosContrat?.nomContact}+${infosContrat?.prenomContact}`}>
+                                                    value={`${infosContrat?.nomContact} ${infosContrat?.prenomContact}`}>
                                                 </Form.Control>
                                             </Form.Group>
                                         </Col>
@@ -270,7 +232,7 @@ const EvaluerLeMilieuDeStage = ({user}: { user: IUser }): JSX.Element => {
                                             <Form.Group>
                                                 <Form.Label className="fw-bold mt-2 h5">Ville</Form.Label>
                                                 <Form.Control type="text" value={ville}
-                                                              onChange={e => setVille(e.target.value)}></Form.Control>
+                                                    onChange={e => setVille(e.target.value)}></Form.Control>
 
                                             </Form.Group>
                                         </Col>
@@ -278,7 +240,7 @@ const EvaluerLeMilieuDeStage = ({user}: { user: IUser }): JSX.Element => {
                                             <Form.Group>
                                                 <Form.Label className="fw-bold mt-2 h5">Telephone</Form.Label>
                                                 <Form.Control type="text" minLength={10} required value={telephone}
-                                                              onChange={e => setTelephone(e.target.value)}></Form.Control>
+                                                    onChange={e => setTelephone(e.target.value)}></Form.Control>
                                                 <Form.Control.Feedback type="invalid">Telephone invalide, la longeur
                                                     minimale 10</Form.Control.Feedback>
                                             </Form.Group>
@@ -287,7 +249,7 @@ const EvaluerLeMilieuDeStage = ({user}: { user: IUser }): JSX.Element => {
                                             <Form.Group>
                                                 <Form.Label className="fw-bold mt-2 h5">Telecopieur</Form.Label>
                                                 <Form.Control type="text" minLength={10} required value={telecopieur}
-                                                              onChange={e => setTelecopieur(e.target.value)}></Form.Control>
+                                                    onChange={e => setTelecopieur(e.target.value)}></Form.Control>
                                                 <Form.Control.Feedback type="invalid">Telecopieur invalide, la longeur
                                                     minimale 10</Form.Control.Feedback>
 
@@ -297,7 +259,7 @@ const EvaluerLeMilieuDeStage = ({user}: { user: IUser }): JSX.Element => {
                                             <Form.Group>
                                                 <Form.Label className="fw-bold mt-2 h5">Code Postal</Form.Label>
                                                 <Form.Control type="text" minLength={6} required value={codePostal}
-                                                              onChange={e => setCodePostal(e.target.value)}></Form.Control>
+                                                    onChange={e => setCodePostal(e.target.value)}></Form.Control>
                                                 <Form.Control.Feedback type="invalid">Code Postal invalide, la longeur
                                                     minimale 6</Form.Control.Feedback>
 
@@ -305,7 +267,7 @@ const EvaluerLeMilieuDeStage = ({user}: { user: IUser }): JSX.Element => {
                                         </Col>
                                         <Row className="mt-3">
                                             <Button type="submit"
-                                                    className="btn btn-success mx-auto">Enregistrer</Button>
+                                                className="btn btn-success mx-auto">Enregistrer</Button>
                                         </Row>
                                     </Row>
                                 </Col>
@@ -317,7 +279,7 @@ const EvaluerLeMilieuDeStage = ({user}: { user: IUser }): JSX.Element => {
                                             <Form.Group>
                                                 <Form.Label className="fw-bold  mt-2 h5">Nom Stagiaire</Form.Label>
                                                 <Form.Control type="text"
-                                                              value={`${infosContrat?.nomEtudiant}+${infosContrat?.prenomEtudiant}`}>
+                                                    value={`${infosContrat?.nomEtudiant} ${infosContrat?.prenomEtudiant}`}>
                                                 </Form.Control>
                                             </Form.Group>
                                         </Col>
@@ -343,7 +305,7 @@ const EvaluerLeMilieuDeStage = ({user}: { user: IUser }): JSX.Element => {
 
                                     <Row className="mt-3">
                                         <Button type="submit"
-                                                className="btn btn-success mx-auto">Enregistrer</Button>
+                                            className="btn btn-success mx-auto">Enregistrer</Button>
                                     </Row>
                                 </Col>
                             </Tab.Pane>
@@ -356,8 +318,8 @@ const EvaluerLeMilieuDeStage = ({user}: { user: IUser }): JSX.Element => {
                                                 dans l'entente de stage.
                                             </Form.Label>
                                             <Form.Select className="mt-2" required
-                                                         value={tachesAnnoncees}
-                                                         onChange={(e) => setTachesAnnoncees(e.target.value)}>
+                                                value={tachesAnnoncees}
+                                                onChange={(e) => setTachesAnnoncees(e.target.value)}>
                                                 <option hidden value="" disabled>Choix
                                                 </option>
                                                 <option value="totalemenEnAccord">Totalement en accord
@@ -381,8 +343,8 @@ const EvaluerLeMilieuDeStage = ({user}: { user: IUser }): JSX.Element => {
                                                 Des mesures d'accueil facilitent l'intégration du nouveau stagiaire.
                                             </Form.Label>
                                             <Form.Select className="mt-2" required
-                                                         value={integration}
-                                                         onChange={(e) => setIntegration(e.target.value)}>
+                                                value={integration}
+                                                onChange={(e) => setIntegration(e.target.value)}>
                                                 <option hidden value="" disabled>Choix
                                                 </option>
                                                 <option value="totalemenEnAccord">Totalement en accord
@@ -406,8 +368,8 @@ const EvaluerLeMilieuDeStage = ({user}: { user: IUser }): JSX.Element => {
                                                 Le temps réel consacré à l'encadrement du stagiaire est suffisant.
                                             </Form.Label>
                                             <Form.Select className="mt-2" required
-                                                         value={tempsReelConsacre}
-                                                         onChange={(e) => setTempsReelConsacre(e.target.value)}>
+                                                value={tempsReelConsacre}
+                                                onChange={(e) => setTempsReelConsacre(e.target.value)}>
                                                 <option hidden value="" disabled>Choix
                                                 </option>
                                                 <option value="totalemenEnAccord">Totalement en accord
@@ -433,8 +395,8 @@ const EvaluerLeMilieuDeStage = ({user}: { user: IUser }): JSX.Element => {
                                             <Form.Group>
                                                 <Form.Label className="fw-bold h5">Premier mois</Form.Label>
                                                 <Form.Control type="text" minLength={6} required
-                                                              value={heureTotalPremierMois}
-                                                              onChange={e => setHeureTotalPremierMois(Number(e.target.value))}></Form.Control>
+                                                    value={heureTotalPremierMois}
+                                                    onChange={e => setHeureTotalPremierMois(Number(e.target.value))}></Form.Control>
                                                 <Form.Control.Feedback type="invalid">Premier mois
                                                     invalide</Form.Control.Feedback>
                                             </Form.Group>
@@ -443,8 +405,8 @@ const EvaluerLeMilieuDeStage = ({user}: { user: IUser }): JSX.Element => {
                                             <Form.Group>
                                                 <Form.Label className="fw-bold h5">Deuxième mois</Form.Label>
                                                 <Form.Control type="text" minLength={6} required
-                                                              value={heureTotalDeuxiemeMois}
-                                                              onChange={e => setHeureTotalDeuxiemeMois(Number(e.target.value))}></Form.Control>
+                                                    value={heureTotalDeuxiemeMois}
+                                                    onChange={e => setHeureTotalDeuxiemeMois(Number(e.target.value))}></Form.Control>
                                                 <Form.Control.Feedback type="invalid">Deuxième mois
                                                     invalide</Form.Control.Feedback>
                                             </Form.Group>
@@ -453,8 +415,8 @@ const EvaluerLeMilieuDeStage = ({user}: { user: IUser }): JSX.Element => {
                                             <Form.Group>
                                                 <Form.Label className="fw-bold h5">Troisième mois</Form.Label>
                                                 <Form.Control type="text" minLength={6} required
-                                                              value={heureTotalTroisiemeMois}
-                                                              onChange={e => setHeureTotalTroisiemeMois(Number(e.target.value))}></Form.Control>
+                                                    value={heureTotalTroisiemeMois}
+                                                    onChange={e => setHeureTotalTroisiemeMois(Number(e.target.value))}></Form.Control>
                                                 <Form.Control.Feedback type="invalid">Troisième mois
                                                     invalide</Form.Control.Feedback>
                                             </Form.Group>
@@ -467,7 +429,7 @@ const EvaluerLeMilieuDeStage = ({user}: { user: IUser }): JSX.Element => {
                                                 de sécurité au travail.
                                             </Form.Label>
                                             <Form.Select className="mt-2" value={environnementDeTravail}
-                                                         onChange={(e) => setenvironnementDeTravail(e.target.value)}>
+                                                onChange={(e) => setenvironnementDeTravail(e.target.value)}>
                                                 <option hidden value="" disabled>Choix
                                                 </option>
                                                 <option value="totalemenEnAccord">Totalement en accord
@@ -491,7 +453,7 @@ const EvaluerLeMilieuDeStage = ({user}: { user: IUser }): JSX.Element => {
                                                 Le climat de travail est agréable.
                                             </Form.Label>
                                             <Form.Select className="mt-2" required value={climatDeTravail}
-                                                         onChange={(e) => setclimatDeTravail(e.target.value)}>
+                                                onChange={(e) => setclimatDeTravail(e.target.value)}>
                                                 <option hidden value="" disabled>Choix
                                                 </option>
                                                 <option value="totalemenEnAccord">Totalement en accord
@@ -515,7 +477,7 @@ const EvaluerLeMilieuDeStage = ({user}: { user: IUser }): JSX.Element => {
                                                 Le milieu de stage est accessble par transport en commun.
                                             </Form.Label>
                                             <Form.Select className="mt-2" required value={milieuDeStage}
-                                                         onChange={(e) => setMilieuDeStage(e.target.value)}>
+                                                onChange={(e) => setMilieuDeStage(e.target.value)}>
                                                 <option hidden value="" disabled>Choix
                                                 </option>
                                                 <option value="totalemenEnAccord">Totalement en accord
@@ -539,7 +501,7 @@ const EvaluerLeMilieuDeStage = ({user}: { user: IUser }): JSX.Element => {
                                                 Le salaire offert est intéressant pour le stagiaire.
                                             </Form.Label>
                                             <Form.Select className="mt-2" required value={salaireOffert}
-                                                         onChange={(e) => setSalaireOffert(e.target.value)}>
+                                                onChange={(e) => setSalaireOffert(e.target.value)}>
                                                 <option hidden value="" disabled>Choix
                                                 </option>
                                                 <option value="totalemenEnAccord">Totalement en accord
@@ -563,7 +525,7 @@ const EvaluerLeMilieuDeStage = ({user}: { user: IUser }): JSX.Element => {
                                         </Col>
                                         <Col className="col-8">
                                             <Form.Control type="text" required value={salaireParHeure}
-                                                          onChange={e => setSalaireParHeure(e.target.value)}></Form.Control>
+                                                onChange={e => setSalaireParHeure(e.target.value)}></Form.Control>
                                         </Col>
                                         <Col className="fw-bold h5 col-2">/l'heure. </Col>
                                     </Row>
@@ -574,8 +536,8 @@ const EvaluerLeMilieuDeStage = ({user}: { user: IUser }): JSX.Element => {
                                                 le déroulement du stage.
                                             </Form.Label>
                                             <Form.Select className="mt-2" required
-                                                         value={communicationAvecSuperviser}
-                                                         onChange={(e) => setCommunicationAvecSuperviser(e.target.value)}>
+                                                value={communicationAvecSuperviser}
+                                                onChange={(e) => setCommunicationAvecSuperviser(e.target.value)}>
                                                 <option hidden value="" disabled>Choix
                                                 </option>
                                                 <option value="totalemenEnAccord">Totalement en accord
@@ -599,7 +561,7 @@ const EvaluerLeMilieuDeStage = ({user}: { user: IUser }): JSX.Element => {
                                                 L'équipement fourni est adéquat pour réaliser les tâches confiées.
                                             </Form.Label>
                                             <Form.Select className="mt-2" required value={equipementFourni}
-                                                         onChange={(e) => setEquipementFourni(e.target.value)}>
+                                                onChange={(e) => setEquipementFourni(e.target.value)}>
                                                 <option hidden value="" disabled>Choix
                                                 </option>
                                                 <option value="totalemenEnAccord">Totalement en accord
@@ -623,7 +585,7 @@ const EvaluerLeMilieuDeStage = ({user}: { user: IUser }): JSX.Element => {
                                                 Le volume de travail est acceptable.
                                             </Form.Label>
                                             <Form.Select className="mt-2" required value={volumeDeTravail}
-                                                         onChange={(e) => setVolumeDeTravail(e.target.value)}>
+                                                onChange={(e) => setVolumeDeTravail(e.target.value)}>
                                                 <option hidden value="" disabled>Choix
                                                 </option>
                                                 <option value="totalemenEnAccord">Totalement en accord
@@ -646,26 +608,8 @@ const EvaluerLeMilieuDeStage = ({user}: { user: IUser }): JSX.Element => {
                                             <Form.Group>
                                                 <Form.Label className="fw-bold mt-2 h5">Commentaires</Form.Label>
                                                 <Form.Control as="textarea" type="text" minLength={2} required
-                                                              value={commentaires}
-                                                              onChange={e => setCommentaires(e.target.value)}></Form.Control>
-                                                <Form.Control.Feedback type="invalid">Champ
-                                                    requis</Form.Control.Feedback>
-                                            </Form.Group>
-                                        </Col>
-                                    </Row>
-                                    <Row className="mt-3">
-                                        <Col>
-                                            <Form.Group>
-                                                <Form.Label className="fw-bold h5">Signature de l'enseignant responsable
-                                                    du stagiaire</Form.Label>
-                                                <Button onClick={()=>{setShowSignature(true)}}>Signer</Button>
-                                            </Form.Group>
-                                        </Col>
-                                        <Col>
-                                            <Form.Group>
-                                                <Form.Control type="text" minLength={6} required value={dateSignature}
-                                                              onChange={e => setDateSignature(e.target.value)}></Form.Control>
-                                                <Form.Label className="fw-bold h5">Date</Form.Label>
+                                                    value={commentaires}
+                                                    onChange={e => setCommentaires(e.target.value)}></Form.Control>
                                                 <Form.Control.Feedback type="invalid">Champ
                                                     requis</Form.Control.Feedback>
                                             </Form.Group>
@@ -673,7 +617,7 @@ const EvaluerLeMilieuDeStage = ({user}: { user: IUser }): JSX.Element => {
                                     </Row>
                                     <Row className="mt-3">
                                         <Button type="submit"
-                                                className="btn btn-success mx-auto">Enregistrer</Button>
+                                            className="btn btn-success mx-auto">Enregistrer</Button>
                                     </Row>
                                 </Col>
                             </Tab.Pane>
@@ -691,28 +635,28 @@ const EvaluerLeMilieuDeStage = ({user}: { user: IUser }): JSX.Element => {
                 <Col>
                     <Table className="text-center" hover>
                         <thead className="bg-primary text-white">
-                        <tr>
-                            <th>Compagnie</th>
-                            <th>Position</th>
-                            <th>Étudiant</th>
-                            <th>Salaire</th>
-                            <th>Évalation</th>
-                        </tr>
+                            <tr>
+                                <th>Compagnie</th>
+                                <th>Position</th>
+                                <th>Étudiant</th>
+                                <th>Description</th>
+                                <th>Évalation</th>
+                            </tr>
                         </thead>
                         <tbody className="bg-light">
-                        {contrats.map((contrat, index) => {
-                            return (
-                                <tr key={index}>
-                                    <td>{contrat.companyName}</td>
-                                    <td>{contrat.position}</td>
-                                    <td>{contrat.studentFullName}</td>
-                                    <td>{contrat.description}</td>
-                                    <td><Button className="btn btn-warning" onClick={() => {
-                                        showFormulaires(Number(contrat.id))
-                                    }}>Évaluer</Button></td>
-                                </tr>
-                            );
-                        })}
+                            {contrats.map((contrat, index) => {
+                                return (
+                                    <tr key={index}>
+                                        <td>{contrat.companyName}</td>
+                                        <td>{contrat.position}</td>
+                                        <td>{contrat.studentFullName}</td>
+                                        <td>{contrat.description}</td>
+                                        <td><Button className="btn btn-warning" onClick={() => {
+                                            showFormulaires(Number(contrat.id))
+                                        }}>Évaluer</Button></td>
+                                    </tr>
+                                );
+                            })}
                         </tbody>
                     </Table>
                 </Col>

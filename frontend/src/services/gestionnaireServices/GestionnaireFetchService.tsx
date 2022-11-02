@@ -5,7 +5,7 @@ export const deleteRemoveStudent = (id: string, token: String): Promise<Response
             headers: {
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify({token: token})
+            body: JSON.stringify({ token: token })
         });
 }
 
@@ -16,7 +16,7 @@ export const deleteRemoveCompany = (id: string, token: String): Promise<Response
             headers: {
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify({token: token})
+            body: JSON.stringify({ token: token })
         });
 }
 
@@ -27,7 +27,7 @@ export const putValidateStudent = (id: string, token: String): Promise<Response>
             headers: {
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify({token: token})
+            body: JSON.stringify({ token: token })
         });
 }
 
@@ -38,7 +38,7 @@ export const putValidateCompany = (id: string, token: String): Promise<Response>
             headers: {
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify({token: token})
+            body: JSON.stringify({ token: token })
         });
 }
 
@@ -49,7 +49,7 @@ export const putUnvalidatedOffers = (token: string): Promise<Response> => {
             'Accept': 'application/json',
             'Content-Type': 'application/json',
         },
-        body: JSON.stringify({"token": token})
+        body: JSON.stringify({ "token": token })
     });
 }
 
@@ -60,7 +60,7 @@ export const putValidatedOffersByYear = (year: string, token: string): Promise<R
             'Accept': 'application/json',
             'Content-Type': 'application/json',
         },
-        body: JSON.stringify({"token": token})
+        body: JSON.stringify({ "token": token })
     });
 }
 
@@ -71,7 +71,7 @@ export const putOfferPdf = (offerId: string, token: string): Promise<Response> =
             'Accept': 'application/json',
             'Content-Type': 'application/json',
         },
-        body: JSON.stringify({"token": token})
+        body: JSON.stringify({ "token": token })
     });
 }
 
@@ -82,7 +82,7 @@ export const putValidateOffer = (offerId: string, token: string): Promise<Respon
             'Accept': 'application/json',
             'Content-Type': 'application/json',
         },
-        body: JSON.stringify({"token": token})
+        body: JSON.stringify({ "token": token })
     })
 }
 
@@ -93,7 +93,7 @@ export const deleteRemoveOffer = (offerId: string, token: string): Promise<Respo
             'Accept': 'application/json',
             'Content-Type': 'application/json',
         },
-        body: JSON.stringify({"token": token})
+        body: JSON.stringify({ "token": token })
     });
 }
 
@@ -104,7 +104,7 @@ export const putUnvalidatedCvStudents = (token: string): Promise<Response> => {
             'Accept': 'application/json',
             'Content-Type': 'application/json',
         },
-        body: JSON.stringify({"token": token})
+        body: JSON.stringify({ "token": token })
     });
 }
 
@@ -115,7 +115,7 @@ export const putStudentUnvalidatedCv = (studentId: string, token: string): Promi
             'Accept': 'application/json',
             'Content-Type': 'application/json',
         },
-        body: JSON.stringify({"token": token})
+        body: JSON.stringify({ "token": token })
     });
 }
 
@@ -126,7 +126,7 @@ export const putValidateCv = (studentId: string, token: string): Promise<Respons
             'Accept': 'application/json',
             'Content-Type': 'application/json',
         },
-        body: JSON.stringify({"token": token})
+        body: JSON.stringify({ "token": token })
     });
 }
 
@@ -137,7 +137,7 @@ export const putRefuseCv = (studentId: string, token: string): Promise<Response>
             'Accept': 'application/json',
             'Content-Type': 'application/json',
         },
-        body: JSON.stringify({"token": token})
+        body: JSON.stringify({ "token": token })
     });
 }
 
@@ -148,7 +148,7 @@ export const putUnvalidatedCompanies = (token: string): Promise<Response> => {
             'Accept': 'application/json',
             'Content-Type': 'application/json',
         },
-        body: JSON.stringify({token: token})
+        body: JSON.stringify({ token: token })
     })
 }
 
@@ -159,15 +159,15 @@ export const putUnvalidatedStudents = (token: string): Promise<Response> => {
             'Accept': 'application/json',
             'Content-Type': 'application/json',
         },
-        body: JSON.stringify({token: token})
+        body: JSON.stringify({ token: token })
     })
 }
 
 export const postCreateGestionnaire = (firstName: string,
-                                       lastName: string,
-                                       email: string,
-                                       password: string,
-                                       token: string): Promise<Response> => {
+    lastName: string,
+    email: string,
+    password: string,
+    token: string): Promise<Response> => {
     return fetch(`http://localhost:8080/createGestionnaire`, {
         method: 'POST',
         headers: {
@@ -183,7 +183,7 @@ export const postCreateGestionnaire = (firstName: string,
     });
 }
 
-export const putInfoContratPourEvaluateStage = (contratId : number, token: string) :Promise<Response> => {
+export const putInfoContratPourEvaluateStage = (contratId: number, token: string): Promise<Response> => {
     return fetch(`http://localhost:8080/evaluateStage/${contratId}/getInfo`, {
         method: 'PUT',
         headers: {
@@ -197,21 +197,19 @@ export const putInfoContratPourEvaluateStage = (contratId : number, token: strin
 }
 
 export const postEvaluationStage = (token: string,
-                                    tachesAnnoncees : string,
-                                    integration: string,
-                                    tempsReelConsacre: string,
-                                    environementTravail: string,
-                                    climatTravail: string,
-                                    milieuDeStage:string,
-                                    heureTotalPremierMois: number,
-                                    heureTotalDeuxiemeMois: number,
-                                    heureTotalTroisiemeMois: number,
-                                    communicationAvecSuperviser: string,
-                                    equipementFourni: string,
-                                    volumeDeTravail: string,
-                                    commentaires: string,
-                                    signature: string,
-                                    dateSignature: string) :Promise<Response> => {
+    tachesAnnoncees: string,
+    integration: string,
+    tempsReelConsacre: string,
+    environementTravail: string,
+    climatTravail: string,
+    milieuDeStage: string,
+    heureTotalPremierMois: number,
+    heureTotalDeuxiemeMois: number,
+    heureTotalTroisiemeMois: number,
+    communicationAvecSuperviser: string,
+    equipementFourni: string,
+    volumeDeTravail: string,
+    commentaires: string): Promise<Response> => {
     return fetch(`http://localhost:8080/evaluateStage/${token}`, {
         method: 'POST',
         headers: {
@@ -231,14 +229,11 @@ export const postEvaluationStage = (token: string,
             "equipementFourni": equipementFourni,
             "volumeDeTravail": volumeDeTravail,
             "commentaires": commentaires,
-            "signature" :signature,
-            "dateSignature": dateSignature
         })
     });
 }
 
-export const putContrats = (token: string) :Promise<Response> => {
-    console.log("put contrats")
+export const putContrats = (token: string): Promise<Response> => {
     return fetch(`http://localhost:8080/getContracts`, {
         method: 'PUT',
         headers: {
