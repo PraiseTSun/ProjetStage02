@@ -96,7 +96,8 @@ public class GestionnaireServiceTest {
                 .position("Stagiaire test backend")
                 .heureParSemaine(40)
                 .salaire(40)
-                .dateStage("2021-01-01")
+                .dateStageDebut("01/01/2020")
+                .dateStageFin("01-01-2021")
                 .session(Offre.currentSession())
                 .adresse("69 shitty street")
                 .pdf(new byte[0])
@@ -882,7 +883,8 @@ public class GestionnaireServiceTest {
         assertThat(dto.getSalaire()).isEqualTo(offerTest.getSalaire());
         assertThat(dto.getPoste()).isEqualTo(offerTest.getPosition());
         assertThat(dto.getAdresse()).isEqualTo(offerTest.getAdresse());
-        assertThat(dto.getDateStage()).isEqualTo(offerTest.getDateStage());
+        assertThat(dto.getDateStageDebut()).isEqualTo(offerTest.getDateStageDebut());
+        assertThat(dto.getDateStageFin()).isEqualTo(offerTest.getDateStageFin());
         assertThat(dto.getEmailCompagnie()).isEqualTo(companyTest.getEmail());
         assertThat(dto.getEmailEtudiant()).isEqualTo(studentTest.getEmail());
         assertThat(dto.getDepartement()).isEqualTo(offerTest.getDepartment().departement);

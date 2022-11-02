@@ -11,18 +11,18 @@ import org.springframework.boot.test.json.JacksonTester;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-import projet.projetstage02.dto.*;
+import projet.projetstage02.dto.SignatureInDTO;
 import projet.projetstage02.dto.applications.ApplicationAcceptationDTO;
 import projet.projetstage02.dto.applications.ApplicationDTO;
 import projet.projetstage02.dto.applications.ApplicationListDTO;
 import projet.projetstage02.dto.applications.OfferApplicationDTO;
 import projet.projetstage02.dto.auth.LoginDTO;
 import projet.projetstage02.dto.auth.TokenDTO;
-import projet.projetstage02.dto.cv.CvRefusalDTO;
-import projet.projetstage02.dto.cv.CvStatusDTO;
 import projet.projetstage02.dto.contracts.ContractsDTO;
 import projet.projetstage02.dto.contracts.StageContractInDTO;
 import projet.projetstage02.dto.contracts.StageContractOutDTO;
+import projet.projetstage02.dto.cv.CvRefusalDTO;
+import projet.projetstage02.dto.cv.CvStatusDTO;
 import projet.projetstage02.dto.evaluations.MillieuStage.MillieuStageEvaluationInDTO;
 import projet.projetstage02.dto.evaluations.MillieuStage.MillieuStageEvaluationInfoDTO;
 import projet.projetstage02.dto.offres.OfferAcceptedStudentsDTO;
@@ -161,7 +161,8 @@ public class RootControllerTest {
                 .position("Delivery Guy")
                 .heureParSemaine(40)
                 .salaire(40)
-                .dateStage("2021-05-01")
+                .dateStageDebut("01/01/2020")
+                .dateStageFin("01/01/2021")
                 .session("Hiver 2022")
                 .adresse("654 Duff Street")
                 .pdf(new byte[0])

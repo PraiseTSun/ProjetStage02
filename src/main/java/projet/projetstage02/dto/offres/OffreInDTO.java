@@ -19,7 +19,7 @@ public class OffreInDTO {
     private String nomDeCompagnie;
     private String session;
     @NotBlank
-    @Pattern(regexp = ("Techniques de linformatique|Techniques de la logistique du transport"))
+    @Pattern(regexp = "Techniques de linformatique|Techniques de la logistique du transport")
     private String department;
     @NotBlank
     @Size(min = 2)
@@ -44,7 +44,11 @@ public class OffreInDTO {
     private String token;
 
     @NotBlank
-    private String dateStage;
+    @Pattern(regexp = "^([0-2][0-9]|3[0-1])/(0[0-9]|1[0-2])/(19|20[0-9][0-9])$")
+    private String dateStageDebut;
+    @NotBlank
+    @Pattern(regexp = "^([0-2][0-9]|3[0-1])/(0[0-9]|1[0-2])/(19|20[0-9][0-9])$")
+    private String dateStageFin;
     private boolean valide;
 
     public Offre toModel() {
@@ -56,7 +60,8 @@ public class OffreInDTO {
                 .position(position)
                 .heureParSemaine(heureParSemaine)
                 .salaire(salaire)
-                .dateStage(dateStage)
+                .dateStageDebut(dateStageDebut)
+                .dateStageFin(dateStageFin)
                 .session(session)
                 .adresse(adresse)
                 .pdf(pdf)
@@ -72,7 +77,8 @@ public class OffreInDTO {
         heureParSemaine = offre.getHeureParSemaine();
         adresse = offre.getAdresse();
         salaire = offre.getSalaire();
-        dateStage = offre.getDateStage();
+        dateStageDebut = offre.getDateStageDebut();
+        dateStageFin = offre.getDateStageFin();
         session = offre.getSession();
         pdf = offre.getPdf();
         valide = offre.isValide();

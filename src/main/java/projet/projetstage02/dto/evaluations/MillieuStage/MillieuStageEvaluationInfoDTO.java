@@ -9,7 +9,8 @@ import projet.projetstage02.model.Student;
 @Data
 public class MillieuStageEvaluationInfoDTO {
     private String session;
-    private String dateStage;
+    private String dateStageDebut;
+    private String dateStageFin;
     private String poste;
     private long salaire;
     private long heureParSemaine;
@@ -25,7 +26,8 @@ public class MillieuStageEvaluationInfoDTO {
 
     public MillieuStageEvaluationInfoDTO(Company company, Offre offre, Student student) {
         session = offre.getSession();
-        dateStage = offre.getDateStage();
+        dateStageDebut = offre.getDateStageDebut();
+        dateStageFin = offre.getDateStageFin();
         poste = offre.getPosition();
         salaire = offre.getSalaire();
         heureParSemaine = offre.getHeureParSemaine();

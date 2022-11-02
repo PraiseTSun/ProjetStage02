@@ -2,7 +2,7 @@ package projet.projetstage02.service;
 
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
-import projet.projetstage02.dto.*;
+import projet.projetstage02.dto.SignatureInDTO;
 import projet.projetstage02.dto.applications.ApplicationAcceptationDTO;
 import projet.projetstage02.dto.applications.OfferApplicationDTO;
 import projet.projetstage02.dto.contracts.ContractsDTO;
@@ -47,7 +47,8 @@ public class CompanyService {
                 .department(Department.getDepartment(offreInDTO.getDepartment()))
                 .position(offreInDTO.getPosition())
                 .heureParSemaine(offreInDTO.getHeureParSemaine())
-                .dateStage(offreInDTO.getDateStage())
+                .dateStageDebut(offreInDTO.getDateStageDebut())
+                .dateStageFin(offreInDTO.getDateStageFin())
                 .salaire(offreInDTO.getSalaire())
                 .session(offreInDTO.getSession())
                 .adresse(offreInDTO.getAdresse())
