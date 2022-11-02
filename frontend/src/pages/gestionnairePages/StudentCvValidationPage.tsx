@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from "react";
-import {Button, Col, Container, Row, Table} from "react-bootstrap";
+import {Button, Col, Container, Form, Row, Table} from "react-bootstrap";
 import {Link} from "react-router-dom";
 import IUser from "../../models/IUser";
 import {Viewer} from '@react-pdf-viewer/core';
@@ -16,7 +16,11 @@ const StudentCvValidationPage = ({connectedUser}:
     const [students, setStudents] = useState<any[]>([]);
     const [pdf, setPDF] = useState<Uint8Array>(new Uint8Array([]))
     const [showPDF, setShowPDF] = useState<boolean>(false)
-
+    const [isRefuse, setIsRefuse] = useState<boolean>(false)
+    const [refuserMessge, setRefuserMessge] = useState<string>("")
+    const [waiting, setWaiting] = useState(false);
+    const [validated, setValidated] = useState<boolean>(false);
+    const [studentId, setStudentId] = useState<string>("")
     useEffect(() => {
         const fetchUnvalidatedCvStudents = async () => {
             try {
@@ -35,17 +39,42 @@ const StudentCvValidationPage = ({connectedUser}:
         fetchUnvalidatedCvStudents();
     }, [connectedUser]);
 
+    const onSubmit = async (event: React.SyntheticEvent): Promise<void> => {
+        const form: any = event.currentTarget;
+        event.preventDefault();
+        if (form.checkValidity()) {
+            setWaiting(true);
+
+            const response = await putRefuseCv(studentId.toString(), refuserMessge, connectedUser.token)
+
+            if (response.ok) {
+                setIsRefuse(false)
+                alert("Message envoyé")
+            } else {
+                generateAlert()
+            }
+
+            setWaiting(false);
+            window.location.href = "/"
+        }
+        setValidated(true);
+    }
+
     async function validateCV(studentId: number, valid: boolean): Promise<void> {
+        if (!valid) {
+            setIsRefuse(true)
+            setStudentId(studentId.toString())
+            return;
+        }
         try {
-            const response = valid
-                ? await putValidateCv(studentId.toString(), connectedUser.token)
-                : await putRefuseCv(studentId.toString(), connectedUser.token);
+            const response = await putValidateCv(studentId.toString(), connectedUser.token)
 
             if (response.ok) {
                 setStudents(students.filter(student => student.id !== studentId));
             } else {
                 generateAlert()
             }
+
         } catch (exception) {
             generateAlert()
         }
@@ -80,7 +109,29 @@ const StudentCvValidationPage = ({connectedUser}:
             </Container>
         );
     }
-
+    if (isRefuse) {
+        return (
+            <Container className="min-vh-100">
+                <Form className="card-body p-3" onSubmit={onSubmit} validated={validated}
+                      noValidate>
+                    <Form.Group>
+                        <Form.Label className="fw-bold h5">Refuser Message</Form.Label>
+                        <Form.Control type="text" required
+                                      value={refuserMessge}
+                                      onChange={field => setRefuserMessge(field.target.value)}></Form.Control>
+                        <Form.Control.Feedback type="invalid">Champ
+                            requis</Form.Control.Feedback>
+                    </Form.Group>
+                    <Row className="mt-3">
+                        <Col className="text-center">
+                            <Button type="submit"
+                                    className="btn btn-success mx-auto w-75">Envoyer</Button>
+                        </Col>
+                    </Row>
+                </Form>
+            </Container>
+        )
+    }
     return (
         <Container className="min-vh-100">
             <Row>
