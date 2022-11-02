@@ -2,7 +2,6 @@ import React, {useEffect, useState} from "react";
 import IUser from "../../models/IUser";
 import {Button, Col, Container, Form, ListGroup, Row, Tab, Table} from "react-bootstrap";
 import {Link} from "react-router-dom";
-import IOffer from "../../models/IOffer";
 import {BeatLoader} from "react-spinners";
 import PageHeader from "../../components/universalComponents/PageHeader";
 import {generateAlert} from "../../services/universalServices/UniversalUtilService";
@@ -12,9 +11,10 @@ import {
     putInfoContratPourEvaluateStage
 } from "../../services/gestionnaireServices/GestionnaireFetchService";
 import SignaturePad from "react-signature-canvas";
+import IContrat from "../../models/IContrat";
 
 const EvaluerLeMilieuDeStage = ({user}: { user: IUser }): JSX.Element => {
-    const [contrats, setContrats] = useState<IOffer[]>([]);
+    const [contrats, setContrats] = useState<IContrat[]>([]);
     const [afficheFormulaire, setAfficheFormuaire] = useState<boolean>(false)
     const [waiting, setWaiting] = useState<boolean>(false);
     const [validated, setValidated] = useState<boolean>(false);
@@ -68,7 +68,8 @@ const EvaluerLeMilieuDeStage = ({user}: { user: IUser }): JSX.Element => {
 
                 if (response.ok) {
                     const data = await response.json()
-                    setContrats(data)
+                    console.log(data)
+                    setContrats(data.contracts)
                 } else {
                     generateAlert()
                 }
@@ -76,7 +77,8 @@ const EvaluerLeMilieuDeStage = ({user}: { user: IUser }): JSX.Element => {
                 generateAlert()
             }
         }
-    })
+        fetchContracts()
+    },[])
 
     const fetchContractParId = async (contractId: number): Promise<void> => {
         try {
@@ -684,7 +686,7 @@ const EvaluerLeMilieuDeStage = ({user}: { user: IUser }): JSX.Element => {
 
     return (
         <Container className="min-vh-100">
-            <PageHeader title={"Évaluation des offres"}></PageHeader>
+            <PageHeader title={"Évaluation des contrats"}></PageHeader>
             <Row>
                 <Col>
                     <Table className="text-center" hover>
@@ -692,9 +694,8 @@ const EvaluerLeMilieuDeStage = ({user}: { user: IUser }): JSX.Element => {
                         <tr>
                             <th>Compagnie</th>
                             <th>Position</th>
-                            <th>Heures par semaine</th>
+                            <th>Étudiant</th>
                             <th>Salaire</th>
-                            <th>Adresse</th>
                             <th>Évalation</th>
                         </tr>
                         </thead>
@@ -702,11 +703,10 @@ const EvaluerLeMilieuDeStage = ({user}: { user: IUser }): JSX.Element => {
                         {contrats.map((contrat, index) => {
                             return (
                                 <tr key={index}>
-                                    <td>{contrat.nomDeCompagnie}</td>
+                                    <td>{contrat.companyName}</td>
                                     <td>{contrat.position}</td>
-                                    <td>{contrat.heureParSemaine}</td>
-                                    <td>{contrat.salaire}$</td>
-                                    <td>{contrat.adresse}</td>
+                                    <td>{contrat.studentFullName}</td>
+                                    <td>{contrat.description}</td>
                                     <td><Button className="btn btn-warning" onClick={() => {
                                         showFormulaires(Number(contrat.id))
                                     }}>Évaluer</Button></td>

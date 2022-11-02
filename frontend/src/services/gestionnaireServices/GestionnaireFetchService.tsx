@@ -238,6 +238,7 @@ export const postEvaluationStage = (token: string,
 }
 
 export const putContrats = (token: string) :Promise<Response> => {
+    console.log("put contrats")
     return fetch(`http://localhost:8080/getContracts`, {
         method: 'PUT',
         headers: {
