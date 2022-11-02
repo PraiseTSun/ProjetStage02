@@ -145,6 +145,7 @@ public class ProjetStage02Application implements CommandLineRunner {
         gestionnaireService.validateStudent(student2.getId());
         gestionnaireService.validateCompany(company.getId());
         gestionnaireService.validateStudentCV(student.getId());
+        gestionnaireService.validateStudentCV(student2.getId());
         System.out.println(studentService.getStudentById(1L));
         System.out.println(companyService.getCompanyById(2L));
         System.out.println(gestionnaireService.getGestionnaireById(3L));
@@ -157,7 +158,6 @@ public class ProjetStage02Application implements CommandLineRunner {
         studentService.createPostulation(student.getId(), offreId);
         studentService.createPostulation(student2.getId(), offreId);
         companyService.saveStudentApplicationAccepted(offreId, student.getId());
-        companyService.saveStudentApplicationAccepted(offreId, student2.getId());
         System.out.println(gestionnaireService.createStageContract(
                 new StageContractInDTO("noToken", student.getId(), offreId)
         ));
