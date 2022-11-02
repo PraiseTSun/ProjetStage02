@@ -562,7 +562,7 @@ const EvaluerLeMilieuDeStage = ({user}: { user: IUser }): JSX.Element => {
                                         <Col className="fw-bold h5 text-nowrap col-2">Préciser :
                                         </Col>
                                         <Col className="col-8">
-                                            <Form.Control type="text" minLength={6} required value={salaireParHeure}
+                                            <Form.Control type="text" required value={salaireParHeure}
                                                           onChange={e => setSalaireParHeure(e.target.value)}></Form.Control>
                                         </Col>
                                         <Col className="fw-bold h5 col-2">/l'heure. </Col>
