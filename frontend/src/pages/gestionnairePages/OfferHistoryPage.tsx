@@ -82,19 +82,27 @@ const OfferHistoryPage = ({connectedUser}:
                     <Table className="text-center" hover>
                         <thead className="bg-primary">
                         <tr>
-                            <th>Nom De Compagnie / Adresse</th>
-                            <th>Départment / Position</th>
-                            <th>Heure Par Semaine / Salaire</th>
-                            <th>Pdf</th>
+                            <th>Compagnie</th>
+                            <th>Adresse</th>
+                            <th>Position</th>
+                            <th>Heures par semaine</th>
+                            <th>Salaire</th>
+                            <th>Date de début</th>
+                            <th>Date de fin</th>
+                            <th>Offre</th>
                         </tr>
                         </thead>
                         <tbody className="bg-light">
                         {offers.map((offer, index) => {
                             return (
                                 <tr key={index}>
-                                    <td>{offer.nomDeCompagnie} <br/> {offer.adresse}</td>
-                                    <td>{offer.department} <br/> {offer.position}</td>
-                                    <td>{offer.heureParSemaine} <br/> {offer.salaire}$/h</td>
+                                    <td>{offer.nomDeCompagnie}</td>
+                                    <td>{offer.adresse}</td>
+                                    <td>{offer.position}</td>
+                                    <td>{offer.heureParSemaine}</td>
+                                    <td>{offer.salaire}$/h</td>
+                                    <td>{offer.dateStageDebut}</td>
+                                    <td>{offer.dateStageFin}</td>
                                     <td><Button className="btn btn-warning"
                                                 onClick={async () => await getPDF(offer.id)}>pdf</Button></td>
                                 </tr>
