@@ -1703,7 +1703,7 @@ public class RootControllerTest {
 
     @Test
     void testGetEvaluationInfoHappyDay() throws Exception {
-        when(gestionnaireService.getEvaluationInfoForContract(anyLong())).thenReturn(evalInfoDTO);
+        when(gestionnaireService.getMillieuEvaluationInfoForContract(anyLong())).thenReturn(evalInfoDTO);
 
         mockMvc.perform(put("/evaluateStage/{contractId}/getInfo", 1L)
                         .contentType(MediaType.APPLICATION_JSON)
@@ -1714,7 +1714,7 @@ public class RootControllerTest {
 
     @Test
     void testGetEvaluationInfoNotFound() throws Exception {
-        when(gestionnaireService.getEvaluationInfoForContract(anyLong())).thenThrow(new NonExistentEntityException());
+        when(gestionnaireService.getMillieuEvaluationInfoForContract(anyLong())).thenThrow(new NonExistentEntityException());
 
         mockMvc.perform(put("/evaluateStage/{contractId}/getInfo", 1L)
                         .contentType(MediaType.APPLICATION_JSON)

@@ -874,7 +874,7 @@ public class GestionnaireServiceTest {
         when(companyRepository.findById(anyLong())).thenReturn(Optional.of(companyTest));
         when(stageContractRepository.findById(anyLong())).thenReturn(Optional.of(stageContract));
 
-        MillieuStageEvaluationInfoDTO dto = gestionnaireService.getEvaluationInfoForContract(1L);
+        MillieuStageEvaluationInfoDTO dto = gestionnaireService.getMillieuEvaluationInfoForContract(1L);
 
         assertThat(dto.getAdresse()).isEqualTo(offerTest.getAdresse());
         assertThat(dto.getNomCompagnie()).isEqualTo(companyTest.getCompanyName());
@@ -899,7 +899,7 @@ public class GestionnaireServiceTest {
         when(stageContractRepository.findById(anyLong())).thenReturn(Optional.empty());
 
         try {
-            gestionnaireService.getEvaluationInfoForContract(1L);
+            gestionnaireService.getMillieuEvaluationInfoForContract(1L);
         } catch (NonExistentEntityException e) {
             return;
         }
@@ -912,7 +912,7 @@ public class GestionnaireServiceTest {
         when(stageContractRepository.findById(anyLong())).thenReturn(Optional.of(stageContract));
 
         try {
-            gestionnaireService.getEvaluationInfoForContract(1L);
+            gestionnaireService.getMillieuEvaluationInfoForContract(1L);
         } catch (NonExistentOfferExeption e) {
             return;
         }
@@ -926,7 +926,7 @@ public class GestionnaireServiceTest {
         when(studentRepository.findById(anyLong())).thenReturn(Optional.empty());
 
         try {
-            gestionnaireService.getEvaluationInfoForContract(1L);
+            gestionnaireService.getMillieuEvaluationInfoForContract(1L);
         } catch (NonExistentEntityException e) {
             return;
         }
@@ -941,7 +941,7 @@ public class GestionnaireServiceTest {
         when(companyRepository.findById(anyLong())).thenReturn(Optional.empty());
 
         try {
-            gestionnaireService.getEvaluationInfoForContract(1L);
+            gestionnaireService.getMillieuEvaluationInfoForContract(1L);
         } catch (NonExistentEntityException e) {
             return;
         }

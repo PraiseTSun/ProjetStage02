@@ -911,9 +911,10 @@ public class RootController {
         try {
             logger.log(Level.INFO, "put /evaluateStage/id/getInfo entered with id : " + contractId);
             authService.getToken(tokenId.getToken(), GESTIONNAIRE);
-            MillieuStageEvaluationInfoDTO millieuStageEvaluationInfoDTO = gestionnaireService.getEvaluationInfoForContract(contractId);
+            MillieuStageEvaluationInfoDTO eval =
+                    gestionnaireService.getMillieuEvaluationInfoForContract(contractId);
             logger.log(Level.INFO, "PutMapping: /evaluateStage/id/getInfo sent 201 response");
-            return ResponseEntity.status(CREATED).body(millieuStageEvaluationInfoDTO);
+            return ResponseEntity.status(CREATED).body(eval);
         } catch (InvalidTokenException e) {
             logger.log(Level.INFO, "PutMapping: /evaluateStage/id/getInfo sent 403 response");
             return ResponseEntity.status(FORBIDDEN).build();
