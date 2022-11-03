@@ -11,14 +11,16 @@ import {
     putStudentAcceptation,
     putStudentCv
 } from "../../services/companyServices/CompanyFetchService";
-import {Viewer} from "@react-pdf-viewer/core";
 import IAcceptedStudents from "../../models/IAcceptedStudents";
+import PdfComponent from "../../components/universalComponents/PdfComponent";
+import InterviewDateForm from "../../components/companyComponents/InterviewDateForm";
 
 const CompanyOffersPage = ({connectedUser}: { connectedUser: IUser }): JSX.Element => {
     const [offers, setOffers] = useState<IOffer[]>([]);
     const [students, setStudents] = useState<IUser[] | null>(null);
     const [cv, setCv] = useState<Uint8Array>(new Uint8Array([]))
     const [showCv, setShowCv] = useState<boolean>(false)
+    const [showDateSelector, setShowDateSelector] = useState<boolean>(false)
     const [acceptedStudents, setAcceptedStudents] = useState<string[]>([])
     const [currentlySelectedOffer, setCurrentlySelectedOffer] = useState<string>("")
 
@@ -105,16 +107,13 @@ const CompanyOffersPage = ({connectedUser}: { connectedUser: IUser }): JSX.Eleme
 
     if (showCv) {
         return (
-            <Container className="min-vh-100 bg-white p-0">
-                <div className="bg-dark p-2">
-                    <Button className="Btn btn-primary" onClick={() => setShowCv(false)}>
-                        Fermer
-                    </Button>
-                </div>
-                <div>
-                    <Viewer fileUrl={cv}/>
-                </div>
-            </Container>
+            <PdfComponent cv={cv} setShowPdf={setShowCv}/>
+        );
+    }
+
+    if (showDateSelector) {
+        return (
+            <InterviewDateForm setShowDateSelector={setShowDateSelector}/>
         );
     }
 
@@ -157,13 +156,14 @@ const CompanyOffersPage = ({connectedUser}: { connectedUser: IUser }): JSX.Eleme
                                 <th>Prénom</th>
                                 <th>Nom</th>
                                 <th>CV</th>
+                                <th>Entrevue</th>
                                 <th>Engager</th>
                             </tr>
                             </thead>
                             <tbody>
                             {students.length === 0 &&
                                 <tr>
-                                    <td colSpan={4}>
+                                    <td colSpan={5}>
                                         <h1>Aucun applicants</h1>
                                     </td>
                                 </tr>
@@ -177,6 +177,15 @@ const CompanyOffersPage = ({connectedUser}: { connectedUser: IUser }): JSX.Eleme
                                             <td><Button variant="warning" onClick={async () => {
                                                 await fetchStudentCv(student.id)
                                             }}>CV</Button></td>
+                                            <td>
+                                                {true && <Button variant="primary" onClick={
+                                                    () => {
+                                                        setShowDateSelector(true)
+                                                    }
+                                                }>Soumettre mes disponibilités</Button>}
+                                                {false && <p>En attente de confirmation</p>}
+                                                {false && <p>Entrevue confirmé pour le TODO</p>}
+                                            </td>
                                             <td>
                                                 <Button disabled={acceptedStudents.includes(student.id)}
                                                         variant="success" onClick={async () => {
