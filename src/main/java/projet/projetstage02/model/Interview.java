@@ -22,6 +22,7 @@ public class Interview {
     private Long id;
     private long companyId;
     private long studentId;
+    @ElementCollection
     private List<LocalDateTime> companyDateOffers;
     private LocalDateTime studentSelectedDate;
 }

@@ -237,7 +237,7 @@ public class CompanyService {
     }
 
     public InterviewOutDTO createInterview(CreateInterviewDTO interviewDTO){
-        Interview interview =
+        Interview interview = Interview.builder().build();
 
         return null;
     }
