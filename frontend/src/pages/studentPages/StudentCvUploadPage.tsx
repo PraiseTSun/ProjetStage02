@@ -169,7 +169,7 @@ const StudentCvUploadPage = ({connectedUser}: { connectedUser: IUser }) => {
                     </tr>
                     <tr>
                         <th data-testid="RefusalMessage"> Refusal Message :</th>
-                        <td>{cvStatus.refusalMessage}</td>
+                        <td className="text-center">{cvStatus.refusalMessage}</td>
                     </tr>
                     <tr>
                         <th>Cv To Validate :</th>

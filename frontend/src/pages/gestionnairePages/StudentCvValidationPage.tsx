@@ -55,7 +55,7 @@ const StudentCvValidationPage = ({connectedUser}:
             }
 
             setWaiting(false);
-            window.location.href = "/"
+            window.location.href = "/cvValidation"
         }
         setValidated(true);
     }
@@ -124,7 +124,7 @@ const StudentCvValidationPage = ({connectedUser}:
                     </Form.Group>
                     <Row className="mt-3">
                         <Col className="text-center">
-                            <Button type="submit"
+                           <Button type="submit"
                                     className="btn btn-success mx-auto w-75">Envoyer</Button>
                         </Col>
                     </Row>
