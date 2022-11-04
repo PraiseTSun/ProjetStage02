@@ -47,8 +47,8 @@ const OffreSoumissionPage = ({user}: { user: IUser }): JSX.Element => {
                 nomDeCompagnie: companyName,
                 token: user.token,
                 companyId: user.id,
-                dateStageDebut: dateStageDebut.replaceAll('-', '/'),
-                dateStageFin: dateStageFin.replaceAll('-', '/'),
+                dateStageDebut: dateStageDebut,
+                dateStageFin: dateStageFin,
             })
 
             if (response.ok) {
