@@ -44,10 +44,10 @@ public class OffreInDTO {
     private String token;
 
     @NotBlank
-    @Pattern(regexp = "^([0-2][0-9]|3[0-1])/(0[0-9]|1[0-2])/(19|20[0-9][0-9])$")
+    @Pattern(regexp = "^(19|20[0-9][0-9])-(0[0-9]|1[0-2])-([0-2][0-9]|3[0-1])$")
     private String dateStageDebut;
     @NotBlank
-    @Pattern(regexp = "^([0-2][0-9]|3[0-1])/(0[0-9]|1[0-2])/(19|20[0-9][0-9])$")
+    @Pattern(regexp = "^(19|20[0-9][0-9])-(0[0-9]|1[0-2])-([0-2][0-9]|3[0-1])$")
     private String dateStageFin;
     private boolean valide;
 

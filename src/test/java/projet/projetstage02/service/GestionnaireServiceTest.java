@@ -96,7 +96,7 @@ public class GestionnaireServiceTest {
                 .position("Stagiaire test backend")
                 .heureParSemaine(40)
                 .salaire(40)
-                .dateStageDebut("01/01/2020")
+                .dateStageDebut("2020-01-01")
                 .dateStageFin("01-01-2021")
                 .session(Offre.currentSession())
                 .adresse("69 shitty street")
