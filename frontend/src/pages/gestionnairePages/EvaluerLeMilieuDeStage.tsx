@@ -18,22 +18,22 @@ const EvaluerLeMilieuDeStage = ({ user }: { user: IUser }): JSX.Element => {
     const [waiting, setWaiting] = useState<boolean>(false);
     const [validated, setValidated] = useState<boolean>(false);
     // varialbles pour formulaire la partie identification de l'entreprise
-    const [infosContrat, setInfosContrat] = useState<InfoDuContrat>({
-        adresse: "",
-        dateStage: "",
-        departement: "",
-        emailCompagnie: "",
-        emailEtudiant: "",
-        heuresParSemaine: 0,
-        nomCompagnie: "",
-        nomContact: "",
-        nomEtudiant: "",
-        poste: "",
-        prenomContact: "",
-        prenomEtudiant: "",
-        salaire: 0,
-        session: ""
-    });
+    // const [infosContrat, setInfosContrat] = useState<InfoDuContrat>({
+    //     adresse: "",
+    //     dateStage: "",
+    //     departement: "",
+    //     emailCompagnie: "",
+    //     emailEtudiant: "",
+    //     heuresParSemaine: 0,
+    //     nomCompagnie: "",
+    //     nomContact: "",
+    //     nomEtudiant: "",
+    //     poste: "",
+    //     prenomContact: "",
+    //     prenomEtudiant: "",
+    //     salaire: 0,
+    //     session: ""
+    // });
     const [ville, setVille] = useState("")
     const [telephone, setTelephone] = useState("")
     const [telecopieur, setTelecopieur] = useState("")
@@ -79,7 +79,7 @@ const EvaluerLeMilieuDeStage = ({ user }: { user: IUser }): JSX.Element => {
             const response: Response = await putInfoContratPourEvaluateStage(contractId, user.token);
             if (response.ok) {
                 const data = await response.json()
-                setInfosContrat(data)
+                //setInfosContrat(data)
             } else {
                 generateAlert()
             }
@@ -123,22 +123,22 @@ const EvaluerLeMilieuDeStage = ({ user }: { user: IUser }): JSX.Element => {
             setWaiting(false)
             setValidated(false)
             setAfficheFormuaire(false)
-            setInfosContrat({
-                adresse: "",
-                dateStage: "",
-                departement: "",
-                emailCompagnie: "",
-                emailEtudiant: "",
-                heuresParSemaine: 0,
-                nomCompagnie: "",
-                nomContact: "",
-                nomEtudiant: "",
-                poste: "",
-                prenomContact: "",
-                prenomEtudiant: "",
-                salaire: 0,
-                session: ""
-            })
+            // setInfosContrat({
+            //     adresse: "",
+            //     dateStage: "",
+            //     departement: "",
+            //     emailCompagnie: "",
+            //     emailEtudiant: "",
+            //     heuresParSemaine: 0,
+            //     nomCompagnie: "",
+            //     nomContact: "",
+            //     nomEtudiant: "",
+            //     poste: "",
+            //     prenomContact: "",
+            //     prenomEtudiant: "",
+            //     salaire: 0,
+            //     session: ""
+            // })
             setVille("")
             setTelephone("")
             setTelecopieur("")
@@ -190,10 +190,10 @@ const EvaluerLeMilieuDeStage = ({ user }: { user: IUser }): JSX.Element => {
                         <ListGroup.Item action href="#entreprise" variant="primary">
                             IDENTIFICATION DE L'ENTREPRISE
                         </ListGroup.Item>
-                        <ListGroup.Item data-testid="entrepriseInscriptionForm" action href="#stagiaire"
-                            variant="primary">
-                            IDENTIFICATION DU STAGIAIRE
-                        </ListGroup.Item>
+                        {/*<ListGroup.Item data-testid="entrepriseInscriptionForm" action href="#stagiaire"*/}
+                        {/*    variant="primary">*/}
+                        {/*    IDENTIFICATION DU STAGIAIRE*/}
+                        {/*</ListGroup.Item>*/}
                         <ListGroup.Item data-testid="entrepriseInscriptionForm" action href="#evaluation"
                             variant="primary">
                             ÉVALUATION
@@ -203,30 +203,30 @@ const EvaluerLeMilieuDeStage = ({ user }: { user: IUser }): JSX.Element => {
                         <Tab.Content className="mt-3 p-2">
                             <Tab.Pane eventKey="#entreprise">
                                 <Col className="bg-light px-4 pb-2 pt-1">
-                                    <Row>
-                                        <Col>
-                                            <Form.Group>
-                                                <Form.Label className="fw-bold h5">Nom Entreprise</Form.Label>
-                                                <Form.Control type="text" minLength={2}
-                                                    value={infosContrat?.nomCompagnie}>
-                                                </Form.Control>
-                                            </Form.Group>
-                                        </Col>
-                                        <Col>
-                                            <Form.Group>
-                                                <Form.Label className="fw-bold h5">Personne Contact</Form.Label>
-                                                <Form.Control type="text"
-                                                    value={`${infosContrat?.nomContact} ${infosContrat?.prenomContact}`}>
-                                                </Form.Control>
-                                            </Form.Group>
-                                        </Col>
-                                    </Row>
-                                    <Row>
-                                        <Form.Group>
-                                            <Form.Label className="fw-bold mt-2 h5">Adresse</Form.Label>
-                                            <Form.Control type="text" value={infosContrat?.adresse}></Form.Control>
-                                        </Form.Group>
-                                    </Row>
+                                    {/*<Row>*/}
+                                    {/*    <Col>*/}
+                                    {/*        <Form.Group>*/}
+                                    {/*            <Form.Label className="fw-bold h5">Nom Entreprise</Form.Label>*/}
+                                    {/*            <Form.Control type="text" minLength={2}*/}
+                                    {/*                value={infosContrat?.nomCompagnie}>*/}
+                                    {/*            </Form.Control>*/}
+                                    {/*        </Form.Group>*/}
+                                    {/*    </Col>*/}
+                                    {/*    <Col>*/}
+                                    {/*        <Form.Group>*/}
+                                    {/*            <Form.Label className="fw-bold h5">Personne Contact</Form.Label>*/}
+                                    {/*            <Form.Control type="text"*/}
+                                    {/*                value={`${infosContrat?.nomContact} ${infosContrat?.prenomContact}`}>*/}
+                                    {/*            </Form.Control>*/}
+                                    {/*        </Form.Group>*/}
+                                    {/*    </Col>*/}
+                                    {/*</Row>*/}
+                                    {/*<Row>*/}
+                                    {/*    <Form.Group>*/}
+                                    {/*        <Form.Label className="fw-bold mt-2 h5">Adresse</Form.Label>*/}
+                                    {/*        <Form.Control type="text" value={infosContrat?.adresse}></Form.Control>*/}
+                                    {/*    </Form.Group>*/}
+                                    {/*</Row>*/}
                                     <Row>
                                         <Col>
                                             <Form.Group>
@@ -272,43 +272,43 @@ const EvaluerLeMilieuDeStage = ({ user }: { user: IUser }): JSX.Element => {
                                     </Row>
                                 </Col>
                             </Tab.Pane>
-                            <Tab.Pane eventKey="#stagiaire">
-                                <Col className="bg-light px-4 pb-2 pt-1">
-                                    <Row>
-                                        <Col>
-                                            <Form.Group>
-                                                <Form.Label className="fw-bold  mt-2 h5">Nom Stagiaire</Form.Label>
-                                                <Form.Control type="text"
-                                                    value={`${infosContrat?.nomEtudiant} ${infosContrat?.prenomEtudiant}`}>
-                                                </Form.Control>
-                                            </Form.Group>
-                                        </Col>
-                                    </Row>
-                                    <Row>
-                                        <Col className="col-10">
-                                            <Form.Group>
-                                                <Form.Label className="fw-bold mt-2 h5">Date Stage(Début -
-                                                    Fin)</Form.Label>
-                                                <Form.Control type="text" value={infosContrat?.dateStage}>
-                                                </Form.Control>
-                                            </Form.Group>
-                                        </Col>
-                                        <Col className="col-2">
-                                            <Form.Group>
-                                                <Form.Label className="fw-bold mt-2 h5">Stage Session
-                                                    <Form.Control type="text" value={infosContrat?.session}>
-                                                    </Form.Control>
-                                                </Form.Label>
-                                            </Form.Group>
-                                        </Col>
-                                    </Row>
+                            {/*<Tab.Pane eventKey="#stagiaire">*/}
+                            {/*    <Col className="bg-light px-4 pb-2 pt-1">*/}
+                            {/*        /!*<Row>*!/*/}
+                            {/*        /!*    <Col>*!/*/}
+                            {/*        /!*        <Form.Group>*!/*/}
+                            {/*        /!*            <Form.Label className="fw-bold  mt-2 h5">Nom Stagiaire</Form.Label>*!/*/}
+                            {/*        /!*            <Form.Control type="text"*!/*/}
+                            {/*        /!*                value={`${infosContrat?.nomEtudiant} ${infosContrat?.prenomEtudiant}`}>*!/*/}
+                            {/*        /!*            </Form.Control>*!/*/}
+                            {/*        /!*        </Form.Group>*!/*/}
+                            {/*        /!*    </Col>*!/*/}
+                            {/*        /!*</Row>*!/*/}
+                            {/*        /!*<Row>*!/*/}
+                            {/*        /!*    <Col className="col-10">*!/*/}
+                            {/*        /!*        <Form.Group>*!/*/}
+                            {/*        /!*            <Form.Label className="fw-bold mt-2 h5">Date Stage(Début -*!/*/}
+                            {/*        /!*                Fin)</Form.Label>*!/*/}
+                            {/*        /!*            <Form.Control type="text" value={infosContrat?.dateStage}>*!/*/}
+                            {/*        /!*            </Form.Control>*!/*/}
+                            {/*        /!*        </Form.Group>*!/*/}
+                            {/*        /!*    </Col>*!/*/}
+                            {/*        /!*    <Col className="col-2">*!/*/}
+                            {/*        /!*        <Form.Group>*!/*/}
+                            {/*        /!*            <Form.Label className="fw-bold mt-2 h5">Stage Session*!/*/}
+                            {/*        /!*                <Form.Control type="text" value={infosContrat?.session}>*!/*/}
+                            {/*        /!*                </Form.Control>*!/*/}
+                            {/*        /!*            </Form.Label>*!/*/}
+                            {/*        /!*        </Form.Group>*!/*/}
+                            {/*        /!*    </Col>*!/*/}
+                            {/*        /!*</Row>*!/*/}
 
-                                    <Row className="mt-3">
-                                        <Button type="submit"
-                                            className="btn btn-success mx-auto">Enregistrer</Button>
-                                    </Row>
-                                </Col>
-                            </Tab.Pane>
+                            {/*        <Row className="mt-3">*/}
+                            {/*            <Button type="submit"*/}
+                            {/*                className="btn btn-success mx-auto">Enregistrer</Button>*/}
+                            {/*        </Row>*/}
+                            {/*    </Col>*/}
+                            {/*</Tab.Pane>*/}
                             <Tab.Pane eventKey="#evaluation">
                                 <Col className="bg-light px-4 pb-2 pt-1">
                                     <Row>
