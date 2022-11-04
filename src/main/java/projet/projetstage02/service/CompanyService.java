@@ -7,6 +7,8 @@ import projet.projetstage02.dto.applications.ApplicationAcceptationDTO;
 import projet.projetstage02.dto.applications.OfferApplicationDTO;
 import projet.projetstage02.dto.contracts.ContractsDTO;
 import projet.projetstage02.dto.contracts.StageContractOutDTO;
+import projet.projetstage02.dto.interview.CreateInterviewDTO;
+import projet.projetstage02.dto.interview.InterviewOutDTO;
 import projet.projetstage02.dto.offres.OfferAcceptedStudentsDTO;
 import projet.projetstage02.dto.offres.OffreInDTO;
 import projet.projetstage02.dto.offres.OffreOutDTO;
@@ -232,5 +234,11 @@ public class CompanyService {
                 .forEach(stageContract -> contracts.add(new StageContractOutDTO(stageContract)));
 
         return ContractsDTO.builder().contracts(contracts).build();
+    }
+
+    public InterviewOutDTO createInterview(CreateInterviewDTO interviewDTO){
+        Interview interview =
+
+        return null;
     }
 }
