@@ -8,7 +8,7 @@ import {generateAlert} from "../../services/universalServices/UniversalUtilServi
 import CvStatus from "../../models/CvStatus";
 import {Viewer} from "@react-pdf-viewer/core";
 
-export const statusCV : CvStatus = {
+export const statusCV: CvStatus = {
     status: "",
     refusalMessage: ""
 }
@@ -21,9 +21,9 @@ const StudentCvUploadPage = ({connectedUser}: { connectedUser: IUser }) => {
     const [cvStatus, setCvStatus] = useState<CvStatus>(statusCV)
     const [showCV, setShowCV] = useState<boolean>(false)
     const [showCvToValidate, setShowCvToValidate] = useState<boolean>(false)
-
+    console.log(connectedUser.cvToValidate?.length)
     useEffect(() => {
-        const fetcheStatusCV = async () => {
+        const fetchStatusCV = async () => {
             await putStatusCv(connectedUser.id, connectedUser.token).then(async reponse => {
                 if (reponse.status == 200) {
                     const data = await reponse.json()
@@ -33,7 +33,7 @@ const StudentCvUploadPage = ({connectedUser}: { connectedUser: IUser }) => {
                 }
             })
         }
-        fetcheStatusCV()
+        fetchStatusCV()
     }, [])
     const onSubmit = async (event: React.SyntheticEvent) => {
         const form: any = event.currentTarget;
@@ -83,20 +83,22 @@ const StudentCvUploadPage = ({connectedUser}: { connectedUser: IUser }) => {
 
 
     async function getCv(): Promise<void> {
-        if(connectedUser.cv == null){
+        if (connectedUser.cv == null) {
             alert("Il y a pas de CV a valider courant, svp envoyez votre CV")
-            return ;
+            return;
         }
         setShowCV(true);
 
     }
+
     async function getCvToValidate(): Promise<void> {
-        if(connectedUser.cvToValidate == null){
+        if (connectedUser.cvToValidate == null) {
             alert("Il y a pas de CV a valider courant, svp envoyez votre CV")
-            return ;
+            return;
         }
         setShowCvToValidate(true);
     }
+
     if (showCV) {
         return (
             <Container className="min-vh-100 bg-white p-0">
@@ -160,12 +162,18 @@ const StudentCvUploadPage = ({connectedUser}: { connectedUser: IUser }) => {
                     <tr>
                         <th>Mon Cv</th>
                         <td className="text-center">
-                            <Button className="btn" onClick={async () => await getCv()}>CV</Button>
+                            {
+                                connectedUser.cv?.length == 2 ?
+
+                                    <Button className="btn" disabled onClick={async () => await getCv()}>CV</Button>
+                                    :
+                                    <Button className="btn" onClick={async () => await getCv()}>CV</Button>
+                            }
                         </td>
                     </tr>
                     <tr>
                         <th data-testid="State">Status :</th>
-                        <td  className="text-center">{cvStatus.status}</td>
+                        <td className="text-center">{cvStatus.status}</td>
                     </tr>
                     <tr>
                         <th data-testid="RefusalMessage"> Refusal Message :</th>
@@ -174,7 +182,15 @@ const StudentCvUploadPage = ({connectedUser}: { connectedUser: IUser }) => {
                     <tr>
                         <th>Cv To Validate :</th>
                         <td data-testid="CvToValidate" className="text-center">
-                            <Button className="btn" onClick={async () => await getCvToValidate()}>Cv To Validate</Button>
+                            {
+                                connectedUser.cvToValidate?.length == 2 ?
+
+                                    <Button className="btn" disabled onClick={async () => await getCvToValidate()}>Cv To
+                                        Validate</Button>
+                                    :
+                                    <Button className="btn" onClick={async () => await getCvToValidate()}>Cv To
+                                        Validate</Button>
+                            }
                         </td>
                     </tr>
                     </tbody>
