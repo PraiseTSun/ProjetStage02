@@ -21,7 +21,7 @@ const StudentCvUploadPage = ({connectedUser}: { connectedUser: IUser }) => {
     const [cvStatus, setCvStatus] = useState<CvStatus>(statusCV)
     const [showCV, setShowCV] = useState<boolean>(false)
     const [showCvToValidate, setShowCvToValidate] = useState<boolean>(false)
-    console.log(connectedUser.cvToValidate?.length)
+
     useEffect(() => {
         const fetchStatusCV = async () => {
             await putStatusCv(connectedUser.id, connectedUser.token).then(async reponse => {
