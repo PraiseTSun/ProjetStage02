@@ -11,6 +11,8 @@ import {
     putInfoContratPourEvaluateStage
 } from "../../services/gestionnaireServices/GestionnaireFetchService";
 import IContrat from "../../models/IContrat";
+import SignaturePad from "react-signature-canvas";
+import {sign} from "crypto";
 
 const EvaluerLeMilieuDeStage = ({user}: { user: IUser }): JSX.Element => {
     const [contrats, setContrats] = useState<IContrat[]>([]);
@@ -52,6 +54,8 @@ const EvaluerLeMilieuDeStage = ({user}: { user: IUser }): JSX.Element => {
     const [commentaires, setCommentaires] = useState("")
     const [signature, setSignature] = useState("")
     const [dateSignature, setDateSignature] = useState("")
+    const [isSigner, setIsSigner] = useState(false)
+    let sigPad: SignaturePad | null
     useEffect(() => {
         const fetchContracts = async (): Promise<void> => {
             try {
@@ -101,7 +105,7 @@ const EvaluerLeMilieuDeStage = ({user}: { user: IUser }): JSX.Element => {
             if (!tachesAnnonces || !integration || !tempsReelConsacre || !heureTotalPremierMois || !heureTotalDeuxiemeMois
                 || !heureTotalTroisiemeMois || !environnementDeTravail || !climatDeTravail || !milieuDeStage
                 || !salaireOffert || !salaireParHeure || !communicationAvecSuperviser
-                || !equipementFourni || !volumeDeTravail || !commentaires) {
+                || !equipementFourni || !volumeDeTravail || !commentaires || !signature || !dateSignature) {
                 alert("Veuillez remplir chaque champ de  la partie l'évaluation.")
                 setWaiting(false)
                 return;
@@ -163,7 +167,37 @@ const EvaluerLeMilieuDeStage = ({user}: { user: IUser }): JSX.Element => {
             </div>
         );
     }
-
+    if (isSigner) {
+        return (
+            <Container className="vh-100">
+                <Row className="bg-dark p-2">
+                    <Col sm={1}><Button variant="danger" onClick={() => {
+                        setIsSigner(false)
+                    }}>Fermer</Button></Col>
+                    <Col sm={10}></Col>
+                    <Col sm={1}><Button variant="success" onClick={() => {
+                        if (sigPad!.isEmpty()) {
+                            alert("Vous devez signer!")
+                        } else {
+                            setSignature(sigPad!.toDataURL())
+                            setIsSigner(false)
+                        }
+                    }}>Signer</Button></Col>
+                </Row>
+                <Row>
+                    <Col sm={4} className="mx-auto mt-3">
+                        <SignaturePad canvasProps={{width: 500, height: 200, className: 'border border-5 bg-light'}}
+                                      ref={(ref) => {
+                                          sigPad = ref
+                                      }}/>
+                        <Button onClick={() => {
+                            sigPad!.clear()
+                        }}>Recommencer</Button>
+                    </Col>
+                </Row>
+            </Container>
+        );
+    }
     if (afficheFormulaire) {
         return (
             <Container className="min-vh-100">
@@ -540,14 +574,15 @@ const EvaluerLeMilieuDeStage = ({user}: { user: IUser }): JSX.Element => {
                                     </Row>
                                     <Row className="mb-4">
                                         <Col>
-                                            <Form.Group>
-                                                <Form.Label className="fw-bold mt-2 h5">Signature</Form.Label>
-                                                <Form.Control type="text" minLength={2} required
-                                                              value={signature}
-                                                              onChange={e => setSignature(e.target.value)}></Form.Control>
-                                                <Form.Control.Feedback type="invalid">Champ
-                                                    requis</Form.Control.Feedback>
-                                            </Form.Group>
+                                            {
+                                                signature == ""
+                                                    ?
+                                                    <p className="fw-bold h5">Signature</p>
+                                                    :
+                                                    <p className="fw-bold h5">Signature
+                                                         <span className="text-success">   (vous avez déjà signé)</span></p>
+                                            }
+                                            <Button  className="btn btn-primary mt-2 w-75" onClick={()=>{setIsSigner(true)}}>Signer</Button>
                                         </Col>
                                         <Col>
                                             <Form.Group>
