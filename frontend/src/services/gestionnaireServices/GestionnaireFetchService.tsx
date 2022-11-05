@@ -197,7 +197,7 @@ export const putInfoContratPourEvaluateStage = (contratId: number, token: string
 }
 
 export const postEvaluationStage = (token: string,
-    tachesAnnoncees: string,
+    tachesAnnonces: string,
     integration: string,
     tempsReelConsacre: string,
     environementTravail: string,
@@ -209,14 +209,16 @@ export const postEvaluationStage = (token: string,
     communicationAvecSuperviser: string,
     equipementFourni: string,
     volumeDeTravail: string,
-    commentaires: string): Promise<Response> => {
+    commentaires: string,
+    signature: string,
+    dateSignature: string ): Promise<Response> => {
     return fetch(`http://localhost:8080/evaluateStage/${token}`, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-            "tachesAnnoncees": tachesAnnoncees,
+            "tachesAnnonces": tachesAnnonces,
             "integration": integration,
             "tempsReelConsacre": tempsReelConsacre,
             "environementTravail": environementTravail,
@@ -229,6 +231,9 @@ export const postEvaluationStage = (token: string,
             "equipementFourni": equipementFourni,
             "volumeDeTravail": volumeDeTravail,
             "commentaires": commentaires,
+            "signature": signature,
+            "dateSignature":dateSignature
+
         })
     });
 }

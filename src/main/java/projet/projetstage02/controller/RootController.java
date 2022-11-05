@@ -842,6 +842,7 @@ public class RootController {
     @PostMapping("/evaluateStage/{token}")
     public ResponseEntity<?> evaluateStage
     (@PathVariable String token, @RequestBody EvaluationInDTO evaluationInDTO) {
+        System.out.println(evaluationInDTO);
         try {
             logger.log(Level.INFO, "put /evaluateStage/id entered with id : " + token);
             authService.getToken(token, GESTIONNAIRE);
