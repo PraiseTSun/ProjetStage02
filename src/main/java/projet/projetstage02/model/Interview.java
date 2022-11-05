@@ -21,6 +21,7 @@ public class Interview {
     @Column(name = "id", nullable = false)
     private Long id;
     private long companyId;
+    private long offerId;
     private long studentId;
     @ElementCollection
     private List<LocalDateTime> companyDateOffers;

@@ -14,6 +14,7 @@ import java.util.List;
 public class CreateInterviewDTO {
     private String token;
     private long companyId;
+    private long offerId;
     private long studentId;
     private List<String> companyDateOffers;
 }

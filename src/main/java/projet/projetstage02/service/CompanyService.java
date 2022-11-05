@@ -15,10 +15,7 @@ import projet.projetstage02.dto.offres.OffreOutDTO;
 import projet.projetstage02.dto.pdf.PdfOutDTO;
 import projet.projetstage02.dto.users.CompanyDTO;
 import projet.projetstage02.dto.users.Students.StudentOutDTO;
-import projet.projetstage02.exception.AlreadyExistingAcceptationException;
-import projet.projetstage02.exception.InvalidOwnershipException;
-import projet.projetstage02.exception.NonExistentEntityException;
-import projet.projetstage02.exception.NonExistentOfferExeption;
+import projet.projetstage02.exception.*;
 import projet.projetstage02.model.AbstractUser.Department;
 import projet.projetstage02.model.*;
 import projet.projetstage02.repository.*;
@@ -41,6 +38,7 @@ public class CompanyService {
     private final ApplicationAcceptationRepository applicationAcceptationRepository;
     private final ApplicationRepository applicationRepository;
     private final StageContractRepository stageContractRepository;
+    private final InterviewRepository interviewRepository;
 
     public long createOffre(OffreInDTO offreInDTO) {
         Offre offre = Offre.builder()
@@ -236,9 +234,49 @@ public class CompanyService {
         return ContractsDTO.builder().contracts(contracts).build();
     }
 
-    public InterviewOutDTO createInterview(CreateInterviewDTO interviewDTO){
-        Interview interview = Interview.builder().build();
+    public InterviewOutDTO createInterview(CreateInterviewDTO interviewDTO)
+            throws NonExistentEntityException, InvalidDateFormatException, InvalidOwnershipException {
+        Optional<Company> companyOpt = companyRepository.findById(interviewDTO.getCompanyId());
+        if(companyOpt.isEmpty()) throw new NonExistentEntityException();
+        Company company = companyOpt.get();
 
-        return null;
+        Optional<Student> studentOpt = studentRepository.findById(interviewDTO.getStudentId());
+        if(studentOpt.isEmpty()) throw new NonExistentEntityException();
+        Student student = studentOpt.get();
+
+        Optional<Offre> offerOpt = offreRepository.findById(interviewDTO.getOfferId());
+        if(offerOpt.isEmpty()) throw new NonExistentEntityException();
+        Offre offer = offerOpt.get();
+
+        if(offer.getIdCompagnie() != company.getId()) throw new InvalidOwnershipException();
+
+        List<LocalDateTime> dates = new ArrayList<>();
+
+        for (String dateInt : interviewDTO.getCompanyDateOffers()){
+            try{
+                dates.add(LocalDateTime.parse(dateInt));
+            } catch(Exception e){
+                throw new InvalidDateFormatException();
+            }
+        }
+
+        interviewRepository.save(Interview.builder()
+                .companyId(company.getId())
+                .offerId(offer.getId())
+                .studentId(student.getId())
+                .companyDateOffers(dates)
+                .studentSelectedDate(null)
+                .build());
+
+        Optional<Interview> interviewOpt = interviewRepository.findByStudentId(interviewDTO.getStudentId())
+                .stream()
+                .filter(
+                    interview -> interview.getCompanyId() == interview.getCompanyId()
+                            && interview.getOfferId() == interview.getOfferId()
+                )
+                .findFirst();
+        if(interviewOpt.isEmpty()) throw new NonExistentEntityException();
+
+        return new InterviewOutDTO(interviewOpt.get());
     }
 }
