@@ -3,7 +3,11 @@ import {Button, Col, Container, Row, Table, ToggleButton, ToggleButtonGroup} fro
 import {Link} from "react-router-dom";
 import IUser from "../../models/IUser";
 import {Viewer} from '@react-pdf-viewer/core';
-import {putOfferPdf, putValidatedOffersByYear} from "../../services/gestionnaireServices/GestionnaireFetchService";
+import {
+    putEvaluationPdf,
+    putOfferPdf,
+    putValidatedOffersByYear
+} from "../../services/gestionnaireServices/GestionnaireFetchService";
 import {generateAlert} from "../../services/universalServices/UniversalUtilService";
 import IOffer from "../../models/IOffer";
 
@@ -14,7 +18,8 @@ const OfferHistoryPage = ({connectedUser}:
     const [pdf, setpdf] = useState<Uint8Array>(new Uint8Array([]));
     const [showPDF, setShowPDF] = useState<boolean>(false);
     const [year, setYear] = useState<number>(nextYear);
-
+    const [evaluation, setEcaluation] = useState<Uint8Array>(new Uint8Array([]));
+    const [showEvaluation, setShowEvaluation] = useState<boolean>(false);
     const fetchValidatedOffersByYear = React.useCallback(async (year: string): Promise<void> => {
         try {
             const response: Response = await putValidatedOffersByYear(year, connectedUser.token);
@@ -49,17 +54,46 @@ const OfferHistoryPage = ({connectedUser}:
         }
     }
 
-    if (showPDF) {
+    async function getEvaluation(offerId: number): Promise<void> {
+        try {
+            const response = await putEvaluationPdf(offerId.toString(), connectedUser.token)
+            if (response.ok) {
+                const data = await response.json();
+                setEcaluation(new Uint8Array(JSON.parse(data.pdf)))
+                setShowEvaluation(true);
+            } else {
+                generateAlert()
+            }
+        } catch (exception) {
+            generateAlert()
+        }
+    }
+
+    if (showPDF || showEvaluation) {
         return (
             <Container>
                 <Container className="min-vh-100 bg-white p-0">
                     <div className="bg-dark p-2">
-                        <Button className="Btn btn-primary" onClick={() => setShowPDF(false)}>
-                            Fermer
-                        </Button>
+                        {
+                            showPDF
+                                ?
+                                <Button className="Btn btn-primary" onClick={() => setShowPDF(false)}>
+                                    Fermer
+                                </Button>
+                                :
+                                <Button className="Btn btn-primary" onClick={() => setShowEvaluation(false)}>
+                                    Fermer
+                                </Button>
+                        }
                     </div>
                     <div>
-                        <Viewer fileUrl={pdf}/>
+                        {
+                            showPDF
+                                ?
+                                <Viewer fileUrl={pdf}/>
+                                :
+                                <Viewer fileUrl={evaluation}/>
+                        }
                     </div>
                 </Container>
             </Container>
@@ -86,6 +120,7 @@ const OfferHistoryPage = ({connectedUser}:
                             <th>Départment / Position</th>
                             <th>Heure Par Semaine / Salaire</th>
                             <th>Pdf</th>
+                            <th>Évalutation</th>
                         </tr>
                         </thead>
                         <tbody className="bg-light">
@@ -97,6 +132,8 @@ const OfferHistoryPage = ({connectedUser}:
                                     <td>{offer.heureParSemaine} <br/> {offer.salaire}$/h</td>
                                     <td><Button className="btn btn-warning"
                                                 onClick={async () => await getPDF(offer.id)}>pdf</Button></td>
+                                    <td><Button onClick={async () => await getEvaluation(offer.id)}>Évaluation</Button>
+                                    </td>
                                 </tr>
                             );
                         })}

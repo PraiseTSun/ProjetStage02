@@ -203,3 +203,14 @@ export const postCreateGestionnaire = (firstName: string,
         })
     });
 }
+
+export const putEvaluationPdf = (offerId: string, token: string): Promise<Response> => {
+    return fetch("http://localhost:8080/offerEvaluation/" + offerId.toString(), {
+        method: "PUT",
+        headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({"token": token})
+    });
+}
