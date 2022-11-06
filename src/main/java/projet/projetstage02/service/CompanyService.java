@@ -268,11 +268,11 @@ public class CompanyService {
                 .studentSelectedDate(null)
                 .build());
 
-        Optional<Interview> interviewOpt = interviewRepository.findByStudentId(interviewDTO.getStudentId())
+        Optional<Interview> interviewOpt = interviewRepository.findByCompanyId(company.getId())
                 .stream()
                 .filter(
-                    interview -> interview.getCompanyId() == interview.getCompanyId()
-                            && interview.getOfferId() == interview.getOfferId()
+                    interview -> interview.getStudentId() == student.getId()
+                            && interview.getOfferId() == offer.getId()
                 )
                 .findFirst();
         if(interviewOpt.isEmpty()) throw new NonExistentEntityException();
