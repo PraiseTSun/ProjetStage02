@@ -261,4 +261,19 @@ public class StudentService {
 
         return new InterviewOutDTO(interview);
     }
+
+    public List<InterviewOutDTO> getInterviews(long studentId) throws NonExistentEntityException {
+        Optional<Student> studentOpt = studentRepository.findById(studentId);
+        if(studentOpt.isEmpty()) throw new NonExistentEntityException();
+
+        List<InterviewOutDTO> interviews = new ArrayList<>();
+
+        interviewRepository.findByStudentId(studentId)
+                .stream()
+                .forEach(
+                        interview -> interviews.add(new InterviewOutDTO(interview))
+                );
+
+        return interviews;
+    }
 }
