@@ -1016,6 +1016,24 @@ public class RootController {
             logger.log(Level.INFO, "Put /studentSelectDate return 409");
             return ResponseEntity.status(CONFLICT).build();
         }
+    }
 
+    @PutMapping("/getStudentInterviews/{studentId}")
+    public ResponseEntity<List<InterviewOutDTO>> GetStudentInterviews
+            (@PathVariable String studentId, @RequestBody TokenDTO token){
+        logger.log(Level.INFO, "Put /getStudentInterviews/{studentId}");
+
+        try {
+            authService.getToken(token.getToken(), STUDENT);
+            List<InterviewOutDTO> interviews = studentService.getInterviews(Long.parseLong(studentId));
+            logger.log(Level.INFO, "Put/getStudentInterviews/{studentId} return 200");
+            return ResponseEntity.ok(interviews);
+        } catch (InvalidTokenException e) {
+            logger.log(Level.INFO, "Put/getStudentInterviews/{studentId} return 403");
+            return ResponseEntity.status(FORBIDDEN).build();
+        } catch (NonExistentEntityException e) {
+            logger.log(Level.INFO, "Put/getStudentInterviews/{studentId} return 404");
+            return ResponseEntity.status(NOT_FOUND).build();
+        }
     }
 }
