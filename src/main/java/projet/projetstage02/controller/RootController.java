@@ -968,12 +968,14 @@ public class RootController {
         } catch (NonExistentEntityException e) {
             logger.log(Level.INFO, "Post /createInterview return 404 request");
             return ResponseEntity.status(NOT_FOUND).build();
-        } catch (InvalidDateFormatException | InvalidOwnershipException e) {
+        } catch (InvalidDateFormatException  e) {
             logger.log(Level.INFO, "Post /createInterview return 409 request");
             return ResponseEntity.status(CONFLICT).build();
-        } catch (InvalidTokenException e) {
+        } catch (InvalidTokenException | InvalidOwnershipException e) {
             logger.log(Level.INFO, "Post /createInterview return 403 request");
             return ResponseEntity.status(FORBIDDEN).build();
         }
     }
+
+    
 }

@@ -25,6 +25,8 @@ import projet.projetstage02.dto.cv.CvRefusalDTO;
 import projet.projetstage02.dto.cv.CvStatusDTO;
 import projet.projetstage02.dto.evaluations.MillieuStage.MillieuStageEvaluationInDTO;
 import projet.projetstage02.dto.evaluations.MillieuStage.MillieuStageEvaluationInfoDTO;
+import projet.projetstage02.dto.interview.CreateInterviewDTO;
+import projet.projetstage02.dto.interview.InterviewOutDTO;
 import projet.projetstage02.dto.offres.OfferAcceptedStudentsDTO;
 import projet.projetstage02.dto.offres.OffreInDTO;
 import projet.projetstage02.dto.offres.OffreOutDTO;
@@ -87,6 +89,7 @@ public class RootControllerTest {
     JacksonTester<PdfDTO> jsonPdfDTO;
     JacksonTester<SignatureInDTO> jsonSignatureDTO;
     JacksonTester<MillieuStageEvaluationInDTO> jsonEvalInDTO;
+    JacksonTester<InterviewOutDTO> jsonInterviewOutDTO;
 
     StudentInDTO bart;
     StudentOutDTO bartOut;
@@ -112,7 +115,8 @@ public class RootControllerTest {
     CvStatusDTO cvStatusDTO;
     MillieuStageEvaluationInfoDTO evalInfoDTO;
     MillieuStageEvaluationInDTO evalInDTO;
-
+    CreateInterviewDTO createInterviewDTO;
+    InterviewOutDTO interviewOutDTO;
 
     // https://thepracticaldeveloper.com/guide-spring-boot-controller-tests/
     @BeforeEach
@@ -281,7 +285,30 @@ public class RootControllerTest {
                 .signature(byteToString(new byte[]{0, 1, 2, 3, 4, 5, 6, 7, 8, 9}))
                 .build();
 
+        createInterviewDTO = CreateInterviewDTO.builder()
+                .token("token")
+                .companyId(duffBeer.getId())
+                .offerId(duffOffreOut.getId())
+                .studentId(bartOut.getId())
+                .companyDateOffers(new ArrayList<>(){{
+                    add("2022-11-28T12:30:00");
+                    add("2022-11-29T12:30:00");
+                    add("2022-11-30T12:30:00");
+                }})
+                .build();
 
+        interviewOutDTO = InterviewOutDTO.builder()
+                .interviewId(10L)
+                .companyId(duffBeer.getId())
+                .offerId(duffOffreOut.getId())
+                .studentId(bartOut.getId())
+                .companyDateOffers(new ArrayList<>(){{
+                    add("2022-11-28T12:30:00");
+                    add("2022-11-29T12:30:00");
+                    add("2022-11-30T12:30:00");
+                }})
+                .studentSelectedDate("")
+                .build();
     }
 
     @Test
@@ -1782,6 +1809,58 @@ public class RootControllerTest {
         mockMvc.perform(put("/companyContracts/{companyId}_{session}", 1, Offre.currentSession())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(jsonTokenDTO.write(token).getJson()))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    void testCreateInterviewHappyDay() throws Exception{
+        when(companyService.createInterview(any())).thenReturn(interviewOutDTO);
+
+        mockMvc.perform(post("/createInterview")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(jsonInterviewOutDTO.write(interviewOutDTO).getJson()))
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.studentSelectedDate", is("")))
+                .andExpect(jsonPath("$.companyDateOffers.size()", is(3)));
+    }
+
+    @Test
+    void testCreateInterviewNotFound() throws Exception {
+        when(companyService.createInterview(any())).thenThrow(new NonExistentEntityException());
+
+        mockMvc.perform(post("/createInterview")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(jsonInterviewOutDTO.write(interviewOutDTO).getJson()))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    void testCreateInterviewOwnershipForbidden() throws Exception {
+        when(companyService.createInterview(any())).thenThrow(new InvalidOwnershipException());
+
+        mockMvc.perform(post("/createInterview")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(jsonInterviewOutDTO.write(interviewOutDTO).getJson()))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    void testCreateInterviewDateConflict() throws Exception {
+        when(companyService.createInterview(any())).thenThrow(new InvalidDateFormatException());
+
+        mockMvc.perform(post("/createInterview")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(jsonInterviewOutDTO.write(interviewOutDTO).getJson()))
+                .andExpect(status().isConflict());
+    }
+
+    @Test
+    void testCreateInterviewInvalidToken() throws Exception {
+        when(authService.getToken(any(), any())).thenThrow(new InvalidTokenException());
+
+        mockMvc.perform(post("/createInterview")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(jsonInterviewOutDTO.write(interviewOutDTO).getJson()))
                 .andExpect(status().isForbidden());
     }
 }
