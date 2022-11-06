@@ -977,5 +977,22 @@ public class RootController {
         }
     }
 
-    
+    @PutMapping("/getCompanyInterviews/{companyId}")
+    public ResponseEntity<List<InterviewOutDTO>> getCompanyInterviews
+            (@PathVariable String companyId, @RequestBody TokenDTO tokenId){
+        logger.log(Level.INFO, "Put /getCompanyInterviews/{companyId}");
+
+        try {
+            authService.getToken(tokenId.getToken(), COMPANY);
+            List<InterviewOutDTO> interviews = companyService.getInterviews(Long.parseLong(companyId));
+            logger.log(Level.INFO, "Put /getCompanyInterviews/{companyId} return 200");
+            return ResponseEntity.ok(interviews);
+        } catch (NonExistentEntityException e) {
+            logger.log(Level.INFO, "Put /getCompanyInterviews/{companyId} return 404");
+            return ResponseEntity.status(NOT_FOUND).build();
+        } catch (InvalidTokenException e) {
+            logger.log(Level.INFO, "Put /getCompanyInterviews/{companyId} return 403");
+            return ResponseEntity.status(FORBIDDEN).build();
+        }
+    }
 }
