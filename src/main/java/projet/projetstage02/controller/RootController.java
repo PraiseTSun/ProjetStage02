@@ -22,6 +22,8 @@ import projet.projetstage02.dto.cv.CvRefusalDTO;
 import projet.projetstage02.dto.cv.CvStatusDTO;
 import projet.projetstage02.dto.evaluations.MillieuStage.MillieuStageEvaluationInDTO;
 import projet.projetstage02.dto.evaluations.MillieuStage.MillieuStageEvaluationInfoDTO;
+import projet.projetstage02.dto.interview.CreateInterviewDTO;
+import projet.projetstage02.dto.interview.InterviewOutDTO;
 import projet.projetstage02.dto.offres.OfferAcceptedStudentsDTO;
 import projet.projetstage02.dto.offres.OffreInDTO;
 import projet.projetstage02.dto.offres.OffreOutDTO;
@@ -954,4 +956,24 @@ public class RootController {
         }
     }
 
+    @PostMapping("/createInterview")
+    public ResponseEntity<InterviewOutDTO> createInterview(@RequestBody @Valid CreateInterviewDTO interviewDTO){
+        logger.log(Level.INFO, "Post /createInterview");
+
+        try {
+            authService.getToken(interviewDTO.getToken(), COMPANY);
+            InterviewOutDTO dto = companyService.createInterview(interviewDTO);
+            logger.log(Level.INFO, "Post /createInterview return 201 request");
+            return ResponseEntity.status(CREATED).body(dto);
+        } catch (NonExistentEntityException e) {
+            logger.log(Level.INFO, "Post /createInterview return 404 request");
+            return ResponseEntity.status(NOT_FOUND).build();
+        } catch (InvalidDateFormatException | InvalidOwnershipException e) {
+            logger.log(Level.INFO, "Post /createInterview return 409 request");
+            return ResponseEntity.status(CONFLICT).build();
+        } catch (InvalidTokenException e) {
+            logger.log(Level.INFO, "Post /createInterview return 403 request");
+            return ResponseEntity.status(FORBIDDEN).build();
+        }
+    }
 }
