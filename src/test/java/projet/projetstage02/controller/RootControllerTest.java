@@ -27,6 +27,7 @@ import projet.projetstage02.dto.evaluations.MillieuStage.MillieuStageEvaluationI
 import projet.projetstage02.dto.evaluations.MillieuStage.MillieuStageEvaluationInfoDTO;
 import projet.projetstage02.dto.interview.CreateInterviewDTO;
 import projet.projetstage02.dto.interview.InterviewOutDTO;
+import projet.projetstage02.dto.interview.InterviewSelectInDTO;
 import projet.projetstage02.dto.offres.OfferAcceptedStudentsDTO;
 import projet.projetstage02.dto.offres.OffreInDTO;
 import projet.projetstage02.dto.offres.OffreOutDTO;
@@ -90,6 +91,7 @@ public class RootControllerTest {
     JacksonTester<SignatureInDTO> jsonSignatureDTO;
     JacksonTester<MillieuStageEvaluationInDTO> jsonEvalInDTO;
     JacksonTester<InterviewOutDTO> jsonInterviewOutDTO;
+    JacksonTester<InterviewSelectInDTO> jsonInterviewSelectDTO;
 
     StudentInDTO bart;
     StudentOutDTO bartOut;
@@ -117,7 +119,7 @@ public class RootControllerTest {
     MillieuStageEvaluationInDTO evalInDTO;
     CreateInterviewDTO createInterviewDTO;
     InterviewOutDTO interviewOutDTO;
-
+    InterviewSelectInDTO interviewSelectInDTO;
     // https://thepracticaldeveloper.com/guide-spring-boot-controller-tests/
     @BeforeEach
     void setup() {
@@ -308,6 +310,13 @@ public class RootControllerTest {
                     add("2022-11-30T12:30:00");
                 }})
                 .studentSelectedDate("")
+                .build();
+
+        interviewSelectInDTO = InterviewSelectInDTO.builder()
+                .token("token")
+                .interviewId(interviewOutDTO.getInterviewId())
+                .studentId(bart.getId())
+                .selectedDate("2022-11-29T12:30")
                 .build();
     }
 
@@ -1890,12 +1899,62 @@ public class RootControllerTest {
     }
 
     @Test
-    void testGetCompanyInterviewsForbidden() throws Exception {
+    void testGetCompanyInterviewsInvalidTokken() throws Exception {
         when(authService.getToken(any(), any())).thenThrow(new InvalidTokenException());
 
         mockMvc.perform(put("/getCompanyInterviews/{companyId}", 1)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(jsonTokenDTO.write(token).getJson()))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    void testStudentSelectDateHappyDay() throws Exception{
+        when(studentService.selectInterviewTime(any())).thenReturn(interviewOutDTO);
+
+        mockMvc.perform(put("/studentSelectDate")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(jsonInterviewSelectDTO.write(interviewSelectInDTO).getJson()))
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    void testStudentSelectDateNotFound() throws Exception{
+        when(studentService.selectInterviewTime(any())).thenThrow(new NonExistentEntityException());
+
+        mockMvc.perform(put("/studentSelectDate")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(jsonInterviewSelectDTO.write(interviewSelectInDTO).getJson()))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    void testStudentSelectDateForbidden() throws Exception{
+        when(studentService.selectInterviewTime(any())).thenThrow(new InvalidOwnershipException());
+
+        mockMvc.perform(put("/studentSelectDate")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(jsonInterviewSelectDTO.write(interviewSelectInDTO).getJson()))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    void testStudentSelectDateConflidt() throws Exception{
+        when(studentService.selectInterviewTime(any())).thenThrow(new InvalidDateFormatException());
+
+        mockMvc.perform(put("/studentSelectDate")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(jsonInterviewSelectDTO.write(interviewSelectInDTO).getJson()))
+                .andExpect(status().isConflict());
+    }
+
+    @Test
+    void testStudentSelectDateInvalidToken() throws Exception{
+        when(authService.getToken(any(), any())).thenThrow(new InvalidTokenException());
+
+        mockMvc.perform(put("/studentSelectDate")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(jsonInterviewSelectDTO.write(interviewSelectInDTO).getJson()))
                 .andExpect(status().isForbidden());
     }
 }
