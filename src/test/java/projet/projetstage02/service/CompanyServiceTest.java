@@ -779,4 +779,35 @@ public class CompanyServiceTest {
 
         fail("Fail to catch the InvalidOwnershipException");
     }
+
+    @Test
+    void testGetInterviewsHappyDay() throws NonExistentEntityException {
+        when(companyRepository.findById(anyLong())).thenReturn(Optional.of(duffBeer));
+        when(interviewRepository.findByCompanyId(anyLong())).thenReturn(
+            new ArrayList<>(){{
+                add(interview);
+                add(interview);
+                add(interview);
+            }}
+        );
+
+        List<InterviewOutDTO> interviews = companyService.getInterviews(1L);
+
+        assertThat(interviews.size()).isEqualTo(3);
+        assertThat(interviews.get(0).getStudentId()).isEqualTo(bart.getId());
+        assertThat(interviews.get(0).getCompanyId()).isEqualTo(duffBeer.getId());
+    }
+
+    @Test
+    void testGetInterviewsNotFound(){
+        when(companyRepository.findById(anyLong())).thenReturn(Optional.empty());
+
+        try {
+            companyService.getInterviews(1L);
+        } catch (NonExistentEntityException e) {
+            return;
+        }
+
+        fail("Fail to catch the NonExistentEntityException");
+    }
 }
