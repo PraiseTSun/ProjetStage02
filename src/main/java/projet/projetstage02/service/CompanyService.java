@@ -279,4 +279,19 @@ public class CompanyService {
 
         return new InterviewOutDTO(interviewOpt.get());
     }
+
+    public List<InterviewOutDTO> getInterviews(long companyId) throws NonExistentEntityException {
+        List<InterviewOutDTO> interviews = new ArrayList<>();
+
+        Optional<Company> companyOpt = companyRepository.findById(companyId);
+        if(companyOpt.isEmpty()) throw new NonExistentEntityException();
+
+        interviewRepository.findByCompanyId(companyId)
+                .stream()
+                .forEach(
+                    interview -> interviews.add(new InterviewOutDTO(interview))
+                );
+
+        return interviews;
+    }
 }
