@@ -1863,4 +1863,39 @@ public class RootControllerTest {
                         .content(jsonInterviewOutDTO.write(interviewOutDTO).getJson()))
                 .andExpect(status().isForbidden());
     }
+
+    @Test
+    void testGetCompanyInterviewsHappyDay() throws Exception {
+        when(companyService.getInterviews(anyLong())).thenReturn(new ArrayList<>(){{
+            add(new InterviewOutDTO());
+            add(new InterviewOutDTO());
+            add(new InterviewOutDTO());
+        }});
+
+        mockMvc.perform(put("/getCompanyInterviews/{companyId}", 1)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(jsonTokenDTO.write(token).getJson()))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.size()", is(3)));
+    }
+
+    @Test
+    void testGetCompanyInterviewsNotFound() throws Exception {
+        when(companyService.getInterviews(anyLong())).thenThrow(new NonExistentEntityException());
+
+        mockMvc.perform(put("/getCompanyInterviews/{companyId}", 1)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(jsonTokenDTO.write(token).getJson()))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    void testGetCompanyInterviewsForbidden() throws Exception {
+        when(authService.getToken(any(), any())).thenThrow(new InvalidTokenException());
+
+        mockMvc.perform(put("/getCompanyInterviews/{companyId}", 1)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(jsonTokenDTO.write(token).getJson()))
+                .andExpect(status().isForbidden());
+    }
 }
