@@ -1957,4 +1957,39 @@ public class RootControllerTest {
                         .content(jsonInterviewSelectDTO.write(interviewSelectInDTO).getJson()))
                 .andExpect(status().isForbidden());
     }
+
+    @Test
+    void testGetStudentInterviewsHappyDay() throws Exception{
+        when(studentService.getInterviews(anyLong())).thenReturn(new ArrayList<>(){{
+            add(new InterviewOutDTO());
+            add(new InterviewOutDTO());
+            add(new InterviewOutDTO());
+        }});
+
+        mockMvc.perform(put("/getStudentInterviews/{studentId}", 1)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(jsonInterviewSelectDTO.write(interviewSelectInDTO).getJson()))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.size()", is(3)));
+    }
+
+    @Test
+    void testGetStudentInterviewsNotFound() throws Exception{
+        when(studentService.getInterviews(anyLong())).thenThrow(new NonExistentEntityException());
+
+        mockMvc.perform(put("/getStudentInterviews/{studentId}", 1)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(jsonInterviewSelectDTO.write(interviewSelectInDTO).getJson()))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    void testGetStudentInterviewsInvalidToken() throws Exception{
+        when(authService.getToken(anyString(), any())).thenThrow(new InvalidTokenException());
+
+        mockMvc.perform(put("/getStudentInterviews/{studentId}", 1)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(jsonInterviewSelectDTO.write(interviewSelectInDTO).getJson()))
+                .andExpect(status().isForbidden());
+    }
 }
