@@ -24,6 +24,7 @@ import projet.projetstage02.dto.evaluations.MillieuStage.MillieuStageEvaluationI
 import projet.projetstage02.dto.evaluations.MillieuStage.MillieuStageEvaluationInfoDTO;
 import projet.projetstage02.dto.interview.CreateInterviewDTO;
 import projet.projetstage02.dto.interview.InterviewOutDTO;
+import projet.projetstage02.dto.interview.InterviewSelectInDTO;
 import projet.projetstage02.dto.offres.OfferAcceptedStudentsDTO;
 import projet.projetstage02.dto.offres.OffreInDTO;
 import projet.projetstage02.dto.offres.OffreOutDTO;
@@ -994,5 +995,27 @@ public class RootController {
             logger.log(Level.INFO, "Put /getCompanyInterviews/{companyId} return 403");
             return ResponseEntity.status(FORBIDDEN).build();
         }
+    }
+
+    @PutMapping("/studentSelectDate")
+    public ResponseEntity<InterviewOutDTO> StudentSelectDate(@RequestBody InterviewSelectInDTO interviewDTO){
+        logger.log(Level.INFO, "Put /studentSelectDate");
+
+        try {
+            authService.getToken(interviewDTO.getToken(), STUDENT);
+            InterviewOutDTO dto = studentService.selectInterviewTime(interviewDTO);
+            logger.log(Level.INFO, "Put/studentSelectDate return 200");
+            return ResponseEntity.ok(dto);
+        } catch (NonExistentEntityException e) {
+            logger.log(Level.INFO, "Put /studentSelectDate return 404");
+            return ResponseEntity.status(NOT_FOUND).build();
+        } catch (InvalidTokenException | InvalidOwnershipException e) {
+            logger.log(Level.INFO, "Put /studentSelectDate return 403");
+            return ResponseEntity.status(FORBIDDEN).build();
+        } catch (InvalidDateFormatException e) {
+            logger.log(Level.INFO, "Put /studentSelectDate return 409");
+            return ResponseEntity.status(CONFLICT).build();
+        }
+
     }
 }
