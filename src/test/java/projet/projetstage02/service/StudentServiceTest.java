@@ -723,4 +723,31 @@ public class StudentServiceTest {
 
         fail("Fail to catch the exception InvalidDateFormatException");
     }
+
+    @Test
+    void testGetInterviewsHappyDay() throws NonExistentEntityException {
+        when(studentRepository.findById(anyLong())).thenReturn(Optional.of(bart));
+        when(interviewRepository.findByStudentId(anyLong())).thenReturn(new ArrayList<>(){{
+            add(interview);
+            add(interview);
+            add(interview);
+        }});
+
+        List<InterviewOutDTO> interviews = studentService.getInterviews(1L);
+
+        assertThat(interviews.size()).isEqualTo(3);
+    }
+
+    @Test
+    void testGetInterviewsNotFound() {
+        when(studentRepository.findById(anyLong())).thenReturn(Optional.empty());
+
+        try {
+            studentService.getInterviews(1L);
+        } catch (NonExistentEntityException e) {
+            return;
+        }
+
+        fail("Fail to catch the exception NonExistentEntityException");
+    }
 }
