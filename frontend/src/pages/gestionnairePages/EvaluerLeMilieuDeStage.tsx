@@ -587,7 +587,7 @@ const EvaluerLeMilieuDeStage = ({user}: { user: IUser }): JSX.Element => {
                                         <Col>
                                             <Form.Group>
                                                 <Form.Label className="fw-bold mt-2 h5">Date Signature(JJ-MM-AAAA)</Form.Label>
-                                                <Form.Control type="text" minLength={2} required
+                                                <Form.Control type="date" minLength={2} required
                                                               value={dateSignature}
                                                               onChange={e => setDateSignature(e.target.value)}></Form.Control>
                                                 <Form.Control.Feedback type="invalid">Champ
