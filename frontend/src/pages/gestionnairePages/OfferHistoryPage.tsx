@@ -54,46 +54,21 @@ const OfferHistoryPage = ({connectedUser}:
         }
     }
 
-    async function getEvaluation(offerId: number): Promise<void> {
-        try {
-            const response = await putEvaluationPdf(offerId.toString(), connectedUser.token)
-            if (response.ok) {
-                const data = await response.json();
-                setEcaluation(new Uint8Array(JSON.parse(data.pdf)))
-                setShowEvaluation(true);
-            } else {
-                generateAlert()
-            }
-        } catch (exception) {
-            generateAlert()
-        }
+    async function getEvaluations(offerId: number): Promise<void> {
+        window.location.href = `/consulterEvaluation/${offerId}`
     }
 
-    if (showPDF || showEvaluation) {
+    if (showPDF) {
         return (
             <Container>
                 <Container className="min-vh-100 bg-white p-0">
                     <div className="bg-dark p-2">
-                        {
-                            showPDF
-                                ?
-                                <Button className="Btn btn-primary" onClick={() => setShowPDF(false)}>
-                                    Fermer
-                                </Button>
-                                :
-                                <Button className="Btn btn-primary" onClick={() => setShowEvaluation(false)}>
-                                    Fermer
-                                </Button>
-                        }
+                        <Button className="Btn btn-primary" onClick={() => setShowPDF(false)}>
+                            Fermer
+                        </Button>
                     </div>
                     <div>
-                        {
-                            showPDF
-                                ?
-                                <Viewer fileUrl={pdf}/>
-                                :
-                                <Viewer fileUrl={evaluation}/>
-                        }
+                        <Viewer fileUrl={pdf}/>
                     </div>
                 </Container>
             </Container>
@@ -120,20 +95,17 @@ const OfferHistoryPage = ({connectedUser}:
                             <th>Départment / Position</th>
                             <th>Heure Par Semaine / Salaire</th>
                             <th>Pdf</th>
-                            <th>Évalutation</th>
                         </tr>
                         </thead>
                         <tbody className="bg-light">
                         {offers.map((offer, index) => {
                             return (
-                                <tr key={index}>
+                                <tr key={index} onClick={() => getEvaluations(offer.id)}>
                                     <td>{offer.nomDeCompagnie} <br/> {offer.adresse}</td>
                                     <td>{offer.department} <br/> {offer.position}</td>
                                     <td>{offer.heureParSemaine} <br/> {offer.salaire}$/h</td>
                                     <td><Button className="btn btn-warning"
                                                 onClick={async () => await getPDF(offer.id)}>pdf</Button></td>
-                                    <td><Button onClick={async () => await getEvaluation(offer.id)}>Évaluation</Button>
-                                    </td>
                                 </tr>
                             );
                         })}
