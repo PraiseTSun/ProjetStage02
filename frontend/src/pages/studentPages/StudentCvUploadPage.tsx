@@ -16,7 +16,7 @@ export const statusCV: CvStatus = {
 const StudentCvUploadPage = ({connectedUser}: { connectedUser: IUser }) => {
     const [waiting, setWaiting] = useState<boolean>(false);
     const [validated, setValidated] = useState<boolean>(false);
-    const [cv, setCv] = useState<number[]>([0])
+    const [cvToValidate , setCvToValidate] = useState<number[]>([0])
     const [isChoisi, setIsChoisi] = useState<boolean>(false)
     const [cvStatus, setCvStatus] = useState<CvStatus>(statusCV)
     const [showCV, setShowCV] = useState<boolean>(false)
@@ -42,9 +42,10 @@ const StudentCvUploadPage = ({connectedUser}: { connectedUser: IUser }) => {
             setWaiting(true)
 
             try {
-                const response = await putUploadStudentCV(connectedUser.id, cv, connectedUser.token)
+                const response = await putUploadStudentCV(connectedUser.id, cvToValidate , connectedUser.token)
 
                 if (response.ok) {
+                    connectedUser.cvToValidate =  JSON.stringify(cvToValidate)
                     alert("CV envoyé")
                 } else {
                     generateAlert()
@@ -70,7 +71,7 @@ const StudentCvUploadPage = ({connectedUser}: { connectedUser: IUser }) => {
         const fileText = await file.arrayBuffer()
         const view = new Uint8Array(fileText)
         const array = intToByteArray(view)
-        setCv(array)
+        setCvToValidate (array)
         setIsChoisi(true)
     }
     if (waiting) {
@@ -89,14 +90,6 @@ const StudentCvUploadPage = ({connectedUser}: { connectedUser: IUser }) => {
         }
         setShowCV(true);
 
-    }
-
-    async function getCvToValidate(): Promise<void> {
-        if (connectedUser.cvToValidate == null) {
-            alert("Il y a pas de CV a valider courant, svp envoyez votre CV")
-            return;
-        }
-        setShowCvToValidate(true);
     }
 
     if (showCV) {
@@ -176,21 +169,14 @@ const StudentCvUploadPage = ({connectedUser}: { connectedUser: IUser }) => {
                         <td className="text-center">{cvStatus.status}</td>
                     </tr>
                     <tr>
-                        <th data-testid="RefusalMessage"> Refusal Message :</th>
+                        <th data-testid="RefusalMessage"> Message de refus :</th>
                         <td className="text-center">{cvStatus.refusalMessage}</td>
                     </tr>
                     <tr>
                         <th>Cv To Validate :</th>
                         <td data-testid="CvToValidate" className="text-center">
-                            {
-                                connectedUser.cvToValidate?.length == 2 ?
-
-                                    <Button className="btn" disabled onClick={async () => await getCvToValidate()}>Cv To
-                                        Validate</Button>
-                                    :
-                                    <Button className="btn" onClick={async () => await getCvToValidate()}>Cv To
-                                        Validate</Button>
-                            }
+                            <Button className="btn" disabled={connectedUser.cvToValidate?.length == 2}
+                                    onClick={() => setShowCvToValidate(true)}>Cv à valider</Button>
                         </td>
                     </tr>
                     </tbody>
