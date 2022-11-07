@@ -351,7 +351,7 @@ const EvaluerLeMilieuDeStage = ({user}: { user: IUser }): JSX.Element => {
                                         <Col>
                                             <Form.Group>
                                                 <Form.Label className="fw-bold h5">Premier mois</Form.Label>
-                                                <Form.Control type="text" minLength={2} required
+                                                <Form.Control type="number" minLength={2} required
                                                               value={heureTotalPremierMois}
                                                               onChange={e => setHeureTotalPremierMois(Number(e.target.value))}></Form.Control>
                                                 <Form.Control.Feedback type="invalid">Premier mois
@@ -361,7 +361,7 @@ const EvaluerLeMilieuDeStage = ({user}: { user: IUser }): JSX.Element => {
                                         <Col>
                                             <Form.Group>
                                                 <Form.Label className="fw-bold h5">Deuxième mois</Form.Label>
-                                                <Form.Control type="text" minLength={2} required
+                                                <Form.Control type="number" minLength={2} required
                                                               value={heureTotalDeuxiemeMois}
                                                               onChange={e => setHeureTotalDeuxiemeMois(Number(e.target.value))}></Form.Control>
                                                 <Form.Control.Feedback type="invalid">Deuxième mois
@@ -371,7 +371,7 @@ const EvaluerLeMilieuDeStage = ({user}: { user: IUser }): JSX.Element => {
                                         <Col>
                                             <Form.Group>
                                                 <Form.Label className="fw-bold h5">Troisième mois</Form.Label>
-                                                <Form.Control type="text" minLength={2} required
+                                                <Form.Control type="number" minLength={2} required
                                                               value={heureTotalTroisiemeMois}
                                                               onChange={e => setHeureTotalTroisiemeMois(Number(e.target.value))}></Form.Control>
                                                 <Form.Control.Feedback type="invalid">Troisième mois
@@ -481,7 +481,7 @@ const EvaluerLeMilieuDeStage = ({user}: { user: IUser }): JSX.Element => {
                                         <Col className="fw-bold h5 text-nowrap col-2">Préciser :
                                         </Col>
                                         <Col className="col-8">
-                                            <Form.Control type="text" required value={salaireParHeure}
+                                            <Form.Control type="number" required value={salaireParHeure}
                                                           onChange={e => setSalaireParHeure(e.target.value)}></Form.Control>
                                         </Col>
                                         <Col className="fw-bold h5 col-2">/l'heure. </Col>
