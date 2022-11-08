@@ -6,11 +6,11 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import projet.projetstage02.dto.*;
+import projet.projetstage02.dto.SignatureInDTO;
 import projet.projetstage02.dto.applications.ApplicationDTO;
 import projet.projetstage02.dto.applications.ApplicationListDTO;
-import projet.projetstage02.dto.cv.CvStatusDTO;
 import projet.projetstage02.dto.contracts.StageContractOutDTO;
+import projet.projetstage02.dto.cv.CvStatusDTO;
 import projet.projetstage02.dto.interview.InterviewOutDTO;
 import projet.projetstage02.dto.interview.InterviewSelectInDTO;
 import projet.projetstage02.dto.offres.OffreOutDTO;
@@ -117,7 +117,7 @@ public class StudentServiceTest {
                 .companyId(0L)
                 .offerId(0L)
                 .studentId(bart.getId())
-                .companyDateOffers(new ArrayList<>(){{
+                .companyDateOffers(new ArrayList<>() {{
                     add(LocalDateTime.parse("2022-11-28T12:30:30"));
                     add(LocalDateTime.parse("2022-11-29T12:30:30"));
                     add(LocalDateTime.parse("2022-11-30T12:30:30"));
@@ -645,25 +645,26 @@ public class StudentServiceTest {
 
         InterviewOutDTO dto = studentService.selectInterviewTime(interviewSelectInDTO);
 
-        verify(interviewRepository,times(1)).save(any());
+        verify(interviewRepository, times(1)).save(any());
         assertThat(dto.getStudentSelectedDate()).isEqualTo(interviewSelectInDTO.getSelectedDate());
     }
 
     @Test
-    void testSelectInterviewTimeStudentNotFound(){
+    void testSelectInterviewTimeStudentNotFound() {
         when(studentRepository.findById(anyLong())).thenReturn(Optional.empty());
 
         try {
             studentService.selectInterviewTime(interviewSelectInDTO);
         } catch (NonExistentEntityException e) {
             return;
-        } catch (InvalidOwnershipException | InvalidDateFormatException | InvalidDateException ignored) { }
+        } catch (InvalidOwnershipException | InvalidDateFormatException | InvalidDateException ignored) {
+        }
 
         fail("Fail to catch the exception NonExistentEntityException");
     }
 
     @Test
-    void testSelectInterviewTimeInterviewNotFound(){
+    void testSelectInterviewTimeInterviewNotFound() {
         when(studentRepository.findById(anyLong())).thenReturn(Optional.of(bart));
         when(interviewRepository.findById(anyLong())).thenReturn(Optional.empty());
 
@@ -671,13 +672,14 @@ public class StudentServiceTest {
             studentService.selectInterviewTime(interviewSelectInDTO);
         } catch (NonExistentEntityException e) {
             return;
-        } catch (InvalidOwnershipException | InvalidDateFormatException | InvalidDateException ignored) { }
+        } catch (InvalidOwnershipException | InvalidDateFormatException | InvalidDateException ignored) {
+        }
 
         fail("Fail to catch the exception NonExistentEntityException");
     }
 
     @Test
-    void testSelectInterviewTimeForbidden(){
+    void testSelectInterviewTimeForbidden() {
         bart.setId(0L);
         when(studentRepository.findById(anyLong())).thenReturn(Optional.of(bart));
         when(interviewRepository.findById(anyLong())).thenReturn(Optional.of(interview));
@@ -686,37 +688,40 @@ public class StudentServiceTest {
             studentService.selectInterviewTime(interviewSelectInDTO);
         } catch (InvalidOwnershipException e) {
             return;
-        } catch (NonExistentEntityException | InvalidDateFormatException | InvalidDateException ignored) { }
+        } catch (NonExistentEntityException | InvalidDateFormatException | InvalidDateException ignored) {
+        }
 
         fail("Fail to catch the exception InvalidOwnershipException");
     }
 
     @Test
-    void testSelectInterviewTimeWrongDateConflict(){
+    void testSelectInterviewTimeWrongDateConflict() {
         interviewSelectInDTO.setSelectedDate("test");
         when(studentRepository.findById(anyLong())).thenReturn(Optional.of(bart));
         when(interviewRepository.findById(anyLong())).thenReturn(Optional.of(interview));
 
         try {
             studentService.selectInterviewTime(interviewSelectInDTO);
-        } catch ( InvalidDateFormatException e) {
+        } catch (InvalidDateFormatException e) {
             return;
-        } catch (NonExistentEntityException | InvalidOwnershipException | InvalidDateException ignored) { }
+        } catch (NonExistentEntityException | InvalidOwnershipException | InvalidDateException ignored) {
+        }
 
         fail("Fail to catch the exception InvalidDateFormatException");
     }
 
     @Test
-    void testSelectInterviewTimeChoiceDateConflict(){
+    void testSelectInterviewTimeChoiceDateConflict() {
         interviewSelectInDTO.setSelectedDate("2022-11-29T12:30:00");
         when(studentRepository.findById(anyLong())).thenReturn(Optional.of(bart));
         when(interviewRepository.findById(anyLong())).thenReturn(Optional.of(interview));
 
         try {
             studentService.selectInterviewTime(interviewSelectInDTO);
-        } catch ( InvalidDateFormatException e) {
+        } catch (InvalidDateException e) {
             return;
-        } catch (NonExistentEntityException | InvalidOwnershipException | InvalidDateException ignored) { }
+        } catch (NonExistentEntityException | InvalidOwnershipException | InvalidDateFormatException ignored) {
+        }
 
         fail("Fail to catch the exception InvalidDateFormatException");
     }
@@ -724,7 +729,7 @@ public class StudentServiceTest {
     @Test
     void testGetInterviewsHappyDay() throws NonExistentEntityException {
         when(studentRepository.findById(anyLong())).thenReturn(Optional.of(bart));
-        when(interviewRepository.findByStudentId(anyLong())).thenReturn(new ArrayList<>(){{
+        when(interviewRepository.findByStudentId(anyLong())).thenReturn(new ArrayList<>() {{
             add(interview);
             add(interview);
             add(interview);
