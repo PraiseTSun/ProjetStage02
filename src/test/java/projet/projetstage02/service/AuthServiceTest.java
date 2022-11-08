@@ -6,8 +6,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import projet.projetstage02.DTO.LoginDTO;
-import projet.projetstage02.DTO.TokenDTO;
+import projet.projetstage02.dto.auth.LoginDTO;
+import projet.projetstage02.dto.auth.TokenDTO;
 import projet.projetstage02.exception.InvalidTokenException;
 import projet.projetstage02.model.*;
 import projet.projetstage02.repository.CompanyRepository;
@@ -44,8 +44,9 @@ public class AuthServiceTest {
     private Company companyTest;
     private Student studentTest;
     TokenDTO tokenDTO;
+
     @BeforeEach
-    void setup(){
+    void setup() {
         gestionnaireTest = new Gestionnaire(
                 "prenom",
                 "nom",
@@ -92,153 +93,172 @@ public class AuthServiceTest {
         //Arrange
         studentTest.setEmailConfirmed(true);
         studentTest.setConfirm(true);
-        when(studentRepository.findByEmailAndPassword(any(),any()))
+        when(studentRepository.findByEmailAndPassword(any(), any()))
                 .thenReturn(Optional.of(studentTest));
         //Act
-        String token = service.loginIfValid(studentLoginDTO,STUDENT);
+        String token = service.loginIfValid(studentLoginDTO, STUDENT);
         //Assert
         assertThat(token).isNotNull();
     }
+
     @Test
     void testLoginStudentNotFound() {
         //Arrange
         studentTest.setEmailConfirmed(true);
-        when(studentRepository.findByEmailAndPassword(any(),any()))
+        when(studentRepository.findByEmailAndPassword(any(), any()))
                 .thenReturn(Optional.empty());
         //Act
         try {
-            service.loginIfValid(studentLoginDTO,STUDENT);
-        }catch (InvalidTokenException e){
-        //Assert
+            service.loginIfValid(studentLoginDTO, STUDENT);
+        } catch (InvalidTokenException e) {
+            //Assert
             return;
-        };
+        }
+        ;
         fail();
     }
+
     @Test
-    void testLoginStudentEmailUnconfirmed(){
+    void testLoginStudentEmailUnconfirmed() {
         //Arrange
         studentTest.setConfirm(true);
-        when(studentRepository.findByEmailAndPassword(any(),any()))
+        when(studentRepository.findByEmailAndPassword(any(), any()))
                 .thenReturn(Optional.of(studentTest));
         //Act
         try {
-            service.loginIfValid(studentLoginDTO,STUDENT);
-        }catch (InvalidTokenException e){
+            service.loginIfValid(studentLoginDTO, STUDENT);
+        } catch (InvalidTokenException e) {
             //Assert
             return;
-        };
+        }
+        ;
         fail();
     }
+
     @Test
-    void testLoginStudentUnconfirmed(){
+    void testLoginStudentUnconfirmed() {
         //Arrange
         studentTest.setEmailConfirmed(true);
-        when(studentRepository.findByEmailAndPassword(any(),any()))
+        when(studentRepository.findByEmailAndPassword(any(), any()))
                 .thenReturn(Optional.of(studentTest));
         //Act
         try {
-            service.loginIfValid(studentLoginDTO,STUDENT);
-        }catch (InvalidTokenException e){
+            service.loginIfValid(studentLoginDTO, STUDENT);
+        } catch (InvalidTokenException e) {
             //Assert
             return;
-        };
+        }
+        ;
         fail();
     }
+
     @Test
     void testLoginCompanyHappyDay() throws InvalidTokenException {
         //Arrange
         companyTest.setEmailConfirmed(true);
         companyTest.setConfirm(true);
-        when(companyRepository.findByEmailAndPassword(any(),any()))
+        when(companyRepository.findByEmailAndPassword(any(), any()))
                 .thenReturn(Optional.of(companyTest));
         //Act
-        String token = service.loginIfValid(companyLoginDTO,COMPANY);
+        String token = service.loginIfValid(companyLoginDTO, COMPANY);
         //Assert
         assertThat(token).isNotNull();
     }
+
     @Test
     void testLoginCompanyNotFound() {
         //Arrange
         companyTest.setEmailConfirmed(true);
         //Act
         try {
-            service.loginIfValid(companyLoginDTO,COMPANY);
-        }catch (InvalidTokenException e){
+            service.loginIfValid(companyLoginDTO, COMPANY);
+        } catch (InvalidTokenException e) {
             //Assert
             return;
-        };
+        }
+        ;
         fail();
     }
+
     @Test
     void testLoginCompanyEmailUnconfirmed() {
         //Arrange
         companyTest.setConfirm(true);
-        when(companyRepository.findByEmailAndPassword(any(),any()))
+        when(companyRepository.findByEmailAndPassword(any(), any()))
                 .thenReturn(Optional.of(companyTest));
         //Act
         try {
-            service.loginIfValid(companyLoginDTO,COMPANY);
-        }catch (InvalidTokenException e){
+            service.loginIfValid(companyLoginDTO, COMPANY);
+        } catch (InvalidTokenException e) {
             //Assert
             return;
-        };
+        }
+        ;
         fail();
     }
+
     @Test
     void testLoginCompanyUnconfirmed() {
         //Arrange
         companyTest.setEmailConfirmed(true);
-        when(companyRepository.findByEmailAndPassword(any(),any()))
+        when(companyRepository.findByEmailAndPassword(any(), any()))
                 .thenReturn(Optional.of(companyTest));
         //Act
         try {
-            service.loginIfValid(companyLoginDTO,COMPANY);
-        }catch (InvalidTokenException e){
+            service.loginIfValid(companyLoginDTO, COMPANY);
+        } catch (InvalidTokenException e) {
             //Assert
             return;
-        };
+        }
+        ;
         fail();
     }
+
     @Test
     void testLoginGestionnaireHappyDay() throws InvalidTokenException {
         //Arrange
         gestionnaireTest.setEmailConfirmed(true);
-        when(gestionnaireRepository.findByEmailAndPassword(any(),any()))
+        when(gestionnaireRepository.findByEmailAndPassword(any(), any()))
                 .thenReturn(Optional.of(gestionnaireTest));
         //Act
-        String token = service.loginIfValid(gestionnaireLoginDTO,GESTIONNAIRE);
+        String token = service.loginIfValid(gestionnaireLoginDTO, GESTIONNAIRE);
         //Assert
         assertThat(token).isNotNull();
     }
+
     @Test
     void testLoginGestionnaireNotFound() {
         //Arrange
         gestionnaireTest.setEmailConfirmed(true);
-        when(gestionnaireRepository.findByEmailAndPassword(any(),any()))
+        when(gestionnaireRepository.findByEmailAndPassword(any(), any()))
                 .thenReturn(Optional.empty());
         //Act
         try {
-            service.loginIfValid(gestionnaireLoginDTO,GESTIONNAIRE);
-        }catch (InvalidTokenException e){
+            service.loginIfValid(gestionnaireLoginDTO, GESTIONNAIRE);
+        } catch (InvalidTokenException e) {
             //Assert
             return;
-        };
+        }
+        ;
         fail();
     }
+
     @Test
     void testLoginGestionnaireEmailUnconfirmed() {
         //Arrange
-        when(gestionnaireRepository.findByEmailAndPassword(any(),any()))
+        when(gestionnaireRepository.findByEmailAndPassword(any(), any()))
                 .thenReturn(Optional.of(gestionnaireTest));
         //Act
         try {
-            service.loginIfValid(gestionnaireLoginDTO,GESTIONNAIRE);
-        }catch (InvalidTokenException e){
+            service.loginIfValid(gestionnaireLoginDTO, GESTIONNAIRE);
+        } catch (InvalidTokenException e) {
             //Assert
             return;
-        };
+        }
+        ;
         fail();
     }
+
     @Test
     void testGetTokenStudentHappyDay() throws InvalidTokenException {
         //Arrange
@@ -251,6 +271,7 @@ public class AuthServiceTest {
         //Assert
         assertThat(token.getToken()).isEqualTo(tokenDTO.getToken());
     }
+
     @Test
     void getTokenCompanyHappyDay() throws InvalidTokenException {
 
@@ -264,6 +285,7 @@ public class AuthServiceTest {
         //Assert
         assertThat(token.getToken()).isEqualTo(tokenDTO.getToken());
     }
+
     @Test
     void getTokenGestionnaireHappyDay() throws InvalidTokenException {
 
@@ -277,57 +299,60 @@ public class AuthServiceTest {
         //Assert
         assertThat(token.getToken()).isEqualTo(tokenDTO.getToken());
     }
+
     @Test
-    void getTokenStudentExpired()  {
+    void getTokenStudentExpired() {
         //Arrange
         when(tokenRepository.findById(any())).thenReturn(
                 Optional.of(Token.builder().token(tokenDTO.getToken())
                         .userType(STUDENT)
                         .build()));
         //Act
-        try{
+        try {
             service.getToken(tokenDTO.getToken(), STUDENT);
-        }catch (InvalidTokenException e){
-        //Assert
+        } catch (InvalidTokenException e) {
+            //Assert
             return;
         }
         fail();
     }
 
     @Test
-    void getTokenCompanyExpired(){
+    void getTokenCompanyExpired() {
         //Arrange
         when(tokenRepository.findById(any())).thenReturn(
                 Optional.of(Token.builder().token(tokenDTO.getToken())
                         .userType(COMPANY)
                         .build()));
         //Act
-        try{
+        try {
             service.getToken(tokenDTO.getToken(), COMPANY);
-        }catch (InvalidTokenException e){
+        } catch (InvalidTokenException e) {
             //Assert
             return;
         }
         fail();
     }
+
     @Test
-    void getTokenGestionnaireExpired(){
+    void getTokenGestionnaireExpired() {
         //Arrange
         when(tokenRepository.findById(any())).thenReturn(
                 Optional.of(Token.builder().token(tokenDTO.getToken())
                         .userType(GESTIONNAIRE)
                         .build()));
         //Act
-        try{
+        try {
             service.getToken(tokenDTO.getToken(), GESTIONNAIRE);
-        }catch (InvalidTokenException e){
+        } catch (InvalidTokenException e) {
             //Assert
             return;
         }
         fail();
     }
+
     @Test
-    void getTokenStudentWrongUser(){
+    void getTokenStudentWrongUser() {
         //Arrange
         when(tokenRepository.findById(any())).thenReturn(
                 Optional.of(Token.builder().token(tokenDTO.getToken())
@@ -335,16 +360,17 @@ public class AuthServiceTest {
                         .userType(GESTIONNAIRE)
                         .build()));
         //Act
-        try{
+        try {
             service.getToken(tokenDTO.getToken(), STUDENT);
-        }catch (InvalidTokenException e){
+        } catch (InvalidTokenException e) {
             //Assert
             return;
         }
         fail();
     }
+
     @Test
-    void getTokenCompanyWrongUser(){
+    void getTokenCompanyWrongUser() {
         //Arrange
         when(tokenRepository.findById(any())).thenReturn(
                 Optional.of(Token.builder().token(tokenDTO.getToken())
@@ -352,16 +378,17 @@ public class AuthServiceTest {
                         .userType(GESTIONNAIRE)
                         .build()));
         //Act
-        try{
+        try {
             service.getToken(tokenDTO.getToken(), COMPANY);
-        }catch (InvalidTokenException e){
+        } catch (InvalidTokenException e) {
             //Assert
             return;
         }
         fail();
     }
+
     @Test
-    void getTokenGestionnaireWrongUser(){
+    void getTokenGestionnaireWrongUser() {
         //Arrange
         when(tokenRepository.findById(any())).thenReturn(
                 Optional.of(Token.builder().token(tokenDTO.getToken())
@@ -369,51 +396,54 @@ public class AuthServiceTest {
                         .userType(STUDENT)
                         .build()));
         //Act
-        try{
+        try {
             service.getToken(tokenDTO.getToken(), GESTIONNAIRE);
-        }catch (InvalidTokenException e){
+        } catch (InvalidTokenException e) {
             //Assert
             return;
         }
         fail();
     }
+
     @Test
-    void getTokenStudentNotFound(){
+    void getTokenStudentNotFound() {
         //Arrange
         when(tokenRepository.findById(any())).thenReturn(
                 Optional.empty());
         //Act
-        try{
+        try {
             service.getToken(tokenDTO.getToken(), STUDENT);
-        }catch (InvalidTokenException e){
+        } catch (InvalidTokenException e) {
             //Assert
             return;
         }
         fail();
     }
+
     @Test
-    void getTokenCompanyNotFound(){
+    void getTokenCompanyNotFound() {
         //Arrange
         when(tokenRepository.findById(any())).thenReturn(
                 Optional.empty());
         //Act
-        try{
+        try {
             service.getToken(tokenDTO.getToken(), COMPANY);
-        }catch (InvalidTokenException e){
+        } catch (InvalidTokenException e) {
             //Assert
             return;
         }
         fail();
     }
+
     @Test
-    void testGetTokenGestionnaireNotFound(){
+    void testGetTokenGestionnaireNotFound() {
         //Arrange
         when(tokenRepository.findById(any())).thenReturn(
                 Optional.empty());
         //Act
-        try{
+        try {
             service.getToken(tokenDTO.getToken(), GESTIONNAIRE);
-        }catch (InvalidTokenException e){
+        } catch (InvalidTokenException e) {
             //Assert
             return;
         }

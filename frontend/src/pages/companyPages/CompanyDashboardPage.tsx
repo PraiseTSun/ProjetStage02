@@ -13,6 +13,10 @@ const CompanyDashboard = ({user, deconnexion}: { user: IUser, deconnexion: Funct
             <Row className="d-flex justify-content-center">
                 <Link to="/soumettreOffre"
                       className="btn btn-primary">Soumettre une offre de stage</Link>
+                <Link to="/myOffers"
+                      className="btn btn-primary mt-3">Mes offres</Link>
+                <Link to="/SignerEntenteDeStageParCompagnie"
+                      className="btn btn-primary mt-3">Signer l'entente de stage</Link>
             </Row>
         </>
     );

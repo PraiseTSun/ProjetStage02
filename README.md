@@ -33,16 +33,15 @@ Notre définition de Done est:
 - 3 daily / semaine
   - Lundi durant la pause du cours (Class)
   - Mercredi 17:00 (Class)
-  - Vendredi 14:30 (TEAM)
+  - Vendredi 11:20 (TEAM)
 - Autour de 24h de travail par personne dans un sprint.
 - Ordre d'execution des story
-  1. API
-     - Fait par la personne qui fait le Backend
-  2. Backend / Frontend
-  3. Plan de démo
+  1. Backend / Frontend
+  2. Plan de démo
      - Fait par la personne qui fait le Frontend
      - Elle est fait dans l'onglet story
-- Le code review doit être en dedans de 2 jours
+- Attribuer le code review au Daily Stand Up pour qu'ils soyent fait tout de suite
+- Attribuer les tâches avant le début du sprint
 
 ## Syntaxe
 - Branche

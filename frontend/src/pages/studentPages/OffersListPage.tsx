@@ -119,12 +119,14 @@ const OffersListPage = ({connectedUser}:
                         <thead className="bg-primary text-white">
                         <tr>
                             <th>Compagnie</th>
+                            <th>Adresse</th>
                             <th>Position</th>
                             <th>Heures par semaine</th>
                             <th>Salaire</th>
-                            <th>Adresse</th>
+                            <th>Date de début</th>
+                            <th>Date de fin</th>
                             <th>Offre</th>
-                            <th></th>
+                            <th>Appliquer</th>
                         </tr>
                         </thead>
                         <tbody className="bg-light">
@@ -132,23 +134,27 @@ const OffersListPage = ({connectedUser}:
                             return (
                                 <tr key={index}>
                                     <td>{offer.nomDeCompagnie}</td>
+                                    <td>{offer.adresse}</td>
                                     <td>{offer.position}</td>
                                     <td>{offer.heureParSemaine}</td>
-                                    <td>{offer.salaire}$</td>
-                                    <td>{offer.adresse}</td>
+                                    <td>{offer.salaire}$/h</td>
+                                    <td>{offer.dateStageDebut}</td>
+                                    <td>{offer.dateStageFin}</td>
                                     <td><Button className="btn btn-warning" onClick={
                                         async () => await getPDF(offer.id)
                                     }>PDF</Button></td>
                                     <td>
                                         {connectedUser.cv === null &&
                                             <p className="h4 text-danger">Vous n'avez pas de CV</p>}
-                                        {connectedUser.cv !== null && studentApplys.offersId.includes(offer.id) &&
-                                            <p className="h4 text-success">Déjà Postulé</p>}
-                                        {connectedUser.cv !== null && !studentApplys.offersId.includes(offer.id) &&
-                                            <Button
-                                                className="btn btn-success" onClick={async () => {
-                                                await applyToOffer(offer.id)
-                                            }}>Postuler</Button>}
+                                        {connectedUser.cv !== null &&
+                                            <>
+                                                {studentApplys.offersId.includes(offer.id) &&
+                                                    <p className="h4 text-success">Déjà Postulé</p>}
+                                                <Button disabled={studentApplys.offersId.includes(offer.id)}
+                                                        className="btn btn-success" onClick={async () => {
+                                                    await applyToOffer(offer.id)
+                                                }}>Postuler</Button>
+                                            </>}
                                     </td>
                                 </tr>
                             );

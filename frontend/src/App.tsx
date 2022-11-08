@@ -15,6 +15,10 @@ import OffersListPage from './pages/studentPages/OffersListPage';
 import StudentCvUploadPage from './pages/studentPages/StudentCvUploadPage';
 import {putUserType} from "./services/universalServices/UniversalFetchService";
 import OfferHistoryPage from "./pages/gestionnairePages/OfferHistoryPage";
+import SignerEntenteDeStageParCompagnie from "./pages/companyPages/SignerEntenteDeStageParCompagnie";
+import CompanyOffersPage from "./pages/companyPages/CompanyOffersPage";
+import StudentContractsPage from "./pages/studentPages/StudentContractsPage";
+import ContractsPage from "./pages/gestionnairePages/ContractsPage";
 
 export const LOCAL_STORAGE_KEY = "MASSI_BEST_PROGRAMMER_PROJET_STAGE_02_CURRENT_CONNECTED_USER"
 export const emptyUser: IUser = {
@@ -105,10 +109,10 @@ function App() {
                         <Route path="/" element={<StudentDashboard deconnexion={deconnexion} user={connectedUser}/>}/>
                         <Route path="/offres" element={<OffersListPage connectedUser={connectedUser}/>}/>
                         <Route path="/uploaderCV" element={<StudentCvUploadPage connectedUser={connectedUser}/>}/>
+                        <Route path="/myContracts" element={<StudentContractsPage connectedUser={connectedUser}/>}/>
                         <Route path="*"
                                element={<h1 className="min-vh-100 text-center text-white display-1 min-vh-100">404 -
-                                   Page pas
-                                   trouvé</h1>}/>
+                                   Page pas trouvé</h1>}/>
                     </Routes>
                 </BrowserRouter>
             </Container>
@@ -120,9 +124,11 @@ function App() {
                     <Routes>
                         <Route path="/" element={<CompanyDashboard deconnexion={deconnexion} user={connectedUser}/>}/>
                         <Route path="/soumettreOffre" element={<OffreSoumissionPage user={connectedUser}/>}/>
+                        <Route path="/myOffers" element={<CompanyOffersPage connectedUser={connectedUser}/>}/>
                         <Route path="*"
                                element={<h1 className="min-vh-100 text-center text-white display-1">404 - Page pas
                                    trouvé</h1>}/>
+                        <Route path="/SignerEntenteDeStageParCompagnie" element={<SignerEntenteDeStageParCompagnie user={connectedUser}/>}/>
                     </Routes>
                 </BrowserRouter>
             </Container>
@@ -135,6 +141,8 @@ function App() {
                         <Route path="/"
                                element={<GestionnaireDashboard deconnexion={deconnexion} user={connectedUser}/>}/>
                         <Route path="/userValidation" element={<UserValidation connectedUser={connectedUser}/>}/>
+                        <Route path="/acceptationsValidation"
+                               element={<ContractsPage connectedUser={connectedUser}/>}/>
                         <Route path="/cvValidation"
                                element={<StudentCvValidationPage connectedUser={connectedUser}/>}/>
                         <Route path="/offerHistory"

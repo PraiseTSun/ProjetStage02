@@ -6,22 +6,20 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
-import javax.validation.constraints.NotBlank;
 
 @Entity
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+//TODO rename to AcceptedApplication
 public class ApplicationAcceptation {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "id", nullable = false)
     private Long id;
-    @NotBlank
     private long studentId;
     private String studentName;
-    @NotBlank
     private long offerId;
     private String companyName;
 }

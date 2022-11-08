@@ -11,9 +11,35 @@ import org.springframework.boot.test.json.JacksonTester;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-import projet.projetstage02.DTO.*;
+import projet.projetstage02.dto.SignatureInDTO;
+import projet.projetstage02.dto.applications.ApplicationAcceptationDTO;
+import projet.projetstage02.dto.applications.ApplicationDTO;
+import projet.projetstage02.dto.applications.ApplicationListDTO;
+import projet.projetstage02.dto.applications.OfferApplicationDTO;
+import projet.projetstage02.dto.auth.LoginDTO;
+import projet.projetstage02.dto.auth.TokenDTO;
+import projet.projetstage02.dto.contracts.ContractsDTO;
+import projet.projetstage02.dto.contracts.StageContractInDTO;
+import projet.projetstage02.dto.contracts.StageContractOutDTO;
+import projet.projetstage02.dto.cv.CvRefusalDTO;
+import projet.projetstage02.dto.cv.CvStatusDTO;
+import projet.projetstage02.dto.evaluations.MillieuStage.MillieuStageEvaluationInDTO;
+import projet.projetstage02.dto.evaluations.MillieuStage.MillieuStageEvaluationInfoDTO;
+import projet.projetstage02.dto.interview.CreateInterviewDTO;
+import projet.projetstage02.dto.interview.InterviewOutDTO;
+import projet.projetstage02.dto.interview.InterviewSelectInDTO;
+import projet.projetstage02.dto.offres.OfferAcceptedStudentsDTO;
+import projet.projetstage02.dto.offres.OffreInDTO;
+import projet.projetstage02.dto.offres.OffreOutDTO;
+import projet.projetstage02.dto.pdf.PdfDTO;
+import projet.projetstage02.dto.pdf.PdfOutDTO;
+import projet.projetstage02.dto.users.CompanyDTO;
+import projet.projetstage02.dto.users.GestionnaireDTO;
+import projet.projetstage02.dto.users.Students.StudentInDTO;
+import projet.projetstage02.dto.users.Students.StudentOutDTO;
 import projet.projetstage02.exception.*;
 import projet.projetstage02.model.AbstractUser.Department;
+import projet.projetstage02.model.Offre;
 import projet.projetstage02.model.Token;
 import projet.projetstage02.service.AuthService;
 import projet.projetstage02.service.CompanyService;
@@ -23,7 +49,6 @@ import projet.projetstage02.service.StudentService;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import static org.hamcrest.core.Is.is;
@@ -63,6 +88,10 @@ public class RootControllerTest {
     JacksonTester<TokenDTO> jsonTokenDTO;
     JacksonTester<CvRefusalDTO> jsonCvRefusalDTO;
     JacksonTester<PdfDTO> jsonPdfDTO;
+    JacksonTester<SignatureInDTO> jsonSignatureDTO;
+    JacksonTester<MillieuStageEvaluationInDTO> jsonEvalInDTO;
+    JacksonTester<InterviewOutDTO> jsonInterviewOutDTO;
+    JacksonTester<InterviewSelectInDTO> jsonInterviewSelectDTO;
 
     StudentInDTO bart;
     StudentOutDTO bartOut;
@@ -79,7 +108,18 @@ public class RootControllerTest {
     ApplicationListDTO bartApplys;
     ApplicationAcceptationDTO applicationDTO;
     OfferAcceptedStudentsDTO acceptedStudentsDTO;
+    StageContractInDTO stageContractInDTO;
+    StageContractOutDTO stageContractOutDTO;
+    SignatureInDTO signatureInDTO;
+    ContractsDTO contractsDTO;
+    OfferApplicationDTO offerApplicationDTO;
 
+    CvStatusDTO cvStatusDTO;
+    MillieuStageEvaluationInfoDTO evalInfoDTO;
+    MillieuStageEvaluationInDTO evalInDTO;
+    CreateInterviewDTO createInterviewDTO;
+    InterviewOutDTO interviewOutDTO;
+    InterviewSelectInDTO interviewSelectInDTO;
     // https://thepracticaldeveloper.com/guide-spring-boot-controller-tests/
     @BeforeEach
     void setup() {
@@ -127,6 +167,8 @@ public class RootControllerTest {
                 .position("Delivery Guy")
                 .heureParSemaine(40)
                 .salaire(40)
+                .dateStageDebut("2020-01-01")
+                .dateStageFin("2020-01-01")
                 .session("Hiver 2022")
                 .adresse("654 Duff Street")
                 .pdf(new byte[0])
@@ -164,7 +206,7 @@ public class RootControllerTest {
 
         bartApplys = ApplicationListDTO.builder()
                 .studentId(bart.getId())
-                .offersId(Arrays.asList(duffOffre.getId()))
+                .offersId(List.of(duffOffre.getId()))
                 .build();
 
         cvRefusalDTO = CvRefusalDTO.builder()
@@ -185,6 +227,96 @@ public class RootControllerTest {
                 .studentsId(new ArrayList<>() {{
                     add(bart.getId());
                 }})
+                .build();
+
+        offerApplicationDTO = OfferApplicationDTO.builder().applicants(List.of(
+                StudentOutDTO.builder().build(),
+                StudentOutDTO.builder().build(),
+                StudentOutDTO.builder().build()
+        )).build();
+
+        cvStatusDTO = CvStatusDTO.builder()
+                .status("ACCEPTED")
+                .refusalMessage("")
+                .build();
+
+        stageContractInDTO = StageContractInDTO.builder()
+                .studentId(7L)
+                .offerId(8L)
+                .build();
+
+        signatureInDTO = SignatureInDTO.builder()
+                .token(token.getToken())
+                .contractId(10L)
+                .userId(11L)
+                .signature("")
+                .build();
+
+        stageContractOutDTO = StageContractOutDTO.builder()
+                .contractId(9L)
+                .studentId(7L)
+                .offerId(8L)
+                .companyId(6L)
+                .description("description")
+                .companySignature(signatureInDTO.getSignature())
+                .studentSignature(signatureInDTO.getSignature())
+                .build();
+
+        contractsDTO = new ContractsDTO();
+        contractsDTO.add(stageContractOutDTO);
+        contractsDTO.add(stageContractOutDTO);
+
+        evalInfoDTO = new MillieuStageEvaluationInfoDTO(duffBeer.toModel(), duffOffre.toModel(), bart.toModel());
+
+        evalInDTO = MillieuStageEvaluationInDTO.builder()
+                .climatTravail("Plutôt en accord")
+                .commentaires("Plutôt en accord")
+                .communicationAvecSuperviser("Plutôt en accord")
+                .contractId(1L)
+                .dateSignature("2021-05-01")
+                .environementTravail("Plutôt en accord")
+                .equipementFourni("Plutôt en accord")
+                .heureTotalDeuxiemeMois(23)
+                .heureTotalPremierMois(23)
+                .heureTotalTroisiemeMois(23)
+                .integration("Plutôt en accord")
+                .milieuDeStage("Plutôt en accord")
+                .tachesAnnonces("Plutôt en accord")
+                .volumeDeTravail("Plutôt en accord")
+                .tempsReelConsacre("Plutôt en accord")
+                .signature(byteToString(new byte[]{0, 1, 2, 3, 4, 5, 6, 7, 8, 9}))
+                .build();
+
+        createInterviewDTO = CreateInterviewDTO.builder()
+                .token("token")
+                .companyId(duffBeer.getId())
+                .offerId(duffOffreOut.getId())
+                .studentId(bartOut.getId())
+                .companyDateOffers(new ArrayList<>(){{
+                    add("2022-11-28T12:30:00");
+                    add("2022-11-29T12:30:00");
+                    add("2022-11-30T12:30:00");
+                }})
+                .build();
+
+        interviewOutDTO = InterviewOutDTO.builder()
+                .interviewId(10L)
+                .companyId(duffBeer.getId())
+                .offerId(duffOffreOut.getId())
+                .studentId(bartOut.getId())
+                .companyDateOffers(new ArrayList<>(){{
+                    add("2022-11-28T12:30:00");
+                    add("2022-11-29T12:30:00");
+                    add("2022-11-30T12:30:00");
+                }})
+                .studentSelectedDate("")
+                .build();
+
+        interviewSelectInDTO = InterviewSelectInDTO.builder()
+                .token("token")
+                .interviewId(interviewOutDTO.getInterviewId())
+                .studentId(bart.getId())
+                .selectedDate("2022-11-29T12:30")
                 .build();
     }
 
@@ -1360,6 +1492,504 @@ public class RootControllerTest {
         mockMvc.perform(put("/getAcceptedStudentsForOffer/{offerId}", 1)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(jsonTokenDTO.write(token).getJson()))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    void testGetApplicationsForOfferHappyDay() throws Exception {
+        when(companyService.getStudentsForOffer(anyLong())).thenReturn(offerApplicationDTO);
+
+        mockMvc.perform(put("/offer/{id}/applications", 1)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(jsonTokenDTO.write(token).getJson()))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.applicants.length()", is(3)));
+    }
+
+    @Test
+    void testGetApplicationsForOfferNotFound() throws Exception {
+        when(companyService.getStudentsForOffer(anyLong())).thenThrow(new NonExistentOfferExeption());
+
+        mockMvc.perform(put("/offer/{id}/applications", 1)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(jsonTokenDTO.write(token).getJson()))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    void testGetApplicationsForOfferForbidden() throws Exception {
+        when(authService.getToken(any(), any())).thenThrow(new InvalidTokenException());
+
+        mockMvc.perform(put("/offer/{id}/applications", 1)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(jsonTokenDTO.write(token).getJson()))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    void testGetStatusValidationCVHappyDay() throws Exception {
+        when(studentService.getStudentCvStatus(anyLong())).thenReturn(cvStatusDTO);
+
+        mockMvc.perform(put("/getStatutValidationCV/{id}", 1)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(jsonTokenDTO.write(token).getJson()))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.status", is("ACCEPTED")));
+    }
+
+    @Test
+    void testGetStatusValidationCVForbidden() throws Exception {
+        when(authService.getToken(any(), any())).thenThrow(new InvalidTokenException());
+
+        mockMvc.perform(put("/getStatutValidationCV/{id}", 1)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(jsonTokenDTO.write(token).getJson()))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    void testGetStatusValidationCVNotFound() throws Exception {
+        when(studentService.getStudentCvStatus(anyLong())).thenThrow(new NonExistentEntityException());
+
+        mockMvc.perform(put("/getStatutValidationCV/{id}", 1)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(jsonTokenDTO.write(token).getJson()))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    void testGetCompanyOffersHappyDay() throws Exception {
+        when(companyService.getValidatedOffers(anyLong())).thenReturn(List.of(duffOffreOut));
+
+        mockMvc.perform(put("/company/validatedOffers/{id}", 1)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(jsonTokenDTO.write(token).getJson()))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.length()", is(1)));
+    }
+
+    @Test
+    void testGetCompanyOffersForbidden() throws Exception {
+        when(authService.getToken(any(), any())).thenThrow(new InvalidTokenException());
+
+        mockMvc.perform(put("/company/validatedOffers/{id}", 1)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(jsonTokenDTO.write(token).getJson()))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    void testGetStudentCvToValidateCompanyHappyDay() throws Exception {
+        when(authService.getToken(any(), any())).thenReturn(Token.builder().userId(1).build());
+        PdfOutDTO cv = new PdfOutDTO(1L, "[96,17,69]");
+        when(companyService.getStudentCv(anyLong())).thenReturn(cv);
+
+        mockMvc.perform(put("/company/studentCv/{studentId}", 1L)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(jsonTokenDTO.write(token).getJson()))
+                .andExpect(jsonPath("$.pdf", is("[96,17,69]")))
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    void testGetStudentCvToValidateCompanyNotFound() throws Exception {
+        when(authService.getToken(any(), any())).thenReturn(Token.builder().userId(1).build());
+        doThrow(new NonExistentEntityException()).
+                when(companyService).getStudentCv(anyLong());
+
+        mockMvc.perform(put("/company/studentCv/{studentId}", 1L)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(jsonTokenDTO.write(token).getJson()))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    void testGetStudentCvToValidateCompanyInvalidToken() throws Exception {
+        when(authService.getToken(any(), any())).thenThrow(new InvalidTokenException());
+
+        mockMvc.perform(put("/company/studentCv/{studentId}", 1L)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(jsonTokenDTO.write(token).getJson()))
+                .andExpect(status().isForbidden());
+    }
+
+
+    @Test
+    void testCreateStageContactHappyDay() throws Exception {
+        when(gestionnaireService.createStageContract(any())).thenReturn(stageContractOutDTO);
+
+        mockMvc.perform(post("/createStageContract")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(jsonTokenDTO.write(token).getJson()))
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.contractId", is((int) stageContractOutDTO.getContractId())));
+    }
+
+    @Test
+    void testCreateStageContactUserNotFound() throws Exception {
+        when(gestionnaireService.createStageContract(any())).thenThrow(new NonExistentEntityException());
+
+        mockMvc.perform(post("/createStageContract", stageContractInDTO)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(jsonTokenDTO.write(token).getJson()))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    void testCreateStageContactOfferNotFound() throws Exception {
+        when(gestionnaireService.createStageContract(any())).thenThrow(new NonExistentOfferExeption());
+
+        mockMvc.perform(post("/createStageContract", stageContractInDTO)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(jsonTokenDTO.write(token).getJson()))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    void testCreateStageContactConflict() throws Exception {
+        when(gestionnaireService.createStageContract(any())).thenThrow(new AlreadyExistingStageContractException());
+
+        mockMvc.perform(post("/createStageContract", stageContractInDTO)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(jsonTokenDTO.write(token).getJson()))
+                .andExpect(status().isConflict());
+    }
+
+    @Test
+    void testCreateStageContactInvalidToken() throws Exception {
+        when(authService.getToken(any(), any())).thenThrow(new InvalidTokenException());
+
+        mockMvc.perform(post("/createStageContract", stageContractInDTO)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(jsonTokenDTO.write(token).getJson()))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    void testCompanyContractSignatureHappyDay() throws Exception {
+        when(companyService.addSignatureToContract(any())).thenReturn(stageContractOutDTO);
+
+        mockMvc.perform(put("/companySignatureContract")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(jsonSignatureDTO.write(signatureInDTO).getJson()))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.companySignature", is(signatureInDTO.getSignature())));
+    }
+
+    @Test
+    void testCompanyContractSignatureNotFound() throws Exception {
+        when(companyService.addSignatureToContract(any())).thenThrow(new NonExistentEntityException());
+
+        mockMvc.perform(put("/companySignatureContract")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(jsonSignatureDTO.write(signatureInDTO).getJson()))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    void testCompanyContractSignatureInvalidToken() throws Exception {
+        when(authService.getToken(any(), any())).thenThrow(new InvalidTokenException());
+
+        mockMvc.perform(put("/companySignatureContract")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(jsonSignatureDTO.write(signatureInDTO).getJson()))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    void testStudentContractSignatureHappyDay() throws Exception {
+        when(studentService.addSignatureToContract(any())).thenReturn(stageContractOutDTO);
+
+        mockMvc.perform(put("/studentSignatureContract")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(jsonSignatureDTO.write(signatureInDTO).getJson()))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.studentSignature", is(signatureInDTO.getSignature())));
+    }
+
+    @Test
+    void testStudentContractSignatureNotFound() throws Exception {
+        when(studentService.addSignatureToContract(any())).thenThrow(new NonExistentEntityException());
+
+        mockMvc.perform(put("/studentSignatureContract")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(jsonSignatureDTO.write(signatureInDTO).getJson()))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    void testStudentContractSignatureConflict() throws Exception {
+        when(studentService.addSignatureToContract(any())).thenThrow(new InvalidOwnershipException());
+
+        mockMvc.perform(put("/studentSignatureContract")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(jsonTokenDTO.write(token).getJson()))
+                .andExpect(status().isConflict());
+    }
+
+    @Test
+    void testGetUnvalidatedAcceptationsInvalidToken() throws Exception {
+        when(authService.getToken(any(), any())).thenThrow(new InvalidTokenException());
+
+        mockMvc.perform(put("/contractsToCreate")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(jsonTokenDTO.write(token).getJson()))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    void testGetEvaluationInfoHappyDay() throws Exception {
+        when(gestionnaireService.getMillieuEvaluationInfoForContract(anyLong())).thenReturn(evalInfoDTO);
+
+        mockMvc.perform(put("/evaluateStage/{contractId}/getInfo", 1L)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(jsonTokenDTO.write(token).getJson()))
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.nomCompagnie", is(duffBeer.getCompanyName())));
+    }
+
+    @Test
+    void testGetEvaluationInfoNotFound() throws Exception {
+        when(gestionnaireService.getMillieuEvaluationInfoForContract(anyLong())).thenThrow(new NonExistentEntityException());
+
+        mockMvc.perform(put("/evaluateStage/{contractId}/getInfo", 1L)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(jsonTokenDTO.write(token).getJson()))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    void testEvaluateStageHappyDay() throws Exception {
+        doNothing().when(gestionnaireService).evaluateStage(any());
+        mockMvc.perform(post("/evaluateStage/{token}", token.getToken())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(jsonEvalInDTO.write(evalInDTO).getJson()))
+                .andExpect(status().isCreated());
+    }
+
+    @Test
+    void testGetAllContractsHappyDay() throws Exception {
+        when(gestionnaireService.getContracts()).thenReturn(contractsDTO);
+
+        mockMvc.perform(put("/getContracts")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(jsonTokenDTO.write(token).getJson()))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.contracts.size()", is(2)));
+    }
+
+    @Test
+    void testGetAllContractsEmpty() throws Exception {
+        contractsDTO.setContracts(new ArrayList<>());
+        when(gestionnaireService.getContracts()).thenReturn(contractsDTO);
+
+        mockMvc.perform(put("/getContracts")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(jsonTokenDTO.write(token).getJson()))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.contracts.size()", is(0)));
+    }
+
+    @Test
+    void testGetCompanyContractsHappyDay() throws Exception {
+        when(companyService.getContracts(anyLong(), anyString())).thenReturn(contractsDTO);
+
+        mockMvc.perform(put("/companyContracts/{companyId}_{session}", 1, Offre.currentSession())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(jsonTokenDTO.write(token).getJson()))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.size()", is(1)));
+    }
+
+    @Test
+    void testGetCompanyContractsNotFound() throws Exception {
+        when(companyService.getContracts(anyLong(), anyString())).thenThrow(new NonExistentEntityException());
+
+        mockMvc.perform(put("/companyContracts/{companyId}_{session}", 1, Offre.currentSession())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(jsonTokenDTO.write(token).getJson()))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    void testGetCompanyContractsTokenInvalid() throws Exception {
+        when(authService.getToken(any(), any())).thenThrow(new InvalidTokenException());
+
+        mockMvc.perform(put("/companyContracts/{companyId}_{session}", 1, Offre.currentSession())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(jsonTokenDTO.write(token).getJson()))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    void testCreateInterviewHappyDay() throws Exception{
+        when(companyService.createInterview(any())).thenReturn(interviewOutDTO);
+
+        mockMvc.perform(post("/createInterview")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(jsonInterviewOutDTO.write(interviewOutDTO).getJson()))
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.studentSelectedDate", is("")))
+                .andExpect(jsonPath("$.companyDateOffers.size()", is(3)));
+    }
+
+    @Test
+    void testCreateInterviewNotFound() throws Exception {
+        when(companyService.createInterview(any())).thenThrow(new NonExistentEntityException());
+
+        mockMvc.perform(post("/createInterview")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(jsonInterviewOutDTO.write(interviewOutDTO).getJson()))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    void testCreateInterviewOwnershipForbidden() throws Exception {
+        when(companyService.createInterview(any())).thenThrow(new InvalidOwnershipException());
+
+        mockMvc.perform(post("/createInterview")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(jsonInterviewOutDTO.write(interviewOutDTO).getJson()))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    void testCreateInterviewBadRequest() throws Exception {
+        when(companyService.createInterview(any())).thenThrow(new InvalidDateFormatException());
+
+        mockMvc.perform(post("/createInterview")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(jsonInterviewOutDTO.write(interviewOutDTO).getJson()))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void testCreateInterviewInvalidToken() throws Exception {
+        when(authService.getToken(any(), any())).thenThrow(new InvalidTokenException());
+
+        mockMvc.perform(post("/createInterview")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(jsonInterviewOutDTO.write(interviewOutDTO).getJson()))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    void testGetCompanyInterviewsHappyDay() throws Exception {
+        when(companyService.getInterviews(anyLong())).thenReturn(new ArrayList<>(){{
+            add(new InterviewOutDTO());
+            add(new InterviewOutDTO());
+            add(new InterviewOutDTO());
+        }});
+
+        mockMvc.perform(put("/getCompanyInterviews/{companyId}", 1)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(jsonTokenDTO.write(token).getJson()))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.size()", is(3)));
+    }
+
+    @Test
+    void testGetCompanyInterviewsNotFound() throws Exception {
+        when(companyService.getInterviews(anyLong())).thenThrow(new NonExistentEntityException());
+
+        mockMvc.perform(put("/getCompanyInterviews/{companyId}", 1)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(jsonTokenDTO.write(token).getJson()))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    void testGetCompanyInterviewsInvalidTokken() throws Exception {
+        when(authService.getToken(any(), any())).thenThrow(new InvalidTokenException());
+
+        mockMvc.perform(put("/getCompanyInterviews/{companyId}", 1)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(jsonTokenDTO.write(token).getJson()))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    void testStudentSelectDateHappyDay() throws Exception{
+        when(studentService.selectInterviewTime(any())).thenReturn(interviewOutDTO);
+
+        mockMvc.perform(put("/studentSelectDate")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(jsonInterviewSelectDTO.write(interviewSelectInDTO).getJson()))
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    void testStudentSelectDateNotFound() throws Exception{
+        when(studentService.selectInterviewTime(any())).thenThrow(new NonExistentEntityException());
+
+        mockMvc.perform(put("/studentSelectDate")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(jsonInterviewSelectDTO.write(interviewSelectInDTO).getJson()))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    void testStudentSelectDateForbidden() throws Exception{
+        when(studentService.selectInterviewTime(any())).thenThrow(new InvalidOwnershipException());
+
+        mockMvc.perform(put("/studentSelectDate")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(jsonInterviewSelectDTO.write(interviewSelectInDTO).getJson()))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    void testStudentSelectDateBadRequest() throws Exception{
+        when(studentService.selectInterviewTime(any())).thenThrow(new InvalidDateFormatException());
+
+        mockMvc.perform(put("/studentSelectDate")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(jsonInterviewSelectDTO.write(interviewSelectInDTO).getJson()))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void testStudentSelectDateInvalidToken() throws Exception{
+        when(authService.getToken(any(), any())).thenThrow(new InvalidTokenException());
+
+        mockMvc.perform(put("/studentSelectDate")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(jsonInterviewSelectDTO.write(interviewSelectInDTO).getJson()))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    void testGetStudentInterviewsHappyDay() throws Exception{
+        when(studentService.getInterviews(anyLong())).thenReturn(new ArrayList<>(){{
+            add(new InterviewOutDTO());
+            add(new InterviewOutDTO());
+            add(new InterviewOutDTO());
+        }});
+
+        mockMvc.perform(put("/getStudentInterviews/{studentId}", 1)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(jsonInterviewSelectDTO.write(interviewSelectInDTO).getJson()))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.size()", is(3)));
+    }
+
+    @Test
+    void testGetStudentInterviewsNotFound() throws Exception{
+        when(studentService.getInterviews(anyLong())).thenThrow(new NonExistentEntityException());
+
+        mockMvc.perform(put("/getStudentInterviews/{studentId}", 1)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(jsonInterviewSelectDTO.write(interviewSelectInDTO).getJson()))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    void testGetStudentInterviewsInvalidToken() throws Exception{
+        when(authService.getToken(anyString(), any())).thenThrow(new InvalidTokenException());
+
+        mockMvc.perform(put("/getStudentInterviews/{studentId}", 1)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(jsonInterviewSelectDTO.write(interviewSelectInDTO).getJson()))
                 .andExpect(status().isForbidden());
     }
 }

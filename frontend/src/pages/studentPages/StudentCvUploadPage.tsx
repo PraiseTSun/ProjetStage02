@@ -143,7 +143,7 @@ const StudentCvUploadPage = ({connectedUser}: { connectedUser: IUser }) => {
                             }}/>
                             <Form.Control.Feedback type="invalid">Champ requis</Form.Control.Feedback>
                         </Form.Group>
-                        {!isChoisi && <h5 className="text-danger mt-3">Choix votre CV</h5>}
+                        {isChoisi ? <></> : <h5 className="text-danger mt-3">Choix votre CV</h5>}
                     </Row>
                     <Row className="m-4">
                         <Button data-testid="buttonid" type="submit"
