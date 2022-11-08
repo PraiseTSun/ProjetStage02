@@ -2,7 +2,6 @@ package projet.projetstage02.dto.offres;
 
 import com.sun.istack.NotNull;
 import lombok.*;
-import org.springframework.format.annotation.DateTimeFormat;
 import projet.projetstage02.model.AbstractUser;
 import projet.projetstage02.model.Offre;
 
@@ -47,10 +46,10 @@ public class OffreOutDTO {
     private String pdf;
     private String token;
 
-    @Pattern(regexp = "^([0-2][0-9]|3[0-1])/(0[0-9]|1[0-2])/(19|20[0-9][0-9])$")
+    @Pattern(regexp = "^(19|20[0-9][0-9])-(0[0-9]|1[0-2])-([0-2][0-9]|3[0-1])$")
     @NotBlank
     private String dateStageDebut;
-    @Pattern(regexp = "^([0-2][0-9]|3[0-1])/(0[0-9]|1[0-2])/(19|20[0-9][0-9])$")
+    @Pattern(regexp = "^(19|20[0-9][0-9])-(0[0-9]|1[0-2])-([0-2][0-9]|3[0-1])$")
     @NotBlank
     private String dateStageFin;
     private boolean valide;
