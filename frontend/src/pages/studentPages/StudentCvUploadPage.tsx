@@ -1,16 +1,40 @@
 import {Button, Col, Container, Form, Row} from "react-bootstrap";
-import React, {useState} from "react";
+import React, {useEffect, useState} from "react";
 import {BeatLoader} from "react-spinners";
 import IUser from "../../models/IUser";
 import {Link} from "react-router-dom";
-import {putUploadStudentCV} from "../../services/studentServices/StudentFetchService";
+import {putStatusCv, putUploadStudentCV} from "../../services/studentServices/StudentFetchService";
 import {generateAlert} from "../../services/universalServices/UniversalUtilService";
+import CvStatus from "../../models/CvStatus";
+import {Viewer} from "@react-pdf-viewer/core";
+
+export const statusCV: CvStatus = {
+    status: "",
+    refusalMessage: ""
+}
 
 const StudentCvUploadPage = ({connectedUser}: { connectedUser: IUser }) => {
     const [waiting, setWaiting] = useState<boolean>(false);
     const [validated, setValidated] = useState<boolean>(false);
-    const [cv, setCv] = useState<number[]>([0])
+    const [cvToValidate, setCvToValidate] = useState<number[]>([0])
     const [isChoisi, setIsChoisi] = useState<boolean>(false)
+    const [cvStatus, setCvStatus] = useState<CvStatus>(statusCV)
+    const [showCV, setShowCV] = useState<boolean>(false)
+    const [showCvToValidate, setShowCvToValidate] = useState<boolean>(false)
+
+    useEffect(() => {
+        const fetchStatusCV = async () => {
+            await putStatusCv(connectedUser.id, connectedUser.token).then(async reponse => {
+                if (reponse.status === 200) {
+                    const data = await reponse.json()
+                    setCvStatus(data)
+                } else {
+                    generateAlert()
+                }
+            })
+        }
+        fetchStatusCV()
+    }, [connectedUser])
 
     const onSubmit = async (event: React.SyntheticEvent) => {
         const form: any = event.currentTarget;
@@ -19,9 +43,10 @@ const StudentCvUploadPage = ({connectedUser}: { connectedUser: IUser }) => {
             setWaiting(true)
 
             try {
-                const response = await putUploadStudentCV(connectedUser.id, cv, connectedUser.token)
+                const response = await putUploadStudentCV(connectedUser.id, cvToValidate, connectedUser.token)
 
                 if (response.ok) {
+                    connectedUser.cvToValidate = JSON.stringify(cvToValidate);
                     alert("CV envoyé")
                 } else {
                     generateAlert()
@@ -30,7 +55,7 @@ const StudentCvUploadPage = ({connectedUser}: { connectedUser: IUser }) => {
                 generateAlert()
             }
             setWaiting(false);
-            window.location.href = "/"
+            window.location.href = "/uploaderCV"
         }
         setValidated(true);
     }
@@ -47,7 +72,7 @@ const StudentCvUploadPage = ({connectedUser}: { connectedUser: IUser }) => {
         const fileText = await file.arrayBuffer()
         const view = new Uint8Array(fileText)
         const array = intToByteArray(view)
-        setCv(array)
+        setCvToValidate(array)
         setIsChoisi(true)
     }
     if (waiting) {
@@ -58,6 +83,44 @@ const StudentCvUploadPage = ({connectedUser}: { connectedUser: IUser }) => {
         );
     }
 
+    async function getCv(): Promise<void> {
+        if (connectedUser.cv == null) {
+            alert("Il y a pas de CV a valider courant, svp envoyez votre CV")
+            return;
+        }
+        setShowCV(true);
+
+    }
+
+    if (showCV) {
+        return (
+            <Container className="min-vh-100 bg-white p-0">
+                <div className="bg-dark p-2">
+                    <Button className="Btn btn-primary" onClick={() => setShowCV(false)}>
+                        Fermer
+                    </Button>
+                </div>
+                <div>
+                    <Viewer fileUrl={new Uint8Array(JSON.parse(connectedUser.cv!))}/>
+                </div>
+            </Container>
+        );
+    }
+
+    if (showCvToValidate) {
+        return (
+            <Container className="min-vh-100 bg-white p-0">
+                <div className="bg-dark p-2">
+                    <Button className="Btn btn-primary" onClick={() => setShowCvToValidate(false)}>
+                        Fermer
+                    </Button>
+                </div>
+                <div>
+                    <Viewer fileUrl={new Uint8Array(JSON.parse(connectedUser.cvToValidate!))}/>
+                </div>
+            </Container>
+        );
+    }
     return (
         <Container className="justify-content-center min-vh-100">
             <Col className="col-12 ">
@@ -87,6 +150,32 @@ const StudentCvUploadPage = ({connectedUser}: { connectedUser: IUser }) => {
                                 className="btn btn-success mx-auto w-75">Envoyer</Button>
                     </Row>
                 </Form>
+                <table className="table table-bordered pt-2 bg-light">
+                    <tbody>
+                    <tr>
+                        <th>Mon Cv</th>
+                        <td className="text-center">
+                            <Button className="btn" disabled={connectedUser.cv?.length === 2}
+                                    onClick={async () => await getCv()}>CV</Button>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th data-testid="State">Status :</th>
+                        <td className="text-center">{cvStatus.status}</td>
+                    </tr>
+                    <tr>
+                        <th data-testid="RefusalMessage"> Message de refus :</th>
+                        <td className="text-center">{cvStatus.refusalMessage}</td>
+                    </tr>
+                    <tr>
+                        <th>Cv à valider :</th>
+                        <td data-testid="CvToValidate" className="text-center">
+                            <Button className="btn" disabled={connectedUser.cvToValidate?.length === 2}
+                                    onClick={() => setShowCvToValidate(true)}>Cv à valider</Button>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
             </Col>
         </Container>
     )

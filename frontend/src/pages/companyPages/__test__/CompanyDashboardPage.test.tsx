@@ -19,7 +19,8 @@ describe("CompanyDashboardPageTests", () => {
             firstName: "Bob",
             lastName: "Marley",
             userType: "company",
-            token: "324324332"
+            token: "324324332",
+            cvToValidate: ""
         }
 
 
