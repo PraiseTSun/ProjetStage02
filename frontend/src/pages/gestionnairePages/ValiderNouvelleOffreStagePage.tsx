@@ -99,9 +99,14 @@ const ValiderNouvelleOffreStagePage = ({connectedUser}:
                     <Table className="text-center" hover>
                         <thead className="bg-primary">
                         <tr>
-                            <th>Nom De Compagnie / Adresse</th>
-                            <th>Départment / Position</th>
-                            <th>Heure Par Semaine / Salaire</th>
+                            <th>Nom De Compagnie</th>
+                            <th>Adresse</th>
+                            <th>Départment</th>
+                            <th>position</th>
+                            <th>Heure Par Semaine</th>
+                            <th>Salaire</th>
+                            <th>Date de début</th>
+                            <th>Date de fin</th>
                             <th>Pdf</th>
                             <th>Valide</th>
                             <th>Non Valide</th>
@@ -111,9 +116,14 @@ const ValiderNouvelleOffreStagePage = ({connectedUser}:
                         {offers.map((offer, index) => {
                             return (
                                 <tr key={index}>
-                                    <td>{offer.nomDeCompagnie} <br/> {offer.adresse}</td>
-                                    <td>{offer.department} <br/> {offer.position}</td>
-                                    <td>{offer.heureParSemaine} <br/> {offer.salaire}$/h</td>
+                                    <td>{offer.nomDeCompagnie}</td>
+                                    <td>{offer.adresse}</td>
+                                    <td>{offer.department}</td>
+                                    <td>{offer.position}</td>
+                                    <td>{offer.heureParSemaine}</td>
+                                    <td>{offer.salaire}</td>
+                                    <td>{offer.dateStageDebut}</td>
+                                    <td>{offer.dateStageFin}</td>
                                     <td><Button className="btn btn-warning"
                                                 onClick={async () => await getPDF(offer.id)}>pdf</Button></td>
                                     <td>
