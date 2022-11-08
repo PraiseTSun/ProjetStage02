@@ -55,7 +55,7 @@ const StudentCvUploadPage = ({connectedUser}: { connectedUser: IUser }) => {
                 generateAlert()
             }
             setWaiting(false);
-
+            window.location.href = "/uploaderCV"
         }
         setValidated(true);
     }
@@ -82,7 +82,6 @@ const StudentCvUploadPage = ({connectedUser}: { connectedUser: IUser }) => {
             </div>
         );
     }
-
 
     async function getCv(): Promise<void> {
         if (connectedUser.cv == null) {
