@@ -18,7 +18,6 @@ const StudentCvValidationPage = ({connectedUser}:
     const [showPDF, setShowPDF] = useState<boolean>(false)
     const [isRefuse, setIsRefuse] = useState<boolean>(false)
     const [refuserMessge, setRefuserMessge] = useState<string>("")
-    const [waiting, setWaiting] = useState(false);
     const [validated, setValidated] = useState<boolean>(false);
     const [studentId, setStudentId] = useState<string>("")
     useEffect(() => {
@@ -43,7 +42,6 @@ const StudentCvValidationPage = ({connectedUser}:
         const form: any = event.currentTarget;
         event.preventDefault();
         if (form.checkValidity()) {
-            setWaiting(true);
 
             const response = await putRefuseCv(studentId.toString(), refuserMessge, connectedUser.token)
 
@@ -54,7 +52,6 @@ const StudentCvValidationPage = ({connectedUser}:
                 generateAlert()
             }
 
-            setWaiting(false);
             window.location.href = "/cvValidation"
         }
         setValidated(true);
@@ -124,7 +121,7 @@ const StudentCvValidationPage = ({connectedUser}:
                     </Form.Group>
                     <Row className="mt-3">
                         <Col className="text-center">
-                           <Button type="submit"
+                            <Button type="submit"
                                     className="btn btn-success mx-auto w-75">Envoyer</Button>
                         </Col>
                     </Row>

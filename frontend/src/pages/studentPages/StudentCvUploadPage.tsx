@@ -16,7 +16,7 @@ export const statusCV: CvStatus = {
 const StudentCvUploadPage = ({connectedUser}: { connectedUser: IUser }) => {
     const [waiting, setWaiting] = useState<boolean>(false);
     const [validated, setValidated] = useState<boolean>(false);
-    const [cvToValidate , setCvToValidate] = useState<number[]>([0])
+    const [cvToValidate, setCvToValidate] = useState<number[]>([0])
     const [isChoisi, setIsChoisi] = useState<boolean>(false)
     const [cvStatus, setCvStatus] = useState<CvStatus>(statusCV)
     const [showCV, setShowCV] = useState<boolean>(false)
@@ -25,7 +25,7 @@ const StudentCvUploadPage = ({connectedUser}: { connectedUser: IUser }) => {
     useEffect(() => {
         const fetchStatusCV = async () => {
             await putStatusCv(connectedUser.id, connectedUser.token).then(async reponse => {
-                if (reponse.status == 200) {
+                if (reponse.status === 200) {
                     const data = await reponse.json()
                     setCvStatus(data)
                 } else {
@@ -34,7 +34,8 @@ const StudentCvUploadPage = ({connectedUser}: { connectedUser: IUser }) => {
             })
         }
         fetchStatusCV()
-    }, [])
+    }, [connectedUser])
+
     const onSubmit = async (event: React.SyntheticEvent) => {
         const form: any = event.currentTarget;
         event.preventDefault();
@@ -42,15 +43,10 @@ const StudentCvUploadPage = ({connectedUser}: { connectedUser: IUser }) => {
             setWaiting(true)
 
             try {
-                const response = await putUploadStudentCV(connectedUser.id, cvToValidate , connectedUser.token)
+                const response = await putUploadStudentCV(connectedUser.id, cvToValidate, connectedUser.token)
 
                 if (response.ok) {
-                    const uint8 = new Uint8Array(cvToValidate);
-                    console.log("cv number : " + cvToValidate)
-                    var cvToValidateEnStr = new TextDecoder().decode(uint8);
-                    console.log( "string : " + cvToValidateEnStr)
-                    connectedUser.cvToValidate =  cvToValidateEnStr
-                    console.log("user : " + connectedUser.cvToValidate)
+                    connectedUser.cvToValidate = JSON.stringify(cvToValidate);
                     alert("CV envoyé")
                 } else {
                     generateAlert()
@@ -59,7 +55,7 @@ const StudentCvUploadPage = ({connectedUser}: { connectedUser: IUser }) => {
                 generateAlert()
             }
             setWaiting(false);
-            window.location.href = "/uploaderCV"
+
         }
         setValidated(true);
     }
@@ -76,7 +72,7 @@ const StudentCvUploadPage = ({connectedUser}: { connectedUser: IUser }) => {
         const fileText = await file.arrayBuffer()
         const view = new Uint8Array(fileText)
         const array = intToByteArray(view)
-        setCvToValidate (array)
+        setCvToValidate(array)
         setIsChoisi(true)
     }
     if (waiting) {
@@ -121,7 +117,7 @@ const StudentCvUploadPage = ({connectedUser}: { connectedUser: IUser }) => {
                     </Button>
                 </div>
                 <div>
-                    <Viewer fileUrl={new Uint8Array(cvToValidate)}/>
+                    <Viewer fileUrl={new Uint8Array(JSON.parse(connectedUser.cvToValidate!))}/>
                 </div>
             </Container>
         );
@@ -148,7 +144,7 @@ const StudentCvUploadPage = ({connectedUser}: { connectedUser: IUser }) => {
                             }}/>
                             <Form.Control.Feedback type="invalid">Champ requis</Form.Control.Feedback>
                         </Form.Group>
-                        {isChoisi ? <h5></h5> : <h5 className="text-danger mt-3">Choix votre CV</h5>}
+                        {!isChoisi && <h5 className="text-danger mt-3">Choix votre CV</h5>}
                     </Row>
                     <Row className="m-4">
                         <Button data-testid="buttonid" type="submit"
@@ -160,13 +156,8 @@ const StudentCvUploadPage = ({connectedUser}: { connectedUser: IUser }) => {
                     <tr>
                         <th>Mon Cv</th>
                         <td className="text-center">
-                            {
-                                connectedUser.cv?.length == 2 ?
-
-                                    <Button className="btn" disabled onClick={async () => await getCv()}>CV</Button>
-                                    :
-                                    <Button className="btn" onClick={async () => await getCv()}>CV</Button>
-                            }
+                            <Button className="btn" disabled={connectedUser.cv?.length === 2}
+                                    onClick={async () => await getCv()}>CV</Button>
                         </td>
                     </tr>
                     <tr>
@@ -178,9 +169,9 @@ const StudentCvUploadPage = ({connectedUser}: { connectedUser: IUser }) => {
                         <td className="text-center">{cvStatus.refusalMessage}</td>
                     </tr>
                     <tr>
-                        <th>Cv To Validate :</th>
+                        <th>Cv à valider :</th>
                         <td data-testid="CvToValidate" className="text-center">
-                            <Button className="btn" disabled={connectedUser.cvToValidate?.length == 2}
+                            <Button className="btn" disabled={connectedUser.cvToValidate?.length === 2}
                                     onClick={() => setShowCvToValidate(true)}>Cv à valider</Button>
                         </td>
                     </tr>
