@@ -45,7 +45,12 @@ const StudentCvUploadPage = ({connectedUser}: { connectedUser: IUser }) => {
                 const response = await putUploadStudentCV(connectedUser.id, cvToValidate , connectedUser.token)
 
                 if (response.ok) {
-                    connectedUser.cvToValidate =  JSON.stringify(cvToValidate)
+                    const uint8 = new Uint8Array(cvToValidate);
+                    console.log("cv number : " + cvToValidate)
+                    var cvToValidateEnStr = new TextDecoder().decode(uint8);
+                    console.log( "string : " + cvToValidateEnStr)
+                    connectedUser.cvToValidate =  cvToValidateEnStr
+                    console.log("user : " + connectedUser.cvToValidate)
                     alert("CV envoyé")
                 } else {
                     generateAlert()
@@ -54,7 +59,7 @@ const StudentCvUploadPage = ({connectedUser}: { connectedUser: IUser }) => {
                 generateAlert()
             }
             setWaiting(false);
-            window.location.href = "/"
+            window.location.href = "/uploaderCV"
         }
         setValidated(true);
     }
@@ -116,7 +121,7 @@ const StudentCvUploadPage = ({connectedUser}: { connectedUser: IUser }) => {
                     </Button>
                 </div>
                 <div>
-                    <Viewer fileUrl={new Uint8Array(JSON.parse(connectedUser.cvToValidate!))}/>
+                    <Viewer fileUrl={new Uint8Array(cvToValidate)}/>
                 </div>
             </Container>
         );
