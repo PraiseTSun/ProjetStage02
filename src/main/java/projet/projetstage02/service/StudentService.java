@@ -7,14 +7,14 @@ import projet.projetstage02.dto.applications.ApplicationDTO;
 import projet.projetstage02.dto.applications.ApplicationListDTO;
 import projet.projetstage02.dto.cv.CvStatusDTO;
 import projet.projetstage02.dto.contracts.StageContractOutDTO;
+import projet.projetstage02.dto.interview.InterviewOutDTO;
+import projet.projetstage02.dto.interview.InterviewSelectInDTO;
 import projet.projetstage02.dto.offres.OffreOutDTO;
 import projet.projetstage02.dto.pdf.PdfDTO;
 import projet.projetstage02.dto.pdf.PdfOutDTO;
 import projet.projetstage02.dto.users.Students.StudentInDTO;
 import projet.projetstage02.dto.users.Students.StudentOutDTO;
-import projet.projetstage02.exception.AlreadyExistingPostulation;
-import projet.projetstage02.exception.InvalidOwnershipException;
-import projet.projetstage02.exception.NonExistentEntityException;
+import projet.projetstage02.exception.*;
 import projet.projetstage02.model.*;
 import projet.projetstage02.repository.*;
 
@@ -37,6 +37,7 @@ public class StudentService {
     private final ApplicationRepository applicationRepository;
     private final StageContractRepository stageContractRepository;
     private final CvStatusRepository cvStatusRepository;
+    private final InterviewRepository interviewRepository;
 
     public void saveStudent(String firstName,
                             String lastName,
@@ -232,5 +233,47 @@ public class StudentService {
         stageContractRepository.save(stageContract);
 
         return new StageContractOutDTO(stageContract);
+    }
+
+    public InterviewOutDTO selectInterviewTime(InterviewSelectInDTO interviewDTO)
+            throws NonExistentEntityException, InvalidOwnershipException, InvalidDateFormatException, InvalidDateException {
+        Optional<Student> studentOpt = studentRepository.findById(interviewDTO.getStudentId());
+        if(studentOpt.isEmpty()) throw new NonExistentEntityException();
+        Student student = studentOpt.get();
+
+        Optional<Interview> interviewOpt = interviewRepository.findById(interviewDTO.getInterviewId());
+        if(interviewOpt.isEmpty()) throw new NonExistentEntityException();
+        Interview interview = interviewOpt.get();
+
+        if(interview.getStudentId() != student.getId()) throw new InvalidOwnershipException();
+
+        try {
+            LocalDateTime dateTime = LocalDateTime.parse(interviewDTO.getSelectedDate());
+            if(!interview.getCompanyDateOffers().contains(dateTime)) throw new InvalidDateException();
+            interview.setStudentSelectedDate(dateTime);
+        } catch (InvalidDateException e){
+          throw new InvalidDateException();
+        } catch (Exception e){
+            throw new InvalidDateFormatException();
+        }
+
+        interviewRepository.save(interview);
+
+        return new InterviewOutDTO(interview);
+    }
+
+    public List<InterviewOutDTO> getInterviews(long studentId) throws NonExistentEntityException {
+        Optional<Student> studentOpt = studentRepository.findById(studentId);
+        if(studentOpt.isEmpty()) throw new NonExistentEntityException();
+
+        List<InterviewOutDTO> interviews = new ArrayList<>();
+
+        interviewRepository.findByStudentId(studentId)
+                .stream()
+                .forEach(
+                        interview -> interviews.add(new InterviewOutDTO(interview))
+                );
+
+        return interviews;
     }
 }
