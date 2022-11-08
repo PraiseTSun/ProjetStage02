@@ -58,8 +58,8 @@ const InterviewDateForm = ({
 
     return (
         <Container>
-            <Row className="min-vh-100">
-                <Col sm={8} className="m-auto bg-white">
+            <Row>
+                <Col className="bg-white">
                     <Row className="bg-dark p-2">
                         <Col sm={1}>
                             <Button variant="danger" onClick={() => setShowDateSelector(false)}>
