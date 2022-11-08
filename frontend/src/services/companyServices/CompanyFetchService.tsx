@@ -9,7 +9,7 @@ export const postCreateOffre = (offer: IOffer): Promise<Response> => {
 };
 
 
-export const putcompanyContracts = (companyId: string, token: string, saison: string, year : number): Promise<Response> => {
+export const putcompanyContracts = (companyId: string, token: string, saison: string, year: number): Promise<Response> => {
     return fetch(`http://localhost:8080/companyContracts/${companyId}_${saison} ${year}`, {
         method: "PUT",
         headers: {
@@ -20,7 +20,7 @@ export const putcompanyContracts = (companyId: string, token: string, saison: st
     })
 }
 
-export const putCompanySignatureContract = (token: string, companyId: string, contratId : number, signature : string): Promise<Response> => {
+export const putCompanySignatureContract = (token: string, companyId: string, contratId: number, signature: string): Promise<Response> => {
 
     return fetch(`http://localhost:8080/companySignatureContract`, {
         method: "PUT",
@@ -28,10 +28,9 @@ export const putCompanySignatureContract = (token: string, companyId: string, co
             'Accept': 'application/json',
             'Content-Type': 'application/json',
         },
-        body: JSON.stringify({token: token, userId: Number(companyId), contractId: contratId,signature : signature})
+        body: JSON.stringify({token: token, userId: Number(companyId), contractId: contratId, signature: signature})
     })
 }
-
 
 
 export const putCompanyOffers = (companyId: string, token: string): Promise<Response> => {
@@ -86,5 +85,37 @@ export const putAcceptedStudentsForOffer = (offerId: string, token: string): Pro
             'Content-Type': 'application/json',
         },
         body: JSON.stringify({"token": token})
+    });
+}
+
+export const putGetCompanyInterviews = (companyId: string, token: string): Promise<Response> => {
+    return fetch(`http://localhost:8080/getCompanyInterviews/${companyId}`, {
+        method: "PUT",
+        headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({"token": token})
+    });
+}
+
+export const postCreateInterview = (companyDateOffers: string[],
+                                    token: string,
+                                    companyId: string,
+                                    offerId: string,
+                                    studentId: string,): Promise<Response> => {
+    return fetch(`http://localhost:8080/createInterview`, {
+        method: "POST",
+        headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            companyDateOffers: companyDateOffers,
+            token: token,
+            companyId: companyId,
+            offerId: offerId,
+            studentId: studentId,
+        })
     });
 }

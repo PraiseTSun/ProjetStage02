@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from "react"
+import React, {useCallback, useEffect, useState} from "react"
 import IUser from "../../models/IUser";
 import {Button, Col, Container, Row, Table} from "react-bootstrap";
 import PageHeader from "../../components/universalComponents/PageHeader";
@@ -7,6 +7,7 @@ import {generateAlert} from "../../services/universalServices/UniversalUtilServi
 import {
     putAcceptedStudentsForOffer,
     putCompanyOffers,
+    putGetCompanyInterviews,
     putOfferApplications,
     putStudentAcceptation,
     putStudentCv
@@ -14,31 +15,51 @@ import {
 import IAcceptedStudents from "../../models/IAcceptedStudents";
 import PdfComponent from "../../components/universalComponents/PdfComponent";
 import InterviewDateForm from "../../components/companyComponents/InterviewDateForm";
+import IInterview from "../../models/IInterview";
 
 const CompanyOffersPage = ({connectedUser}: { connectedUser: IUser }): JSX.Element => {
     const [offers, setOffers] = useState<IOffer[]>([]);
     const [students, setStudents] = useState<IUser[] | null>(null);
+    const [interviews, setInterviews] = useState<IInterview[]>([]);
     const [cv, setCv] = useState<Uint8Array>(new Uint8Array([]))
     const [showCv, setShowCv] = useState<boolean>(false)
     const [showDateSelector, setShowDateSelector] = useState<boolean>(false)
     const [acceptedStudents, setAcceptedStudents] = useState<string[]>([])
     const [currentlySelectedOffer, setCurrentlySelectedOffer] = useState<string>("")
+    const [currentlySelectedStudent, setCurrentlySelectedStudent] = useState<string>("")
+
+    const fetchOffers = useCallback(async (): Promise<void> => {
+        try {
+            const response: Response = await putCompanyOffers(connectedUser.id, connectedUser.token);
+
+            if (response.ok) {
+                const data: IOffer[] = await response.json();
+                setOffers(data);
+            } else {
+                generateAlert();
+            }
+        } catch {
+            generateAlert();
+        }
+    }, [connectedUser]);
+
+    const fetchInterviews = useCallback(async (): Promise<void> => {
+        try {
+            const response: Response = await putGetCompanyInterviews(connectedUser.id, connectedUser.token);
+
+            if (response.ok) {
+                const data: IInterview[] = await response.json();
+                setInterviews(data);
+            } else {
+                generateAlert();
+            }
+        } catch {
+            generateAlert();
+        }
+    }, [connectedUser]);
 
     useEffect(() => {
-        const fetchOffers = async (): Promise<void> => {
-            try {
-                const response: Response = await putCompanyOffers(connectedUser.id, connectedUser.token);
-
-                if (response.ok) {
-                    const data: IOffer[] = await response.json()
-                    setOffers(data)
-                } else {
-                    generateAlert()
-                }
-            } catch {
-                generateAlert()
-            }
-        }
+        fetchInterviews();
         fetchOffers()
     }, [connectedUser]);
 
@@ -48,6 +69,7 @@ const CompanyOffersPage = ({connectedUser}: { connectedUser: IUser }): JSX.Eleme
 
             if (response.ok) {
                 const data = await response.json();
+                setCurrentlySelectedOffer(offerId)
                 setStudents(data.applicants);
                 await fetchAcceptedStudents(offerId);
             } else {
@@ -64,7 +86,6 @@ const CompanyOffersPage = ({connectedUser}: { connectedUser: IUser }): JSX.Eleme
 
             if (response.ok) {
                 const data: IAcceptedStudents = await response.json();
-                setCurrentlySelectedOffer(data.offerId)
                 setAcceptedStudents(data.studentsId);
             } else {
                 generateAlert()
@@ -105,6 +126,14 @@ const CompanyOffersPage = ({connectedUser}: { connectedUser: IUser }): JSX.Eleme
         }
     }
 
+    const hasInterview = (offerId: string, studentId: string): boolean => {
+        return interviews.some(interview => interview.offerId === offerId && interview.studentId === studentId)
+    }
+
+    const getInterview = (offerId: string, studentId: string): IInterview | undefined => {
+        return interviews.find(interview => interview.offerId === offerId && interview.studentId === studentId)
+    }
+
     if (showCv) {
         return (
             <PdfComponent cv={cv} setShowPdf={setShowCv}/>
@@ -113,7 +142,12 @@ const CompanyOffersPage = ({connectedUser}: { connectedUser: IUser }): JSX.Eleme
 
     if (showDateSelector) {
         return (
-            <InterviewDateForm setShowDateSelector={setShowDateSelector}/>
+            <InterviewDateForm connectedUser={connectedUser}
+                               offerId={currentlySelectedOffer}
+                               studentId={currentlySelectedStudent}
+                               interviews={interviews}
+                               setInterviews={setInterviews}
+                               setShowDateSelector={setShowDateSelector}/>
         );
     }
 
@@ -178,13 +212,18 @@ const CompanyOffersPage = ({connectedUser}: { connectedUser: IUser }): JSX.Eleme
                                                 await fetchStudentCv(student.id)
                                             }}>CV</Button></td>
                                             <td>
-                                                {true && <Button variant="primary" onClick={
-                                                    () => {
-                                                        setShowDateSelector(true)
-                                                    }
-                                                }>Soumettre mes disponibilités</Button>}
-                                                {false && <p>En attente de confirmation</p>}
-                                                {false && <p>Entrevue confirmé pour le TODO</p>}
+                                                {
+                                                    hasInterview(currentlySelectedOffer, student.id) && getInterview(currentlySelectedOffer, student.id)!.studentSelectedDate !== ""
+                                                        ? <p>Entrevue confirmé pour
+                                                            le {getInterview(currentlySelectedOffer, student.id)?.studentSelectedDate}</p>
+                                                        : hasInterview(currentlySelectedOffer, student.id)
+                                                            ? <p>En attente de confirmation</p>
+                                                            : <Button variant="primary" onClick={
+                                                                () => {
+                                                                    setCurrentlySelectedStudent(student.id)
+                                                                    setShowDateSelector(true)
+                                                                }}>Soumettre mes disponibilités</Button>
+                                                }
                                             </td>
                                             <td>
                                                 <Button disabled={acceptedStudents.includes(student.id)}
