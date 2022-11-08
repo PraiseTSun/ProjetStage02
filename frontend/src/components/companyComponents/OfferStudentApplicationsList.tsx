@@ -165,12 +165,12 @@ const OfferStudentApplicationsList = ({
                             }}>CV</Button></td>
                             <td>
                                 {
-                                    hasInterview(offerId, student.id)
-                                    && getInterview(offerId, student.id)!.studentSelectedDate !== ""
+                                    hasInterview(offerId, student.id) &&
+                                    getInterview(offerId, student.id)!.studentSelectedDate !== ""
                                         ? <p>Entrevue confirmé pour
                                             le {getInterview(offerId, student.id)?.studentSelectedDate}</p>
                                         : hasInterview(offerId, student.id)
-                                            ? <p>En attente de confirmation</p>
+                                            ? <p>En attente de confirmation de l'étudiant</p>
                                             : <Button variant="primary" onClick={
                                                 () => {
                                                     setCurrentlySelectedStudent(student.id)
