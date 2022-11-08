@@ -260,24 +260,16 @@ public class CompanyService {
             }
         }
 
-        interviewRepository.save(Interview.builder()
+        Interview interview = Interview.builder()
                 .companyId(company.getId())
                 .offerId(offer.getId())
                 .studentId(student.getId())
                 .companyDateOffers(dates)
                 .studentSelectedDate(null)
-                .build());
+                .build();
+        interview = interviewRepository.save(interview);
 
-        Optional<Interview> interviewOpt = interviewRepository.findByCompanyId(company.getId())
-                .stream()
-                .filter(
-                    interview -> interview.getStudentId() == student.getId()
-                            && interview.getOfferId() == offer.getId()
-                )
-                .findFirst();
-        if(interviewOpt.isEmpty()) throw new NonExistentEntityException();
-
-        return new InterviewOutDTO(interviewOpt.get());
+        return new InterviewOutDTO(interview);
     }
 
     public List<InterviewOutDTO> getInterviews(long companyId) throws NonExistentEntityException {

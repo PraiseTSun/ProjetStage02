@@ -694,7 +694,7 @@ public class CompanyServiceTest {
             companyService.createInterview(createInterviewDTO);
         } catch (NonExistentEntityException e) {
             return;
-        } catch (InvalidDateFormatException | InvalidOwnershipException e) {}
+        } catch (InvalidDateFormatException | InvalidOwnershipException ignored) {}
 
         fail("Fail to catch the NonExistentEntityException");
     }
@@ -710,7 +710,7 @@ public class CompanyServiceTest {
             companyService.createInterview(createInterviewDTO);
         } catch (NonExistentEntityException e) {
             return;
-        } catch (InvalidDateFormatException | InvalidOwnershipException e) {}
+        } catch (InvalidDateFormatException | InvalidOwnershipException ignored) {}
 
         fail("Fail to catch the NonExistentEntityException");
     }
@@ -725,7 +725,7 @@ public class CompanyServiceTest {
             companyService.createInterview(createInterviewDTO);
         } catch (NonExistentEntityException e) {
             return;
-        } catch (InvalidDateFormatException | InvalidOwnershipException e) {}
+        } catch (InvalidDateFormatException | InvalidOwnershipException ignored) {}
 
         fail("Fail to catch the NonExistentEntityException");
     }
@@ -739,7 +739,7 @@ public class CompanyServiceTest {
             companyService.createInterview(createInterviewDTO);
         } catch (NonExistentEntityException e) {
             return;
-        } catch (InvalidDateFormatException | InvalidOwnershipException e) {}
+        } catch (InvalidDateFormatException | InvalidOwnershipException ignored) {}
 
         fail("Fail to catch the NonExistentEntityException");
     }
@@ -757,7 +757,7 @@ public class CompanyServiceTest {
             companyService.createInterview(createInterviewDTO);
         } catch (InvalidDateFormatException e) {
             return;
-        } catch (InvalidOwnershipException | NonExistentEntityException e) {}
+        } catch (InvalidOwnershipException | NonExistentEntityException ignored) {}
 
         fail("Fail to catch the InvalidDateFormatException");
     }
@@ -775,7 +775,7 @@ public class CompanyServiceTest {
             companyService.createInterview(createInterviewDTO);
         } catch (InvalidOwnershipException e) {
             return;
-        } catch (InvalidDateFormatException | NonExistentEntityException e) {}
+        } catch (InvalidDateFormatException | NonExistentEntityException ignored) {}
 
         fail("Fail to catch the InvalidOwnershipException");
     }

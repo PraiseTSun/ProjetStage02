@@ -30,8 +30,6 @@ public class InterviewOutDTO {
         companyDateOffers = new ArrayList<>();
         studentSelectedDate = interview.getStudentSelectedDate() == null
                 ? "" : interview.getStudentSelectedDate().toString();
-        for(LocalDateTime dateTime : interview.getCompanyDateOffers()){
-            companyDateOffers.add(dateTime.toString());
-        }
+        interview.getCompanyDateOffers().forEach(localDateTime -> companyDateOffers.add(localDateTime.toString()));
     }
 }

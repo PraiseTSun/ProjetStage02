@@ -969,8 +969,8 @@ public class RootController {
             logger.log(Level.INFO, "Post /createInterview return 404 request");
             return ResponseEntity.status(NOT_FOUND).build();
         } catch (InvalidDateFormatException  e) {
-            logger.log(Level.INFO, "Post /createInterview return 409 request");
-            return ResponseEntity.status(CONFLICT).build();
+            logger.log(Level.INFO, "Post /createInterview return 400 request");
+            return ResponseEntity.status(BAD_REQUEST).build();
         } catch (InvalidTokenException | InvalidOwnershipException e) {
             logger.log(Level.INFO, "Post /createInterview return 403 request");
             return ResponseEntity.status(FORBIDDEN).build();

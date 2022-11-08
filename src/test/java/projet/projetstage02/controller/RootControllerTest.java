@@ -1845,13 +1845,13 @@ public class RootControllerTest {
     }
 
     @Test
-    void testCreateInterviewDateConflict() throws Exception {
+    void testCreateInterviewBadRequest() throws Exception {
         when(companyService.createInterview(any())).thenThrow(new InvalidDateFormatException());
 
         mockMvc.perform(post("/createInterview")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(jsonInterviewOutDTO.write(interviewOutDTO).getJson()))
-                .andExpect(status().isConflict());
+                .andExpect(status().isBadRequest());
     }
 
     @Test
