@@ -658,17 +658,10 @@ public class CompanyServiceTest {
     void testCreateInterviewHappyDay()
             throws InvalidOwnershipException, InvalidDateFormatException, NonExistentEntityException {
         // Arrange
-        List<Interview> interviews = new ArrayList<>(){{
-            add(Interview.builder().studentId(0L).offerId(0L).build());
-            add(Interview.builder().studentId(0L).offerId(duffBeerOffer.getId()).build());
-            add(Interview.builder().studentId(bart.getId()).offerId(0L).build());
-            add(interview);
-            add(Interview.builder().studentId(bart.getId()).offerId(duffBeerOffer.getId()).build());
-        }};
         when(companyRepository.findById(anyLong())).thenReturn(Optional.of(duffBeer));
         when(studentRepository.findById(anyLong())).thenReturn(Optional.of(bart));
         when(offreRepository.findById(anyLong())).thenReturn(Optional.of(duffBeerOffer));
-        when(interviewRepository.findByCompanyId(anyLong())).thenReturn(interviews);
+        when(interviewRepository.save(any())).thenReturn(interview);
 
         // Act
         InterviewOutDTO dto = companyService.createInterview(createInterviewDTO);
@@ -680,23 +673,6 @@ public class CompanyServiceTest {
         assertThat(dto.getCompanyDateOffers().get(0)).isEqualTo(interview.getCompanyDateOffers().get(0).toString());
         assertThat(dto.getCompanyDateOffers().get(1)).isEqualTo(interview.getCompanyDateOffers().get(1).toString());
         assertThat(dto.getCompanyDateOffers().get(2)).isEqualTo(interview.getCompanyDateOffers().get(2).toString());
-    }
-
-    @Test
-    void testCreateInterviewInterviewNotFound(){
-        when(companyRepository.findById(anyLong())).thenReturn(Optional.of(duffBeer));
-        when(studentRepository.findById(anyLong())).thenReturn(Optional.of(bart));
-        when(offreRepository.findById(anyLong())).thenReturn(Optional.of(duffBeerOffer));
-        when(interviewRepository.findByCompanyId(anyLong())).thenReturn(new ArrayList<>());
-
-        // Act
-        try {
-            companyService.createInterview(createInterviewDTO);
-        } catch (NonExistentEntityException e) {
-            return;
-        } catch (InvalidDateFormatException | InvalidOwnershipException ignored) {}
-
-        fail("Fail to catch the NonExistentEntityException");
     }
 
     @Test
