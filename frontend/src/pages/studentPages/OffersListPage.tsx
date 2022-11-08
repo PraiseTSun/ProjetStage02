@@ -1,5 +1,5 @@
 import {Viewer} from "@react-pdf-viewer/core";
-import React, {useEffect, useState} from "react";
+import React, {useCallback, useEffect, useState} from "react";
 import {Button, Col, Container, Row, Table} from "react-bootstrap";
 import {Link} from "react-router-dom";
 import IUser from "../../models/IUser";
@@ -9,51 +9,73 @@ import {
     putApplyToOffer,
     putGetOffers,
     putGetOfferStudent,
-    putStudentApplys
+    putGetStudentInterviews,
+    putStudentApplys,
+    putStudentSelectDate
 } from "../../services/studentServices/StudentFetchService";
 import {generateAlert} from "../../services/universalServices/UniversalUtilService";
+import IInterview from "../../models/IInterview";
 
 const OffersListPage = ({connectedUser}:
                             { connectedUser: IUser }): JSX.Element => {
     const [offers, setOffers] = useState<IOffer[]>([]);
     const [pdf, setPDF] = useState<Uint8Array>(new Uint8Array([]))
     const [showPdf, setShowPDF] = useState<boolean>(false)
+    const [interviews, setInterviews] = useState<IInterview[]>([])
     const [studentApplys, setStudentApplys] =
         useState<IStudentApplys>({studentId: connectedUser.id, offersId: new Array<string>()});
 
-    useEffect(() => {
-        const fetchOffers = async () => {
-            try {
-                const response = await putGetOffers(connectedUser.id, connectedUser.token);
-                if (response.ok) {
-                    const data = await response.json();
-                    setOffers(data);
-                } else {
-                    generateAlert()
-                }
-            } catch {
+    const fetchInterviews = useCallback(async () => {
+        try {
+            const response: Response = await putGetStudentInterviews(connectedUser.id, connectedUser.token);
+            if (response.ok) {
+                const data: IInterview[] = await response.json();
+                setInterviews(data);
+                console.log(data)
+            } else {
                 generateAlert()
             }
+        } catch {
+            generateAlert()
         }
-        const fetchStudentApplys = async () => {
-            try {
-                const response = await putStudentApplys(connectedUser.id, connectedUser.token);
-                if (response.ok) {
-                    const data = await response.json();
-                    setStudentApplys(data);
-                } else {
-                    generateAlert()
-                }
-            } catch (exception) {
-                generateAlert()
-            }
-        }
-
-        fetchStudentApplys();
-        fetchOffers();
     }, [connectedUser]);
 
-    async function applyToOffer(offerId: string): Promise<void> {
+
+    const fetchOffers = useCallback(async () => {
+        try {
+            const response: Response = await putGetOffers(connectedUser.id, connectedUser.token);
+            if (response.ok) {
+                const data: IOffer[] = await response.json();
+                setOffers(data);
+            } else {
+                generateAlert()
+            }
+        } catch {
+            generateAlert()
+        }
+    }, [connectedUser]);
+
+    const fetchStudentApplys = useCallback(async () => {
+        try {
+            const response = await putStudentApplys(connectedUser.id, connectedUser.token);
+            if (response.ok) {
+                const data = await response.json();
+                setStudentApplys(data);
+            } else {
+                generateAlert()
+            }
+        } catch (exception) {
+            generateAlert()
+        }
+    }, [connectedUser]);
+
+    useEffect(() => {
+        fetchStudentApplys();
+        fetchOffers();
+        fetchInterviews();
+    }, [connectedUser])
+
+    const applyToOffer = async (offerId: string): Promise<void> => {
         try {
             const response = await putApplyToOffer(connectedUser.id, offerId, connectedUser.token)
 
@@ -71,7 +93,21 @@ const OffersListPage = ({connectedUser}:
         }
     }
 
-    async function getPDF(offerId: string): Promise<void> {
+    const confirmInterview = async (interviewId: string, selectedDate: string): Promise<void> => {
+        try {
+            const response = await putStudentSelectDate(connectedUser.id, interviewId, selectedDate, connectedUser.token)
+            if (response.ok) {
+                interviews.find(interview => interview.interviewId === interviewId)!.studentSelectedDate = selectedDate;
+                setInterviews([...interviews]);
+            } else {
+                generateAlert()
+            }
+        } catch {
+            generateAlert()
+        }
+    }
+
+    const getPDF = async (offerId: string): Promise<void> => {
         try {
             const response = await putGetOfferStudent(offerId, connectedUser.token)
 
@@ -85,6 +121,14 @@ const OffersListPage = ({connectedUser}:
         } catch (exception) {
             generateAlert()
         }
+    }
+
+    const hasInterview = (offerId: string): boolean => {
+        return interviews.some(interview => interview.offerId === offerId);
+    }
+
+    const getInterview = (offerId: string): IInterview | undefined => {
+        return interviews.find(interview => interview.offerId === offerId);
     }
 
     if (showPdf) {
@@ -125,6 +169,7 @@ const OffersListPage = ({connectedUser}:
                             <th>Salaire</th>
                             <th>Date de début</th>
                             <th>Date de fin</th>
+                            <th>Entrevue</th>
                             <th>Offre</th>
                             <th>Appliquer</th>
                         </tr>
@@ -140,6 +185,30 @@ const OffersListPage = ({connectedUser}:
                                     <td>{offer.salaire}$/h</td>
                                     <td>{offer.dateStageDebut}</td>
                                     <td>{offer.dateStageFin}</td>
+                                    <td>
+                                        {!hasInterview(offer.id) && "En attente des entrevues"}
+                                        {hasInterview(offer.id) && getInterview(offer.id)?.studentSelectedDate === "" &&
+                                            <Col>
+                                                <Button
+                                                    className="mb-2" onClick={async () => {
+                                                    await confirmInterview(getInterview(offer.id)!.interviewId, getInterview(offer.id)!.companyDateOffers[0])
+                                                }
+                                                }>{getInterview(offer.id)!.companyDateOffers[0].replace("T", " ") + "h"}</Button>
+                                                <br/>
+                                                <Button
+                                                    className="mb-2" onClick={async () => {
+                                                    await confirmInterview(getInterview(offer.id)!.interviewId, getInterview(offer.id)!.companyDateOffers[1])
+                                                }
+                                                }>{getInterview(offer.id)!.companyDateOffers[1].replace("T", " ") + "h"}</Button>
+                                                <br/>
+                                                <Button onClick={async () => {
+                                                    await confirmInterview(getInterview(offer.id)!.interviewId, getInterview(offer.id)!.companyDateOffers[2])
+                                                }
+                                                }>{getInterview(offer.id)!.companyDateOffers[2].replace("T", " ") + "h"}</Button>
+                                            </Col>}
+                                        {hasInterview(offer.id) && getInterview(offer.id)?.studentSelectedDate !== "" &&
+                                            "Entrevue confirmée pour le " + getInterview(offer.id)!.studentSelectedDate}
+                                    </td>
                                     <td><Button className="btn btn-warning" onClick={
                                         async () => await getPDF(offer.id)
                                     }>PDF</Button></td>
