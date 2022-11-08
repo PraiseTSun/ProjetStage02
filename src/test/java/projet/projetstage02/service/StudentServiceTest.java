@@ -18,10 +18,7 @@ import projet.projetstage02.dto.pdf.PdfDTO;
 import projet.projetstage02.dto.pdf.PdfOutDTO;
 import projet.projetstage02.dto.users.Students.StudentInDTO;
 import projet.projetstage02.dto.users.Students.StudentOutDTO;
-import projet.projetstage02.exception.AlreadyExistingPostulation;
-import projet.projetstage02.exception.InvalidDateFormatException;
-import projet.projetstage02.exception.InvalidOwnershipException;
-import projet.projetstage02.exception.NonExistentEntityException;
+import projet.projetstage02.exception.*;
 import projet.projetstage02.model.AbstractUser.Department;
 import projet.projetstage02.model.*;
 import projet.projetstage02.repository.*;
@@ -642,7 +639,7 @@ public class StudentServiceTest {
 
     @Test
     void testSelectInterviewTimeHappyDay()
-            throws InvalidOwnershipException, NonExistentEntityException, InvalidDateFormatException {
+            throws InvalidOwnershipException, NonExistentEntityException, InvalidDateFormatException, InvalidDateException {
         when(studentRepository.findById(anyLong())).thenReturn(Optional.of(bart));
         when(interviewRepository.findById(anyLong())).thenReturn(Optional.of(interview));
 
@@ -660,7 +657,7 @@ public class StudentServiceTest {
             studentService.selectInterviewTime(interviewSelectInDTO);
         } catch (NonExistentEntityException e) {
             return;
-        } catch (InvalidOwnershipException | InvalidDateFormatException e) { }
+        } catch (InvalidOwnershipException | InvalidDateFormatException | InvalidDateException ignored) { }
 
         fail("Fail to catch the exception NonExistentEntityException");
     }
@@ -674,7 +671,7 @@ public class StudentServiceTest {
             studentService.selectInterviewTime(interviewSelectInDTO);
         } catch (NonExistentEntityException e) {
             return;
-        } catch (InvalidOwnershipException | InvalidDateFormatException e) { }
+        } catch (InvalidOwnershipException | InvalidDateFormatException | InvalidDateException ignored) { }
 
         fail("Fail to catch the exception NonExistentEntityException");
     }
@@ -689,7 +686,7 @@ public class StudentServiceTest {
             studentService.selectInterviewTime(interviewSelectInDTO);
         } catch (InvalidOwnershipException e) {
             return;
-        } catch (NonExistentEntityException | InvalidDateFormatException e) { }
+        } catch (NonExistentEntityException | InvalidDateFormatException | InvalidDateException ignored) { }
 
         fail("Fail to catch the exception InvalidOwnershipException");
     }
@@ -704,7 +701,7 @@ public class StudentServiceTest {
             studentService.selectInterviewTime(interviewSelectInDTO);
         } catch ( InvalidDateFormatException e) {
             return;
-        } catch (NonExistentEntityException | InvalidOwnershipException e) { }
+        } catch (NonExistentEntityException | InvalidOwnershipException | InvalidDateException ignored) { }
 
         fail("Fail to catch the exception InvalidDateFormatException");
     }
@@ -719,7 +716,7 @@ public class StudentServiceTest {
             studentService.selectInterviewTime(interviewSelectInDTO);
         } catch ( InvalidDateFormatException e) {
             return;
-        } catch (NonExistentEntityException | InvalidOwnershipException e) { }
+        } catch (NonExistentEntityException | InvalidOwnershipException | InvalidDateException ignored) { }
 
         fail("Fail to catch the exception InvalidDateFormatException");
     }

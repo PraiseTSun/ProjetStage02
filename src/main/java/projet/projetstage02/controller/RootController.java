@@ -1012,9 +1012,9 @@ public class RootController {
         } catch (InvalidTokenException | InvalidOwnershipException e) {
             logger.log(Level.INFO, "Put /studentSelectDate return 403");
             return ResponseEntity.status(FORBIDDEN).build();
-        } catch (InvalidDateFormatException e) {
-            logger.log(Level.INFO, "Put /studentSelectDate return 409");
-            return ResponseEntity.status(CONFLICT).build();
+        } catch (InvalidDateFormatException | InvalidDateException e) {
+            logger.log(Level.INFO, "Put /studentSelectDate return 400");
+            return ResponseEntity.status(BAD_REQUEST).build();
         }
     }
 

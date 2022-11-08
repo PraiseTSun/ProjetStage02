@@ -14,10 +14,7 @@ import projet.projetstage02.dto.pdf.PdfDTO;
 import projet.projetstage02.dto.pdf.PdfOutDTO;
 import projet.projetstage02.dto.users.Students.StudentInDTO;
 import projet.projetstage02.dto.users.Students.StudentOutDTO;
-import projet.projetstage02.exception.AlreadyExistingPostulation;
-import projet.projetstage02.exception.InvalidDateFormatException;
-import projet.projetstage02.exception.InvalidOwnershipException;
-import projet.projetstage02.exception.NonExistentEntityException;
+import projet.projetstage02.exception.*;
 import projet.projetstage02.model.*;
 import projet.projetstage02.repository.*;
 
@@ -239,7 +236,7 @@ public class StudentService {
     }
 
     public InterviewOutDTO selectInterviewTime(InterviewSelectInDTO interviewDTO)
-            throws NonExistentEntityException, InvalidOwnershipException, InvalidDateFormatException {
+            throws NonExistentEntityException, InvalidOwnershipException, InvalidDateFormatException, InvalidDateException {
         Optional<Student> studentOpt = studentRepository.findById(interviewDTO.getStudentId());
         if(studentOpt.isEmpty()) throw new NonExistentEntityException();
         Student student = studentOpt.get();
@@ -252,11 +249,14 @@ public class StudentService {
 
         try {
             LocalDateTime dateTime = LocalDateTime.parse(interviewDTO.getSelectedDate());
-            if(!interview.getCompanyDateOffers().contains(dateTime)) throw new InvalidOwnershipException();
+            if(!interview.getCompanyDateOffers().contains(dateTime)) throw new InvalidDateException();
             interview.setStudentSelectedDate(dateTime);
+        } catch (InvalidDateException e){
+          throw new InvalidDateException();
         } catch (Exception e){
             throw new InvalidDateFormatException();
         }
+
         interviewRepository.save(interview);
 
         return new InterviewOutDTO(interview);

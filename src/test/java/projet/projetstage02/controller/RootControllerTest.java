@@ -1939,13 +1939,13 @@ public class RootControllerTest {
     }
 
     @Test
-    void testStudentSelectDateConflidt() throws Exception{
+    void testStudentSelectDateBadRequest() throws Exception{
         when(studentService.selectInterviewTime(any())).thenThrow(new InvalidDateFormatException());
 
         mockMvc.perform(put("/studentSelectDate")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(jsonInterviewSelectDTO.write(interviewSelectInDTO).getJson()))
-                .andExpect(status().isConflict());
+                .andExpect(status().isBadRequest());
     }
 
     @Test
