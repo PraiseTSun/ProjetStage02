@@ -1,125 +1,37 @@
-import React, {useEffect, useState} from "react"
+import React, {useCallback, useEffect, useState} from "react"
 import IUser from "../../models/IUser";
 import {Button, Col, Container, Row, Table} from "react-bootstrap";
 import PageHeader from "../../components/universalComponents/PageHeader";
 import IOffer from "../../models/IOffer";
 import {generateAlert} from "../../services/universalServices/UniversalUtilService";
-import {
-    putAcceptedStudentsForOffer,
-    putCompanyOffers,
-    putOfferApplications,
-    putStudentAcceptation,
-    putStudentCv
-} from "../../services/companyServices/CompanyFetchService";
-import {Viewer} from "@react-pdf-viewer/core";
-import IAcceptedStudents from "../../models/IAcceptedStudents";
+import {putCompanyOffers} from "../../services/companyServices/CompanyFetchService";
+import OfferStudentApplicationsList from "../../components/companyComponents/OfferStudentApplicationsList";
 
 const CompanyOffersPage = ({connectedUser}: { connectedUser: IUser }): JSX.Element => {
     const [offers, setOffers] = useState<IOffer[]>([]);
-    const [students, setStudents] = useState<IUser[] | null>(null);
-    const [cv, setCv] = useState<Uint8Array>(new Uint8Array([]))
-    const [showCv, setShowCv] = useState<boolean>(false)
-    const [acceptedStudents, setAcceptedStudents] = useState<string[]>([])
-    const [currentlySelectedOffer, setCurrentlySelectedOffer] = useState<string>("")
+    const [currentlySelectedOffer, setCurrentlySelectedOffer] = useState<string | null>(null);
+
+    const fetchOffers = useCallback(async (): Promise<void> => {
+        try {
+            const response: Response = await putCompanyOffers(connectedUser.id, connectedUser.token);
+
+            if (response.ok) {
+                const data: IOffer[] = await response.json();
+                setOffers(data);
+            } else {
+                generateAlert();
+            }
+        } catch {
+            generateAlert();
+        }
+    }, [connectedUser]);
 
     useEffect(() => {
-        const fetchOffers = async (): Promise<void> => {
-            try {
-                const response: Response = await putCompanyOffers(connectedUser.id, connectedUser.token);
-
-                if (response.ok) {
-                    const data: IOffer[] = await response.json()
-                    setOffers(data)
-                } else {
-                    generateAlert()
-                }
-            } catch {
-                generateAlert()
-            }
-        }
         fetchOffers()
     }, [connectedUser]);
 
-    const fetchOfferApplications = async (offerId: string): Promise<void> => {
-        try {
-            const response: Response = await putOfferApplications(offerId, connectedUser.token);
-
-            if (response.ok) {
-                const data = await response.json();
-                setStudents(data.applicants);
-                await fetchAcceptedStudents(offerId);
-            } else {
-                generateAlert()
-            }
-        } catch {
-            generateAlert()
-        }
-    }
-
-    const fetchAcceptedStudents = async (offerId: string): Promise<void> => {
-        try {
-            const response: Response = await putAcceptedStudentsForOffer(offerId, connectedUser.token);
-
-            if (response.ok) {
-                const data: IAcceptedStudents = await response.json();
-                setCurrentlySelectedOffer(data.offerId)
-                setAcceptedStudents(data.studentsId);
-            } else {
-                generateAlert()
-            }
-        } catch {
-            generateAlert()
-        }
-    }
-
-    const hireStudent = async (studentId: string): Promise<void> => {
-        try {
-            const response: Response =
-                await putStudentAcceptation(currentlySelectedOffer, studentId, connectedUser.token);
-
-            if (response.ok) {
-                setAcceptedStudents([...acceptedStudents, studentId])
-            } else {
-                generateAlert()
-            }
-        } catch (exception) {
-            generateAlert()
-        }
-    }
-
-    const fetchStudentCv = async (studentId: string): Promise<void> => {
-        try {
-            const response: Response = await putStudentCv(studentId, connectedUser.token);
-
-            if (response.ok) {
-                const data: any = await response.json();
-                setCv(new Uint8Array(JSON.parse(data.pdf)));
-                setShowCv(true);
-            } else {
-                generateAlert()
-            }
-        } catch {
-            generateAlert()
-        }
-    }
-
-    if (showCv) {
-        return (
-            <Container className="min-vh-100 bg-white p-0">
-                <div className="bg-dark p-2">
-                    <Button className="Btn btn-primary" onClick={() => setShowCv(false)}>
-                        Fermer
-                    </Button>
-                </div>
-                <div>
-                    <Viewer fileUrl={cv}/>
-                </div>
-            </Container>
-        );
-    }
-
     return (
-        <Container className="min-vh-100">
+        <Container className="min-vh-100 p-0">
             <PageHeader title={"Mes offres"}/>
             <Row>
                 <Col className="bg-light p-0 mx-2" style={{height: 300}}>
@@ -149,7 +61,7 @@ const CompanyOffersPage = ({connectedUser}: { connectedUser: IUser }): JSX.Eleme
                                     <td>{offer.dateStageFin}</td>
                                     <th><Button disabled={currentlySelectedOffer === offer.id} variant="warning"
                                                 onClick={async () => {
-                                                    await fetchOfferApplications(offer.id)
+                                                    setCurrentlySelectedOffer(offer.id)
                                                 }}>Applicants</Button></th>
                                 </tr>
                             );
@@ -157,48 +69,11 @@ const CompanyOffersPage = ({connectedUser}: { connectedUser: IUser }): JSX.Eleme
                         </tbody>
                     </Table>
                 </Col>
-                {students !== null &&
+                {currentlySelectedOffer !== null &&
                     <Col className="bg-light p-0 mx-2" style={{height: 300}}>
-                        <Table className="text-center" hover>
-                            <thead className="bg-primary text-white">
-                            <tr>
-                                <th>Prénom</th>
-                                <th>Nom</th>
-                                <th>CV</th>
-                                <th>Engager</th>
-                            </tr>
-                            </thead>
-                            <tbody>
-                            {students.length === 0 &&
-                                <tr>
-                                    <td colSpan={4}>
-                                        <h1>Aucun applicants</h1>
-                                    </td>
-                                </tr>
-                            }
-                            {students.length !== 0 &&
-                                students!.map((student, index) => {
-                                    return (
-                                        <tr key={index}>
-                                            <td>{student.firstName}</td>
-                                            <td>{student.lastName}</td>
-                                            <td><Button variant="warning" onClick={async () => {
-                                                await fetchStudentCv(student.id)
-                                            }}>CV</Button></td>
-                                            <td>
-                                                <Button disabled={acceptedStudents.includes(student.id)}
-                                                        variant="success" onClick={async () => {
-                                                    await hireStudent(student.id)
-                                                }}>Engager</Button>
-                                                {acceptedStudents.includes(student.id) &&
-                                                    <p className="text-primary">En attente du contrat</p>}
-                                            </td>
-                                        </tr>
-                                    );
-                                })}
-                            </tbody>
-                        </Table>
-                    </Col>}
+                        <OfferStudentApplicationsList connectedUser={connectedUser} offerId={currentlySelectedOffer!}/>
+                    </Col>
+                }
             </Row>
         </Container>
     );
