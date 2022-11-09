@@ -1036,4 +1036,18 @@ public class RootController {
             return ResponseEntity.status(NOT_FOUND).build();
         }
     }
+
+    @PutMapping("/getGestionnaireContracts")
+    public ResponseEntity<List<StageContractOutDTO>> GetGestionrionnaireContract(@RequestBody TokenDTO token){
+        logger.log(Level.INFO, "Put getGestionnaireContracts");
+        try {
+            authService.getToken(token.getToken(), GESTIONNAIRE);
+            List<StageContractOutDTO> contracts = gestionnaireService.getContractsToSigne();
+            logger.log(Level.INFO, "Put getGestionnaireContracts return 200");
+            return ResponseEntity.ok(contracts);
+        } catch (InvalidTokenException e) {
+            logger.log(Level.INFO, "Put getGestionnaireContracts return 403");
+            return ResponseEntity.status(FORBIDDEN).build();
+        }
+    }
 }
