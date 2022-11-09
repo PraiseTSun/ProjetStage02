@@ -893,7 +893,6 @@ public class RootController {
     }
 
     @PutMapping("/company/validatedOffers/{id}")
-    //todo replace tokens with @RequestHeader("Authorization") String token
     public ResponseEntity<List<OffreOutDTO>> getValidatedOffers
             (@PathVariable long id, @RequestBody TokenDTO tokenId) {
         try {
@@ -958,7 +957,7 @@ public class RootController {
     }
 
     @PostMapping("/createInterview")
-    public ResponseEntity<InterviewOutDTO> createInterview(@RequestBody @Valid CreateInterviewDTO interviewDTO){
+    public ResponseEntity<InterviewOutDTO> createInterview(@RequestBody @Valid CreateInterviewDTO interviewDTO) {
         logger.log(Level.INFO, "Post /createInterview");
 
         try {
@@ -969,7 +968,7 @@ public class RootController {
         } catch (NonExistentEntityException e) {
             logger.log(Level.INFO, "Post /createInterview return 404 request");
             return ResponseEntity.status(NOT_FOUND).build();
-        } catch (InvalidDateFormatException  e) {
+        } catch (InvalidDateFormatException e) {
             logger.log(Level.INFO, "Post /createInterview return 400 request");
             return ResponseEntity.status(BAD_REQUEST).build();
         } catch (InvalidTokenException | InvalidOwnershipException e) {
@@ -980,7 +979,7 @@ public class RootController {
 
     @PutMapping("/getCompanyInterviews/{companyId}")
     public ResponseEntity<List<InterviewOutDTO>> getCompanyInterviews
-            (@PathVariable String companyId, @RequestBody TokenDTO tokenId){
+            (@PathVariable String companyId, @RequestBody TokenDTO tokenId) {
         logger.log(Level.INFO, "Put /getCompanyInterviews/{companyId}");
 
         try {
@@ -998,7 +997,7 @@ public class RootController {
     }
 
     @PutMapping("/studentSelectDate")
-    public ResponseEntity<InterviewOutDTO> StudentSelectDate(@RequestBody InterviewSelectInDTO interviewDTO){
+    public ResponseEntity<InterviewOutDTO> StudentSelectDate(@RequestBody InterviewSelectInDTO interviewDTO) {
         logger.log(Level.INFO, "Put /studentSelectDate");
 
         try {
@@ -1020,7 +1019,7 @@ public class RootController {
 
     @PutMapping("/getStudentInterviews/{studentId}")
     public ResponseEntity<List<InterviewOutDTO>> GetStudentInterviews
-            (@PathVariable String studentId, @RequestBody TokenDTO token){
+            (@PathVariable String studentId, @RequestBody TokenDTO token) {
         logger.log(Level.INFO, "Put /getStudentInterviews/{studentId}");
 
         try {

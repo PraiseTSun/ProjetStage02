@@ -1,5 +1,6 @@
 package projet.projetstage02.service;
 
+import com.itextpdf.text.DocumentException;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import projet.projetstage02.dto.contracts.ContractsDTO;
@@ -15,13 +16,12 @@ import projet.projetstage02.dto.users.Students.StudentOutDTO;
 import projet.projetstage02.exception.*;
 import projet.projetstage02.model.*;
 import projet.projetstage02.repository.*;
+import projet.projetstage02.utils.PDFCreationUtil;
 
 import javax.validation.constraints.NotNull;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 import static projet.projetstage02.utils.ByteConverter.byteToString;
 import static projet.projetstage02.utils.TimeUtil.*;
@@ -375,13 +375,105 @@ public class GestionnaireService {
         return new MillieuStageEvaluationInfoDTO(company, offre, student);
     }
 
-    public void evaluateStage(MillieuStageEvaluationInDTO millieuStageEvaluationInDTO) {
-        evaluationRepository.save(new Evaluation(millieuStageEvaluationInDTO));
+    public long evaluateStage(MillieuStageEvaluationInDTO millieuStageEvaluationInDTO) {
+        return evaluationRepository.save(new Evaluation(millieuStageEvaluationInDTO)).getId();
     }
 
     public ContractsDTO getContracts() {
         List<StageContractOutDTO> contracts = new ArrayList<>();
         stageContractRepository.findAll().forEach(stageContract -> contracts.add(new StageContractOutDTO(stageContract)));
         return ContractsDTO.builder().contracts(contracts).build();
+    }
+
+    public String createEvaluationMillieuStagePDF(long evaluationId) throws NonExistentEntityException, NonExistentOfferExeption, DocumentException {
+        Optional<Evaluation> optional = evaluationRepository.findById(evaluationId);
+        if (optional.isEmpty()) {
+            throw new NonExistentEntityException();
+        }
+        Evaluation evaluation = optional.get();
+        MillieuStageEvaluationInfoDTO millieuStageEvaluationInfoDTO =
+                getMillieuEvaluationInfoForContract(evaluation.getContractId());
+
+        return PDFCreationUtil.createPDFFromMap("evaluation_millieu_stage",
+                evaluationMillieuStageToMap(millieuStageEvaluationInfoDTO, evaluation));
+
+    }
+
+    private Map<String, Map<String, String>> evaluationMillieuStageToMap(MillieuStageEvaluationInfoDTO millieuStageEvaluationInfoDTO,
+                                                                         Evaluation evaluation) {
+        Map<String, Map<String, String>> map = new LinkedHashMap<>();
+        Map<String, String> companyInfo = new LinkedHashMap<>();
+        Map<String, String> studentInfo = new LinkedHashMap<>();
+        Map<String, String> offerInfo = new LinkedHashMap<>();
+        Map<String, String> evaluationParagraph = new LinkedHashMap<>();
+        Map<String, String> commentaires = new LinkedHashMap<>();
+        Map<String, String> signPara = new LinkedHashMap<>();
+
+        studentInfo.put("Nom de l'étudiant", millieuStageEvaluationInfoDTO.getNomEtudiant());
+        studentInfo.put("Prénom de l'étudiant", millieuStageEvaluationInfoDTO.getPrenomEtudiant());
+        studentInfo.put("Email de l'étudiant", millieuStageEvaluationInfoDTO.getEmailEtudiant());
+
+        companyInfo.put("Nom de la compagnie", millieuStageEvaluationInfoDTO.getNomCompagnie());
+        companyInfo.put("Nom de la personne contact", millieuStageEvaluationInfoDTO.getNomContact());
+        companyInfo.put("Prénom de la personne contact", millieuStageEvaluationInfoDTO.getPrenomContact());
+        companyInfo.put("Adresse de la compagnie", millieuStageEvaluationInfoDTO.getAdresse());
+        companyInfo.put("Département", millieuStageEvaluationInfoDTO.getDepartement());
+        companyInfo.put("Email de la compagnie", millieuStageEvaluationInfoDTO.getEmailCompagnie());
+
+        offerInfo.put("Titre du poste", millieuStageEvaluationInfoDTO.getPoste());
+        offerInfo.put("Session", millieuStageEvaluationInfoDTO.getSession());
+        offerInfo.put("Date de début", millieuStageEvaluationInfoDTO.getDateStageDebut());
+        offerInfo.put("Date de fin", millieuStageEvaluationInfoDTO.getDateStageFin());
+        offerInfo.put("Nombre d'heures par semaine", millieuStageEvaluationInfoDTO.getHeureParSemaine() + " heures");
+        offerInfo.put("Salaire", millieuStageEvaluationInfoDTO.getSalaire() + " $/h");
+
+
+        evaluationParagraph.put("Les taches confiées sont celles annoncées dans l'entente de stage",
+                evaluation.getTachesAnnonces());
+        evaluationParagraph.put("Des mesures d'accueil facilitent l'intégration du nouveau stagiaire",
+                evaluation.getIntegration());
+        evaluationParagraph.put("Le temps réel consacré à l'encadrement du stagiaire est suffisant",
+                evaluation.getTempsReelConsacre());
+        evaluationParagraph.put("Nombre d'heures pour le premier mois",
+                evaluation.getHeureTotalPremierMois() + " heures");
+        evaluationParagraph.put("Nombre d'heures pour le deuxième mois",
+                evaluation.getHeureTotalDeuxiemeMois() + " heures");
+        evaluationParagraph.put("Nombre d'heures pour le troisième mois",
+                evaluation.getHeureTotalTroisiemeMois() + " heures");
+        evaluationParagraph.put("L'environnement de travail respecte les normes de sécurité",
+                evaluation.getEnvironementTravail());
+        evaluationParagraph.put("Le climat de travail est agréable",
+                evaluation.getClimatTravail());
+        evaluationParagraph.put("Le millieu de stage est accessible par transport en commun",
+                evaluation.getMilieuDeStage());
+        evaluationParagraph.put("La communication avec le superviseur est efficace",
+                evaluation.getCommunicationAvecSuperviser());
+        evaluationParagraph.put("L'équipement de travail est adéquat",
+                evaluation.getEquipementFourni());
+        evaluationParagraph.put("Le volume de travail est raisonnable",
+                evaluation.getVolumeDeTravail());
+
+        commentaires.put("", evaluation.getCommentaires());
+
+        signPara.put("Signé le", evaluation.getDateSignature());
+        map.put("Information sur la compagnie", companyInfo);
+        map.put("Information sur l'étudiant", studentInfo);
+        map.put("Information sur l'offre de stage", offerInfo);
+        map.put("Évaluation", evaluationParagraph);
+        map.put("Commentaires", commentaires);
+        map.put("Signature", signPara);
+        map.put("_signature_", getSignatureGestionnaire(evaluation));
+        return map;
+    }
+
+    private Map<String, String> getSignatureGestionnaire(Evaluation evaluation) {
+        String signature = evaluation.getSignature();
+        signature = signature.split(",")[1];
+        Base64.Decoder decoder = Base64.getDecoder();
+        byte[] decodedByteArray = decoder.decode(signature);
+        String bytes = byteToString(decodedByteArray);
+        Map<String, String> map = new LinkedHashMap<>();
+        map.put("signature", bytes);
+        return map;
     }
 }
