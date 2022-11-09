@@ -37,24 +37,25 @@ const EvaluerLeMilieuDeStage = ({user}: { user: IUser }): JSX.Element => {
         session: ""
     });
     // varialbles pour formulaire la partie identification du stagiaire
-    const [contratId, setContratId] = useState(0)
-    const [tachesAnnonces, setTachesAnnonces] = useState("")
-    const [integration, setIntegration] = useState("")
-    const [tempsReelConsacre, setTempsReelConsacre] = useState("")
-    const [heureTotalPremierMois, setHeureTotalPremierMois] = useState(0)//les heures par mois
-    const [heureTotalDeuxiemeMois, setHeureTotalDeuxiemeMois] = useState(0)
-    const [heureTotalTroisiemeMois, setHeureTotalTroisiemeMois] = useState(0)
-    const [environnementDeTravail, setenvironnementDeTravail] = useState("")
-    const [climatDeTravail, setclimatDeTravail] = useState("")
-    const [milieuDeStage, setMilieuDeStage] = useState("")
-    const [salaireOffert, setSalaireOffert] = useState("")
-    const [salaireParHeure, setSalaireParHeure] = useState("")
-    const [communicationAvecSuperviser, setCommunicationAvecSuperviser] = useState("")
-    const [equipementFourni, setEquipementFourni] = useState("")
-    const [volumeDeTravail, setVolumeDeTravail] = useState("")
-    const [commentaires, setCommentaires] = useState("")
-    const [signature, setSignature] = useState("")
-    const [dateSignature, setDateSignature] = useState("")
+    const [contratId, setContratId] = useState<number>(0)
+    const [tachesAnnonces, setTachesAnnonces] = useState<string>("")
+    const [integration, setIntegration] = useState<string>("")
+    const [tempsReelConsacre, setTempsReelConsacre] = useState<string>("")
+    const [heureTotalPremierMois, setHeureTotalPremierMois] = useState<number>(0)//les heures par mois
+    const [heureTotalDeuxiemeMois, setHeureTotalDeuxiemeMois] = useState<number>(0)
+    const [heureTotalTroisiemeMois, setHeureTotalTroisiemeMois] = useState<number>(0)
+    const [environnementDeTravail, setenvironnementDeTravail] = useState<string>("")
+    const [climatDeTravail, setclimatDeTravail] = useState<string>("")
+    const [milieuDeStage, setMilieuDeStage] = useState<string>("")
+    const [salaireOffert, setSalaireOffert] = useState<string>("")
+    const [salaireParHeure, setSalaireParHeure] = useState<string>("")
+    const [communicationAvecSuperviser, setCommunicationAvecSuperviser] = useState<string>("")
+    const [equipementFourni, setEquipementFourni] = useState<string>("")
+    const [volumeDeTravail, setVolumeDeTravail] = useState<string>("")
+    const [commentaires, setCommentaires] = useState<string>("")
+    const [signature, setSignature] = useState<string>("")
+    const [dateNow, setDateNow] = useState<Date>(new Date())
+    const [dateSignature, setDateSignature] = useState<string>(`${dateNow.getDate().toString()}-${(dateNow.getMonth()+1).toString()}-${dateNow.getFullYear().toString()}`)
     const [isSigner, setIsSigner] = useState(false)
     let sigPad: SignaturePad | null
     useEffect(() => {
@@ -162,6 +163,7 @@ const EvaluerLeMilieuDeStage = ({user}: { user: IUser }): JSX.Element => {
             setCommentaires("")
         }
         setValidated(true)
+        window.location.href = "/evaluerLeMilieuDeStage"
     }
 
     if (waiting) {
@@ -259,9 +261,9 @@ const EvaluerLeMilieuDeStage = ({user}: { user: IUser }): JSX.Element => {
                                             <p>{`${infosContrat?.nomEtudiant} ${infosContrat?.prenomEtudiant}`}</p>
                                         </Col>
                                         <Col className="col-5">
-                                            <p className="fw-bold mt-2 h5">Date Stage(Début -
+                                            <p className="fw-bold mt-2 h5">Date Stage(Début à
                                                 Fin)</p>
-                                            <p>{infosContrat?.dateStageDebut} ~ {infosContrat.dateStageFin}</p>
+                                            <p>{infosContrat?.dateStageDebut} à {infosContrat.dateStageFin}</p>
                                         </Col>
                                         <Col className="col-3">
                                             <p className="fw-bold mt-2 h5">Stage Session</p>
@@ -595,11 +597,7 @@ const EvaluerLeMilieuDeStage = ({user}: { user: IUser }): JSX.Element => {
                                             <Form.Group>
                                                 <Form.Label className="fw-bold mt-2 h5">Date
                                                     Signature(JJ-MM-AAAA)</Form.Label>
-                                                <Form.Control type="date" minLength={2} required
-                                                              value={dateSignature}
-                                                              onChange={e => setDateSignature(e.target.value)}></Form.Control>
-                                                <Form.Control.Feedback type="invalid">Champ
-                                                    requis</Form.Control.Feedback>
+                                                <h5 className="p-2">{dateSignature}</h5>
                                             </Form.Group>
                                         </Col>
                                     </Row>
