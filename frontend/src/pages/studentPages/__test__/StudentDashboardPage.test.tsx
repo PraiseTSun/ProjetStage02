@@ -16,7 +16,8 @@ describe("StudentDashBoardTest", () => {
             userType: "student",
             token: "324324332",
             cv: "",
-            companyName: ""
+            companyName: "",
+            cvToValidate: ""
         }
 
         deconnexion = jest.fn()

@@ -5,5 +5,6 @@ export default interface IUser {
     lastName: string,
     companyName: string | null,
     cv: string | null,
-    userType: string
+    userType: string,
+    cvToValidate: string | null
 }

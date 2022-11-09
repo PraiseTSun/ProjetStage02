@@ -29,7 +29,8 @@ export const emptyUser: IUser = {
     userType: "",
     cv: "",
     token: "",
-    companyName: ""
+    companyName: "",
+    cvToValidate: ""
 }
 
 function App() {
