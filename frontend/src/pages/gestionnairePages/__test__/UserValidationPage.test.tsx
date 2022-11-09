@@ -17,7 +17,8 @@ describe("UserValidationPageTests", () => {
             userType: "gestionnaire",
             token: "32432",
             companyName: "",
-            cv: ""
+            cv: "",
+            cvToValidate: ""
         }
 
         student = {
@@ -27,7 +28,8 @@ describe("UserValidationPageTests", () => {
             userType: "student",
             token: "324324332",
             cv: "",
-            companyName: ""
+            companyName: "",
+            cvToValidate: ""
         }
 
         company = {
@@ -37,7 +39,8 @@ describe("UserValidationPageTests", () => {
             lastName: "Marley",
             userType: "company",
             token: "324324332",
-            cv: ""
+            cv: "",
+            cvToValidate: ""
         }
 
         global.fetch = jest.fn((url) => {

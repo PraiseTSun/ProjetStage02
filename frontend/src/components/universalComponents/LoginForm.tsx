@@ -31,8 +31,9 @@ const LoginForm = (props: { setUser: Function }): JSX.Element => {
                         lastName: data.lastName,
                         userType: userType,
                         token: tokenData.token,
+                        cvToValidate: data.cvToValidate,
                         cv: data.cv,
-                        companyName: ""
+                        companyName: data.companyName
                     }
                     props.setUser(user)
                     localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(user))
