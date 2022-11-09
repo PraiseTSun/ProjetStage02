@@ -6,6 +6,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import projet.projetstage02.dto.SignatureInDTO;
 import projet.projetstage02.dto.contracts.ContractsDTO;
 import projet.projetstage02.dto.contracts.StageContractInDTO;
 import projet.projetstage02.dto.contracts.StageContractOutDTO;
@@ -994,5 +995,102 @@ public class GestionnaireServiceTest {
         List<StageContractOutDTO> contractsDTO = gestionnaireService.getContractsToSigne();
 
         assertThat(contractsDTO.size()).isEqualTo(2);
+    }
+
+    @Test
+    void testContractSignatureHappyDay()
+            throws NonExistentEntityException, NotReadyToBeSigneException {
+        stageContract.setCompanySignature("done");
+        stageContract.setStudentSignature("done");
+        when(gestionnaireRepository.findById(anyLong())).thenReturn(Optional.of(gestionnaireTest));
+        when(stageContractRepository.findById(anyLong())).thenReturn(Optional.of(stageContract));
+
+        StageContractOutDTO dto = gestionnaireService.contractSignature(SignatureInDTO.builder()
+                .token("token")
+                .userId(0L)
+                .contractId(0L)
+                .signature("IAmSoOverIt")
+                .build());
+
+        assertThat(dto.getGestionnaireSignature()).isEqualTo("IAmSoOverIt");
+    }
+
+    @Test
+    void testContractSignatureCompanyMissing(){
+        stageContract.setCompanySignature("");
+        stageContract.setStudentSignature("done");
+        when(gestionnaireRepository.findById(anyLong())).thenReturn(Optional.of(gestionnaireTest));
+        when(stageContractRepository.findById(anyLong())).thenReturn(Optional.of(stageContract));
+
+        try {
+            gestionnaireService.contractSignature(SignatureInDTO.builder()
+                    .token("token")
+                    .userId(0L)
+                    .contractId(0L)
+                    .signature("IAmSoOverIt")
+                    .build());
+        } catch (NotReadyToBeSigneException e) {
+            return;
+        } catch (NonExistentEntityException e) {}
+
+        fail("Fail to catch the NotReadyToBeSigneException");
+    }
+
+    @Test
+    void testContractSignatureStudentMissing(){
+        stageContract.setCompanySignature("done");
+        stageContract.setStudentSignature("");
+        when(gestionnaireRepository.findById(anyLong())).thenReturn(Optional.of(gestionnaireTest));
+        when(stageContractRepository.findById(anyLong())).thenReturn(Optional.of(stageContract));
+
+        try {
+            gestionnaireService.contractSignature(SignatureInDTO.builder()
+                    .token("token")
+                    .userId(0L)
+                    .contractId(0L)
+                    .signature("IAmSoOverIt")
+                    .build());
+        } catch (NotReadyToBeSigneException e) {
+            return;
+        } catch (NonExistentEntityException e) {}
+
+        fail("Fail to catch the NotReadyToBeSigneException");
+    }
+
+    @Test
+    void testContractSignatureContractNotFound(){
+        when(gestionnaireRepository.findById(anyLong())).thenReturn(Optional.of(gestionnaireTest));
+        when(stageContractRepository.findById(anyLong())).thenReturn(Optional.empty());
+
+        try {
+            gestionnaireService.contractSignature(SignatureInDTO.builder()
+                    .token("token")
+                    .userId(0L)
+                    .contractId(0L)
+                    .signature("IAmSoOverIt")
+                    .build());
+        } catch (NonExistentEntityException e) {
+            return;
+        } catch (NotReadyToBeSigneException e) {}
+
+        fail("Fail to catch the NonExistentEntityException");
+    }
+
+    @Test
+    void testContractSignatureGestionnaireNotFound(){
+        when(gestionnaireRepository.findById(anyLong())).thenReturn(Optional.empty());
+
+        try {
+            gestionnaireService.contractSignature(SignatureInDTO.builder()
+                    .token("token")
+                    .userId(0L)
+                    .contractId(0L)
+                    .signature("IAmSoOverIt")
+                    .build());
+        } catch (NonExistentEntityException e) {
+            return;
+        } catch (NotReadyToBeSigneException e) {}
+
+        fail("Fail to catch the NonExistentEntityException");
     }
 }
