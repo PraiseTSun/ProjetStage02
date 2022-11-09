@@ -595,7 +595,7 @@ public class RootController {
 
     @PutMapping("/refuseCv/{studentId}")
     public ResponseEntity<StudentOutDTO> refuseStudentCv(@PathVariable long studentId, @RequestBody CvRefusalDTO cvRefusalDTO) {
-        logger.log(Level.INFO, "Put /refuseCv entered with id : ");
+        logger.log(Level.INFO, "Put /refuseCv entered with id : " + studentId);
         try {
             authService.getToken(cvRefusalDTO.getToken(), GESTIONNAIRE);
             StudentOutDTO studentDTO = gestionnaireService.removeStudentCvValidation(

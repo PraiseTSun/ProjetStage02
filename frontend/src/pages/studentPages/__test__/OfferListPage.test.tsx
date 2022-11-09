@@ -15,7 +15,8 @@ describe("OffersListPageTests", () => {
             firstName: "Peter",
             cv: null,
             token: "",
-            userType: ""
+            userType: "",
+            cvToValidate: ""
         }
 
         global.fetch = jest.fn((url) => {
