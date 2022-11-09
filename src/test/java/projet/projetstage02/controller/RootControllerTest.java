@@ -2017,4 +2017,44 @@ public class RootControllerTest {
                         .content(jsonInterviewSelectDTO.write(interviewSelectInDTO).getJson()))
                 .andExpect(status().isForbidden());
     }
+
+    @Test
+    void testGestionnaireSignatureHappyDay() throws Exception{
+        when(gestionnaireService.contractSignature(any())).thenReturn(new StageContractOutDTO());
+
+        mockMvc.perform(put("/gestionnaireSignature")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(jsonSignatureDTO.write(signatureInDTO).getJson()))
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    void testGestionnaireSignatureNotFound() throws Exception{
+        when(gestionnaireService.contractSignature(any())).thenThrow(new NonExistentEntityException());
+
+        mockMvc.perform(put("/gestionnaireSignature")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(jsonSignatureDTO.write(signatureInDTO).getJson()))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    void testGestionnaireSignatureConflict() throws Exception{
+        when(gestionnaireService.contractSignature(any())).thenThrow(new NotReadyToBeSigneException());
+
+        mockMvc.perform(put("/gestionnaireSignature")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(jsonSignatureDTO.write(signatureInDTO).getJson()))
+                .andExpect(status().isConflict());
+    }
+
+    @Test
+    void testGestionnaireSignatureInvalidToken() throws Exception{
+        when(authService.getToken(anyString(), any())).thenThrow(new InvalidTokenException());
+
+        mockMvc.perform(put("/gestionnaireSignature")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(jsonSignatureDTO.write(signatureInDTO).getJson()))
+                .andExpect(status().isForbidden());
+    }
 }
