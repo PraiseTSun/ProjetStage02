@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 import projet.projetstage02.dto.evaluations.MillieuStage.MillieuStageEvaluationInDTO;
 
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotBlank;
@@ -19,7 +20,7 @@ import javax.validation.constraints.Pattern;
 @Builder
 public class Evaluation {
     @Id
-    @Min(1)
+    @GeneratedValue
     private long id;
     @Min(1)
     private long contractId;
