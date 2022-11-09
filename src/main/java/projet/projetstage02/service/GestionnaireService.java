@@ -2,6 +2,7 @@ package projet.projetstage02.service;
 
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
+import projet.projetstage02.dto.SignatureInDTO;
 import projet.projetstage02.dto.contracts.ContractsDTO;
 import projet.projetstage02.dto.contracts.StageContractInDTO;
 import projet.projetstage02.dto.contracts.StageContractOutDTO;
@@ -17,6 +18,7 @@ import projet.projetstage02.model.*;
 import projet.projetstage02.repository.*;
 
 import javax.validation.constraints.NotNull;
+import java.security.Signature;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -291,8 +293,6 @@ public class GestionnaireService {
                 .offerId(offer.getId())
                 .companyId(company.getId())
                 .session(offer.getSession())
-                .companySignature("")
-                .studentSignature("")
                 .description(getContractDescription(student, offer, company))
                 .build();
 
@@ -383,5 +383,20 @@ public class GestionnaireService {
         List<StageContractOutDTO> contracts = new ArrayList<>();
         stageContractRepository.findAll().forEach(stageContract -> contracts.add(new StageContractOutDTO(stageContract)));
         return ContractsDTO.builder().contracts(contracts).build();
+    }
+
+    public List<StageContractOutDTO> getContractsToSigne(){
+        List<StageContractOutDTO> contractsDTO = new ArrayList<>();
+
+        stageContractRepository.findAll()
+                .stream()
+                .filter(stageContract ->
+                        !stageContract.getCompanySignature().equals("")
+                                && !stageContract.getStudentSignature().equals("")
+                                && stageContract.getGestionnaireSignature().equals("")
+                )
+                .forEach(stageContract -> contractsDTO.add(new StageContractOutDTO(stageContract)));
+
+        return contractsDTO;
     }
 }
