@@ -106,9 +106,13 @@ const OffersListPage = ({connectedUser}:
     const getInterviewTableCell = (offerId: string): JSX.Element | JSX.Element[] => {
         if (!studentApplys.offersId.some(applyOfferId => applyOfferId === offerId)) {
             return <p>Pas encore appliqué</p>;
-        } else if (!hasInterview(offerId)) {
+        }
+
+        if (!hasInterview(offerId)) {
             return <p>En attente des entrevues</p>
-        } else if (getInterview(offerId)!.studentSelectedDate === "") {
+        }
+
+        if (getInterview(offerId)!.studentSelectedDate === "") {
             return (
                 getInterview(offerId)!.companyDateOffers.map((date: string, index: number) =>
                     <>
@@ -123,14 +127,15 @@ const OffersListPage = ({connectedUser}:
                     </>
                 )
             );
-        } else {
-            return (
-                <p>
-                    Entrevue confirmée pour le {getInterview(offerId)!
-                    .studentSelectedDate.replace("T", " ")}
-                </p>
-            );
         }
+
+        // Entrevue confirmée par l'étudiant
+        return (
+            <p>
+                Entrevue confirmée pour le {getInterview(offerId)!
+                .studentSelectedDate.replace("T", " ")}
+            </p>
+        );
     }
 
     return (

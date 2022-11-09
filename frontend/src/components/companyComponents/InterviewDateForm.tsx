@@ -46,9 +46,10 @@ const InterviewDateForm = ({
                 const data: IInterview = await response.json();
                 setInterviews([...interviews, data])
                 setShowDateSelector(false)
-            } else {
-                generateAlert()
+                return;
             }
+            
+            generateAlert()
 
         } catch {
             generateAlert()

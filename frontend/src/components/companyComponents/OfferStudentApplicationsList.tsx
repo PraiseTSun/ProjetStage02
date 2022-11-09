@@ -101,6 +101,30 @@ const OfferStudentApplicationsList = ({
         );
     }
 
+    const getOfferInterviewTableCell = (studentId: string): JSX.Element => {
+        if (acceptedStudents.includes(studentId)) {
+            return <p>Étudiant engagé</p>
+        }
+
+        if (hasInterview(offerId, studentId)) {
+            const interview = getInterview(offerId, studentId);
+
+            return interview!.studentSelectedDate === ""
+                ? <p>En attente de confirmation de l'étudiant</p>
+                : <p>
+                    Entrevue confirmée pour le {interview!.studentSelectedDate.replace("T", " ")}
+                </p>
+        }
+
+        return (
+            <Button variant="primary" onClick={
+                () => {
+                    setCurrentlySelectedStudent(studentId)
+                    setShowDateSelector(true)
+                }}>Soumettre mes disponibilités</Button>
+        );
+    }
+
     return (
         <Table className="text-center" hover>
             <thead className="bg-primary text-white">
@@ -129,23 +153,7 @@ const OfferStudentApplicationsList = ({
                             <td><Button variant="warning" onClick={async () => {
                                 await fetchStudentCv(student.id)
                             }}>CV</Button></td>
-                            <td>
-                                {
-                                    hasInterview(offerId, student.id) &&
-                                    getInterview(offerId, student.id)!.studentSelectedDate !== ""
-                                        ? <p>
-                                            Entrevue confirmée pour le {getInterview(offerId, student.id)!
-                                            .studentSelectedDate.replace("T", " ")}
-                                        </p>
-                                        : hasInterview(offerId, student.id)
-                                            ? <p>En attente de confirmation de l'étudiant</p>
-                                            : <Button variant="primary" onClick={
-                                                () => {
-                                                    setCurrentlySelectedStudent(student.id)
-                                                    setShowDateSelector(true)
-                                                }}>Soumettre mes disponibilités</Button>
-                                }
-                            </td>
+                            <td>{getOfferInterviewTableCell(student.id)}</td>
                             <td>
                                 <Button disabled={acceptedStudents.includes(student.id)}
                                         variant="success" onClick={async () => {
