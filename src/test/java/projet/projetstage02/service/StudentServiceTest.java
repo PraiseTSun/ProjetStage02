@@ -6,19 +6,24 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import projet.projetstage02.DTO.*;
-import projet.projetstage02.exception.AlreadyExistingPostulation;
-import projet.projetstage02.exception.NonExistentEntityException;
+import projet.projetstage02.dto.SignatureInDTO;
+import projet.projetstage02.dto.applications.ApplicationDTO;
+import projet.projetstage02.dto.applications.ApplicationListDTO;
+import projet.projetstage02.dto.contracts.StageContractOutDTO;
+import projet.projetstage02.dto.cv.CvStatusDTO;
+import projet.projetstage02.dto.interview.InterviewOutDTO;
+import projet.projetstage02.dto.interview.InterviewSelectInDTO;
+import projet.projetstage02.dto.offres.OffreOutDTO;
+import projet.projetstage02.dto.pdf.PdfDTO;
+import projet.projetstage02.dto.pdf.PdfOutDTO;
+import projet.projetstage02.dto.users.Students.StudentInDTO;
+import projet.projetstage02.dto.users.Students.StudentOutDTO;
+import projet.projetstage02.exception.*;
 import projet.projetstage02.model.AbstractUser.Department;
-import projet.projetstage02.model.Application;
-import projet.projetstage02.model.CvStatus;
-import projet.projetstage02.model.Offre;
-import projet.projetstage02.model.Student;
-import projet.projetstage02.repository.ApplicationRepository;
-import projet.projetstage02.repository.CvStatusRepository;
-import projet.projetstage02.repository.OffreRepository;
-import projet.projetstage02.repository.StudentRepository;
+import projet.projetstage02.model.*;
+import projet.projetstage02.repository.*;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -42,6 +47,10 @@ public class StudentServiceTest {
     OffreRepository offreRepository;
     @Mock
     ApplicationRepository applicationRepository;
+    @Mock
+    InterviewRepository interviewRepository;
+    @Mock
+    StageContractRepository stageContractRepository;
 
     @Mock
     CvStatusRepository cvStatusRepository;
@@ -50,6 +59,10 @@ public class StudentServiceTest {
     Offre duffOffer;
     Application bartApplication;
     CvStatus cvStatus;
+    SignatureInDTO signatureInDTO;
+    StageContract stageContract;
+    Interview interview;
+    InterviewSelectInDTO interviewSelectInDTO;
 
     @BeforeEach
     void setup() {
@@ -83,6 +96,41 @@ public class StudentServiceTest {
                 .offerId(1L)
                 .build();
         cvStatus = CvStatus.builder().build();
+
+        stageContract = StageContract.builder()
+                .id(5L)
+                .studentId(bart.getId())
+                .offerId(duffOffer.getId())
+                .companyId(99L)
+                .description("Do a better job than Homer Simpson")
+                .companySignature("")
+                .build();
+
+        signatureInDTO = SignatureInDTO.builder()
+                .userId(bart.getId())
+                .contractId(stageContract.getId())
+                .signature("")
+                .build();
+
+        interview = Interview.builder()
+                .id(6L)
+                .companyId(0L)
+                .offerId(0L)
+                .studentId(bart.getId())
+                .companyDateOffers(new ArrayList<>() {{
+                    add(LocalDateTime.parse("2022-11-28T12:30:30"));
+                    add(LocalDateTime.parse("2022-11-29T12:30:30"));
+                    add(LocalDateTime.parse("2022-11-30T12:30:30"));
+                }})
+                .studentSelectedDate(null)
+                .build();
+
+        interviewSelectInDTO = InterviewSelectInDTO.builder()
+                .token("token")
+                .interviewId(interview.getId())
+                .studentId(bart.getId())
+                .selectedDate("2022-11-29T12:30:30")
+                .build();
     }
 
     @Test
@@ -492,5 +540,216 @@ public class StudentServiceTest {
             return;
         }
         fail("NonExistentEntityException not launched");
+    }
+
+    @Test
+    void testGetContractHappyDay() throws NonExistentEntityException {
+        when(studentRepository.findById(anyLong())).thenReturn(Optional.of(bart));
+        StageContract contractValid = StageContract.builder()
+                .id(1L).studentId(1L).offerId(1L).companyId(bart.getId()).companySignature("")
+                .session(Offre.currentSession()).description("").companySignatureDate(LocalDateTime.now()).build();
+        StageContract contractInvalid1 = StageContract.builder()
+                .id(1L).studentId(1L).offerId(1L).companyId(bart.getId()).companySignature("").session("Hiver 2000")
+                .description("").companySignatureDate(LocalDateTime.now()).build();
+        StageContract contractInvalid2 = StageContract.builder()
+                .id(1L).studentId(1L).offerId(1L).companyId(bart.getId()).companySignature("").session("Hiver 1997")
+                .description("").companySignatureDate(LocalDateTime.now()).build();
+        when(stageContractRepository.findByStudentId(anyLong())).thenReturn(
+                new ArrayList<>() {{
+                    add(contractValid);
+                    add(contractInvalid1);
+                    add(contractValid);
+                    add(contractInvalid2);
+                }}
+        );
+
+        List<StageContractOutDTO> contracts = studentService.getContracts(bart.getId(), Offre.currentSession());
+
+        assertThat(contracts.size()).isEqualTo(2);
+    }
+
+    @Test
+    void testGetContractsNotFound() {
+        when(studentRepository.findById(anyLong())).thenReturn(Optional.empty());
+
+        try {
+            studentService.getContracts(1L, "");
+        } catch (NonExistentEntityException e) {
+            return;
+        }
+        fail("Fail to catch the NonExistentEntityException");
+    }
+
+    @Test
+    void testAddSignatureToContractHappyDay() throws Exception {
+        when(studentRepository.findById(anyLong())).thenReturn(Optional.of(bart));
+        when(stageContractRepository.findById(anyLong())).thenReturn(Optional.of(stageContract));
+
+        StageContractOutDTO dto = studentService.addSignatureToContract(signatureInDTO);
+
+        assertThat(dto.getStudentId()).isEqualTo(bart.getId());
+        assertThat(dto.getContractId()).isEqualTo(stageContract.getId());
+        assertThat(dto.getStudentSignature()).isEqualTo(signatureInDTO.getSignature());
+    }
+
+    @Test
+    void testAddSignatureToContractOwnershipConflict() {
+        bart.setId(99L);
+        when(studentRepository.findById(anyLong())).thenReturn(Optional.of(bart));
+        when(stageContractRepository.findById(anyLong())).thenReturn(Optional.of(stageContract));
+
+        try {
+            studentService.addSignatureToContract(signatureInDTO);
+        } catch (InvalidOwnershipException e) {
+            return;
+        } catch (Exception e) {
+        }
+
+        fail("Fail to catch the InvalidOwnershipException!");
+    }
+
+    @Test
+    void testAddSignatureToContractStudentNotFound() {
+        when(studentRepository.findById(anyLong())).thenReturn(Optional.empty());
+
+        try {
+            studentService.addSignatureToContract(signatureInDTO);
+        } catch (NonExistentEntityException e) {
+            return;
+        } catch (Exception e) {
+        }
+
+        fail("Fail to catch the NonExistentEntityException!");
+    }
+
+    @Test
+    void testAddSignatureToContractNotFound() {
+        when(studentRepository.findById(anyLong())).thenReturn(Optional.of(bart));
+        when(stageContractRepository.findById(anyLong())).thenReturn(Optional.empty());
+
+        try {
+            studentService.addSignatureToContract(signatureInDTO);
+        } catch (NonExistentEntityException e) {
+            return;
+        } catch (Exception e) {
+        }
+
+        fail("Fail to catch the NonExistentEntityException!");
+    }
+
+    @Test
+    void testSelectInterviewTimeHappyDay()
+            throws InvalidOwnershipException, NonExistentEntityException, InvalidDateFormatException, InvalidDateException {
+        when(studentRepository.findById(anyLong())).thenReturn(Optional.of(bart));
+        when(interviewRepository.findById(anyLong())).thenReturn(Optional.of(interview));
+
+        InterviewOutDTO dto = studentService.selectInterviewTime(interviewSelectInDTO);
+
+        verify(interviewRepository, times(1)).save(any());
+        assertThat(dto.getStudentSelectedDate()).isEqualTo(interviewSelectInDTO.getSelectedDate());
+    }
+
+    @Test
+    void testSelectInterviewTimeStudentNotFound() {
+        when(studentRepository.findById(anyLong())).thenReturn(Optional.empty());
+
+        try {
+            studentService.selectInterviewTime(interviewSelectInDTO);
+        } catch (NonExistentEntityException e) {
+            return;
+        } catch (InvalidOwnershipException | InvalidDateFormatException | InvalidDateException ignored) {
+        }
+
+        fail("Fail to catch the exception NonExistentEntityException");
+    }
+
+    @Test
+    void testSelectInterviewTimeInterviewNotFound() {
+        when(studentRepository.findById(anyLong())).thenReturn(Optional.of(bart));
+        when(interviewRepository.findById(anyLong())).thenReturn(Optional.empty());
+
+        try {
+            studentService.selectInterviewTime(interviewSelectInDTO);
+        } catch (NonExistentEntityException e) {
+            return;
+        } catch (InvalidOwnershipException | InvalidDateFormatException | InvalidDateException ignored) {
+        }
+
+        fail("Fail to catch the exception NonExistentEntityException");
+    }
+
+    @Test
+    void testSelectInterviewTimeForbidden() {
+        bart.setId(0L);
+        when(studentRepository.findById(anyLong())).thenReturn(Optional.of(bart));
+        when(interviewRepository.findById(anyLong())).thenReturn(Optional.of(interview));
+
+        try {
+            studentService.selectInterviewTime(interviewSelectInDTO);
+        } catch (InvalidOwnershipException e) {
+            return;
+        } catch (NonExistentEntityException | InvalidDateFormatException | InvalidDateException ignored) {
+        }
+
+        fail("Fail to catch the exception InvalidOwnershipException");
+    }
+
+    @Test
+    void testSelectInterviewTimeWrongDateConflict() {
+        interviewSelectInDTO.setSelectedDate("test");
+        when(studentRepository.findById(anyLong())).thenReturn(Optional.of(bart));
+        when(interviewRepository.findById(anyLong())).thenReturn(Optional.of(interview));
+
+        try {
+            studentService.selectInterviewTime(interviewSelectInDTO);
+        } catch (InvalidDateFormatException e) {
+            return;
+        } catch (NonExistentEntityException | InvalidOwnershipException | InvalidDateException ignored) {
+        }
+
+        fail("Fail to catch the exception InvalidDateFormatException");
+    }
+
+    @Test
+    void testSelectInterviewTimeChoiceDateConflict() {
+        interviewSelectInDTO.setSelectedDate("2022-11-29T12:30:00");
+        when(studentRepository.findById(anyLong())).thenReturn(Optional.of(bart));
+        when(interviewRepository.findById(anyLong())).thenReturn(Optional.of(interview));
+
+        try {
+            studentService.selectInterviewTime(interviewSelectInDTO);
+        } catch (InvalidDateException e) {
+            return;
+        } catch (NonExistentEntityException | InvalidOwnershipException | InvalidDateFormatException ignored) {
+        }
+
+        fail("Fail to catch the exception InvalidDateFormatException");
+    }
+
+    @Test
+    void testGetInterviewsHappyDay() throws NonExistentEntityException {
+        when(studentRepository.findById(anyLong())).thenReturn(Optional.of(bart));
+        when(interviewRepository.findByStudentId(anyLong())).thenReturn(new ArrayList<>() {{
+            add(interview);
+            add(interview);
+            add(interview);
+        }});
+
+        List<InterviewOutDTO> interviews = studentService.getInterviews(1L);
+
+        assertThat(interviews.size()).isEqualTo(3);
+    }
+
+    @Test
+    void testGetInterviewsNotFound() {
+        when(studentRepository.findById(anyLong())).thenReturn(Optional.empty());
+
+        try {
+            studentService.getInterviews(1L);
+        } catch (NonExistentEntityException e) {
+            return;
+        }
+
+        fail("Fail to catch the exception NonExistentEntityException");
     }
 }

@@ -163,6 +163,27 @@ export const putUnvalidatedStudents = (token: string): Promise<Response> => {
     })
 }
 
+export const putGetContracts = (token: string): Promise<Response> => {
+    return fetch("http://localhost:8080/contractsToCreate", {
+        method: "PUT",
+        headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({token: token})
+    })
+}
+
+export const postCreateStageContract = (studentId: string, offerId: string, token: string): Promise<Response> => {
+    return fetch("http://localhost:8080/createStageContract", {
+        method: "POST",
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({token: token, offerId: offerId, studentId: studentId})
+    })
+}
+
 export const postCreateGestionnaire = (firstName: string,
     lastName: string,
     email: string,

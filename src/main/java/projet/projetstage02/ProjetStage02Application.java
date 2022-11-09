@@ -4,7 +4,13 @@ import lombok.AllArgsConstructor;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import projet.projetstage02.DTO.*;
+import projet.projetstage02.dto.contracts.StageContractInDTO;
+import projet.projetstage02.dto.offres.OffreInDTO;
+import projet.projetstage02.dto.pdf.PdfDTO;
+import projet.projetstage02.dto.users.CompanyDTO;
+import projet.projetstage02.dto.users.GestionnaireDTO;
+import projet.projetstage02.dto.users.Students.StudentInDTO;
+import projet.projetstage02.dto.users.Students.StudentOutDTO;
 import projet.projetstage02.model.AbstractUser;
 import projet.projetstage02.model.AbstractUser.Department;
 import projet.projetstage02.service.CompanyService;
@@ -85,10 +91,12 @@ public class ProjetStage02Application implements CommandLineRunner {
                 .department(Department.Informatique.departement)
                 .heureParSemaine(40)
                 .companyId(company.getId())
-                .dateStage("2019-05-01")
+                .dateStageDebut("2020-01-01")
+                .dateStageFin("2020-01-01")
                 .salaire(40)
                 .session("Hiver 2023")
-                .nomDeCompagnie("Duff Beer")
+                .nomDeCompagnie("Bell")
+                .companyId(company.getId())
                 .position("Delivery Man")
                 .pdf(TEST_PDF)
                 .build());
@@ -108,11 +116,13 @@ public class ProjetStage02Application implements CommandLineRunner {
                 OffreInDTO.builder()
                         .id(0L)
                         .nomDeCompagnie("Bell")
+                        .companyId(company.getId())
                         .department("Techniques de linformatique")
                         .position("Support TI")
                         .heureParSemaine(35)
                         .salaire(35)
-                        .dateStage("2019-05-01")
+                        .dateStageDebut("2020-01-01")
+                        .dateStageFin("2020-01-01")
                         .session("Hiver 2023")
                         .adresse("My Home")
                         .pdf(TEST_PDF)
@@ -124,12 +134,14 @@ public class ProjetStage02Application implements CommandLineRunner {
         companyService.createOffre(
                 OffreInDTO.builder()
                         .id(0L)
-                        .nomDeCompagnie("Vidéotron")
+                        .nomDeCompagnie("Bell")
+                        .companyId(company.getId())
                         .department("Techniques de linformatique")
                         .position("Support TI")
                         .heureParSemaine(36)
                         .salaire(15)
-                        .dateStage("2019-05-01")
+                        .dateStageDebut("2020-01-01")
+                        .dateStageFin("2020-01-01")
                         .session("Hiver 2023")
                         .companyId(company.getId())
                         .adresse("33 My Home")
@@ -154,6 +166,7 @@ public class ProjetStage02Application implements CommandLineRunner {
                 .offerId(offreId)
                 .studentId(student2.getId())
                 .build());
+        gestionnaireService.validateStudentCV(student2.getId());
         System.out.println(studentService.getStudentById(1L));
         System.out.println(companyService.getCompanyById(2L));
         System.out.println(gestionnaireService.getGestionnaireById(3L));
@@ -163,5 +176,11 @@ public class ProjetStage02Application implements CommandLineRunner {
         System.out.println(gestionnaireService.getGestionnaireByEmailPassword("dave@gmail.ca", "cooldude"));
         System.out.println(gestionnaireService.getUnvalidatedOffers());
         System.out.println(gestionnaireService.getUnvalidatedCVStudents());
+        studentService.createPostulation(student.getId(), offreId);
+        studentService.createPostulation(student2.getId(), offreId);
+        companyService.saveStudentApplicationAccepted(offreId, student.getId());
+        System.out.println(gestionnaireService.createStageContract(
+                new StageContractInDTO("noToken", student.getId(), offreId)
+        ));
     }
 }

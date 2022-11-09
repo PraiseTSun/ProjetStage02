@@ -7,6 +7,8 @@ import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 import javax.validation.constraints.Min;
+import javax.validation.constraints.Pattern;
+import java.time.LocalDateTime;
 
 @Entity
 @Data
@@ -18,17 +20,25 @@ public class StageContract {
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "id", nullable = false)
     private long id;
+    @Pattern(regexp = "^Hiver (\\d{4})$")
+    private String session;
     @Min(0)
     private long studentId;
-    @Min(0)
+    @Min(1)
     private long offerId;
-    @Min(0)
+    @Min(1)
     private long companyId;
     private String description;
+    @Lob
     @Builder.Default()
-    private String companySignature = "";
+    private String companySignature = "";;
+    private LocalDateTime companySignatureDate;
+    @Lob
     @Builder.Default()
-    private String gestionnaireSignature = "";
+    private String gestionnaireSignature = "";;
+    private LocalDateTime gestionnaireSignatureDate;
+    @Lob
     @Builder.Default()
-    private String studentSignature = "";
+    private String studentSignature = "";;
+    private LocalDateTime studentSignatureDate;
 }

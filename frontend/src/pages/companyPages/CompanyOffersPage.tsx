@@ -126,9 +126,13 @@ const CompanyOffersPage = ({connectedUser}: { connectedUser: IUser }): JSX.Eleme
                     <Table className="text-center" hover>
                         <thead className="bg-primary text-white">
                         <tr>
-                            <th>Nom de compagnie</th>
+                            <th>Compagnie</th>
+                            <th>Adresse</th>
                             <th>Position</th>
-                            <th>Departement</th>
+                            <th>Heures par semaine</th>
+                            <th>Salaire</th>
+                            <th>Date de début</th>
+                            <th>Date de fin</th>
                             <th></th>
                         </tr>
                         </thead>
@@ -137,8 +141,12 @@ const CompanyOffersPage = ({connectedUser}: { connectedUser: IUser }): JSX.Eleme
                             return (
                                 <tr key={index}>
                                     <td>{offer.nomDeCompagnie}</td>
+                                    <td>{offer.adresse}</td>
                                     <td>{offer.position}</td>
-                                    <td>{offer.department}</td>
+                                    <td>{offer.heureParSemaine}</td>
+                                    <td>{offer.salaire}$/h</td>
+                                    <td>{offer.dateStageDebut}</td>
+                                    <td>{offer.dateStageFin}</td>
                                     <th><Button disabled={currentlySelectedOffer === offer.id} variant="warning"
                                                 onClick={async () => {
                                                     await fetchOfferApplications(offer.id)
@@ -183,7 +191,7 @@ const CompanyOffersPage = ({connectedUser}: { connectedUser: IUser }): JSX.Eleme
                                                     await hireStudent(student.id)
                                                 }}>Engager</Button>
                                                 {acceptedStudents.includes(student.id) &&
-                                                    <p className="text-primary">Déjà engagé</p>}
+                                                    <p className="text-primary">En attente du contrat</p>}
                                             </td>
                                         </tr>
                                     );

@@ -6,7 +6,16 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import projet.projetstage02.DTO.*;
+import projet.projetstage02.dto.contracts.ContractsDTO;
+import projet.projetstage02.dto.contracts.StageContractInDTO;
+import projet.projetstage02.dto.contracts.StageContractOutDTO;
+import projet.projetstage02.dto.evaluations.MillieuStage.MillieuStageEvaluationInDTO;
+import projet.projetstage02.dto.evaluations.MillieuStage.MillieuStageEvaluationInfoDTO;
+import projet.projetstage02.dto.offres.OffreOutDTO;
+import projet.projetstage02.dto.pdf.PdfOutDTO;
+import projet.projetstage02.dto.users.CompanyDTO;
+import projet.projetstage02.dto.users.GestionnaireDTO;
+import projet.projetstage02.dto.users.Students.StudentOutDTO;
 import projet.projetstage02.exception.*;
 import projet.projetstage02.model.*;
 import projet.projetstage02.repository.*;
@@ -50,7 +59,7 @@ public class GestionnaireServiceTest {
     private CvStatus cvStatus;
     private StageContract stageContract;
     private ApplicationAcceptation applicationAcceptationTest;
-    private EvaluationInDTO evalInDTO;
+    private MillieuStageEvaluationInDTO evalInDTO;
 
     private StageContractInDTO stageContractInDTO;
 
@@ -87,7 +96,8 @@ public class GestionnaireServiceTest {
                 .position("Stagiaire test backend")
                 .heureParSemaine(40)
                 .salaire(40)
-                .dateStage("2021-01-01")
+                .dateStageDebut("2020-01-01")
+                .dateStageFin("01-01-2021")
                 .session(Offre.currentSession())
                 .adresse("69 shitty street")
                 .pdf(new byte[0])
@@ -100,6 +110,7 @@ public class GestionnaireServiceTest {
                 .studentId(studentTest.getId())
                 .offerId(offerTest.getId())
                 .companyId(companyTest.getId())
+                .session(offerTest.getSession())
                 .description("description")
                 .build();
 
@@ -116,7 +127,7 @@ public class GestionnaireServiceTest {
                 .companyName(companyTest.getCompanyName())
                 .build();
 
-        evalInDTO = EvaluationInDTO.builder()
+        evalInDTO = MillieuStageEvaluationInDTO.builder()
                 .climatTravail("Plutôt en accord")
                 .commentaires("Plutôt en accord")
                 .communicationAvecSuperviser("Plutôt en accord")
@@ -135,7 +146,7 @@ public class GestionnaireServiceTest {
                 .signature(byteToString(new byte[]{0, 1, 2, 3, 4, 5, 6, 7, 8, 9}))
                 .build();
 
-       
+
     }
 
     @Test
@@ -769,6 +780,7 @@ public class GestionnaireServiceTest {
         assertThat(dto.getStudentId()).isEqualTo(studentTest.getId());
         assertThat(dto.getOfferId()).isEqualTo(offerTest.getId());
         assertThat(dto.getCompanyId()).isEqualTo(companyTest.getId());
+        assertThat(dto.getSession()).isEqualTo(Offre.currentSession());
     }
 
     @Test
@@ -862,7 +874,7 @@ public class GestionnaireServiceTest {
         when(companyRepository.findById(anyLong())).thenReturn(Optional.of(companyTest));
         when(stageContractRepository.findById(anyLong())).thenReturn(Optional.of(stageContract));
 
-        EvaluationInfoDTO dto = gestionnaireService.getEvaluationInfoForContract(1L);
+        MillieuStageEvaluationInfoDTO dto = gestionnaireService.getMillieuEvaluationInfoForContract(1L);
 
         assertThat(dto.getAdresse()).isEqualTo(offerTest.getAdresse());
         assertThat(dto.getNomCompagnie()).isEqualTo(companyTest.getCompanyName());
@@ -871,7 +883,8 @@ public class GestionnaireServiceTest {
         assertThat(dto.getSalaire()).isEqualTo(offerTest.getSalaire());
         assertThat(dto.getPoste()).isEqualTo(offerTest.getPosition());
         assertThat(dto.getAdresse()).isEqualTo(offerTest.getAdresse());
-        assertThat(dto.getDateStage()).isEqualTo(offerTest.getDateStage());
+        assertThat(dto.getDateStageDebut()).isEqualTo(offerTest.getDateStageDebut());
+        assertThat(dto.getDateStageFin()).isEqualTo(offerTest.getDateStageFin());
         assertThat(dto.getEmailCompagnie()).isEqualTo(companyTest.getEmail());
         assertThat(dto.getEmailEtudiant()).isEqualTo(studentTest.getEmail());
         assertThat(dto.getDepartement()).isEqualTo(offerTest.getDepartment().departement);
@@ -886,7 +899,7 @@ public class GestionnaireServiceTest {
         when(stageContractRepository.findById(anyLong())).thenReturn(Optional.empty());
 
         try {
-            gestionnaireService.getEvaluationInfoForContract(1L);
+            gestionnaireService.getMillieuEvaluationInfoForContract(1L);
         } catch (NonExistentEntityException e) {
             return;
         }
@@ -899,7 +912,7 @@ public class GestionnaireServiceTest {
         when(stageContractRepository.findById(anyLong())).thenReturn(Optional.of(stageContract));
 
         try {
-            gestionnaireService.getEvaluationInfoForContract(1L);
+            gestionnaireService.getMillieuEvaluationInfoForContract(1L);
         } catch (NonExistentOfferExeption e) {
             return;
         }
@@ -913,7 +926,7 @@ public class GestionnaireServiceTest {
         when(studentRepository.findById(anyLong())).thenReturn(Optional.empty());
 
         try {
-            gestionnaireService.getEvaluationInfoForContract(1L);
+            gestionnaireService.getMillieuEvaluationInfoForContract(1L);
         } catch (NonExistentEntityException e) {
             return;
         }
@@ -928,7 +941,7 @@ public class GestionnaireServiceTest {
         when(companyRepository.findById(anyLong())).thenReturn(Optional.empty());
 
         try {
-            gestionnaireService.getEvaluationInfoForContract(1L);
+            gestionnaireService.getMillieuEvaluationInfoForContract(1L);
         } catch (NonExistentEntityException e) {
             return;
         }

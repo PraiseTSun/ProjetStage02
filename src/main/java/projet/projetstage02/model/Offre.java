@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.format.annotation.DateTimeFormat;
 import projet.projetstage02.model.AbstractUser.Department;
 import projet.projetstage02.utils.TimeUtil;
 
@@ -42,9 +43,13 @@ public class Offre {
     @Min(15)
     @Max(999)
     private int salaire;
-    //todo: add in front end
     @NotBlank
-    private String dateStage;
+    @Pattern(regexp = "^(19|20[0-9][0-9])-(0[0-9]|1[0-2])-([0-2][0-9]|3[0-1])$")
+    private String dateStageFin;
+
+    @NotBlank
+    @Pattern(regexp = "^(19|20[0-9][0-9])-(0[0-9]|1[0-2])-([0-2][0-9]|3[0-1])$")
+    private String dateStageDebut;
     @NotBlank
     @Size(min = 2)
     private String adresse;

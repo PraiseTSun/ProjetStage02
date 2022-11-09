@@ -119,10 +119,12 @@ const OffersListPage = ({connectedUser}:
                         <thead className="bg-primary text-white">
                         <tr>
                             <th>Compagnie</th>
+                            <th>Adresse</th>
                             <th>Position</th>
                             <th>Heures par semaine</th>
                             <th>Salaire</th>
-                            <th>Adresse</th>
+                            <th>Date de début</th>
+                            <th>Date de fin</th>
                             <th>Offre</th>
                             <th>Appliquer</th>
                         </tr>
@@ -132,10 +134,12 @@ const OffersListPage = ({connectedUser}:
                             return (
                                 <tr key={index}>
                                     <td>{offer.nomDeCompagnie}</td>
+                                    <td>{offer.adresse}</td>
                                     <td>{offer.position}</td>
                                     <td>{offer.heureParSemaine}</td>
-                                    <td>{offer.salaire}$</td>
-                                    <td>{offer.adresse}</td>
+                                    <td>{offer.salaire}$/h</td>
+                                    <td>{offer.dateStageDebut}</td>
+                                    <td>{offer.dateStageFin}</td>
                                     <td><Button className="btn btn-warning" onClick={
                                         async () => await getPDF(offer.id)
                                     }>PDF</Button></td>

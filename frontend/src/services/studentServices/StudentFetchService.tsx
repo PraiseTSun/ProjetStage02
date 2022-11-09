@@ -42,7 +42,7 @@ export const putGetOfferStudent = (offerId: string, token: string): Promise<Resp
     });
 }
 
-export const putUploadStudentCV = (studentId: String, cv: number[], token: string): Promise<Response> => {
+export const putUploadStudentCV = (studentId: string, cv: number[], token: string): Promise<Response> => {
     return fetch("http://localhost:8080/uploadStudentCV", {
         method: "PUT",
         headers: {"Content-Type": "application/json"},
@@ -53,3 +53,27 @@ export const putUploadStudentCV = (studentId: String, cv: number[], token: strin
         })
     });
 }
+
+export const putStudentContracts = (studentId: string, session: string, token: string): Promise<Response> => {
+    return fetch(`http://localhost:8080/studentContracts/${studentId}_${session}`, {
+        method: "PUT",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify({
+            token: token
+        })
+    });
+}
+
+export const putStudentSignatureContract =
+    (studentId: string, contractId: string, signature: string, token: string): Promise<Response> => {
+        return fetch("http://localhost:8080/studentSignatureContract", {
+            method: "PUT",
+            headers: {"Content-Type": "application/json"},
+            body: JSON.stringify({
+                userId: studentId,
+                contractId: contractId,
+                signature: signature,
+                token: token
+            })
+        });
+    }
