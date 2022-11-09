@@ -205,3 +205,27 @@ export const putRefuseCv = (studentId: string, message : string, token:string):P
     });
 }
 
+
+export const putContracts = (token: string): Promise<Response> => {
+    return fetch('http://localhost:8080/getGestionnaireContracts', {
+        method: "PUT",
+        headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({token: token})
+    })
+}
+
+export const putSignatureContract = (token: string, gestionnaireId: number, contratId : number, signature : string): Promise<Response> => {
+
+    return fetch(`http://localhost:8080/companySignatureContract`, {
+        method: "PUT",
+        headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({token: token, userId: gestionnaireId, contractId: contratId,signature : signature})
+    })
+}
+
