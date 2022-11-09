@@ -1992,4 +1992,29 @@ public class RootControllerTest {
                         .content(jsonInterviewSelectDTO.write(interviewSelectInDTO).getJson()))
                 .andExpect(status().isForbidden());
     }
+
+    @Test
+    void testGetGestionnaireContractsHappyDay() throws Exception{
+        when(gestionnaireService.getContractsToSigne()).thenReturn(new ArrayList<>(){{
+            add(new StageContractOutDTO());
+            add(new StageContractOutDTO());
+            add(new StageContractOutDTO());
+        }});
+
+        mockMvc.perform(put("/getGestionnaireContracts")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(jsonInterviewSelectDTO.write(interviewSelectInDTO).getJson()))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.size()", is(3)));
+    }
+
+    @Test
+    void testGetGestionnaireContractsInvalidToken() throws Exception{
+        when(authService.getToken(anyString(), any())).thenThrow(new InvalidTokenException());
+
+        mockMvc.perform(put("/getGestionnaireContracts")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(jsonInterviewSelectDTO.write(interviewSelectInDTO).getJson()))
+                .andExpect(status().isForbidden());
+    }
 }

@@ -1038,7 +1038,7 @@ public class RootController {
     }
 
     @PutMapping("/getGestionnaireContracts")
-    public ResponseEntity<List<StageContractOutDTO>> GetGestionrionnaireContract(@RequestBody TokenDTO token){
+    public ResponseEntity<List<StageContractOutDTO>> GetGestionnaireContract(@RequestBody TokenDTO token){
         logger.log(Level.INFO, "Put getGestionnaireContracts");
         try {
             authService.getToken(token.getToken(), GESTIONNAIRE);
