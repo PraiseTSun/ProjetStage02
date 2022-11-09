@@ -120,7 +120,7 @@ const OfferStudentApplicationsList = ({
 
     if (showCv) {
         return (
-            <PdfComponent cv={cv} setShowPdf={setShowCv}/>
+            <PdfComponent pdf={cv} setShowPdf={setShowCv}/>
         );
     }
 

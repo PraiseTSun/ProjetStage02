@@ -1,7 +1,5 @@
-import {Viewer} from "@react-pdf-viewer/core";
 import React, {useCallback, useEffect, useState} from "react";
 import {Button, Col, Container, Row, Table} from "react-bootstrap";
-import {Link} from "react-router-dom";
 import IUser from "../../models/IUser";
 import IOffer from "../../models/IOffer";
 import IStudentApplys from "../../models/IStudentApplys";
@@ -15,11 +13,13 @@ import {
 } from "../../services/studentServices/StudentFetchService";
 import {generateAlert} from "../../services/universalServices/UniversalUtilService";
 import IInterview from "../../models/IInterview";
+import PdfComponent from "../../components/universalComponents/PdfComponent";
+import PageHeader from "../../components/universalComponents/PageHeader";
 
 const OffersListPage = ({connectedUser}:
                             { connectedUser: IUser }): JSX.Element => {
     const [offers, setOffers] = useState<IOffer[]>([]);
-    const [pdf, setPDF] = useState<Uint8Array>(new Uint8Array([]))
+    const [pdf, setPdf] = useState<Uint8Array>(new Uint8Array([]))
     const [showPdf, setShowPDF] = useState<boolean>(false)
     const [interviews, setInterviews] = useState<IInterview[]>([])
     const [studentApplys, setStudentApplys] =
@@ -31,7 +31,6 @@ const OffersListPage = ({connectedUser}:
             if (response.ok) {
                 const data: IInterview[] = await response.json();
                 setInterviews(data);
-                console.log(data)
             } else {
                 generateAlert()
             }
@@ -113,7 +112,7 @@ const OffersListPage = ({connectedUser}:
 
             if (response.ok) {
                 const data = await response.json();
-                setPDF(new Uint8Array(JSON.parse(data.pdf)));
+                setPdf(new Uint8Array(JSON.parse(data.pdf)));
                 setShowPDF(true);
             } else {
                 generateAlert()
@@ -133,30 +132,13 @@ const OffersListPage = ({connectedUser}:
 
     if (showPdf) {
         return (
-            <Container className="min-vh-100 bg-white p-0">
-                <div className="bg-dark p-2">
-                    <Button className="Btn btn-primary" onClick={() => setShowPDF(false)}>
-                        Fermer
-                    </Button>
-                </div>
-                <div>
-                    <Viewer fileUrl={pdf}/>
-                </div>
-            </Container>
+            <PdfComponent pdf={pdf} setShowPdf={setPdf}/>
         );
     }
 
     return (
         <Container className="min-vh-100">
-            <Row>
-                <Col sm={2}>
-                    <Link to="/" className="btn btn-primary my-3">Home</Link>
-                </Col>
-                <Col sm={8} className="text-center pt-2">
-                    <h1 className="fw-bold text-white display-3 pb-2">Liste de stages</h1>
-                </Col>
-                <Col sm={2}></Col>
-            </Row>
+            <PageHeader title={"Liste de stages"}/>
             <Row>
                 <Col>
                     <Table className="text-center" hover>
@@ -186,31 +168,25 @@ const OffersListPage = ({connectedUser}:
                                     <td>{offer.dateStageDebut}</td>
                                     <td>{offer.dateStageFin}</td>
                                     <td>
-                                        {!hasInterview(offer.id) && "En attente des entrevues"}
-                                        {hasInterview(offer.id) && getInterview(offer.id)?.studentSelectedDate === "" &&
-                                            <Col>
-                                                <Button
-                                                    className="mb-2" onClick={async () => {
-                                                    await confirmInterview(getInterview(offer.id)!.interviewId, getInterview(offer.id)!.companyDateOffers[0])
-                                                }
-                                                }>{getInterview(offer.id)!.companyDateOffers[0].replace("T", " ") + "h"}</Button>
-                                                <br/>
-                                                <Button
-                                                    className="mb-2" onClick={async () => {
-                                                    await confirmInterview(getInterview(offer.id)!.interviewId, getInterview(offer.id)!.companyDateOffers[1])
-                                                }
-                                                }>{getInterview(offer.id)!.companyDateOffers[1].replace("T", " ") + "h"}</Button>
-                                                <br/>
-                                                <Button onClick={async () => {
-                                                    await confirmInterview(getInterview(offer.id)!.interviewId, getInterview(offer.id)!.companyDateOffers[2])
-                                                }
-                                                }>{getInterview(offer.id)!.companyDateOffers[2].replace("T", " ") + "h"}</Button>
-                                            </Col>}
-                                        {hasInterview(offer.id) && getInterview(offer.id)?.studentSelectedDate !== "" &&
-                                            "Entrevue confirmée pour le " + getInterview(offer.id)!.studentSelectedDate}
+                                        {studentApplys.offersId.some(offerId => offerId === offer.id)
+                                            ? hasInterview(offer.id)
+                                                ? getInterview(offer.id)!.studentSelectedDate === ""
+                                                    ? "Entrevue confirmée pour le " + getInterview(offer.id)!.studentSelectedDate
+                                                    : getInterview(offer.id)!.companyDateOffers.map((date) => {
+                                                        return (
+                                                            <Button className="Btn btn-primary"
+                                                                    onClick={() => confirmInterview(getInterview(offer.id)!.interviewId, date)}>
+                                                                {date.replace("T", " ") + "h"}
+                                                            </Button>
+                                                        );
+                                                    })
+                                                : "En attente des entrevues"
+                                            : "Pas encore appliqué"}
                                     </td>
                                     <td><Button className="btn btn-warning" onClick={
-                                        async () => await getPDF(offer.id)
+                                        async () => {
+                                            await getPDF(offer.id)
+                                        }
                                     }>PDF</Button></td>
                                     <td>
                                         {connectedUser.cv === null &&
