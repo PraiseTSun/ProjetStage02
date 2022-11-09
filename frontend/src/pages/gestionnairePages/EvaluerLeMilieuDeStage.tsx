@@ -66,7 +66,6 @@ const EvaluerLeMilieuDeStage = ({user}: { user: IUser }): JSX.Element => {
                 if (response.ok) {
                     const data = await response.json()
                     setContrats(await data.contracts)
-                    console.log(await data.contracts)
                 } else {
                     generateAlert()
                 }
@@ -92,7 +91,6 @@ const EvaluerLeMilieuDeStage = ({user}: { user: IUser }): JSX.Element => {
     }
 
     const showFormulaires = (id: number) => {
-        console.log(id)
         setAfficheFormuaire(true)
         setContratId(id)
         fetchContractParId(id)
