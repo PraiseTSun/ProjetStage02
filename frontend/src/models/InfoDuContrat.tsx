@@ -1,6 +1,7 @@
 export default interface InfoDuContrat{
     session: string,
-    dateStage: string,
+    dateStageDebut:string,
+    dateStageFin:string,
     poste: string,
     salaire: number,
     heuresParSemaine: number,

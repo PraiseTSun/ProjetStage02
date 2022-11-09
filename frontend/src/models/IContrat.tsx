@@ -1,5 +1,5 @@
 export default interface IContrat {
-    id: number,
+    contractId: number,
     studentId: number,
     offerId: number,
     companyId:number,

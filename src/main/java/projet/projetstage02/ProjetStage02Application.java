@@ -176,11 +176,6 @@ public class ProjetStage02Application implements CommandLineRunner {
         System.out.println(gestionnaireService.getGestionnaireByEmailPassword("dave@gmail.ca", "cooldude"));
         System.out.println(gestionnaireService.getUnvalidatedOffers());
         System.out.println(gestionnaireService.getUnvalidatedCVStudents());
-        studentService.createPostulation(student.getId(), offreId);
-        studentService.createPostulation(student2.getId(), offreId);
         companyService.saveStudentApplicationAccepted(offreId, student.getId());
-        System.out.println(gestionnaireService.createStageContract(
-                new StageContractInDTO("noToken", student.getId(), offreId)
-        ));
     }
 }

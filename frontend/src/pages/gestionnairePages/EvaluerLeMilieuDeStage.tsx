@@ -12,7 +12,6 @@ import {
 } from "../../services/gestionnaireServices/GestionnaireFetchService";
 import IContrat from "../../models/IContrat";
 import SignaturePad from "react-signature-canvas";
-import {sign} from "crypto";
 
 const EvaluerLeMilieuDeStage = ({user}: { user: IUser }): JSX.Element => {
     const [contrats, setContrats] = useState<IContrat[]>([]);
@@ -22,7 +21,8 @@ const EvaluerLeMilieuDeStage = ({user}: { user: IUser }): JSX.Element => {
     //varialbles pour formulaire la partie identification de l'entreprise
     const [infosContrat, setInfosContrat] = useState<InfoDuContrat>({
         adresse: "",
-        dateStage: "",
+        dateStageDebut:"",
+        dateStageFin:"",
         departement: "",
         emailCompagnie: "",
         emailEtudiant: "",
@@ -126,7 +126,8 @@ const EvaluerLeMilieuDeStage = ({user}: { user: IUser }): JSX.Element => {
             setAfficheFormuaire(false)
             setInfosContrat({
                 adresse: "",
-                dateStage: "",
+                dateStageDebut:"",
+                dateStageFin:"",
                 departement: "",
                 emailCompagnie: "",
                 emailEtudiant: "",
@@ -257,7 +258,7 @@ const EvaluerLeMilieuDeStage = ({user}: { user: IUser }): JSX.Element => {
                                         <Col className="col-5">
                                             <p className="fw-bold mt-2 h5">Date Stage(Début -
                                                 Fin)</p>
-                                            <p>{infosContrat?.dateStage}</p>
+                                            <p>{infosContrat?.dateStageDebut} ~ {infosContrat.dateStageFin}</p>
                                         </Col>
                                         <Col className="col-3">
                                             <p className="fw-bold mt-2 h5">Stage Session</p>
@@ -351,7 +352,7 @@ const EvaluerLeMilieuDeStage = ({user}: { user: IUser }): JSX.Element => {
                                         <Col>
                                             <Form.Group>
                                                 <Form.Label className="fw-bold h5">Premier mois</Form.Label>
-                                                <Form.Control type="number" minLength={2} required
+                                                <Form.Control type="number" minLength={1} required
                                                               value={heureTotalPremierMois}
                                                               onChange={e => setHeureTotalPremierMois(Number(e.target.value))}></Form.Control>
                                                 <Form.Control.Feedback type="invalid">Premier mois
@@ -361,7 +362,7 @@ const EvaluerLeMilieuDeStage = ({user}: { user: IUser }): JSX.Element => {
                                         <Col>
                                             <Form.Group>
                                                 <Form.Label className="fw-bold h5">Deuxième mois</Form.Label>
-                                                <Form.Control type="number" minLength={2} required
+                                                <Form.Control type="number" minLength={1} required
                                                               value={heureTotalDeuxiemeMois}
                                                               onChange={e => setHeureTotalDeuxiemeMois(Number(e.target.value))}></Form.Control>
                                                 <Form.Control.Feedback type="invalid">Deuxième mois
@@ -371,7 +372,7 @@ const EvaluerLeMilieuDeStage = ({user}: { user: IUser }): JSX.Element => {
                                         <Col>
                                             <Form.Group>
                                                 <Form.Label className="fw-bold h5">Troisième mois</Form.Label>
-                                                <Form.Control type="number" minLength={2} required
+                                                <Form.Control type="number" minLength={1} required
                                                               value={heureTotalTroisiemeMois}
                                                               onChange={e => setHeureTotalTroisiemeMois(Number(e.target.value))}></Form.Control>
                                                 <Form.Control.Feedback type="invalid">Troisième mois
@@ -575,7 +576,7 @@ const EvaluerLeMilieuDeStage = ({user}: { user: IUser }): JSX.Element => {
                                     <Row className="mb-4">
                                         <Col>
                                             {
-                                                signature == ""
+                                                signature === ""
                                                     ?
                                                     <p className="fw-bold h5">Signature</p>
                                                     :
@@ -632,7 +633,7 @@ const EvaluerLeMilieuDeStage = ({user}: { user: IUser }): JSX.Element => {
                                     <td>{contrat.studentFullName}</td>
                                     <td>{contrat.description}</td>
                                     <td><Button className="btn btn-warning" onClick={() => {
-                                        showFormulaires(Number(contrat.id))
+                                        showFormulaires(Number(contrat.contractId))
                                     }}>Évaluer</Button></td>
                                 </tr>
                             );
