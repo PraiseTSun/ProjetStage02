@@ -1,3 +1,5 @@
+import {generateAlert} from "./UniversalUtilService";
+
 export const putConfirmEmail = (userType: string, id: string): Promise<Response> => {
     return fetch("http://localhost:8080/confirmEmail/" + userType + "/" + id, {
         method: "PUT",
@@ -28,5 +30,17 @@ export const postUserTypeLogin = (userType: string, email: string, password: str
         method: "POST",
         headers: {"Content-Type": "application/json"},
         body: JSON.stringify({"email": email, "password": password})
+    })
+}
+
+export const universalFetch = (fetchFunction: Function, ifResponseOk: Function): void => {
+    fetchFunction().then(async (response: Response) => {
+        if (response.ok) {
+            await ifResponseOk(response);
+        } else {
+            generateAlert();
+        }
+    }).catch(() => {
+        generateAlert();
     })
 }

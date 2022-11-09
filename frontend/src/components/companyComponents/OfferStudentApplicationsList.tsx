@@ -167,8 +167,13 @@ const OfferStudentApplicationsList = ({
                                 {
                                     hasInterview(offerId, student.id) &&
                                     getInterview(offerId, student.id)!.studentSelectedDate !== ""
-                                        ? <p>Entrevue confirmé pour
-                                            le {getInterview(offerId, student.id)?.studentSelectedDate}</p>
+                                        ? <p>
+                                            Entrevue confirmée pour le
+                                            <p className="text-danger">
+                                                {getInterview(offerId, student.id)!
+                                                    .studentSelectedDate.replace("T", " ") + "h"}
+                                            </p>
+                                        </p>
                                         : hasInterview(offerId, student.id)
                                             ? <p>En attente de confirmation de l'étudiant</p>
                                             : <Button variant="primary" onClick={

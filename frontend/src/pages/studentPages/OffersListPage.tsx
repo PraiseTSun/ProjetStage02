@@ -11,10 +11,10 @@ import {
     putStudentApplys,
     putStudentSelectDate
 } from "../../services/studentServices/StudentFetchService";
-import {generateAlert} from "../../services/universalServices/UniversalUtilService";
 import IInterview from "../../models/IInterview";
 import PdfComponent from "../../components/universalComponents/PdfComponent";
 import PageHeader from "../../components/universalComponents/PageHeader";
+import {universalFetch} from "../../services/universalServices/UniversalFetchService";
 
 const OffersListPage = ({connectedUser}:
                             { connectedUser: IUser }): JSX.Element => {
@@ -26,100 +26,67 @@ const OffersListPage = ({connectedUser}:
         useState<IStudentApplys>({studentId: connectedUser.id, offersId: new Array<string>()});
 
     const fetchInterviews = useCallback(async () => {
-        try {
-            const response: Response = await putGetStudentInterviews(connectedUser.id, connectedUser.token);
-            if (response.ok) {
+        universalFetch(async () => await putGetStudentInterviews(connectedUser.id, connectedUser.token),
+            async (response: Response) => {
                 const data: IInterview[] = await response.json();
                 setInterviews(data);
-            } else {
-                generateAlert()
-            }
-        } catch {
-            generateAlert()
-        }
+            });
     }, [connectedUser]);
 
 
     const fetchOffers = useCallback(async () => {
-        try {
-            const response: Response = await putGetOffers(connectedUser.id, connectedUser.token);
-            if (response.ok) {
+        universalFetch(async () => await putGetOffers(connectedUser.id, connectedUser.token),
+            async (response: Response) => {
                 const data: IOffer[] = await response.json();
                 setOffers(data);
-            } else {
-                generateAlert()
-            }
-        } catch {
-            generateAlert()
-        }
+            });
     }, [connectedUser]);
 
     const fetchStudentApplys = useCallback(async () => {
-        try {
-            const response = await putStudentApplys(connectedUser.id, connectedUser.token);
-            if (response.ok) {
+        universalFetch(async () => await putStudentApplys(connectedUser.id, connectedUser.token),
+            async (response: Response) => {
                 const data = await response.json();
                 setStudentApplys(data);
-            } else {
-                generateAlert()
-            }
-        } catch (exception) {
-            generateAlert()
-        }
+            })
     }, [connectedUser]);
 
     useEffect(() => {
         fetchStudentApplys();
         fetchOffers();
         fetchInterviews();
-    }, [connectedUser])
+    }, [connectedUser, fetchOffers, fetchInterviews, fetchStudentApplys]);
 
     const applyToOffer = async (offerId: string): Promise<void> => {
-        try {
-            const response = await putApplyToOffer(connectedUser.id, offerId, connectedUser.token)
-
-            if (response.ok) {
+        universalFetch(async () => await putApplyToOffer(connectedUser.id, offerId, connectedUser.token),
+            async (response: Response) => {
                 setStudentApplys(
                     {
                         studentId: connectedUser.id,
                         offersId: [...studentApplys.offersId, offerId]
                     });
-            } else {
-                generateAlert()
-            }
-        } catch {
-            generateAlert()
-        }
+            });
     }
 
     const confirmInterview = async (interviewId: string, selectedDate: string): Promise<void> => {
-        try {
-            const response = await putStudentSelectDate(connectedUser.id, interviewId, selectedDate, connectedUser.token)
-            if (response.ok) {
-                interviews.find(interview => interview.interviewId === interviewId)!.studentSelectedDate = selectedDate;
+        universalFetch(async () => await putStudentSelectDate(
+                connectedUser.id,
+                interviewId,
+                selectedDate,
+                connectedUser.token),
+            async (response: Response) => {
+                interviews.find(interview =>
+                    interview.interviewId === interviewId)!.studentSelectedDate = selectedDate;
                 setInterviews([...interviews]);
-            } else {
-                generateAlert()
-            }
-        } catch {
-            generateAlert()
-        }
+            });
     }
 
     const getPDF = async (offerId: string): Promise<void> => {
-        try {
-            const response = await putGetOfferStudent(offerId, connectedUser.token)
-
-            if (response.ok) {
+        universalFetch(async () => await putGetOfferStudent(offerId, connectedUser.token),
+            async (response: Response) => {
                 const data = await response.json();
                 setPdf(new Uint8Array(JSON.parse(data.pdf)));
                 setShowPDF(true);
-            } else {
-                generateAlert()
-            }
-        } catch (exception) {
-            generateAlert()
-        }
+            });
     }
 
     const hasInterview = (offerId: string): boolean => {
@@ -132,8 +99,40 @@ const OffersListPage = ({connectedUser}:
 
     if (showPdf) {
         return (
-            <PdfComponent pdf={pdf} setShowPdf={setPdf}/>
+            <PdfComponent pdf={pdf} setShowPdf={setShowPDF}/>
         );
+    }
+
+    const getInterviewTableCell = (offerId: string): JSX.Element | JSX.Element[] => {
+        if (!studentApplys.offersId.some(applyOfferId => applyOfferId === offerId)) {
+            return <p>Pas encore appliqué</p>;
+        } else if (!hasInterview(offerId)) {
+            return <p>En attente des entrevues</p>
+        } else if (getInterview(offerId)!.studentSelectedDate === "") {
+            return (
+                getInterview(offerId)!.companyDateOffers.map((date: string, index: number) =>
+                    <>
+                        <Button key={index} className="Btn btn-primary mb-2"
+                                onClick={() => {
+                                    confirmInterview(
+                                        getInterview(offerId)!.interviewId, date)
+                                }}>
+                            {date.replace("T", " ") + "h"}
+                        </Button>
+                        <br/>
+                    </>
+                )
+            );
+        } else {
+            return (
+                <p>
+                    Entrevue confirmée pour le
+                    <p className="text-danger">
+                        {getInterview(offerId)!.studentSelectedDate.replace("T", " ") + "h"}
+                    </p>
+                </p>
+            );
+        }
     }
 
     return (
@@ -167,31 +166,16 @@ const OffersListPage = ({connectedUser}:
                                     <td>{offer.salaire}$/h</td>
                                     <td>{offer.dateStageDebut}</td>
                                     <td>{offer.dateStageFin}</td>
-                                    <td>
-                                        {studentApplys.offersId.some(offerId => offerId === offer.id)
-                                            ? hasInterview(offer.id)
-                                                ? getInterview(offer.id)!.studentSelectedDate === ""
-                                                    ? "Entrevue confirmée pour le " + getInterview(offer.id)!.studentSelectedDate
-                                                    : getInterview(offer.id)!.companyDateOffers.map((date) => {
-                                                        return (
-                                                            <Button className="Btn btn-primary"
-                                                                    onClick={() => confirmInterview(getInterview(offer.id)!.interviewId, date)}>
-                                                                {date.replace("T", " ") + "h"}
-                                                            </Button>
-                                                        );
-                                                    })
-                                                : "En attente des entrevues"
-                                            : "Pas encore appliqué"}
-                                    </td>
+                                    <td>{getInterviewTableCell(offer.id)}</td>
                                     <td><Button className="btn btn-warning" onClick={
                                         async () => {
                                             await getPDF(offer.id)
                                         }
                                     }>PDF</Button></td>
                                     <td>
-                                        {connectedUser.cv === null &&
+                                        {connectedUser.cv!.length <= 2 &&
                                             <p className="h4 text-danger">Vous n'avez pas de CV</p>}
-                                        {connectedUser.cv !== null &&
+                                        {connectedUser.cv!.length > 2 &&
                                             <>
                                                 {studentApplys.offersId.includes(offer.id) &&
                                                     <p className="h4 text-success">Déjà Postulé</p>}
