@@ -1772,7 +1772,7 @@ public class RootControllerTest {
     void testGetAllContractsHappyDay() throws Exception {
         when(gestionnaireService.getContractsToEvaluateMillieuStage()).thenReturn(contractsDTO);
 
-        mockMvc.perform(put("/getContracts")
+        mockMvc.perform(put("/getContractsToEvaluate/millieuStage")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(jsonTokenDTO.write(token).getJson()))
                 .andExpect(status().isOk())
@@ -1784,7 +1784,7 @@ public class RootControllerTest {
         contractsDTO.setContracts(new ArrayList<>());
         when(gestionnaireService.getContractsToEvaluateMillieuStage()).thenReturn(contractsDTO);
 
-        mockMvc.perform(put("/getContracts")
+        mockMvc.perform(put("/getContractsToEvaluate/millieuStage")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(jsonTokenDTO.write(token).getJson()))
                 .andExpect(status().isOk())
