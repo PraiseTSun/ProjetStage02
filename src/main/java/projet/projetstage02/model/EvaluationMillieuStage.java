@@ -19,7 +19,7 @@ import javax.validation.constraints.Pattern;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class Evaluation {
+public class EvaluationMillieuStage {
     @Id
     @GeneratedValue
     private long id;
@@ -66,7 +66,7 @@ public class Evaluation {
     @NotBlank
     private String dateSignature;
 
-    public Evaluation(MillieuStageEvaluationInDTO millieuStageEvaluationInDTO) {
+    public EvaluationMillieuStage(MillieuStageEvaluationInDTO millieuStageEvaluationInDTO) {
         contractId = millieuStageEvaluationInDTO.getContractId();
         tachesAnnonces = millieuStageEvaluationInDTO.getTachesAnnonces();
         integration = millieuStageEvaluationInDTO.getIntegration();

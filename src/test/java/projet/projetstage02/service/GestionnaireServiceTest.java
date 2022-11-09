@@ -50,7 +50,7 @@ public class GestionnaireServiceTest {
     @Mock
     private ApplicationAcceptationRepository applicationAcceptationRepository;
     @Mock
-    private EvaluationRepository evaluationRepository;
+    private EvaluationMillieuStageRepository evaluationMillieuStageRepository;
 
     private Gestionnaire gestionnaireTest;
     private Company companyTest;
@@ -949,7 +949,7 @@ public class GestionnaireServiceTest {
     @Test
     void testEvaluateStageHappyDay() {
         gestionnaireService.evaluateStage(evalInDTO);
-        verify(evaluationRepository, times(1)).save(any());
+        verify(evaluationMillieuStageRepository, times(1)).save(any());
     }
 
     @Test

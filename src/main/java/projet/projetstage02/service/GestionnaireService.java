@@ -38,7 +38,7 @@ public class GestionnaireService {
     private final ApplicationAcceptationRepository applicationAcceptationRepository;
 
     private final ApplicationRepository applicationRepository;
-    private final EvaluationRepository evaluationRepository;
+    private final EvaluationMillieuStageRepository evaluationMillieuStageRepository;
 
     public long saveGestionnaire(String firstname, String lastname, String email, String password) {
         GestionnaireDTO dto = GestionnaireDTO.builder()
@@ -376,7 +376,7 @@ public class GestionnaireService {
     }
 
     public long evaluateStage(MillieuStageEvaluationInDTO millieuStageEvaluationInDTO) {
-        return evaluationRepository.save(new Evaluation(millieuStageEvaluationInDTO)).getId();
+        return evaluationMillieuStageRepository.save(new EvaluationMillieuStage(millieuStageEvaluationInDTO)).getId();
     }
 
     public ContractsDTO getContracts() {
@@ -386,21 +386,21 @@ public class GestionnaireService {
     }
 
     public String createEvaluationMillieuStagePDF(long evaluationId) throws NonExistentEntityException, NonExistentOfferExeption, DocumentException {
-        Optional<Evaluation> optional = evaluationRepository.findById(evaluationId);
+        Optional<EvaluationMillieuStage> optional = evaluationMillieuStageRepository.findById(evaluationId);
         if (optional.isEmpty()) {
             throw new NonExistentEntityException();
         }
-        Evaluation evaluation = optional.get();
+        EvaluationMillieuStage evaluationMillieuStage = optional.get();
         MillieuStageEvaluationInfoDTO millieuStageEvaluationInfoDTO =
-                getMillieuEvaluationInfoForContract(evaluation.getContractId());
+                getMillieuEvaluationInfoForContract(evaluationMillieuStage.getContractId());
 
         return PDFCreationUtil.createPDFFromMap("evaluation_millieu_stage",
-                evaluationMillieuStageToMap(millieuStageEvaluationInfoDTO, evaluation));
+                evaluationMillieuStageToMap(millieuStageEvaluationInfoDTO, evaluationMillieuStage));
 
     }
 
     private Map<String, Map<String, String>> evaluationMillieuStageToMap(MillieuStageEvaluationInfoDTO millieuStageEvaluationInfoDTO,
-                                                                         Evaluation evaluation) {
+                                                                         EvaluationMillieuStage evaluationMillieuStage) {
         Map<String, Map<String, String>> map = new LinkedHashMap<>();
         Map<String, String> companyInfo = new LinkedHashMap<>();
         Map<String, String> studentInfo = new LinkedHashMap<>();
@@ -429,45 +429,45 @@ public class GestionnaireService {
 
 
         evaluationParagraph.put("Les taches confiées sont celles annoncées dans l'entente de stage",
-                evaluation.getTachesAnnonces());
+                evaluationMillieuStage.getTachesAnnonces());
         evaluationParagraph.put("Des mesures d'accueil facilitent l'intégration du nouveau stagiaire",
-                evaluation.getIntegration());
+                evaluationMillieuStage.getIntegration());
         evaluationParagraph.put("Le temps réel consacré à l'encadrement du stagiaire est suffisant",
-                evaluation.getTempsReelConsacre());
+                evaluationMillieuStage.getTempsReelConsacre());
         evaluationParagraph.put("Nombre d'heures pour le premier mois",
-                evaluation.getHeureTotalPremierMois() + " heures");
+                evaluationMillieuStage.getHeureTotalPremierMois() + " heures");
         evaluationParagraph.put("Nombre d'heures pour le deuxième mois",
-                evaluation.getHeureTotalDeuxiemeMois() + " heures");
+                evaluationMillieuStage.getHeureTotalDeuxiemeMois() + " heures");
         evaluationParagraph.put("Nombre d'heures pour le troisième mois",
-                evaluation.getHeureTotalTroisiemeMois() + " heures");
+                evaluationMillieuStage.getHeureTotalTroisiemeMois() + " heures");
         evaluationParagraph.put("L'environnement de travail respecte les normes de sécurité",
-                evaluation.getEnvironementTravail());
+                evaluationMillieuStage.getEnvironementTravail());
         evaluationParagraph.put("Le climat de travail est agréable",
-                evaluation.getClimatTravail());
+                evaluationMillieuStage.getClimatTravail());
         evaluationParagraph.put("Le millieu de stage est accessible par transport en commun",
-                evaluation.getMilieuDeStage());
+                evaluationMillieuStage.getMilieuDeStage());
         evaluationParagraph.put("La communication avec le superviseur est efficace",
-                evaluation.getCommunicationAvecSuperviser());
+                evaluationMillieuStage.getCommunicationAvecSuperviser());
         evaluationParagraph.put("L'équipement de travail est adéquat",
-                evaluation.getEquipementFourni());
+                evaluationMillieuStage.getEquipementFourni());
         evaluationParagraph.put("Le volume de travail est raisonnable",
-                evaluation.getVolumeDeTravail());
+                evaluationMillieuStage.getVolumeDeTravail());
 
-        commentaires.put("", evaluation.getCommentaires());
+        commentaires.put("", evaluationMillieuStage.getCommentaires());
 
-        signPara.put("Signé le", evaluation.getDateSignature());
+        signPara.put("Signé le", evaluationMillieuStage.getDateSignature());
         map.put("Information sur la compagnie", companyInfo);
         map.put("Information sur l'étudiant", studentInfo);
         map.put("Information sur l'offre de stage", offerInfo);
         map.put("Évaluation", evaluationParagraph);
         map.put("Commentaires", commentaires);
         map.put("Signature", signPara);
-        map.put("_signature_", getSignatureGestionnaire(evaluation));
+        map.put("_signature_", getSignatureGestionnaire(evaluationMillieuStage));
         return map;
     }
 
-    private Map<String, String> getSignatureGestionnaire(Evaluation evaluation) {
-        String signature = evaluation.getSignature();
+    private Map<String, String> getSignatureGestionnaire(EvaluationMillieuStage evaluationMillieuStage) {
+        String signature = evaluationMillieuStage.getSignature();
         signature = signature.split(",")[1];
         Base64.Decoder decoder = Base64.getDecoder();
         byte[] decodedByteArray = decoder.decode(signature);
