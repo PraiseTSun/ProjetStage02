@@ -339,12 +339,6 @@ public class GestionnaireService {
                             .studentId(student.getId())
                             .studentFullName(student.getFirstName() + " " + student.getLastName())
                             .build();
-
-                    stageContractOutDTO.setEmployFullName(company.getFirstName() + " " + company.getLastName());
-                    stageContractOutDTO.setStudentFullName(student.getFirstName() + " " + student.getLastName());
-                    stageContractOutDTO.setPosition(offre.getPosition());
-                    stageContractOutDTO.setCompanyName(company.getCompanyName());
-
                     contractsDTO.add(stageContractOutDTO);
                 });
         return contractsDTO;
@@ -383,7 +377,36 @@ public class GestionnaireService {
         List<StageContractOutDTO> contracts = new ArrayList<>();
         stageContractRepository.findAll().stream().filter(
                 stageContract -> evaluationRepository.findByContractId(stageContract.getId()).isEmpty()
-        ).forEach(stageContract -> contracts.add(new StageContractOutDTO(stageContract)));
+        ).forEach(stageContract -> {
+            Optional<Company> companyOptional = companyRepository.findById(stageContract.getCompanyId());
+            Optional<Student> studentOptional = studentRepository.findById(stageContract.getStudentId());
+            Optional<Offre> offreOptional = offreRepository.findById(stageContract.getOfferId());
+            StageContractOutDTO stageContractOutDTO = new StageContractOutDTO(stageContract);
+            if (offreOptional.isEmpty()) {
+                return;
+            }
+
+            if (companyOptional.isEmpty()) {
+                return;
+            }
+
+
+            if (studentOptional.isEmpty()) {
+                return;
+            }
+
+            Company company = companyOptional.get();
+            stageContractOutDTO.setEmployFullName(company.getFirstName() + " " + company.getLastName());
+            stageContractOutDTO.setCompanyName(company.getCompanyName());
+
+            Offre offre = offreOptional.get();
+            stageContractOutDTO.setPosition(offre.getPosition());
+
+            Student student = studentOptional.get();
+            stageContractOutDTO.setStudentFullName(student.getFirstName() + " " + student.getLastName());
+
+            contracts.add(stageContractOutDTO);
+        });
         return ContractsDTO.builder().contracts(contracts).build();
     }
 }
