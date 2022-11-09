@@ -958,7 +958,7 @@ public class GestionnaireServiceTest {
     void testGetContractsHappyDay() {
         when(stageContractRepository.findAll()).thenReturn(List.of(stageContract, stageContract, stageContract));
 
-        ContractsDTO dto = gestionnaireService.getContracts();
+        ContractsDTO dto = gestionnaireService.getContractsToEvaluateMillieuStage();
 
         assertThat(dto.size()).isEqualTo(3);
         assertThat(dto.getContracts().get(0)).isEqualTo(new StageContractOutDTO(stageContract));
@@ -968,7 +968,7 @@ public class GestionnaireServiceTest {
     void testGetContractsEmpty() {
         when(stageContractRepository.findAll()).thenReturn(new ArrayList<>());
 
-        ContractsDTO dto = gestionnaireService.getContracts();
+        ContractsDTO dto = gestionnaireService.getContractsToEvaluateMillieuStage();
 
         assertThat(dto.size()).isEqualTo(0);
     }

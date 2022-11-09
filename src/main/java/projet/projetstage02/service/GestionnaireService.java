@@ -379,9 +379,11 @@ public class GestionnaireService {
         evaluationRepository.save(new Evaluation(millieuStageEvaluationInDTO));
     }
 
-    public ContractsDTO getContracts() {
+    public ContractsDTO getContractsToEvaluateMillieuStage() {
         List<StageContractOutDTO> contracts = new ArrayList<>();
-        stageContractRepository.findAll().forEach(stageContract -> contracts.add(new StageContractOutDTO(stageContract)));
+        stageContractRepository.findAll().stream().filter(
+                stageContract -> evaluationRepository.findByContractId(stageContract.getId()).isEmpty()
+        ).forEach(stageContract -> contracts.add(new StageContractOutDTO(stageContract)));
         return ContractsDTO.builder().contracts(contracts).build();
     }
 }
