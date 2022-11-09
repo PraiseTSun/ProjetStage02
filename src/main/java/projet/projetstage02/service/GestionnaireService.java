@@ -379,39 +379,11 @@ public class GestionnaireService {
         evaluationRepository.save(new Evaluation(millieuStageEvaluationInDTO));
     }
 
-    public ContractsDTO getContracts() {
+    public ContractsDTO getContractsToEvaluateMillieuStage() {
         List<StageContractOutDTO> contracts = new ArrayList<>();
-        stageContractRepository.findAll().forEach(stageContract -> {
-            StageContractOutDTO stageContractOutDTO = new StageContractOutDTO(stageContract);
-            Optional<Company> companyOptional = companyRepository.findById(stageContract.getCompanyId());
-            Optional<Student> studentOptional = studentRepository.findById(stageContract.getStudentId());
-            Optional<Offre> offreOptional = offreRepository.findById(stageContract.getOfferId());
-
-            if (offreOptional.isEmpty()) {
-                return;
-            }
-
-            if (companyOptional.isEmpty()) {
-                return;
-            }
-
-
-            if (studentOptional.isEmpty()) {
-                return;
-            }
-            
-            Company company = companyOptional.get();
-            stageContractOutDTO.setEmployFullName(company.getFirstName() + " " + company.getLastName());
-            stageContractOutDTO.setCompanyName(company.getCompanyName());
-            
-            Offre offre = offreOptional.get();
-            stageContractOutDTO.setPosition(offre.getPosition());
-
-            Student student = studentOptional.get();
-            stageContractOutDTO.setStudentFullName(student.getFirstName() + " " + student.getLastName());
-
-            contracts.add(stageContractOutDTO);
-        });
+        stageContractRepository.findAll().stream().filter(
+                stageContract -> evaluationRepository.findByContractId(stageContract.getId()).isEmpty()
+        ).forEach(stageContract -> contracts.add(new StageContractOutDTO(stageContract)));
         return ContractsDTO.builder().contracts(contracts).build();
     }
 }
