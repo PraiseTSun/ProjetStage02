@@ -54,6 +54,17 @@ export const putUploadStudentCV = (studentId: string, cv: number[], token: strin
     });
 }
 
+export const putStatusCv = (studentId: String, token: string): Promise<Response> => {
+    return fetch(`http://localhost:8080/getStatutValidationCV/${studentId}`, {
+        method: "PUT",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify({
+            "studentId": studentId,
+            "token": token
+        })
+    });
+}
+
 export const putStudentContracts = (studentId: string, session: string, token: string): Promise<Response> => {
     return fetch(`http://localhost:8080/studentContracts/${studentId}_${session}`, {
         method: "PUT",

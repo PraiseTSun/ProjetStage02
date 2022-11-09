@@ -130,16 +130,6 @@ export const putValidateCv = (studentId: string, token: string): Promise<Respons
     });
 }
 
-export const putRefuseCv = (studentId: string, token: string): Promise<Response> => {
-    return fetch("http://localhost:8080/refuseCv/" + studentId.toString(), {
-        method: "PUT",
-        headers: {
-            'Accept': 'application/json',
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({"token": token})
-    });
-}
 
 export const putUnvalidatedCompanies = (token: string): Promise<Response> => {
     return fetch('http://localhost:8080/unvalidatedCompanies', {
@@ -203,3 +193,15 @@ export const postCreateGestionnaire = (firstName: string,
         })
     });
 }
+
+export const putRefuseCv = (studentId: string, message : string, token:string):Promise<Response> => {
+    return fetch("http://localhost:8080/refuseCv/" + studentId, {
+        method: "PUT",
+        headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({"token": token, "refusalReason" : message})
+    });
+}
+
