@@ -972,4 +972,27 @@ public class GestionnaireServiceTest {
 
         assertThat(dto.size()).isEqualTo(0);
     }
+
+    @Test
+    void testGetContractsToSigneHappyDay(){
+        List<StageContract> contracts = new ArrayList<>(){{
+            add(StageContract.builder().id(0L).studentId(0L).offerId(0L).companyId(0L).session("").description("")
+                    .companySignature("").studentSignature("").gestionnaireSignature("").build());
+            add(StageContract.builder().id(0L).studentId(0L).offerId(0L).companyId(0L).session("").description("")
+                    .companySignature("Test").studentSignature("").gestionnaireSignature("").build());
+            add(StageContract.builder().id(0L).studentId(0L).offerId(0L).companyId(0L).session("").description("")
+                    .companySignature("").studentSignature("Test").gestionnaireSignature("").build());
+            add(StageContract.builder().id(0L).studentId(0L).offerId(0L).companyId(0L).session("").description("")
+                    .companySignature("Test").studentSignature("Test").gestionnaireSignature("").build());
+            add(StageContract.builder().id(0L).studentId(0L).offerId(0L).companyId(0L).session("").description("")
+                    .companySignature("Test").studentSignature("Test").gestionnaireSignature("").build());
+            add(StageContract.builder().id(0L).studentId(0L).offerId(0L).companyId(0L).session("").description("")
+                    .companySignature("Test").studentSignature("Test").gestionnaireSignature("Test").build());
+        }};
+        when(stageContractRepository.findAll()).thenReturn(contracts);
+
+        List<StageContractOutDTO> contractsDTO = gestionnaireService.getContractsToSigne();
+
+        assertThat(contractsDTO.size()).isEqualTo(2);
+    }
 }
