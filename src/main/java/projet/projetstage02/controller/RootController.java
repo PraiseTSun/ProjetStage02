@@ -1050,4 +1050,25 @@ public class RootController {
             return ResponseEntity.status(FORBIDDEN).build();
         }
     }
+
+    @PutMapping("/gestionnaireSignature")
+    public ResponseEntity<StageContractOutDTO> GestionnaireSignature(@RequestBody SignatureInDTO signature){
+        logger.log(Level.INFO, "Put gestionnaireSignature");
+
+        try {
+            authService.getToken(signature.getToken(), GESTIONNAIRE);
+            StageContractOutDTO dto = gestionnaireService.contractSignature(signature);
+            logger.log(Level.INFO, "Put gestionnaireSignature return 200");
+            return ResponseEntity.ok(dto);
+        } catch (InvalidTokenException e) {
+            logger.log(Level.INFO, "Put gestionnaireSignature return 403");
+            return ResponseEntity.status(FORBIDDEN).build();
+        } catch (NonExistentEntityException e) {
+            logger.log(Level.INFO, "Put gestionnaireSignature return 404");
+            return ResponseEntity.status(NOT_FOUND).build();
+        } catch (NotReadyToBeSigneException e) {
+            logger.log(Level.INFO, "Put gestionnaireSignature return 409");
+            return ResponseEntity.status(CONFLICT).build();
+        }
+    }
 }
