@@ -8,11 +8,11 @@ import {
     putStudentAcceptation,
     putStudentCv
 } from "../../services/companyServices/CompanyFetchService";
-import {generateAlert} from "../../services/universalServices/UniversalUtilService";
 import IAcceptedStudents from "../../models/IAcceptedStudents";
 import IInterview from "../../models/IInterview";
 import PdfComponent from "../universalComponents/PdfComponent";
 import InterviewDateForm from "./InterviewDateForm";
+import {universalFetch} from "../../services/universalServices/UniversalFetchService";
 
 const OfferStudentApplicationsList = ({
                                           offerId,
@@ -28,86 +28,52 @@ const OfferStudentApplicationsList = ({
 
 
     const fetchOfferApplications = useCallback(async (): Promise<void> => {
-        try {
-            const response: Response = await putOfferApplications(offerId, connectedUser.token);
-
-            if (response.ok) {
+        universalFetch(async () => await putOfferApplications(offerId, connectedUser.token),
+            async (response: Response) => {
                 const data = await response.json();
                 setStudents(data.applicants);
-            } else {
-                generateAlert()
-            }
-        } catch {
-            generateAlert()
-        }
-    }, [offerId]);
+            });
+    }, [offerId, connectedUser]);
 
     const fetchAcceptedStudents = useCallback(async (): Promise<void> => {
-        try {
-            const response: Response = await putAcceptedStudentsForOffer(offerId, connectedUser.token);
-
-            if (response.ok) {
+        universalFetch(async () => await putAcceptedStudentsForOffer(offerId, connectedUser.token),
+            async (response: Response) => {
                 const data: IAcceptedStudents = await response.json();
                 setAcceptedStudents(data.studentsId);
-            } else {
-                generateAlert()
-            }
-        } catch {
-            generateAlert()
-        }
-    }, [offerId]);
+            });
+    }, [offerId, connectedUser]);
 
     const fetchInterviews = useCallback(async (): Promise<void> => {
-        try {
-            const response: Response = await putGetCompanyInterviews(connectedUser.id, connectedUser.token);
-
-            if (response.ok) {
+        universalFetch(async () => await putGetCompanyInterviews(connectedUser.id, connectedUser.token),
+            async (response: Response) => {
                 const data: IInterview[] = await response.json();
                 setInterviews(data);
-            } else {
-                generateAlert();
             }
-        } catch {
-            generateAlert();
-        }
+        );
     }, [connectedUser]);
 
     useEffect(() => {
         fetchOfferApplications();
         fetchAcceptedStudents();
         fetchInterviews();
-    }, [offerId]);
+    }, [offerId, fetchOfferApplications, fetchAcceptedStudents, fetchInterviews]);
 
     const hireStudent = async (studentId: string): Promise<void> => {
-        try {
-            const response: Response =
-                await putStudentAcceptation(offerId, studentId, connectedUser.token);
-
-            if (response.ok) {
+        universalFetch(async () => await putStudentAcceptation(offerId, studentId, connectedUser.token),
+            async (response: Response) => {
                 setAcceptedStudents([...acceptedStudents, studentId])
-            } else {
-                generateAlert()
             }
-        } catch (exception) {
-            generateAlert()
-        }
+        )
     }
 
 
     const fetchStudentCv = async (studentId: string): Promise<void> => {
-        try {
-            const response: Response = await putStudentCv(studentId, connectedUser.token);
-
-            if (response.ok) {
+        universalFetch(async () => await putStudentCv(studentId, connectedUser.token),
+            async (response: Response) => {
                 const data: any = await response.json();
                 setCv(new Uint8Array(JSON.parse(data.pdf)));
                 setShowCv(true);
-            } else {
-                generateAlert()
-            }
-        } catch {
-            generateAlert()
-        }
+            });
     }
 
     const hasInterview = (offerId: string, studentId: string): boolean => {
@@ -168,11 +134,8 @@ const OfferStudentApplicationsList = ({
                                     hasInterview(offerId, student.id) &&
                                     getInterview(offerId, student.id)!.studentSelectedDate !== ""
                                         ? <p>
-                                            Entrevue confirmée pour le
-                                            <p className="text-danger">
-                                                {getInterview(offerId, student.id)!
-                                                    .studentSelectedDate.replace("T", " ") + "h"}
-                                            </p>
+                                            Entrevue confirmée pour le {getInterview(offerId, student.id)!
+                                            .studentSelectedDate.replace("T", " ")}
                                         </p>
                                         : hasInterview(offerId, student.id)
                                             ? <p>En attente de confirmation de l'étudiant</p>

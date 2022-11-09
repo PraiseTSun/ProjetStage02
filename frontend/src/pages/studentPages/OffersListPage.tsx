@@ -117,7 +117,7 @@ const OffersListPage = ({connectedUser}:
                                     confirmInterview(
                                         getInterview(offerId)!.interviewId, date)
                                 }}>
-                            {date.replace("T", " ") + "h"}
+                            {date.replace("T", " ")}
                         </Button>
                         <br/>
                     </>
@@ -126,10 +126,8 @@ const OffersListPage = ({connectedUser}:
         } else {
             return (
                 <p>
-                    Entrevue confirmée pour le
-                    <p className="text-danger">
-                        {getInterview(offerId)!.studentSelectedDate.replace("T", " ") + "h"}
-                    </p>
+                    Entrevue confirmée pour le {getInterview(offerId)!
+                    .studentSelectedDate.replace("T", " ")}
                 </p>
             );
         }

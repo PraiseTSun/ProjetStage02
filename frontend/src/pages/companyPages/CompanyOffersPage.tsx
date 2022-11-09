@@ -3,32 +3,25 @@ import IUser from "../../models/IUser";
 import {Button, Col, Container, Row, Table} from "react-bootstrap";
 import PageHeader from "../../components/universalComponents/PageHeader";
 import IOffer from "../../models/IOffer";
-import {generateAlert} from "../../services/universalServices/UniversalUtilService";
 import {putCompanyOffers} from "../../services/companyServices/CompanyFetchService";
 import OfferStudentApplicationsList from "../../components/companyComponents/OfferStudentApplicationsList";
+import {universalFetch} from "../../services/universalServices/UniversalFetchService";
 
 const CompanyOffersPage = ({connectedUser}: { connectedUser: IUser }): JSX.Element => {
     const [offers, setOffers] = useState<IOffer[]>([]);
     const [currentlySelectedOffer, setCurrentlySelectedOffer] = useState<string | null>(null);
 
     const fetchOffers = useCallback(async (): Promise<void> => {
-        try {
-            const response: Response = await putCompanyOffers(connectedUser.id, connectedUser.token);
-
-            if (response.ok) {
+        universalFetch(async () => await putCompanyOffers(connectedUser.id, connectedUser.token),
+            async (response: Response) => {
                 const data: IOffer[] = await response.json();
                 setOffers(data);
-            } else {
-                generateAlert();
-            }
-        } catch {
-            generateAlert();
-        }
+            });
     }, [connectedUser]);
 
     useEffect(() => {
         fetchOffers()
-    }, [connectedUser]);
+    }, [connectedUser, fetchOffers]);
 
     return (
         <Container className="min-vh-100 p-0">
