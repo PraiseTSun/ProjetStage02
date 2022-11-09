@@ -1,5 +1,5 @@
 import {Button, Col, Container, Form, Row} from "react-bootstrap";
-import React from "react";
+import React, {useState} from "react";
 import {BeatLoader} from "react-spinners";
 import {generateAlert} from "../../services/universalServices/UniversalUtilService";
 import {postCreateInterview} from "../../services/companyServices/CompanyFetchService";
@@ -21,13 +21,14 @@ const InterviewDateForm = ({
     setInterviews: Function,
     setShowDateSelector: Function
 }): JSX.Element => {
-    const MIN_DATE = new Date().toISOString().split(/:[0-9][0-9]\./)[0];
-    const MAX_DATE = new Date(new Date().setMonth(new Date().getMonth() + 1))
+    const CURRENT_DATE = new Date();
+    const MIN_DATE = CURRENT_DATE.toISOString().split(/:[0-9][0-9]\./)[0];
+    const MAX_DATE = new Date(CURRENT_DATE.setMonth(CURRENT_DATE.getMonth() + 1))
         .toISOString().split(/:[0-9][0-9]\./)[0];
-    const [firstDate, setFirstDate] = React.useState<string>("")
-    const [secondDate, setSecondDate] = React.useState<string>("")
-    const [thirdDate, setThirdDate] = React.useState<string>("")
-    const [waiting, setWaiting] = React.useState<boolean>(false)
+    const [firstDate, setFirstDate] = useState<string>("")
+    const [secondDate, setSecondDate] = useState<string>("")
+    const [thirdDate, setThirdDate] = useState<string>("")
+    const [waiting, setWaiting] = useState<boolean>(false)
 
     const onSubmit = async (event: React.FormEvent<HTMLFormElement>): Promise<void> => {
         event.preventDefault();
@@ -48,7 +49,7 @@ const InterviewDateForm = ({
                 setShowDateSelector(false)
                 return;
             }
-            
+
             generateAlert()
 
         } catch {

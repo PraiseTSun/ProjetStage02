@@ -115,8 +115,8 @@ const OffersListPage = ({connectedUser}:
         if (getInterview(offerId)!.studentSelectedDate === "") {
             return (
                 getInterview(offerId)!.companyDateOffers.map((date: string, index: number) =>
-                    <>
-                        <Button key={index} className="Btn btn-primary mb-2"
+                    <div key={index}>
+                        <Button className="Btn btn-primary mb-2"
                                 onClick={() => {
                                     confirmInterview(
                                         getInterview(offerId)!.interviewId, date)
@@ -124,7 +124,7 @@ const OffersListPage = ({connectedUser}:
                             {date.replace("T", " ")}
                         </Button>
                         <br/>
-                    </>
+                    </div>
                 )
             );
         }
