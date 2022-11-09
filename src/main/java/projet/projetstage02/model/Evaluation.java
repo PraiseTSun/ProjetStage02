@@ -9,6 +9,7 @@ import projet.projetstage02.dto.evaluations.MillieuStage.MillieuStageEvaluationI
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.Lob;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Pattern;
@@ -25,22 +26,22 @@ public class Evaluation {
     @Min(1)
     private long contractId;
     @NotBlank
-    @Pattern(regexp = "totalementEnAccord|plutotEnAccord|plutotEnDesaccord|totalementEnDesaccord|impossibleDeSePronnoncer")
+    @Pattern(regexp = "totalementEnAccord|plutotEnAccord|plutotEnDesaccord|totalementEnDesaccord|impossibleDeSeprononcer")
     private String tachesAnnonces;
     @NotBlank
-    @Pattern(regexp = "totalementEnAccord|plutotEnAccord|plutotEnDesaccord|totalementEnDesaccord|impossibleDeSePronnoncer")
+    @Pattern(regexp = "totalementEnAccord|plutotEnAccord|plutotEnDesaccord|totalementEnDesaccord|impossibleDeSeprononcer")
     private String integration;
     @NotBlank
-    @Pattern(regexp = "totalementEnAccord|plutotEnAccord|plutotEnDesaccord|totalementEnDesaccord|impossibleDeSePronnoncer")
+    @Pattern(regexp = "totalementEnAccord|plutotEnAccord|plutotEnDesaccord|totalementEnDesaccord|impossibleDeSeprononcer")
     private String tempsReelConsacre;
     @NotBlank
-    @Pattern(regexp = "totalementEnAccord|plutotEnAccord|plutotEnDesaccord|totalementEnDesaccord|impossibleDeSePronnoncer")
+    @Pattern(regexp = "totalementEnAccord|plutotEnAccord|plutotEnDesaccord|totalementEnDesaccord|impossibleDeSeprononcer")
     private String environementTravail;
     @NotBlank
-    @Pattern(regexp = "totalementEnAccord|plutotEnAccord|plutotEnDesaccord|totalementEnDesaccord|impossibleDeSePronnoncer")
+    @Pattern(regexp = "totalementEnAccord|plutotEnAccord|plutotEnDesaccord|totalementEnDesaccord|impossibleDeSeprononcer")
     private String climatTravail;
     @NotBlank
-    @Pattern(regexp = "totalementEnAccord|plutotEnAccord|plutotEnDesaccord|totalementEnDesaccord|impossibleDeSePronnoncer")
+    @Pattern(regexp = "totalementEnAccord|plutotEnAccord|plutotEnDesaccord|totalementEnDesaccord|impossibleDeSeprononcer")
     private String milieuDeStage;
     @Min(1)
     private long heureTotalPremierMois;
@@ -49,17 +50,18 @@ public class Evaluation {
     @Min(1)
     private long heureTotalTroisiemeMois;
     @NotBlank
-    @Pattern(regexp = "totalementEnAccord|plutotEnAccord|plutotEnDesaccord|totalementEnDesaccord|impossibleDeSePronnoncer")
+    @Pattern(regexp = "totalementEnAccord|plutotEnAccord|plutotEnDesaccord|totalementEnDesaccord|impossibleDeSeprononcer")
     private String communicationAvecSuperviser;
     @NotBlank
-    @Pattern(regexp = "totalementEnAccord|plutotEnAccord|plutotEnDesaccord|totalementEnDesaccord|impossibleDeSePronnoncer")
+    @Pattern(regexp = "totalementEnAccord|plutotEnAccord|plutotEnDesaccord|totalementEnDesaccord|impossibleDeSeprononcer")
     private String equipementFourni;
     @NotBlank
-    @Pattern(regexp = "totalementEnAccord|plutotEnAccord|plutotEnDesaccord|totalementEnDesaccord|impossibleDeSePronnoncer")
+    @Pattern(regexp = "totalementEnAccord|plutotEnAccord|plutotEnDesaccord|totalementEnDesaccord|impossibleDeSeprononcer")
     private String volumeDeTravail;
     @NotBlank
     private String commentaires;
     @NotBlank
+    @Lob
     private String signature;
     @NotBlank
     private String dateSignature;

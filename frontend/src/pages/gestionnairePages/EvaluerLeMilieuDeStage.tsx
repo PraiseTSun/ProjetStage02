@@ -21,8 +21,8 @@ const EvaluerLeMilieuDeStage = ({user}: { user: IUser }): JSX.Element => {
     //varialbles pour formulaire la partie identification de l'entreprise
     const [infosContrat, setInfosContrat] = useState<InfoDuContrat>({
         adresse: "",
-        dateStageDebut:"",
-        dateStageFin:"",
+        dateStageDebut: "",
+        dateStageFin: "",
         departement: "",
         emailCompagnie: "",
         emailEtudiant: "",
@@ -37,6 +37,7 @@ const EvaluerLeMilieuDeStage = ({user}: { user: IUser }): JSX.Element => {
         session: ""
     });
     // varialbles pour formulaire la partie identification du stagiaire
+    const [contratId, setContratId] = useState(0)
     const [tachesAnnonces, setTachesAnnonces] = useState("")
     const [integration, setIntegration] = useState("")
     const [tempsReelConsacre, setTempsReelConsacre] = useState("")
@@ -90,7 +91,9 @@ const EvaluerLeMilieuDeStage = ({user}: { user: IUser }): JSX.Element => {
     }
 
     const showFormulaires = (id: number) => {
+        console.log(id)
         setAfficheFormuaire(true)
+        setContratId(id)
         fetchContractParId(id)
     }
     const notShowFormulaires = () => {
@@ -111,7 +114,7 @@ const EvaluerLeMilieuDeStage = ({user}: { user: IUser }): JSX.Element => {
                 return;
             }
 
-            const res = await postEvaluationStage(user.token, tachesAnnonces, integration, tempsReelConsacre,
+            const res = await postEvaluationStage(contratId, user.token, tachesAnnonces, integration, tempsReelConsacre,
                 environnementDeTravail, climatDeTravail, milieuDeStage, heureTotalPremierMois,
                 heureTotalDeuxiemeMois, heureTotalTroisiemeMois, communicationAvecSuperviser,
                 equipementFourni, volumeDeTravail, commentaires, signature, dateSignature);
@@ -126,8 +129,8 @@ const EvaluerLeMilieuDeStage = ({user}: { user: IUser }): JSX.Element => {
             setAfficheFormuaire(false)
             setInfosContrat({
                 adresse: "",
-                dateStageDebut:"",
-                dateStageFin:"",
+                dateStageDebut: "",
+                dateStageFin: "",
                 departement: "",
                 emailCompagnie: "",
                 emailEtudiant: "",
@@ -280,7 +283,7 @@ const EvaluerLeMilieuDeStage = ({user}: { user: IUser }): JSX.Element => {
                                                          onChange={(e) => setTachesAnnonces(e.target.value)}>
                                                 <option hidden value="" disabled>Choix
                                                 </option>
-                                                <option value="totalemenEnAccord">Totalement en accord
+                                                <option value="totalementEnAccord">Totalement en accord
                                                 </option>
                                                 <option value="plutotEnAccord">Plutôt en accord
                                                 </option>
@@ -305,7 +308,7 @@ const EvaluerLeMilieuDeStage = ({user}: { user: IUser }): JSX.Element => {
                                                          onChange={(e) => setIntegration(e.target.value)}>
                                                 <option hidden value="" disabled>Choix
                                                 </option>
-                                                <option value="totalemenEnAccord">Totalement en accord
+                                                <option value="totalementEnAccord">Totalement en accord
                                                 </option>
                                                 <option value="plutotEnAccord">Plutôt en accord
                                                 </option>
@@ -330,7 +333,7 @@ const EvaluerLeMilieuDeStage = ({user}: { user: IUser }): JSX.Element => {
                                                          onChange={(e) => setTempsReelConsacre(e.target.value)}>
                                                 <option hidden value="" disabled>Choix
                                                 </option>
-                                                <option value="totalemenEnAccord">Totalement en accord
+                                                <option value="totalementEnAccord">Totalement en accord
                                                 </option>
                                                 <option value="plutotEnAccord">Plutôt en accord
                                                 </option>
@@ -346,7 +349,7 @@ const EvaluerLeMilieuDeStage = ({user}: { user: IUser }): JSX.Element => {
                                         </Form.Group>
                                     </Row>
                                     <Row>
-                                        <h3 className="fw-bold mt-2 h5">Préciser le nombre d'heures/semaine:</h3>
+                                        <h3 className="fw-bold mt-2 h5">Préciser le nombre d'heures total:</h3>
                                     </Row>
                                     <Row>
                                         <Col>
@@ -390,7 +393,7 @@ const EvaluerLeMilieuDeStage = ({user}: { user: IUser }): JSX.Element => {
                                                          onChange={(e) => setenvironnementDeTravail(e.target.value)}>
                                                 <option hidden value="" disabled>Choix
                                                 </option>
-                                                <option value="totalemenEnAccord">Totalement en accord
+                                                <option value="totalementEnAccord">Totalement en accord
                                                 </option>
                                                 <option value="plutotEnAccord">Plutôt en accord
                                                 </option>
@@ -414,7 +417,7 @@ const EvaluerLeMilieuDeStage = ({user}: { user: IUser }): JSX.Element => {
                                                          onChange={(e) => setclimatDeTravail(e.target.value)}>
                                                 <option hidden value="" disabled>Choix
                                                 </option>
-                                                <option value="totalemenEnAccord">Totalement en accord
+                                                <option value="totalementEnAccord">Totalement en accord
                                                 </option>
                                                 <option value="plutotEnAccord">Plutôt en accord
                                                 </option>
@@ -438,7 +441,7 @@ const EvaluerLeMilieuDeStage = ({user}: { user: IUser }): JSX.Element => {
                                                          onChange={(e) => setMilieuDeStage(e.target.value)}>
                                                 <option hidden value="" disabled>Choix
                                                 </option>
-                                                <option value="totalemenEnAccord">Totalement en accord
+                                                <option value="totalementEnAccord">Totalement en accord
                                                 </option>
                                                 <option value="plutotEnAccord">Plutôt en accord
                                                 </option>
@@ -462,7 +465,7 @@ const EvaluerLeMilieuDeStage = ({user}: { user: IUser }): JSX.Element => {
                                                          onChange={(e) => setSalaireOffert(e.target.value)}>
                                                 <option hidden value="" disabled>Choix
                                                 </option>
-                                                <option value="totalemenEnAccord">Totalement en accord
+                                                <option value="totalementEnAccord">Totalement en accord
                                                 </option>
                                                 <option value="plutotEnAccord">Plutôt en accord
                                                 </option>
@@ -498,7 +501,7 @@ const EvaluerLeMilieuDeStage = ({user}: { user: IUser }): JSX.Element => {
                                                          onChange={(e) => setCommunicationAvecSuperviser(e.target.value)}>
                                                 <option hidden value="" disabled>Choix
                                                 </option>
-                                                <option value="totalemenEnAccord">Totalement en accord
+                                                <option value="totalementEnAccord">Totalement en accord
                                                 </option>
                                                 <option value="plutotEnAccord">Plutôt en accord
                                                 </option>
@@ -522,7 +525,7 @@ const EvaluerLeMilieuDeStage = ({user}: { user: IUser }): JSX.Element => {
                                                          onChange={(e) => setEquipementFourni(e.target.value)}>
                                                 <option hidden value="" disabled>Choix
                                                 </option>
-                                                <option value="totalemenEnAccord">Totalement en accord
+                                                <option value="totalementEnAccord">Totalement en accord
                                                 </option>
                                                 <option value="plutotEnAccord">Plutôt en accord
                                                 </option>
@@ -546,7 +549,7 @@ const EvaluerLeMilieuDeStage = ({user}: { user: IUser }): JSX.Element => {
                                                          onChange={(e) => setVolumeDeTravail(e.target.value)}>
                                                 <option hidden value="" disabled>Choix
                                                 </option>
-                                                <option value="totalemenEnAccord">Totalement en accord
+                                                <option value="totalementEnAccord">Totalement en accord
                                                 </option>
                                                 <option value="plutotEnAccord">Plutôt en accord
                                                 </option>
@@ -581,13 +584,17 @@ const EvaluerLeMilieuDeStage = ({user}: { user: IUser }): JSX.Element => {
                                                     <p className="fw-bold h5">Signature</p>
                                                     :
                                                     <p className="fw-bold h5">Signature
-                                                         <span className="text-success">   (vous avez déjà signé)</span></p>
+                                                        <span className="text-success">   (vous avez déjà signé)</span>
+                                                    </p>
                                             }
-                                            <Button  className="btn btn-primary mt-2 w-75" onClick={()=>{setIsSigner(true)}}>Signer</Button>
+                                            <Button className="btn btn-primary mt-2 w-75" onClick={() => {
+                                                setIsSigner(true)
+                                            }}>Signer</Button>
                                         </Col>
                                         <Col>
                                             <Form.Group>
-                                                <Form.Label className="fw-bold mt-2 h5">Date Signature(JJ-MM-AAAA)</Form.Label>
+                                                <Form.Label className="fw-bold mt-2 h5">Date
+                                                    Signature(JJ-MM-AAAA)</Form.Label>
                                                 <Form.Control type="date" minLength={2} required
                                                               value={dateSignature}
                                                               onChange={e => setDateSignature(e.target.value)}></Form.Control>

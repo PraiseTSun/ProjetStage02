@@ -217,7 +217,7 @@ export const putInfoContratPourEvaluateStage = (contratId: number, token: string
     });
 }
 
-export const postEvaluationStage = (token: string,
+export const postEvaluationStage = (contratId:number, token: string,
     tachesAnnonces: string,
     integration: string,
     tempsReelConsacre: string,
@@ -239,6 +239,7 @@ export const postEvaluationStage = (token: string,
             'Content-Type': 'application/json',
         },
         body: JSON.stringify({
+            "contractId": contratId,
             "tachesAnnonces": tachesAnnonces,
             "integration": integration,
             "tempsReelConsacre": tempsReelConsacre,
@@ -260,7 +261,7 @@ export const postEvaluationStage = (token: string,
 }
 
 export const putContrats = (token: string): Promise<Response> => {
-    return fetch(`http://localhost:8080/getContracts`, {
+    return fetch(`http://localhost:8080/getContractsToEvaluate/millieuStage`, {
         method: 'PUT',
         headers: {
             'Content-Type': 'application/json',

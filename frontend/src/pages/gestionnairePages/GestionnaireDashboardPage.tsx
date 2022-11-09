@@ -17,7 +17,7 @@ const GestionnaireDashboard = ({user, deconnexion}: { user: IUser, deconnexion: 
                     étudiants</Link>
                 <Link to="/validerNouvelleOffre" className="btn btn-primary mt-3">Validation nouvelle offre stage</Link>
                 <Link to="/offerHistory" className="btn btn-primary mt-3">Historique des offres</Link>
-                <Link to="/evaluerLeMilieuDeStage" className="btn btn-primary mt-3">Evaluer le milieu de stage</Link>
+                <Link to="/evaluerLeMilieuDeStage" className="btn btn-primary mt-3">Évaluer le milieu de stage</Link>
                 <Link to="/acceptationsValidation" className="btn btn-primary mt-3">Créer les ententes de stage</Link>
             </Row>
         </div>
