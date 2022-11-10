@@ -32,7 +32,6 @@ const SignerEntenteDeStage = ({connectedUser}: { connectedUser: IUser }): JSX.El
         fetchContracts()
     }, [connectedUser])
 
-    console.log("getGestionnaireContracts : "+contratsNonSigner)
     async function getEntente(contratId: number): Promise<void> {
         setIsSigner(true)
         setContratId(contratId)
