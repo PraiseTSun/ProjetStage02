@@ -19,7 +19,9 @@ const SignerEntenteDeStage = ({connectedUser}: { connectedUser: IUser }): JSX.El
                 const response = await putContracts(connectedUser.token)
                 if (response.ok) {
                     const data = await response.json();
-                    setContratsNonSigner(data.contracts)
+                    if (data.contracts !== undefined){
+                        setContratsNonSigner(data.contracts)
+                    }
                 } else {
                     generateAlert()
                 }
@@ -108,27 +110,27 @@ const SignerEntenteDeStage = ({connectedUser}: { connectedUser: IUser }): JSX.El
                             </tr>
                             </thead>
                             <tbody className="bg-light">
-                            {/*{contratsNonSigner.map((contrat, index) => {*/}
-                            {/*    return (*/}
-                            {/*        <tr key={index}>*/}
-                            {/*            <td>{contrat.companyName}</td>*/}
-                            {/*            <td>{contrat.studentFullName}</td>*/}
-                            {/*            <td>{contrat.position}</td>*/}
-                            {/*            <td>{contrat.session}</td>*/}
-                            {/*            <td>{contrat.description}</td>*/}
-                            {/*            <td>{contrat.companySignatureDate}</td>*/}
-                            {/*            <td>{contrat.studentSignatureDate}</td>*/}
-                            {/*            <td>{*/}
-                            {/*                contrat.companySignature.length > 0 ?*/}
-                            {/*                    <p>Déjà signé</p>*/}
-                            {/*                    :*/}
-                            {/*                    <Button className="btn btn-warning"*/}
-                            {/*                            onClick={async () => await getEntente(contrat.contractId)}>Signer</Button>*/}
+                            {contratsNonSigner.map((contrat, index) => {
+                                return (
+                                    <tr key={index}>
+                                        <td>{contrat.companyName}</td>
+                                        <td>{contrat.studentFullName}</td>
+                                        <td>{contrat.position}</td>
+                                        <td>{contrat.session}</td>
+                                        <td>{contrat.description}</td>
+                                        <td>{contrat.companySignatureDate}</td>
+                                        <td>{contrat.studentSignatureDate}</td>
+                                        <td>{
+                                            contrat.companySignature.length > 0 ?
+                                                <p>Déjà signé</p>
+                                                :
+                                                <Button className="btn btn-warning"
+                                                        onClick={async () => await getEntente(contrat.contractId)}>Signer</Button>
 
-                            {/*            }</td>*/}
-                            {/*        </tr>*/}
-                            {/*    );*/}
-                            {/*})}*/}
+                                        }</td>
+                                    </tr>
+                                );
+                            })}
                             </tbody>
                         </Table>
                     </Col>
