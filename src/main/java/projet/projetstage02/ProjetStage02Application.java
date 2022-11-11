@@ -4,7 +4,9 @@ import lombok.AllArgsConstructor;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import projet.projetstage02.dto.SignatureInDTO;
 import projet.projetstage02.dto.contracts.StageContractInDTO;
+import projet.projetstage02.dto.contracts.StageContractOutDTO;
 import projet.projetstage02.dto.offres.OffreInDTO;
 import projet.projetstage02.dto.pdf.PdfDTO;
 import projet.projetstage02.dto.users.CompanyDTO;
@@ -167,8 +169,20 @@ public class ProjetStage02Application implements CommandLineRunner {
         studentService.createPostulation(student.getId(), offreId);
         studentService.createPostulation(student2.getId(), offreId);
         companyService.saveStudentApplicationAccepted(offreId, student.getId());
-        System.out.println(gestionnaireService.createStageContract(
-                new StageContractInDTO("noToken", student.getId(), offreId)
-        ));
+
+        StageContractOutDTO stageContractOutDTO = gestionnaireService.createStageContract(
+                new StageContractInDTO(gestionnaire.getToken(), student.getId(), offreId));
+        SignatureInDTO signatureCompany = new SignatureInDTO("",company.getId(),stageContractOutDTO.getContractId(), "dsfsfdfs");
+        companyService.addSignatureToContract(signatureCompany);
+        SignatureInDTO signatureStudent = new SignatureInDTO("",student.getId(),stageContractOutDTO.getContractId(), "studanenn");
+        studentService.addSignatureToContract(signatureStudent);
+        stageContractOutDTO.setPosition("position");
+        stageContractOutDTO.setCompanyName(company.getCompanyName());
+        stageContractOutDTO.setStudentFullName(student.getFirstName());
+        stageContractOutDTO.setContractId(stageContractOutDTO.getContractId());
+        stageContractOutDTO.setSession("Hiver 2023");
+        stageContractOutDTO.setStudentSignature(signatureStudent.getSignature());
+        stageContractOutDTO.setCompanySignature(signatureCompany.getSignature());
+        System.out.println(stageContractOutDTO);
     }
 }
