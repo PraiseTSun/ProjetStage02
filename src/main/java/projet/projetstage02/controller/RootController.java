@@ -859,7 +859,6 @@ public class RootController {
         }
     }
 
-
     @PutMapping("/contractsToCreate")
     public ResponseEntity<ContractsDTO> getContracts(@RequestBody TokenDTO tokenId) {
         logger.log(Level.INFO, "Put /contracts");

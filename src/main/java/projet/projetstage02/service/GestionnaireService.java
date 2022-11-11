@@ -376,7 +376,7 @@ public class GestionnaireService {
     public ContractsDTO getContractsToEvaluateMillieuStage() {
         List<StageContractOutDTO> contracts = new ArrayList<>();
         stageContractRepository.findAll().stream().filter(
-                stageContract -> evaluationRepository.findByContractId(stageContract.getId()).isEmpty()
+                stageContract -> evaluationMillieuStageRepository.findByContractId(stageContract.getId()).isEmpty()
         ).forEach(stageContract -> {
             Optional<Company> companyOptional = companyRepository.findById(stageContract.getCompanyId());
             Optional<Student> studentOptional = studentRepository.findById(stageContract.getStudentId());

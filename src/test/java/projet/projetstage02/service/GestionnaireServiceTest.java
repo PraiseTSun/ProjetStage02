@@ -948,6 +948,7 @@ public class GestionnaireServiceTest {
 
     @Test
     void testEvaluateStageHappyDay() {
+        when(evaluationMillieuStageRepository.save(any())).thenReturn(EvaluationMillieuStage.builder().id(1L).build());
         gestionnaireService.evaluateStage(evalInDTO);
         verify(evaluationMillieuStageRepository, times(1)).save(any());
     }
@@ -959,7 +960,7 @@ public class GestionnaireServiceTest {
         expected.setEmployFullName(companyTest.getFirstName() + " " + companyTest.getLastName());
         expected.setPosition(offerTest.getPosition());
         expected.setCompanyName(companyTest.getCompanyName());
-        when(evaluationRepository.findByContractId(anyLong())).thenReturn(Optional.empty());
+        when(evaluationMillieuStageRepository.findByContractId(anyLong())).thenReturn(Optional.empty());
         when(stageContractRepository.findAll()).thenReturn(List.of(stageContract, stageContract, stageContract));
         when(companyRepository.findById(anyLong())).thenReturn(Optional.of(companyTest));
         when(studentRepository.findById(anyLong())).thenReturn(Optional.of(studentTest));

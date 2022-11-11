@@ -1761,7 +1761,7 @@ public class RootControllerTest {
 
     @Test
     void testEvaluateStageHappyDay() throws Exception {
-        doNothing().when(gestionnaireService).evaluateStage(any());
+        when(gestionnaireService.evaluateStage(any())).thenReturn(1L);
         mockMvc.perform(post("/evaluateStage/{token}", token.getToken())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(jsonEvalInDTO.write(evalInDTO).getJson()))
