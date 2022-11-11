@@ -19,9 +19,8 @@ const SignerEntenteDeStage = ({connectedUser}: { connectedUser: IUser }): JSX.El
                 const response = await putContracts(connectedUser.token)
                 if (response.ok) {
                     const data = await response.json();
-                    if (data.contracts !== undefined){
-                        setContratsNonSigner(data.contracts)
-                    }
+                    setContratsNonSigner(data)
+
                 } else {
                     generateAlert()
                 }
@@ -44,7 +43,7 @@ const SignerEntenteDeStage = ({connectedUser}: { connectedUser: IUser }): JSX.El
             if (response.ok) {
                 contratsNonSigner.forEach(contrat => {
                     if (contrat.contractId === contratId) {
-                        contrat.companySignature = signature;
+                        contrat.gestionnaireSignature = signature;
                         return;
                     }
                 })
@@ -120,7 +119,7 @@ const SignerEntenteDeStage = ({connectedUser}: { connectedUser: IUser }): JSX.El
                                         <td>{contrat.companySignatureDate}</td>
                                         <td>{contrat.studentSignatureDate}</td>
                                         <td>{
-                                            contrat.companySignature.length > 0 ?
+                                            contrat.gestionnaireSignature.length > 0 ?
                                                 <p>Déjà signé</p>
                                                 :
                                                 <Button className="btn btn-warning"

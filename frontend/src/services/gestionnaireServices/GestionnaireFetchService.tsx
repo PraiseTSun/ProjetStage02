@@ -219,7 +219,7 @@ export const putContracts = (token: string): Promise<Response> => {
 
 export const putSignatureContract = (token: string, gestionnaireId: number, contratId : number, signature : string): Promise<Response> => {
 
-    return fetch(`http://localhost:8080/companySignatureContract`, {
+    return fetch(`http://localhost:8080/gestionnaireSignature`, {
         method: "PUT",
         headers: {
             'Accept': 'application/json',
