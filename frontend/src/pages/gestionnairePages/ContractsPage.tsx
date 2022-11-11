@@ -34,7 +34,7 @@ const ContractsPage = ({connectedUser}: { connectedUser: IUser }): JSX.Element =
 
             if (response.ok) {
                 setAcceptations(acceptations.filter(acceptation =>
-                    !(acceptation.offerId == offerId && acceptation.studentId == studentId)));
+                    !(acceptation.offerId === offerId && acceptation.studentId === studentId)));
             } else {
                 generateAlert()
             }

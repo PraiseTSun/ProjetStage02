@@ -16,7 +16,8 @@ const StudentContractsPage = ({connectedUser}: { connectedUser: IUser }): JSX.El
 
     const fetchContracts = useCallback(async () => {
         try {
-            const response: Response = await putStudentContracts(connectedUser.id, `Hiver ${nextYear}`, connectedUser.token);
+            const response: Response = await putStudentContracts(connectedUser.id,
+                `Hiver ${nextYear}`, connectedUser.token);
 
             if (response.ok) {
                 const data: IContract[] = await response.json();
