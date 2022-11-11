@@ -943,6 +943,9 @@ public class RootController {
         } catch (NonExistentOfferExeption | NonExistentEntityException e) {
             logger.log(Level.INFO, "PutMapping: /evaluateStage/id sent 404 response");
             return ResponseEntity.status(NOT_FOUND).build();
+        } catch (EmptySignatureException e) {
+            logger.log(Level.INFO, "PutMapping: /evaluateStage/id sent 401 response");
+            return ResponseEntity.status(BAD_REQUEST).build();
         } catch (DocumentException e) {
             logger.log(Level.INFO, "PutMapping: /evaluateStage/id sent 500 response");
             return ResponseEntity.status(INTERNAL_SERVER_ERROR).build();
@@ -1058,6 +1061,21 @@ public class RootController {
         } catch (NonExistentEntityException e) {
             logger.log(Level.INFO, "Put/getStudentInterviews/{studentId} return 404");
             return ResponseEntity.status(NOT_FOUND).build();
+        }
+    }
+
+    @PutMapping("/getEvaluatedContracts/millieuStage")
+    public ResponseEntity<List<StageContractOutDTO>> getEvaluatedContractsMillieuStage(@RequestBody TokenDTO tokenId) {
+        logger.log(Level.INFO, "Put /getEvaluatedContracts/millieuStage");
+
+        try {
+            authService.getToken(tokenId.getToken(), GESTIONNAIRE);
+            List<StageContractOutDTO> evaluatedContracts = gestionnaireService.getEvaluatedContractsMillieuStage();
+            logger.log(Level.INFO, "Put /getEvaluatedContracts/millieuStage return 200");
+            return ResponseEntity.ok(evaluatedContracts);
+        } catch (InvalidTokenException e) {
+            logger.log(Level.INFO, "Put /getEvaluatedContracts/millieuStage return 403");
+            return ResponseEntity.status(FORBIDDEN).build();
         }
     }
 }

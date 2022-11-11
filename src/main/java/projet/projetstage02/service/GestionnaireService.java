@@ -409,7 +409,7 @@ public class GestionnaireService {
         return ContractsDTO.builder().contracts(contracts).build();
     }
 
-    public void createEvaluationMillieuStagePDF(long contractId) throws NonExistentEntityException, NonExistentOfferExeption, DocumentException {
+    public void createEvaluationMillieuStagePDF(long contractId) throws NonExistentEntityException, NonExistentOfferExeption, DocumentException, EmptySignatureException {
         Optional<EvaluationMillieuStage> optional = evaluationMillieuStageRepository.findByContractId(contractId);
         if (optional.isEmpty()) {
             throw new NonExistentEntityException();
@@ -427,7 +427,7 @@ public class GestionnaireService {
     }
 
     private Map<String, Map<String, String>> evaluationMillieuStageToMap(MillieuStageEvaluationInfoDTO millieuStageEvaluationInfoDTO,
-                                                                         EvaluationMillieuStage evaluationMillieuStage) {
+                                                                         EvaluationMillieuStage evaluationMillieuStage) throws EmptySignatureException {
         Map<String, Map<String, String>> map = new LinkedHashMap<>();
         Map<String, String> companyInfo = new LinkedHashMap<>();
         Map<String, String> studentInfo = new LinkedHashMap<>();
@@ -493,9 +493,14 @@ public class GestionnaireService {
         return map;
     }
 
-    private Map<String, String> getSignatureGestionnaire(EvaluationMillieuStage evaluationMillieuStage) {
+    private Map<String, String> getSignatureGestionnaire(EvaluationMillieuStage evaluationMillieuStage) throws EmptySignatureException {
         String signature = evaluationMillieuStage.getSignature();
-        signature = signature.split(",")[1];
+        String[] split = signature.split(",");
+        if (split.length != 2) {
+            throw new EmptySignatureException();
+        }
+        signature = split[1];
+        if (signature.length() < 2) throw new EmptySignatureException();
         Base64.Decoder decoder = Base64.getDecoder();
         byte[] decodedByteArray = decoder.decode(signature);
         String bytes = byteToString(decodedByteArray);
@@ -509,5 +514,13 @@ public class GestionnaireService {
         if (optional.isEmpty()) throw new NonExistentEntityException();
         EvaluationPDF evaluationPDF = optional.get();
         return new PdfOutDTO(evaluationPDF.getContractId(), evaluationPDF.getPdf());
+    }
+
+    public List<StageContractOutDTO> getEvaluatedContractsMillieuStage() {
+        List<StageContract> stageContracts = stageContractRepository.findAll();
+        return stageContracts.stream().filter(stageContract -> {
+            Optional<EvaluationMillieuStage> opt = evaluationMillieuStageRepository.findByContractId(stageContract.getId());
+            return opt.isPresent();
+        }).map(StageContractOutDTO::new).toList();
     }
 }
