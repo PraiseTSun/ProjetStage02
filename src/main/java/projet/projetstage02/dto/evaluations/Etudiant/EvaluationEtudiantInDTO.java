@@ -79,7 +79,7 @@ public class EvaluationEtudiantInDTO {
     //Habilites
     @NotBlank
     @Pattern(regexp = "totalementEnAccord|plutotEnAccord|plutotEnDesaccord|totalementEnDesaccord|impossibleDeSePronnoncer")
-    private String interetMotiviation;
+    private String interetMotivation;
     @NotBlank
     @Pattern(regexp = "totalementEnAccord|plutotEnAccord|plutotEnDesaccord|totalementEnDesaccord|impossibleDeSePronnoncer")
     private String exprimeIdees;
@@ -103,7 +103,6 @@ public class EvaluationEtudiantInDTO {
     private String habiletesDemontres;
     @Pattern(regexp = "oui|non")
     @NotBlank
-    @Pattern(regexp = "totalementEnAccord|plutotEnAccord|plutotEnDesaccord|totalementEnDesaccord|impossibleDeSePronnoncer")
     private String discuteAvecStagiaire;
     @Min(0)
     private long heuresEncadrement;

@@ -85,7 +85,7 @@ public class EvaluationEtudiant {
     private String commentairesRelationsInterpersonnelles;
     @NotBlank
     @Pattern(regexp = "totalementEnAccord|plutotEnAccord|plutotEnDesaccord|totalementEnDesaccord|impossibleDeSePronnoncer")
-    private String interetMotiviation;
+    private String interetMotivation;
     @NotBlank
     @Pattern(regexp = "totalementEnAccord|plutotEnAccord|plutotEnDesaccord|totalementEnDesaccord|impossibleDeSePronnoncer")
     private String exprimeIdees;
@@ -108,7 +108,6 @@ public class EvaluationEtudiant {
     private String habiletesDemontres;
     @Pattern(regexp = "oui|non")
     @NotBlank
-    @Pattern(regexp = "totalementEnAccord|plutotEnAccord|plutotEnDesaccord|totalementEnDesaccord|impossibleDeSePronnoncer")
     private String discuteAvecStagiaire;
     @Min(0)
     private long heuresEncadrement;
@@ -140,7 +139,7 @@ public class EvaluationEtudiant {
         this.heuresEncadrement = evaluationEtudiantInDTO.getHeuresEncadrement();
         this.habiletesDemontres = evaluationEtudiantInDTO.getHabiletesDemontres();
         this.initiative = evaluationEtudiantInDTO.getInitiative();
-        this.interetMotiviation = evaluationEtudiantInDTO.getInteretMotiviation();
+        this.interetMotivation = evaluationEtudiantInDTO.getInteretMotivation();
         this.occasionsDePerfectionnement = evaluationEtudiantInDTO.getOccasionsDePerfectionnement();
         this.ponctuel = evaluationEtudiantInDTO.getPonctuel();
         this.respecteAutres = evaluationEtudiantInDTO.getRespecteAutres();

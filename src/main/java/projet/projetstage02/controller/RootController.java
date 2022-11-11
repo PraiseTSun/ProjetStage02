@@ -1038,7 +1038,7 @@ public class RootController {
         }
     }
 
-    @PutMapping("/evaluateStudent/{token}")
+    @PostMapping("/evaluateStudent/{token}")
     public ResponseEntity<?> evaluateStudent(@PathVariable String token,
                                              @RequestBody @Valid EvaluationEtudiantInDTO studentEvaluationInDTO) {
         try {

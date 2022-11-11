@@ -23,6 +23,7 @@ import projet.projetstage02.dto.contracts.StageContractInDTO;
 import projet.projetstage02.dto.contracts.StageContractOutDTO;
 import projet.projetstage02.dto.cv.CvRefusalDTO;
 import projet.projetstage02.dto.cv.CvStatusDTO;
+import projet.projetstage02.dto.evaluations.Etudiant.EvaluationEtudiantInDTO;
 import projet.projetstage02.dto.evaluations.MillieuStage.MillieuStageEvaluationInDTO;
 import projet.projetstage02.dto.evaluations.MillieuStage.MillieuStageEvaluationInfoDTO;
 import projet.projetstage02.dto.interview.CreateInterviewDTO;
@@ -90,6 +91,7 @@ public class RootControllerTest {
     JacksonTester<PdfDTO> jsonPdfDTO;
     JacksonTester<SignatureInDTO> jsonSignatureDTO;
     JacksonTester<MillieuStageEvaluationInDTO> jsonEvalInDTO;
+    JacksonTester<EvaluationEtudiantInDTO> jsonEvalEtudiantInDTO;
     JacksonTester<InterviewOutDTO> jsonInterviewOutDTO;
     JacksonTester<InterviewSelectInDTO> jsonInterviewSelectDTO;
 
@@ -117,6 +119,7 @@ public class RootControllerTest {
     CvStatusDTO cvStatusDTO;
     MillieuStageEvaluationInfoDTO evalInfoDTO;
     MillieuStageEvaluationInDTO evalInDTO;
+    EvaluationEtudiantInDTO evaluationEtudiantInDTO;
     CreateInterviewDTO createInterviewDTO;
     InterviewOutDTO interviewOutDTO;
     InterviewSelectInDTO interviewSelectInDTO;
@@ -318,6 +321,43 @@ public class RootControllerTest {
                 .interviewId(interviewOutDTO.getInterviewId())
                 .studentId(bart.getId())
                 .selectedDate("2022-11-29T12:30")
+                .build();
+        evaluationEtudiantInDTO = EvaluationEtudiantInDTO.builder()
+                .accepteCritiques("plutotEnAccord")
+                .acueillirPourProchainStage("oui")
+                .adapteCulture("plutotEnAccord")
+                .attentionAuxDetails("plutotEnAccord")
+                .bonneAnalyseProblemes("plutotEnAccord")
+                .commentairesHabilites("plutotEnAccord")
+                .commentairesProductivite("plutotEnAccord")
+                .commentairesQualite("plutotEnAccord")
+                .comprendRapidement("plutotEnAccord")
+                .contactsFaciles("plutotEnAccord")
+                .commentairesRelationsInterpersonnelles("plutotEnAccord")
+                .contractId(1L)
+                .dateSignature("2021-05-01")
+                .discuteAvecStagiaire("oui")
+                .doubleCheckTravail("plutotEnAccord")
+                .etablirPriorites("plutotEnAccord")
+                .exprimeIdees("plutotEnAccord")
+                .ecouteActiveComprendrePDVautre("plutotEnAccord")
+                .formationTechniqueSuffisante("plutotEnAccord")
+                .habiletesDemontres("repondentAttentes")
+                .heuresEncadrement(145)
+                .initiative("plutotEnAccord")
+                .interetMotivation("plutotEnAccord")
+                .occasionsDePerfectionnement("plutotEnAccord")
+                .planifieTravail("plutotEnAccord")
+                .ponctuel("plutotEnAccord")
+                .respecteAutres("plutotEnAccord")
+                .respecteEcheances("plutotEnAccord")
+                .rythmeSoutenu("plutotEnAccord")
+                .responsableAutonome("plutotEnAccord")
+                .respecteMandatsDemandes("plutotEnAccord")
+                .signature(byteToString(new byte[]{0, 1, 2, 3, 4, 5, 6, 7, 8, 9}))
+                .travailEnEquipe("plutotEnAccord")
+                .travailSecuritaire("plutotEnAccord")
+                .travailEfficace("plutotEnAccord")
                 .build();
     }
 
@@ -1992,5 +2032,14 @@ public class RootControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(jsonInterviewSelectDTO.write(interviewSelectInDTO).getJson()))
                 .andExpect(status().isForbidden());
+    }
+
+    @Test
+    void testEvaluateStudentHappyDay() throws Exception {
+        doNothing().when(companyService).evaluateStudent(any());
+        mockMvc.perform(post("/evaluateStudent/{token}", token.getToken())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(jsonEvalEtudiantInDTO.write(evaluationEtudiantInDTO).getJson()))
+                .andExpect(status().isCreated());
     }
 }
