@@ -1044,7 +1044,7 @@ public class RootController {
         try {
             logger.log(Level.INFO, "put /evaluateStudent entered");
             authService.getToken(token, COMPANY);
-            gestionnaireService.evaluateStudent(studentEvaluationInDTO);
+            companyService.evaluateStudent(studentEvaluationInDTO);
             logger.log(Level.INFO, "PutMapping: /evaluateStudent sent 201 response");
             return ResponseEntity.status(CREATED).build();
         } catch (InvalidTokenException e) {

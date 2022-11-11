@@ -5,7 +5,6 @@ import org.springframework.stereotype.Service;
 import projet.projetstage02.dto.contracts.ContractsDTO;
 import projet.projetstage02.dto.contracts.StageContractInDTO;
 import projet.projetstage02.dto.contracts.StageContractOutDTO;
-import projet.projetstage02.dto.evaluations.Etudiant.EvaluationEtudiantInDTO;
 import projet.projetstage02.dto.evaluations.MillieuStage.MillieuStageEvaluationInDTO;
 import projet.projetstage02.dto.evaluations.MillieuStage.MillieuStageEvaluationInfoDTO;
 import projet.projetstage02.dto.offres.OffreOutDTO;
@@ -40,7 +39,6 @@ public class GestionnaireService {
 
     private final ApplicationRepository applicationRepository;
     private final EvaluationRepository evaluationRepository;
-    private final EvaluationEtudiantRepository evaluationEtudiantRepository;
 
     public long saveGestionnaire(String firstname, String lastname, String email, String password) {
         GestionnaireDTO dto = GestionnaireDTO.builder()
@@ -412,7 +410,5 @@ public class GestionnaireService {
         return ContractsDTO.builder().contracts(contracts).build();
     }
 
-    public void evaluateStudent(EvaluationEtudiantInDTO studentEvaluationInDTO) {
-        evaluationEtudiantRepository.save(new EvaluationEtudiant(studentEvaluationInDTO));
-    }
+
 }

@@ -7,6 +7,7 @@ import projet.projetstage02.dto.applications.ApplicationAcceptationDTO;
 import projet.projetstage02.dto.applications.OfferApplicationDTO;
 import projet.projetstage02.dto.contracts.ContractsDTO;
 import projet.projetstage02.dto.contracts.StageContractOutDTO;
+import projet.projetstage02.dto.evaluations.Etudiant.EvaluationEtudiantInDTO;
 import projet.projetstage02.dto.interview.CreateInterviewDTO;
 import projet.projetstage02.dto.interview.InterviewOutDTO;
 import projet.projetstage02.dto.offres.OfferAcceptedStudentsDTO;
@@ -39,6 +40,7 @@ public class CompanyService {
     private final ApplicationRepository applicationRepository;
     private final StageContractRepository stageContractRepository;
     private final InterviewRepository interviewRepository;
+    private final EvaluationEtudiantRepository evaluationEtudiantRepository;
 
     public long createOffre(OffreInDTO offreInDTO) {
         Offre offre = Offre.builder()
@@ -237,25 +239,25 @@ public class CompanyService {
     public InterviewOutDTO createInterview(CreateInterviewDTO interviewDTO)
             throws NonExistentEntityException, InvalidDateFormatException, InvalidOwnershipException {
         Optional<Company> companyOpt = companyRepository.findById(interviewDTO.getCompanyId());
-        if(companyOpt.isEmpty()) throw new NonExistentEntityException();
+        if (companyOpt.isEmpty()) throw new NonExistentEntityException();
         Company company = companyOpt.get();
 
         Optional<Student> studentOpt = studentRepository.findById(interviewDTO.getStudentId());
-        if(studentOpt.isEmpty()) throw new NonExistentEntityException();
+        if (studentOpt.isEmpty()) throw new NonExistentEntityException();
         Student student = studentOpt.get();
 
         Optional<Offre> offerOpt = offreRepository.findById(interviewDTO.getOfferId());
-        if(offerOpt.isEmpty()) throw new NonExistentEntityException();
+        if (offerOpt.isEmpty()) throw new NonExistentEntityException();
         Offre offer = offerOpt.get();
 
-        if(offer.getIdCompagnie() != company.getId()) throw new InvalidOwnershipException();
+        if (offer.getIdCompagnie() != company.getId()) throw new InvalidOwnershipException();
 
         List<LocalDateTime> dates = new ArrayList<>();
 
-        for (String dateInt : interviewDTO.getCompanyDateOffers()){
-            try{
+        for (String dateInt : interviewDTO.getCompanyDateOffers()) {
+            try {
                 dates.add(LocalDateTime.parse(dateInt));
-            } catch(Exception e){
+            } catch (Exception e) {
                 throw new InvalidDateFormatException();
             }
         }
@@ -276,14 +278,18 @@ public class CompanyService {
         List<InterviewOutDTO> interviews = new ArrayList<>();
 
         Optional<Company> companyOpt = companyRepository.findById(companyId);
-        if(companyOpt.isEmpty()) throw new NonExistentEntityException();
+        if (companyOpt.isEmpty()) throw new NonExistentEntityException();
 
         interviewRepository.findByCompanyId(companyId)
                 .stream()
                 .forEach(
-                    interview -> interviews.add(new InterviewOutDTO(interview))
+                        interview -> interviews.add(new InterviewOutDTO(interview))
                 );
 
         return interviews;
+    }
+
+    public void evaluateStudent(EvaluationEtudiantInDTO studentEvaluationInDTO) {
+        evaluationEtudiantRepository.save(new EvaluationEtudiant(studentEvaluationInDTO));
     }
 }
