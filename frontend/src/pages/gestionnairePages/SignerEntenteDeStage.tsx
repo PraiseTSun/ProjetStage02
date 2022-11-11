@@ -19,9 +19,7 @@ const SignerEntenteDeStage = ({connectedUser}: { connectedUser: IUser }): JSX.El
                 const response = await putContracts(connectedUser.token)
                 if (response.ok) {
                     const data = await response.json();
-                    if (data.contracts !== undefined){
-                        setContratsNonSigner(data.contracts)
-                    }
+                    setContratsNonSigner(data)
                 } else {
                     generateAlert()
                 }
