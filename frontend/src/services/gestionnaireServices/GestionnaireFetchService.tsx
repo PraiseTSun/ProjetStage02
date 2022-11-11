@@ -260,7 +260,7 @@ export const postEvaluationStage = (contratId:number, token: string,
     });
 }
 
-export const putContrats = (token: string): Promise<Response> => {
+export const putGetContrats = (token: string): Promise<Response> => {
     return fetch(`http://localhost:8080/getContractsToEvaluate/millieuStage`, {
         method: 'PUT',
         headers: {

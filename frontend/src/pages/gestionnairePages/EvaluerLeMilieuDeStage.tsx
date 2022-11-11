@@ -7,7 +7,7 @@ import PageHeader from "../../components/universalComponents/PageHeader";
 import {generateAlert} from "../../services/universalServices/UniversalUtilService";
 import InfoDuContrat from "../../models/InfoDuContrat";
 import {
-    postEvaluationStage, putContrats,
+    postEvaluationStage, putGetContrats,
     putInfoContratPourEvaluateStage
 } from "../../services/gestionnaireServices/GestionnaireFetchService";
 import IContrat from "../../models/IContrat";
@@ -61,7 +61,7 @@ const EvaluerLeMilieuDeStage = ({user}: { user: IUser }): JSX.Element => {
     useEffect(() => {
         const fetchContracts = async (): Promise<void> => {
             try {
-                const response: Response = await putContrats(user.token);
+                const response: Response = await putGetContrats(user.token);
 
                 if (response.ok) {
                     const data = await response.json()
@@ -95,7 +95,7 @@ const EvaluerLeMilieuDeStage = ({user}: { user: IUser }): JSX.Element => {
         setContratId(id)
         fetchContractParId(id)
     }
-    const notShowFormulaires = () => {
+    const hideFormulaires = () => {
         setAfficheFormuaire(false)
     }
     const onSubmit = async (event: React.SyntheticEvent) => {
@@ -208,7 +208,7 @@ const EvaluerLeMilieuDeStage = ({user}: { user: IUser }): JSX.Element => {
                 <Row>
                     <Col sm={2}>
                         <Link to="/evaluerLeMilieuDeStage" onClick={() => {
-                            notShowFormulaires()
+                            hideFormulaires()
                         }} className="btn btn-primary my-3">Page précédente</Link>
                     </Col>
                     <Col sm={8} className="text-center pt-2">
