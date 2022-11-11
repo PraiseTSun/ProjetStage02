@@ -12,7 +12,7 @@ import {Viewer} from "@react-pdf-viewer/core";
 const ConsulterEvaluation = ({connectedUser}:
                                  { connectedUser: IUser }): JSX.Element => {
     const [contrats, setContrats] = useState<IContract[]>([])
-    const [evaluation, setEvaluation] = useState<string>("");
+    const [evaluation, setEvaluation] = useState<any>("");
     const [showEvaluation, setShowEvaluation] = useState<boolean>(false);
 
     useEffect(()=>{
@@ -31,34 +31,15 @@ const ConsulterEvaluation = ({connectedUser}:
         }
         fetchContrat()
     },[connectedUser])
-    // async function getEvaluation(contratId: number): Promise<void> {
-    //     try {
-    //         const response = await putEvaluationPdf(contratId, connectedUser.token)
-    //         if (response.ok) {
-    //             const data = await response.json();
-    //             console.log("data.pdf : " + data.pdf)
-    //             setEvaluation(data.pdf)
-    //             console.log("evaluation pdf : " + evaluation)
-    //             if(evaluation !== ""){
-    //                 setShowEvaluation(true);
-    //             }
-    //         } else {
-    //             generateAlert()
-    //         }
-    //     } catch (exception) {
-    //         generateAlert()
-    //     }
-    // }
-    const getEvaluation = useCallback(async (contratId: number): Promise<void> => {
+    async function getEvaluation(contratId: number): Promise<void> {
         try {
             const response = await putEvaluationPdf(contratId, connectedUser.token)
             if (response.ok) {
                 const data = await response.json();
                 console.log("data.pdf : " + data.pdf)
-                await new Promise((r) => setTimeout(r, 2000));
                 setEvaluation(data.pdf)
                 console.log("evaluation pdf : " + evaluation)
-                if (evaluation !== "") {
+                if(evaluation !== ""){
                     setShowEvaluation(true);
                 }
             } else {
@@ -67,7 +48,8 @@ const ConsulterEvaluation = ({connectedUser}:
         } catch (exception) {
             generateAlert()
         }
-    }, [evaluation, connectedUser])
+    }
+
     if (showEvaluation) {
         return (
             <Container>
