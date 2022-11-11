@@ -18,8 +18,7 @@ const OfferHistoryPage = ({connectedUser}:
     const [pdf, setpdf] = useState<Uint8Array>(new Uint8Array([]));
     const [showPDF, setShowPDF] = useState<boolean>(false);
     const [year, setYear] = useState<number>(nextYear);
-    const [evaluation, setEcaluation] = useState<Uint8Array>(new Uint8Array([]));
-    const [showEvaluation, setShowEvaluation] = useState<boolean>(false);
+
     const fetchValidatedOffersByYear = React.useCallback(async (year: string): Promise<void> => {
         try {
             const response: Response = await putValidatedOffersByYear(year, connectedUser.token);
@@ -52,10 +51,6 @@ const OfferHistoryPage = ({connectedUser}:
         } catch (exception) {
             generateAlert()
         }
-    }
-
-    async function getEvaluations(offerId: number): Promise<void> {
-        window.location.href = `/consulterEvaluation/${offerId}`
     }
 
     if (showPDF) {
@@ -104,7 +99,7 @@ const OfferHistoryPage = ({connectedUser}:
                         <tbody className="bg-light">
                         {offers.map((offer, index) => {
                             return (
-                                <tr key={index} onClick={() => getEvaluations(offer.id)}>
+                                <tr key={index}>
                                     <td>{offer.nomDeCompagnie}</td>
                                     <td>{offer.adresse}</td>
                                     <td>{offer.position}</td>

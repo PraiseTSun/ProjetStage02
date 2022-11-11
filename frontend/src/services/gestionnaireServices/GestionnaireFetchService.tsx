@@ -204,8 +204,8 @@ export const putEvaluationPdf = (contratId: string, token: string): Promise<Resp
     });
 }
 
-export const putGetContractsParOffreId = (offreId: string | undefined, token: string): Promise<Response> => {
-    return fetch("http://localhost:8080/contrats/" + offreId, {
+export const putGetContractsParOffreId = (studentId: string | undefined, session : string, token: string): Promise<Response> => {
+    return fetch(`http://localhost:8080/studentContracts/${studentId}_${session}`, {
         method: "PUT",
         headers: {
             'Accept': 'application/json',

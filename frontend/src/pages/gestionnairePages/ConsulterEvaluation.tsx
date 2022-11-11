@@ -16,23 +16,21 @@ const ConsulterEvaluation = ({connectedUser}:
     const [evaluation, setEvaluation] = useState<Uint8Array>(new Uint8Array([]));
     const [showEvaluation, setShowEvaluation] = useState<boolean>(false);
 
-    const {offreId} = useParams()
-
     useEffect(()=>{
-        const fetchContrat = async () => {
-            try {
-                const response = await putGetContractsParOffreId(offreId, connectedUser.token);
-                if (response.ok) {
-                    const data = await response.json();
-                    setContrats(data);
-                } else {
-                    generateAlert()
-                }
-            } catch {
-                generateAlert()
-            }
-        }
-        fetchContrat()
+       // const fetchContrat = async () => {
+        //     try {
+        //         const response = await putGetContractsParOffreId(connectedUser.token);
+        //         if (response.ok) {
+        //             const data = await response.json();
+        //             setContrats(data);
+        //         } else {
+        //             generateAlert()
+        //         }
+        //     } catch {
+        //         generateAlert()
+        //     }
+        // }
+        // fetchContrat()
     },[connectedUser])
     async function getEvaluation(contratId: string): Promise<void> {
         try {
@@ -80,8 +78,8 @@ const ConsulterEvaluation = ({connectedUser}:
                 <Col sm={2}></Col>
             </Row>
             <Row>
-                <Col className="bg-light p-0" style={{height: 400}}>
-                    <Table className="text-center" hover>
+                <Col className="bg-light p-0">
+                    <Table className="text-center text-light" hover>
                         <thead className="bg-primary">
                         <tr>
                             <th>Description du contrat</th>
