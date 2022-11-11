@@ -1,22 +1,23 @@
 import IUser from "../../models/IUser";
-import React, {useCallback, useEffect, useState} from "react";
-import {Button, Col, Container, Row, Table, ToggleButton, ToggleButtonGroup} from "react-bootstrap";
-import {Link, useParams} from "react-router-dom";
-import IContract from "../../models/IContract";
+import React, {useEffect, useState} from "react";
+import {Button, Col, Container, Row, Table} from "react-bootstrap";
+import {Link} from "react-router-dom";
 import {
-    putEvaluationPdf, putGetContracts, putGetContractsPourMillieuStage
+    putEvaluationPdf,
+    putGetContractsPourMillieuStage
 } from "../../services/gestionnaireServices/GestionnaireFetchService";
 import {generateAlert} from "../../services/universalServices/UniversalUtilService";
-import {Viewer} from "@react-pdf-viewer/core";
+import IContract from "../../models/IContract";
+import PdfComponent from "../../components/universalComponents/PdfComponent";
 
 const ConsulterEvaluation = ({connectedUser}:
                                  { connectedUser: IUser }): JSX.Element => {
-    const [contrats, setContrats] = useState<IContract[]>([])
-    const [evaluation, setEvaluation] = useState<any>("");
+    const [contrats, setContrats] = useState<any>([])
+    const [evaluation, setEvaluation] = useState<Uint8Array>(new Uint8Array([]));
     const [showEvaluation, setShowEvaluation] = useState<boolean>(false);
 
-    useEffect(()=>{
-       const fetchContrat = async () => {
+    useEffect(() => {
+        const fetchContrat = async () => {
             try {
                 const response = await putGetContractsPourMillieuStage(connectedUser.token);
                 if (response.ok) {
@@ -30,18 +31,16 @@ const ConsulterEvaluation = ({connectedUser}:
             }
         }
         fetchContrat()
-    },[connectedUser])
-    async function getEvaluation(contratId: number): Promise<void> {
+    }, [connectedUser])
+
+    const getEvaluation = async (contratId: number): Promise<void> => {
         try {
             const response = await putEvaluationPdf(contratId, connectedUser.token)
             if (response.ok) {
                 const data = await response.json();
-                console.log("data.pdf : " + data.pdf)
-                setEvaluation(data.pdf)
-                console.log("evaluation pdf : " + evaluation)
-                if(evaluation !== ""){
-                    setShowEvaluation(true);
-                }
+                var toUint8Array = require('base64-to-uint8array')
+                setEvaluation(toUint8Array(data.pdf))
+                setShowEvaluation(true);
             } else {
                 generateAlert()
             }
@@ -52,19 +51,7 @@ const ConsulterEvaluation = ({connectedUser}:
 
     if (showEvaluation) {
         return (
-            <Container>
-                <Container className="min-vh-100 bg-white p-0">
-                    <div className="bg-dark p-2">
-                        <Button className="Btn btn-primary" onClick={() => setShowEvaluation(false)}>
-                            Fermer
-                        </Button>
-
-                    </div>
-                    <div>
-                        <Viewer fileUrl={new Uint8Array(JSON.parse(evaluation))}/>
-                    </div>
-                </Container>
-            </Container>
+            <PdfComponent pdf={evaluation} setShowPdf={setShowEvaluation}/>
         );
     }
 
@@ -89,7 +76,7 @@ const ConsulterEvaluation = ({connectedUser}:
                         </tr>
                         </thead>
                         <tbody className="bg-light text-dark">
-                        {contrats.map((contrat, index) => {
+                        {contrats.map((contrat: IContract, index: number) => {
                             return (
                                 <tr key={index}>
                                     <td>{contrat.description}</td>
