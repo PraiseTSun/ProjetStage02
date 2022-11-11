@@ -20,6 +20,7 @@ import projet.projetstage02.dto.contracts.StageContractInDTO;
 import projet.projetstage02.dto.contracts.StageContractOutDTO;
 import projet.projetstage02.dto.cv.CvRefusalDTO;
 import projet.projetstage02.dto.cv.CvStatusDTO;
+import projet.projetstage02.dto.evaluations.Etudiant.EvaluationEtudiantInDTO;
 import projet.projetstage02.dto.evaluations.MillieuStage.MillieuStageEvaluationInDTO;
 import projet.projetstage02.dto.evaluations.MillieuStage.MillieuStageEvaluationInfoDTO;
 import projet.projetstage02.dto.interview.CreateInterviewDTO;
@@ -1034,6 +1035,21 @@ public class RootController {
         } catch (NonExistentEntityException e) {
             logger.log(Level.INFO, "Put/getStudentInterviews/{studentId} return 404");
             return ResponseEntity.status(NOT_FOUND).build();
+        }
+    }
+
+    @PutMapping("/evaluateStudent/{token}")
+    public ResponseEntity<?> evaluateStudent(@PathVariable String token,
+                                             @RequestBody @Valid EvaluationEtudiantInDTO studentEvaluationInDTO) {
+        try {
+            logger.log(Level.INFO, "put /evaluateStudent entered");
+            authService.getToken(token, COMPANY);
+            gestionnaireService.evaluateStudent(studentEvaluationInDTO);
+            logger.log(Level.INFO, "PutMapping: /evaluateStudent sent 201 response");
+            return ResponseEntity.status(CREATED).build();
+        } catch (InvalidTokenException e) {
+            logger.log(Level.INFO, "PutMapping: /evaluateStudent sent 403 response");
+            return ResponseEntity.status(FORBIDDEN).build();
         }
     }
 }
