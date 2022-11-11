@@ -17,27 +17,27 @@ const ConsulterEvaluation = ({connectedUser}:
     const [showEvaluation, setShowEvaluation] = useState<boolean>(false);
 
     useEffect(()=>{
-       // const fetchContrat = async () => {
-        //     try {
-        //         const response = await putGetContractsParOffreId(connectedUser.token);
-        //         if (response.ok) {
-        //             const data = await response.json();
-        //             setContrats(data);
-        //         } else {
-        //             generateAlert()
-        //         }
-        //     } catch {
-        //         generateAlert()
-        //     }
-        // }
-        // fetchContrat()
+       const fetchContrat = async () => {
+            try {
+                const response = await putGetContractsParOffreId(connectedUser.token);
+                if (response.ok) {
+                    const data = await response.json();
+                    setContrats(data);
+                } else {
+                    generateAlert()
+                }
+            } catch {
+                generateAlert()
+            }
+        }
+        fetchContrat()
     },[connectedUser])
-    async function getEvaluation(contratId: string): Promise<void> {
+    async function getEvaluation(contratId: number): Promise<void> {
         try {
             const response = await putEvaluationPdf(contratId, connectedUser.token)
             if (response.ok) {
                 const data = await response.json();
-                setEvaluation(data)
+                setEvaluation(data.pdf)
                 setShowEvaluation(true);
             } else {
                 generateAlert()
@@ -52,7 +52,6 @@ const ConsulterEvaluation = ({connectedUser}:
             <Container>
                 <Container className="min-vh-100 bg-white p-0">
                     <div className="bg-dark p-2">
-
                         <Button className="Btn btn-primary" onClick={() => setShowEvaluation(false)}>
                             Fermer
                         </Button>
@@ -92,7 +91,7 @@ const ConsulterEvaluation = ({connectedUser}:
                                 <tr key={index}>
                                     <td>{contrat.description}</td>
                                     <td><Button className="btn btn-warning"
-                                                onClick={async () => await getEvaluation(contrat.contractId)}>pdf</Button>
+                                                onClick={async () => await getEvaluation(Number(contrat.contractId))}>pdf</Button>
                                     </td>
                                 </tr>
                             );

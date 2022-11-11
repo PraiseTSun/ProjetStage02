@@ -193,8 +193,8 @@ export const postCreateGestionnaire = (firstName: string,
     });
 }
 
-export const putEvaluationPdf = (contratId: string, token: string): Promise<Response> => {
-    return fetch("http://localhost:8080/consulterEvaluation/" + contratId.toString(), {
+export const putEvaluationPdf = (contratId: number, token: string): Promise<Response> => {
+    return fetch("http://localhost:8080/getEvaluationPDF/millieuStage/" + contratId, {
         method: "PUT",
         headers: {
             'Accept': 'application/json',
