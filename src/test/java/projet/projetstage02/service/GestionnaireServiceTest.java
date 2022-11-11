@@ -50,7 +50,7 @@ public class GestionnaireServiceTest {
     @Mock
     private ApplicationAcceptationRepository applicationAcceptationRepository;
     @Mock
-    private EvaluationRepository evaluationRepository;
+    private EvaluationMillieuStageRepository evaluationMillieuStageRepository;
 
     private Gestionnaire gestionnaireTest;
     private Company companyTest;
@@ -145,8 +145,6 @@ public class GestionnaireServiceTest {
                 .tempsReelConsacre("Plutôt en accord")
                 .signature(byteToString(new byte[]{0, 1, 2, 3, 4, 5, 6, 7, 8, 9}))
                 .build();
-
-
     }
 
     @Test
@@ -951,7 +949,7 @@ public class GestionnaireServiceTest {
     @Test
     void testEvaluateStageHappyDay() {
         gestionnaireService.evaluateStage(evalInDTO);
-        verify(evaluationRepository, times(1)).save(any());
+        verify(evaluationMillieuStageRepository, times(1)).save(any());
     }
 
     @Test

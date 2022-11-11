@@ -9,10 +9,13 @@ import {Link} from "react-router-dom";
 declare type FormControlElement = HTMLInputElement | HTMLTextAreaElement;
 
 const OffreSoumissionPage = ({user}: { user: IUser }): JSX.Element => {
+    const CURRENT_DATE = new Date().toISOString().split("T")[0];
     const [waiting, setWaiting] = useState(false);
     const [validated, setValidated] = useState(false);
     const [companyName, setCompanyName] = useState("")
     const [department, setDepartment] = useState("")
+    const [dateStageDebut, setDateStageDebut] = useState("")
+    const [dateStageFin, setDateStageFin] = useState("")
     const [poste, setPoste] = useState("")
     const [hoursPerWeek, setHoursPerWeek] = useState(40)
     const [salary, setSalary] = useState(20)
@@ -22,9 +25,17 @@ const OffreSoumissionPage = ({user}: { user: IUser }): JSX.Element => {
     const onSubmit = async (event: React.SyntheticEvent): Promise<void> => {
         const form: any = event.currentTarget;
         event.preventDefault();
+
+        if (dateStageFin < dateStageDebut) {
+            alert("La date de fin doit être après la date de début");
+            return;
+        }
+
+
         if (form.checkValidity()) {
             setWaiting(true);
 
+            //TODO: This does not work
             const response = await postCreateOffre({
                 id: "",
                 adresse: address,
@@ -35,7 +46,9 @@ const OffreSoumissionPage = ({user}: { user: IUser }): JSX.Element => {
                 heureParSemaine: hoursPerWeek.toString(),
                 nomDeCompagnie: companyName,
                 token: user.token,
-                companyId: user.id
+                companyId: user.id,
+                dateStageDebut: dateStageDebut,
+                dateStageFin: dateStageFin,
             })
 
             if (response.ok) {
@@ -151,6 +164,18 @@ const OffreSoumissionPage = ({user}: { user: IUser }): JSX.Element => {
                                           onChange={field => setAddress(field.target.value)}></Form.Control>
                             <Form.Control.Feedback type="invalid">Champ requis</Form.Control.Feedback>
                         </Form.Group>
+                        <Row>
+                            <Form.Group>
+                                <Form.Label className="fw-bold h5">Date de début</Form.Label>
+                                <Form.Control type="date" required min={CURRENT_DATE}
+                                              onChange={event => setDateStageDebut(event.target.value)}/>
+                            </Form.Group>
+                            <Form.Group>
+                                <Form.Label className="fw-bold h5">Date de fin</Form.Label>
+                                <Form.Control type="date" required min={CURRENT_DATE}
+                                              onChange={event => setDateStageFin(event.target.value)}/>
+                            </Form.Group>
+                        </Row>
                         <Form.Group>
                             <Form.Label className="fw-bold h5">Document PDF</Form.Label>
                             <input data-testid="pdfFormulaireSoumission" id={"file"} className="form-control"

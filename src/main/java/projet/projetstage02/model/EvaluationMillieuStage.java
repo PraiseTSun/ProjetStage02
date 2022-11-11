@@ -7,7 +7,9 @@ import lombok.NoArgsConstructor;
 import projet.projetstage02.dto.evaluations.MillieuStage.MillieuStageEvaluationInDTO;
 
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.Lob;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Pattern;
@@ -17,9 +19,9 @@ import javax.validation.constraints.Pattern;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class Evaluation {
+public class EvaluationMillieuStage {
     @Id
-    @Min(1)
+    @GeneratedValue
     private long id;
     @Min(1)
     private long contractId;
@@ -59,11 +61,12 @@ public class Evaluation {
     @NotBlank
     private String commentaires;
     @NotBlank
+    @Lob
     private String signature;
     @NotBlank
     private String dateSignature;
 
-    public Evaluation(MillieuStageEvaluationInDTO millieuStageEvaluationInDTO) {
+    public EvaluationMillieuStage(MillieuStageEvaluationInDTO millieuStageEvaluationInDTO) {
         contractId = millieuStageEvaluationInDTO.getContractId();
         tachesAnnonces = millieuStageEvaluationInDTO.getTachesAnnonces();
         integration = millieuStageEvaluationInDTO.getIntegration();
