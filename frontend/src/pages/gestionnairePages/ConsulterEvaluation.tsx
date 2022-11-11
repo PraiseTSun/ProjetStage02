@@ -1,11 +1,10 @@
 import IUser from "../../models/IUser";
-import React, {useEffect, useState} from "react";
+import React, {useCallback, useEffect, useState} from "react";
 import {Button, Col, Container, Row, Table, ToggleButton, ToggleButtonGroup} from "react-bootstrap";
 import {Link, useParams} from "react-router-dom";
 import IContract from "../../models/IContract";
 import {
-    putEvaluationPdf,
-    putGetContractsParOffreId
+    putEvaluationPdf, putGetContracts, putGetContractsPourMillieuStage
 } from "../../services/gestionnaireServices/GestionnaireFetchService";
 import {generateAlert} from "../../services/universalServices/UniversalUtilService";
 import {Viewer} from "@react-pdf-viewer/core";
@@ -13,13 +12,13 @@ import {Viewer} from "@react-pdf-viewer/core";
 const ConsulterEvaluation = ({connectedUser}:
                                  { connectedUser: IUser }): JSX.Element => {
     const [contrats, setContrats] = useState<IContract[]>([])
-    const [evaluation, setEvaluation] = useState<Uint8Array>(new Uint8Array([]));
+    const [evaluation, setEvaluation] = useState<string>("");
     const [showEvaluation, setShowEvaluation] = useState<boolean>(false);
 
     useEffect(()=>{
        const fetchContrat = async () => {
             try {
-                const response = await putGetContractsParOffreId(connectedUser.token);
+                const response = await putGetContractsPourMillieuStage(connectedUser.token);
                 if (response.ok) {
                     const data = await response.json();
                     setContrats(data);
@@ -32,21 +31,43 @@ const ConsulterEvaluation = ({connectedUser}:
         }
         fetchContrat()
     },[connectedUser])
-    async function getEvaluation(contratId: number): Promise<void> {
+    // async function getEvaluation(contratId: number): Promise<void> {
+    //     try {
+    //         const response = await putEvaluationPdf(contratId, connectedUser.token)
+    //         if (response.ok) {
+    //             const data = await response.json();
+    //             console.log("data.pdf : " + data.pdf)
+    //             setEvaluation(data.pdf)
+    //             console.log("evaluation pdf : " + evaluation)
+    //             if(evaluation !== ""){
+    //                 setShowEvaluation(true);
+    //             }
+    //         } else {
+    //             generateAlert()
+    //         }
+    //     } catch (exception) {
+    //         generateAlert()
+    //     }
+    // }
+    const getEvaluation = useCallback(async (contratId: number): Promise<void> => {
         try {
             const response = await putEvaluationPdf(contratId, connectedUser.token)
             if (response.ok) {
                 const data = await response.json();
+                console.log("data.pdf : " + data.pdf)
+                await new Promise((r) => setTimeout(r, 2000));
                 setEvaluation(data.pdf)
-                setShowEvaluation(true);
+                console.log("evaluation pdf : " + evaluation)
+                if (evaluation !== "") {
+                    setShowEvaluation(true);
+                }
             } else {
                 generateAlert()
             }
         } catch (exception) {
             generateAlert()
         }
-    }
-
+    }, [evaluation, connectedUser])
     if (showEvaluation) {
         return (
             <Container>
@@ -58,7 +79,7 @@ const ConsulterEvaluation = ({connectedUser}:
 
                     </div>
                     <div>
-                        <Viewer fileUrl={evaluation}/>
+                        <Viewer fileUrl={new Uint8Array(JSON.parse(evaluation))}/>
                     </div>
                 </Container>
             </Container>
@@ -85,7 +106,7 @@ const ConsulterEvaluation = ({connectedUser}:
                             <th>Évaluation (pdf)</th>
                         </tr>
                         </thead>
-                        <tbody className="bg-light">
+                        <tbody className="bg-light text-dark">
                         {contrats.map((contrat, index) => {
                             return (
                                 <tr key={index}>
