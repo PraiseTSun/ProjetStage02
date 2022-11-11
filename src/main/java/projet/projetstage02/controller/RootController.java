@@ -942,12 +942,12 @@ public class RootController {
         }
     }
 
-    @PutMapping("/getContracts")
+    @PutMapping("/getContractsToEvaluate/millieuStage")
     public ResponseEntity<ContractsDTO> getAllContracts(@RequestBody TokenDTO tokenId) {
         logger.log(Level.INFO, "Put /getContracts");
         try {
             authService.getToken(tokenId.getToken(), GESTIONNAIRE);
-            ContractsDTO dto = gestionnaireService.getContracts();
+            ContractsDTO dto = gestionnaireService.getContractsToEvaluateMillieuStage();
             logger.log(Level.INFO, "Put /getContracts sent request 200 : " + dto);
             return ResponseEntity.ok(dto);
         } catch (InvalidTokenException e) {
