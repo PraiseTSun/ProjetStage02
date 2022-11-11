@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import javax.persistence.Lob;
 import javax.validation.constraints.NotBlank;
 
 @Entity
@@ -19,5 +20,6 @@ public class EvaluationPDF {
     private long contractId;
 
     @NotBlank
+    @Lob
     private String pdf;
 }
