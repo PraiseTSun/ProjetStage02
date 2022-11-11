@@ -36,9 +36,8 @@ public class GestionnaireService {
     private final OffreRepository offreRepository;
     private final StageContractRepository stageContractRepository;
     private final ApplicationAcceptationRepository applicationAcceptationRepository;
-
-    private final ApplicationRepository applicationRepository;
     private final EvaluationMillieuStageRepository evaluationMillieuStageRepository;
+    private final EvaluationMillieuStagePDFRepository evaluationMillieuStagePDFRepository;
 
     public long saveGestionnaire(String firstname, String lastname, String email, String password) {
         GestionnaireDTO dto = GestionnaireDTO.builder()
@@ -339,12 +338,6 @@ public class GestionnaireService {
                             .studentId(student.getId())
                             .studentFullName(student.getFirstName() + " " + student.getLastName())
                             .build();
-
-                    stageContractOutDTO.setEmployFullName(company.getFirstName() + " " + company.getLastName());
-                    stageContractOutDTO.setStudentFullName(student.getFirstName() + " " + student.getLastName());
-                    stageContractOutDTO.setPosition(offre.getPosition());
-                    stageContractOutDTO.setCompanyName(company.getCompanyName());
-
                     contractsDTO.add(stageContractOutDTO);
                 });
         return contractsDTO;
@@ -379,23 +372,57 @@ public class GestionnaireService {
         return evaluationMillieuStageRepository.save(new EvaluationMillieuStage(millieuStageEvaluationInDTO)).getId();
     }
 
-    public ContractsDTO getContracts() {
+    public ContractsDTO getContractsToEvaluateMillieuStage() {
         List<StageContractOutDTO> contracts = new ArrayList<>();
-        stageContractRepository.findAll().forEach(stageContract -> contracts.add(new StageContractOutDTO(stageContract)));
+        stageContractRepository.findAll().stream().filter(
+                stageContract -> evaluationMillieuStageRepository.findByContractId(stageContract.getId()).isEmpty()
+        ).forEach(stageContract -> {
+            Optional<Company> companyOptional = companyRepository.findById(stageContract.getCompanyId());
+            Optional<Student> studentOptional = studentRepository.findById(stageContract.getStudentId());
+            Optional<Offre> offreOptional = offreRepository.findById(stageContract.getOfferId());
+            StageContractOutDTO stageContractOutDTO = new StageContractOutDTO(stageContract);
+            if (offreOptional.isEmpty()) {
+                return;
+            }
+
+            if (companyOptional.isEmpty()) {
+                return;
+            }
+
+
+            if (studentOptional.isEmpty()) {
+                return;
+            }
+
+            Company company = companyOptional.get();
+            stageContractOutDTO.setEmployFullName(company.getFirstName() + " " + company.getLastName());
+            stageContractOutDTO.setCompanyName(company.getCompanyName());
+
+            Offre offre = offreOptional.get();
+            stageContractOutDTO.setPosition(offre.getPosition());
+
+            Student student = studentOptional.get();
+            stageContractOutDTO.setStudentFullName(student.getFirstName() + " " + student.getLastName());
+
+            contracts.add(stageContractOutDTO);
+        });
         return ContractsDTO.builder().contracts(contracts).build();
     }
 
-    public String createEvaluationMillieuStagePDF(long evaluationId) throws NonExistentEntityException, NonExistentOfferExeption, DocumentException {
-        Optional<EvaluationMillieuStage> optional = evaluationMillieuStageRepository.findById(evaluationId);
+    public void createEvaluationMillieuStagePDF(long contractId) throws NonExistentEntityException, NonExistentOfferExeption, DocumentException {
+        Optional<EvaluationMillieuStage> optional = evaluationMillieuStageRepository.findByContractId(contractId);
         if (optional.isEmpty()) {
             throw new NonExistentEntityException();
         }
         EvaluationMillieuStage evaluationMillieuStage = optional.get();
         MillieuStageEvaluationInfoDTO millieuStageEvaluationInfoDTO =
-                getMillieuEvaluationInfoForContract(evaluationMillieuStage.getContractId());
+                getMillieuEvaluationInfoForContract(contractId);
 
-        return PDFCreationUtil.createPDFFromMap("evaluation_millieu_stage",
-                evaluationMillieuStageToMap(millieuStageEvaluationInfoDTO, evaluationMillieuStage));
+        evaluationMillieuStagePDFRepository.save(EvaluationPDF.builder()
+                .pdf(PDFCreationUtil.createPDFFromMap("Évaluation du millieu stage",
+                        evaluationMillieuStageToMap(millieuStageEvaluationInfoDTO, evaluationMillieuStage)))
+                .contractId(contractId)
+                .build());
 
     }
 
@@ -475,5 +502,12 @@ public class GestionnaireService {
         Map<String, String> map = new LinkedHashMap<>();
         map.put("signature", bytes);
         return map;
+    }
+
+    public PdfOutDTO getEvaluationMillieuStagePDF(long id) throws NonExistentEntityException {
+        Optional<EvaluationPDF> optional = evaluationMillieuStagePDFRepository.findById(id);
+        if (optional.isEmpty()) throw new NonExistentEntityException();
+        EvaluationPDF evaluationPDF = optional.get();
+        return new PdfOutDTO(evaluationPDF.getContractId(), evaluationPDF.getPdf());
     }
 }

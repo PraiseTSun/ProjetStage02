@@ -26,22 +26,22 @@ public class EvaluationMillieuStage {
     @Min(1)
     private long contractId;
     @NotBlank
-    @Pattern(regexp = "Totalement en accord|Plutôt en accord|Plutôt en désaccord|Totalement en désaccord|Impossible de se prononcer")
+    @Pattern(regexp = "totalementEnAccord|plutotEnAccord|plutotEnDesaccord|totalementEnDesaccord|impossibleDeSePrononcer")
     private String tachesAnnonces;
     @NotBlank
-    @Pattern(regexp = "Totalement en accord|Plutôt en accord|Plutôt en désaccord|Totalement en désaccord|Impossible de se prononcer")
+    @Pattern(regexp = "totalementEnAccord|plutotEnAccord|plutotEnDesaccord|totalementEnDesaccord|impossibleDeSePrononcer")
     private String integration;
     @NotBlank
-    @Pattern(regexp = "Totalement en accord|Plutôt en accord|Plutôt en désaccord|Totalement en désaccord|Impossible de se prononcer")
+    @Pattern(regexp = "totalementEnAccord|plutotEnAccord|plutotEnDesaccord|totalementEnDesaccord|impossibleDeSePrononcer")
     private String tempsReelConsacre;
     @NotBlank
-    @Pattern(regexp = "Totalement en accord|Plutôt en accord|Plutôt en désaccord|Totalement en désaccord|Impossible de se prononcer")
+    @Pattern(regexp = "totalementEnAccord|plutotEnAccord|plutotEnDesaccord|totalementEnDesaccord|impossibleDeSePrononcer")
     private String environementTravail;
     @NotBlank
-    @Pattern(regexp = "Totalement en accord|Plutôt en accord|Plutôt en désaccord|Totalement en désaccord|Impossible de se prononcer")
+    @Pattern(regexp = "totalementEnAccord|plutotEnAccord|plutotEnDesaccord|totalementEnDesaccord|impossibleDeSePrononcer")
     private String climatTravail;
     @NotBlank
-    @Pattern(regexp = "Totalement en accord|Plutôt en accord|Plutôt en désaccord|Totalement en désaccord|Impossible de se prononcer")
+    @Pattern(regexp = "totalementEnAccord|plutotEnAccord|plutotEnDesaccord|totalementEnDesaccord|impossibleDeSePrononcer")
     private String milieuDeStage;
     @Min(1)
     private long heureTotalPremierMois;
@@ -50,13 +50,13 @@ public class EvaluationMillieuStage {
     @Min(1)
     private long heureTotalTroisiemeMois;
     @NotBlank
-    @Pattern(regexp = "Totalement en accord|Plutôt en accord|Plutôt en désaccord|Totalement en désaccord|Impossible de se prononcer")
+    @Pattern(regexp = "totalementEnAccord|plutotEnAccord|plutotEnDesaccord|totalementEnDesaccord|impossibleDeSePrononcer")
     private String communicationAvecSuperviser;
     @NotBlank
-    @Pattern(regexp = "Totalement en accord|Plutôt en accord|Plutôt en désaccord|Totalement en désaccord|Impossible de se prononcer")
+    @Pattern(regexp = "totalementEnAccord|plutotEnAccord|plutotEnDesaccord|totalementEnDesaccord|impossibleDeSePrononcer")
     private String equipementFourni;
     @NotBlank
-    @Pattern(regexp = "Totalement en accord|Plutôt en accord|Plutôt en désaccord|Totalement en désaccord|Impossible de se prononcer")
+    @Pattern(regexp = "totalementEnAccord|plutotEnAccord|plutotEnDesaccord|totalementEnDesaccord|impossibleDeSePrononcer")
     private String volumeDeTravail;
     @NotBlank
     private String commentaires;

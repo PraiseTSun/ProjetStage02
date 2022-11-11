@@ -120,6 +120,7 @@ public class RootControllerTest {
     CreateInterviewDTO createInterviewDTO;
     InterviewOutDTO interviewOutDTO;
     InterviewSelectInDTO interviewSelectInDTO;
+
     // https://thepracticaldeveloper.com/guide-spring-boot-controller-tests/
     @BeforeEach
     void setup() {
@@ -292,7 +293,7 @@ public class RootControllerTest {
                 .companyId(duffBeer.getId())
                 .offerId(duffOffreOut.getId())
                 .studentId(bartOut.getId())
-                .companyDateOffers(new ArrayList<>(){{
+                .companyDateOffers(new ArrayList<>() {{
                     add("2022-11-28T12:30:00");
                     add("2022-11-29T12:30:00");
                     add("2022-11-30T12:30:00");
@@ -304,7 +305,7 @@ public class RootControllerTest {
                 .companyId(duffBeer.getId())
                 .offerId(duffOffreOut.getId())
                 .studentId(bartOut.getId())
-                .companyDateOffers(new ArrayList<>(){{
+                .companyDateOffers(new ArrayList<>() {{
                     add("2022-11-28T12:30:00");
                     add("2022-11-29T12:30:00");
                     add("2022-11-30T12:30:00");
@@ -1760,7 +1761,7 @@ public class RootControllerTest {
 
     @Test
     void testEvaluateStageHappyDay() throws Exception {
-        doNothing().when(gestionnaireService).evaluateStage(any());
+        when(gestionnaireService.evaluateStage(any())).thenReturn(1L);
         mockMvc.perform(post("/evaluateStage/{token}", token.getToken())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(jsonEvalInDTO.write(evalInDTO).getJson()))
@@ -1769,9 +1770,9 @@ public class RootControllerTest {
 
     @Test
     void testGetAllContractsHappyDay() throws Exception {
-        when(gestionnaireService.getContracts()).thenReturn(contractsDTO);
+        when(gestionnaireService.getContractsToEvaluateMillieuStage()).thenReturn(contractsDTO);
 
-        mockMvc.perform(put("/getContracts")
+        mockMvc.perform(put("/getContractsToEvaluate/millieuStage")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(jsonTokenDTO.write(token).getJson()))
                 .andExpect(status().isOk())
@@ -1781,9 +1782,9 @@ public class RootControllerTest {
     @Test
     void testGetAllContractsEmpty() throws Exception {
         contractsDTO.setContracts(new ArrayList<>());
-        when(gestionnaireService.getContracts()).thenReturn(contractsDTO);
+        when(gestionnaireService.getContractsToEvaluateMillieuStage()).thenReturn(contractsDTO);
 
-        mockMvc.perform(put("/getContracts")
+        mockMvc.perform(put("/getContractsToEvaluate/millieuStage")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(jsonTokenDTO.write(token).getJson()))
                 .andExpect(status().isOk())
@@ -1822,7 +1823,7 @@ public class RootControllerTest {
     }
 
     @Test
-    void testCreateInterviewHappyDay() throws Exception{
+    void testCreateInterviewHappyDay() throws Exception {
         when(companyService.createInterview(any())).thenReturn(interviewOutDTO);
 
         mockMvc.perform(post("/createInterview")
@@ -1875,7 +1876,7 @@ public class RootControllerTest {
 
     @Test
     void testGetCompanyInterviewsHappyDay() throws Exception {
-        when(companyService.getInterviews(anyLong())).thenReturn(new ArrayList<>(){{
+        when(companyService.getInterviews(anyLong())).thenReturn(new ArrayList<>() {{
             add(new InterviewOutDTO());
             add(new InterviewOutDTO());
             add(new InterviewOutDTO());
@@ -1909,7 +1910,7 @@ public class RootControllerTest {
     }
 
     @Test
-    void testStudentSelectDateHappyDay() throws Exception{
+    void testStudentSelectDateHappyDay() throws Exception {
         when(studentService.selectInterviewTime(any())).thenReturn(interviewOutDTO);
 
         mockMvc.perform(put("/studentSelectDate")
@@ -1919,7 +1920,7 @@ public class RootControllerTest {
     }
 
     @Test
-    void testStudentSelectDateNotFound() throws Exception{
+    void testStudentSelectDateNotFound() throws Exception {
         when(studentService.selectInterviewTime(any())).thenThrow(new NonExistentEntityException());
 
         mockMvc.perform(put("/studentSelectDate")
@@ -1929,7 +1930,7 @@ public class RootControllerTest {
     }
 
     @Test
-    void testStudentSelectDateForbidden() throws Exception{
+    void testStudentSelectDateForbidden() throws Exception {
         when(studentService.selectInterviewTime(any())).thenThrow(new InvalidOwnershipException());
 
         mockMvc.perform(put("/studentSelectDate")
@@ -1939,7 +1940,7 @@ public class RootControllerTest {
     }
 
     @Test
-    void testStudentSelectDateBadRequest() throws Exception{
+    void testStudentSelectDateBadRequest() throws Exception {
         when(studentService.selectInterviewTime(any())).thenThrow(new InvalidDateFormatException());
 
         mockMvc.perform(put("/studentSelectDate")
@@ -1949,7 +1950,7 @@ public class RootControllerTest {
     }
 
     @Test
-    void testStudentSelectDateInvalidToken() throws Exception{
+    void testStudentSelectDateInvalidToken() throws Exception {
         when(authService.getToken(any(), any())).thenThrow(new InvalidTokenException());
 
         mockMvc.perform(put("/studentSelectDate")
@@ -1959,8 +1960,8 @@ public class RootControllerTest {
     }
 
     @Test
-    void testGetStudentInterviewsHappyDay() throws Exception{
-        when(studentService.getInterviews(anyLong())).thenReturn(new ArrayList<>(){{
+    void testGetStudentInterviewsHappyDay() throws Exception {
+        when(studentService.getInterviews(anyLong())).thenReturn(new ArrayList<>() {{
             add(new InterviewOutDTO());
             add(new InterviewOutDTO());
             add(new InterviewOutDTO());
@@ -1974,7 +1975,7 @@ public class RootControllerTest {
     }
 
     @Test
-    void testGetStudentInterviewsNotFound() throws Exception{
+    void testGetStudentInterviewsNotFound() throws Exception {
         when(studentService.getInterviews(anyLong())).thenThrow(new NonExistentEntityException());
 
         mockMvc.perform(put("/getStudentInterviews/{studentId}", 1)
@@ -1984,7 +1985,7 @@ public class RootControllerTest {
     }
 
     @Test
-    void testGetStudentInterviewsInvalidToken() throws Exception{
+    void testGetStudentInterviewsInvalidToken() throws Exception {
         when(authService.getToken(anyString(), any())).thenThrow(new InvalidTokenException());
 
         mockMvc.perform(put("/getStudentInterviews/{studentId}", 1)
