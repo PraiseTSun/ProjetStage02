@@ -564,7 +564,6 @@ public class GestionnaireService {
         }
         Optional<StageContract> opt = stageContractRepository.findById(contractId);
         if (opt.isEmpty()) throw new NonExistentEntityException();
-        StageContract stageContract = opt.get();
         EvaluationEtudiant evaluationMillieuStage = optional.get();
         evaluationMillieuStagePDFRepository.save(EvaluationPDF.builder()
                 .pdf(PDFCreationUtil.createPDFFromMap("Évaluation de l'étudiant",

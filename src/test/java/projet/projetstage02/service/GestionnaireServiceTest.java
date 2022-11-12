@@ -30,7 +30,6 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.*;
 import static projet.projetstage02.model.AbstractUser.Department.Informatique;
-import static projet.projetstage02.utils.ByteConverter.byteToString;
 import static projet.projetstage02.utils.TimeUtil.currentTimestamp;
 
 @ExtendWith(MockitoExtension.class)
@@ -151,7 +150,7 @@ public class GestionnaireServiceTest {
                 .heureTotalPremierMois(23)
                 .heureTotalTroisiemeMois(23)
                 .integration("plutotEnAccord")
-                .milieuDeStage("plutotEnAccord")
+                .milieuDeStage("plutotEnDesccord")
                 .tachesAnnonces("plutotEnAccord")
                 .volumeDeTravail("plutotEnAccord")
                 .tempsReelConsacre("plutotEnAccord")
@@ -176,9 +175,9 @@ public class GestionnaireServiceTest {
                 .discuteAvecStagiaire("oui")
                 .doubleCheckTravail("plutotEnAccord")
                 .etablirPriorites("plutotEnAccord")
-                .exprimeIdees("plutotEnAccord")
-                .ecouteActiveComprendrePDVautre("plutotEnAccord")
-                .formationTechniqueSuffisante("plutotEnAccord")
+                .exprimeIdees("impossibleDeSePronnoncer")
+                .ecouteActiveComprendrePDVautre("totalementEnDesaccord")
+                .formationTechniqueSuffisante("totalementEnAccord")
                 .habiletesDemontres("repondentAttentes")
                 .heuresEncadrement(145)
                 .initiative("plutotEnAccord")
@@ -191,7 +190,7 @@ public class GestionnaireServiceTest {
                 .rythmeSoutenu("plutotEnAccord")
                 .responsableAutonome("plutotEnAccord")
                 .respecteMandatsDemandes("plutotEnAccord")
-                .signature(byteToString(new byte[]{0, 1, 2, 3, 4, 5, 6, 7, 8, 9}))
+                .signature(signature)
                 .travailEnEquipe("plutotEnAccord")
                 .travailSecuritaire("plutotEnAccord")
                 .travailEfficace("plutotEnAccord")
@@ -1173,14 +1172,147 @@ public class GestionnaireServiceTest {
 
     @Test
     void testGetEvaluatedStudentsContractsHappyDay() {
-        when(stageContractRepository.findById(anyLong()))
-                .thenReturn(Optional.of(new EvaluationEtudiant(evaluationetu)), Optional.empty());
-        when(evaluationEtudiantRepository.findAll()).thenReturn(List.of(stageContract, stageContract));
+        when(evaluationEtudiantRepository.findByContractId(anyLong()))
+                .thenReturn(Optional.of(new EvaluationEtudiant(evaluationEtudiantInDTO)), Optional.empty());
+        when(stageContractRepository.findAll())
+                .thenReturn(List.of(stageContract, stageContract));
 
-        List<StageContractOutDTO> evaluatedContractsMillieuStage = gestionnaireService.getEvaluatedStudentsContracts();
+        List<StageContractOutDTO> evaluatedContractsMillieuStage = gestionnaireService.getEvaluatedContractsEtudiants();
 
-        verify(evaluationStageRepository, times(2)).findByContractId(anyLong());
+        verify(evaluationEtudiantRepository, times(2)).findByContractId(anyLong());
         verify(stageContractRepository, times(1)).findAll();
         assertThat(evaluatedContractsMillieuStage).hasSize(1);
     }
+
+    @Test
+    void testGetEvaluatedStudentsContractsEmpty() {
+        when(evaluationEtudiantRepository.findByContractId(anyLong()))
+                .thenReturn(Optional.empty());
+        when(stageContractRepository.findAll())
+                .thenReturn(List.of(stageContract, stageContract));
+
+        List<StageContractOutDTO> evaluatedContractsMillieuStage = gestionnaireService.getEvaluatedContractsEtudiants();
+
+        verify(evaluationEtudiantRepository, times(2)).findByContractId(anyLong());
+        verify(stageContractRepository, times(1)).findAll();
+        assertThat(evaluatedContractsMillieuStage).hasSize(0);
+    }
+
+    @Test
+    void testGetEvaluationPDFEtudiantHappyDay() throws NonExistentEntityException {
+        when(evaluationEtudiantPDFRepository.findById(anyLong())).thenReturn(Optional.of(EvaluationPDF.builder().pdf("TestPDF").build()));
+        gestionnaireService.getEvaluationPDFEtudiant(1L);
+
+        verify(evaluationEtudiantPDFRepository, times(1)).findById(anyLong());
+    }
+
+    @Test
+    void testGetEvaluationPDFEtudiantNonExistentException() {
+        when(evaluationEtudiantPDFRepository.findById(anyLong())).thenReturn(Optional.empty());
+        try {
+            gestionnaireService.getEvaluationPDFEtudiant(1L);
+        } catch (NonExistentEntityException e) {
+            return;
+        } catch (Exception ignored) {
+        }
+        fail("NonExistentEntityException not thrown");
+    }
+
+    @Test
+    void testCreateEvaluationEtudiantPDFHappyDay() throws Exception {
+        when(evaluationEtudiantRepository.findByContractId(anyLong()))
+                .thenReturn(Optional.of(new EvaluationEtudiant(evaluationEtudiantInDTO)));
+        when(stageContractRepository.findById(anyLong())).thenReturn(Optional.of(stageContract));
+        when(offreRepository.findById(anyLong())).thenReturn(Optional.of(offerTest));
+        when(studentRepository.findById(anyLong())).thenReturn(Optional.of(studentTest));
+        when(companyRepository.findById(anyLong())).thenReturn(Optional.of(companyTest));
+        gestionnaireService.createEvaluationEtudiantPDF(1L);
+
+        verify(evaluationEtudiantRepository, times(1)).findByContractId(anyLong());
+        verify(stageContractRepository, times(2)).findById(anyLong());
+        verify(offreRepository, times(1)).findById(anyLong());
+        verify(studentRepository, times(1)).findById(anyLong());
+        verify(companyRepository, times(1)).findById(anyLong());
+    }
+
+    @Test
+    void testCreateEvaluationEtudiantNonExistentException() {
+        when(evaluationEtudiantRepository.findByContractId(anyLong()))
+                .thenReturn(Optional.empty());
+        try {
+            gestionnaireService.createEvaluationEtudiantPDF(1L);
+        } catch (NonExistentEntityException e) {
+            return;
+        } catch (Exception ignored) {
+        }
+        fail("NonExistentEntityException not thrown");
+    }
+
+    @Test
+    void testCreateEvaluationEtudiantPDFNonExistentOfferException() {
+        when(evaluationEtudiantRepository.findByContractId(anyLong()))
+                .thenReturn(Optional.of(new EvaluationEtudiant(evaluationEtudiantInDTO)));
+        when(stageContractRepository.findById(anyLong())).thenReturn(Optional.of(stageContract));
+        when(offreRepository.findById(anyLong())).thenReturn(Optional.empty());
+        try {
+            gestionnaireService.createEvaluationEtudiantPDF(1L);
+        } catch (NonExistentOfferExeption e) {
+            return;
+        } catch (Exception ignored) {
+        }
+        fail("NonExistentOfferExeption not thrown");
+    }
+
+    @Test
+    void testCreateEvaluationEtudiantPDFNonExistentStudentException() {
+        when(evaluationEtudiantRepository.findByContractId(anyLong()))
+                .thenReturn(Optional.of(new EvaluationEtudiant(evaluationEtudiantInDTO)));
+        when(stageContractRepository.findById(anyLong())).thenReturn(Optional.of(stageContract));
+        when(offreRepository.findById(anyLong())).thenReturn(Optional.of(offerTest));
+        when(studentRepository.findById(anyLong())).thenReturn(Optional.empty());
+        try {
+            gestionnaireService.createEvaluationEtudiantPDF(1L);
+        } catch (NonExistentEntityException e) {
+            return;
+        } catch (Exception ignored) {
+        }
+        fail("NonExistentEntityException not thrown");
+    }
+
+    @Test
+    void testCreateEvaluationEtudiantPDFNonExistentCompanyException() {
+        when(evaluationEtudiantRepository.findByContractId(anyLong()))
+                .thenReturn(Optional.of(new EvaluationEtudiant(evaluationEtudiantInDTO)));
+        when(stageContractRepository.findById(anyLong())).thenReturn(Optional.of(stageContract));
+        when(offreRepository.findById(anyLong())).thenReturn(Optional.of(offerTest));
+        when(studentRepository.findById(anyLong())).thenReturn(Optional.of(studentTest));
+        when(companyRepository.findById(anyLong())).thenReturn(Optional.empty());
+        try {
+            gestionnaireService.createEvaluationEtudiantPDF(1L);
+        } catch (NonExistentEntityException e) {
+            return;
+        } catch (Exception ignored) {
+        }
+        fail("NonExistentEntityException not thrown");
+    }
+
+    @Test
+    void testCreateEvaluationEtudiantPDFEmptySignatureException() throws NonExistentOfferExeption, NonExistentEntityException, DocumentException {
+        evaluationEtudiantInDTO.setSignature("");
+
+        when(evaluationEtudiantRepository.findByContractId(anyLong()))
+                .thenReturn(Optional.of(new EvaluationEtudiant(evaluationEtudiantInDTO)));
+        when(stageContractRepository.findById(anyLong())).thenReturn(Optional.of(stageContract));
+        when(offreRepository.findById(anyLong())).thenReturn(Optional.of(offerTest));
+        when(studentRepository.findById(anyLong())).thenReturn(Optional.of(studentTest));
+        when(companyRepository.findById(anyLong())).thenReturn(Optional.of(companyTest));
+        try {
+            gestionnaireService.createEvaluationEtudiantPDF(1L);
+        } catch (EmptySignatureException e) {
+            return;
+        }
+        fail("EmptySignatureException not thrown");
+    }
+
+
 }
