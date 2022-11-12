@@ -217,7 +217,7 @@ const EvaluerLeMilieuDeStage = ({user}: { user: IUser }): JSX.Element => {
                     <Col sm={2}></Col>
                 </Row>
 
-                <Tab.Container defaultActiveKey="#etudiant">
+                <Tab.Container defaultActiveKey="#evaluation">
                     <ListGroup horizontal className="">
                         <ListGroup.Item action href="#entreprise" variant="primary">
                             IDENTIFICATION DE L'ENTREPRISE
