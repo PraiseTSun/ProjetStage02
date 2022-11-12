@@ -1053,7 +1053,7 @@ public class RootController {
         }
     }
 
-    @PutMapping("/getEvaluatedStudentsContrats/{companyId}")
+    @PutMapping("/getEvaluatedStudentsContracts/{companyId}")
     public ResponseEntity<List<Long>> getEvaluatedStudents(@PathVariable long companyId,
                                                            @RequestBody TokenDTO token) {
         try {
