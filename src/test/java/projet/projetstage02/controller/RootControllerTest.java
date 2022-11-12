@@ -2217,4 +2217,32 @@ public class RootControllerTest {
     }
 
 
+
+    @Test
+    void testGetEvaluatedStudentContratsHappyDay() throws Exception {
+        when(companyService.getEvaluatedStudentsContracts(anyLong())).thenReturn(new ArrayList<>() {{
+            add(stageContractOutDTO.getContractId());
+            add(stageContractOutDTO.getContractId());
+            add(stageContractOutDTO.getContractId());
+            add(stageContractOutDTO.getContractId());
+        }});
+
+        mockMvc.perform(put("/getEvaluatedStudentsContracts/{companyId}", 1)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(jsonTokenDTO.write(token).getJson()))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.size()", is(4)));
+
+    }
+
+
+    @Test
+    void testGetEvaluatedStudentContratsInvalidToken() throws Exception {
+        when(authService.getToken(anyString(), any())).thenThrow(new InvalidTokenException());
+
+        mockMvc.perform(put("/getEvaluatedStudentsContracts/{companyId}", 1)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(jsonTokenDTO.write(token).getJson()))
+                .andExpect(status().isForbidden());
+    }
 }

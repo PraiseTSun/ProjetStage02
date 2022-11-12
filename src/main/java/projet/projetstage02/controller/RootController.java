@@ -1134,4 +1134,19 @@ public class RootController {
             return ResponseEntity.notFound().build();
         }
     }
+
+    @PutMapping("/getEvaluatedStudentsContracts/{companyId}")
+    public ResponseEntity<List<Long>> getEvaluatedStudents(@PathVariable long companyId,
+                                                           @RequestBody TokenDTO token) {
+        try {
+            logger.log(Level.INFO, "Put /getEvaluatedStudents entered");
+            authService.getToken(token.getToken(), COMPANY);
+            List<Long> contractIds = companyService.getEvaluatedStudentsContracts(companyId);
+            logger.log(Level.INFO, "Put /getEvaluatedStudents sent 200 response");
+            return ResponseEntity.ok(contractIds);
+        } catch (InvalidTokenException e) {
+            logger.log(Level.INFO, "Put /getEvaluatedStudents sent 403 response");
+            return ResponseEntity.status(FORBIDDEN).build();
+        }
+    }
 }
