@@ -5,7 +5,7 @@ import {generateAlert} from "../../services/universalServices/UniversalUtilServi
 import {
     putcompanyContracts,
     putCompanySignatureContract,
-    putGetEvaluatedStudentsContrats
+    putGetEvaluatedStudentsContracts
 } from "../../services/companyServices/CompanyFetchService";
 import SignaturePad from "react-signature-canvas";
 import PageHeader from "../../components/universalComponents/PageHeader";
@@ -24,7 +24,7 @@ const CompanyContractsPage = ({connectedUser}: { connectedUser: IUser }): JSX.El
 
     const fetchEvaluatedStudentContracts = useCallback(async () => {
         universalFetch(async () =>
-                await putGetEvaluatedStudentsContrats(connectedUser.token, connectedUser.id),
+                await putGetEvaluatedStudentsContracts(connectedUser.token, connectedUser.id),
             async (response: Response) => {
                 const data = await response.json();
                 setEvaluatedStudentContracts(data)

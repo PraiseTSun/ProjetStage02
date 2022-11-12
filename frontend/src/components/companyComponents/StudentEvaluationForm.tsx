@@ -35,6 +35,7 @@ const StudentEvaluationForm = ({
             formFields.contractId = contractId;
             formFields.signature = sigPad!.toDataURL();
             formFields.dateSignature = new Date().toISOString().split("T")[0];
+            console.log(formFields)
             const response: Response = await postEvaluateStudent(connectedUser.token, formFields);
 
             if (response.ok) {

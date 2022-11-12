@@ -132,8 +132,8 @@ export const postCreateInterview = (companyDateOffers: string[],
     });
 }
 
-export const putGetEvaluatedStudentsContrats = (token: string, companyId: string): Promise<Response> => {
-    return fetch(`http://localhost:8080/getEvaluatedStudentsContrats/${companyId}`, {
+export const putGetEvaluatedStudentsContracts = (token: string, companyId: string): Promise<Response> => {
+    return fetch(`http://localhost:8080/getEvaluatedStudentsContracts/${companyId}`, {
         method: "PUT",
         headers: {
             'Accept': 'application/json',
