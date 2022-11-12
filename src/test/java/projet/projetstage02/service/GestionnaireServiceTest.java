@@ -10,6 +10,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import projet.projetstage02.dto.contracts.ContractsDTO;
 import projet.projetstage02.dto.contracts.StageContractInDTO;
 import projet.projetstage02.dto.contracts.StageContractOutDTO;
+import projet.projetstage02.dto.evaluations.Etudiant.EvaluationEtudiantInDTO;
 import projet.projetstage02.dto.evaluations.EvaluationInfoDTO;
 import projet.projetstage02.dto.evaluations.MillieuStage.MillieuStageEvaluationInDTO;
 import projet.projetstage02.dto.offres.OffreOutDTO;
@@ -29,6 +30,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.*;
 import static projet.projetstage02.model.AbstractUser.Department.Informatique;
+import static projet.projetstage02.utils.ByteConverter.byteToString;
 import static projet.projetstage02.utils.TimeUtil.currentTimestamp;
 
 @ExtendWith(MockitoExtension.class)
@@ -54,6 +56,11 @@ public class GestionnaireServiceTest {
     @Mock
     private EvaluationMillieuStagePDFRepository evaluationMillieuStagePDFRepository;
 
+    @Mock
+    private EvaluationEtudiantRepository evaluationEtudiantRepository;
+    @Mock
+    private EvaluationEtudiantPDFRepository evaluationEtudiantPDFRepository;
+
     private Gestionnaire gestionnaireTest;
     private Company companyTest;
     private Student studentTest;
@@ -61,9 +68,10 @@ public class GestionnaireServiceTest {
     private CvStatus cvStatus;
     private StageContract stageContract;
     private ApplicationAcceptation applicationAcceptationTest;
-    private MillieuStageEvaluationInDTO evalInDTO;
+    private MillieuStageEvaluationInDTO millieuStageEvaluationInDTO;
 
     private StageContractInDTO stageContractInDTO;
+    private EvaluationEtudiantInDTO evaluationEtudiantInDTO;
 
     @BeforeEach
     void beforeEach() {
@@ -131,7 +139,7 @@ public class GestionnaireServiceTest {
                 .companyName(companyTest.getCompanyName())
                 .build();
 
-        evalInDTO = MillieuStageEvaluationInDTO.builder()
+        millieuStageEvaluationInDTO = MillieuStageEvaluationInDTO.builder()
                 .climatTravail("plutotEnAccord")
                 .commentaires("plutotEnAccord")
                 .communicationAvecSuperviser("plutotEnAccord")
@@ -148,6 +156,45 @@ public class GestionnaireServiceTest {
                 .volumeDeTravail("plutotEnAccord")
                 .tempsReelConsacre("plutotEnAccord")
                 .signature(signature)
+                .build();
+
+        evaluationEtudiantInDTO = EvaluationEtudiantInDTO.builder()
+                .accepteCritiques("plutotEnAccord")
+                .acueillirPourProchainStage("oui")
+                .adapteCulture("plutotEnAccord")
+                .attentionAuxDetails("plutotEnAccord")
+                .bonneAnalyseProblemes("plutotEnAccord")
+                .commentairesHabilites("plutotEnAccord")
+                .commentairesProductivite("plutotEnAccord")
+                .commentairesQualite("plutotEnAccord")
+                .commentairesAppreciation("plutotEnAccord")
+                .comprendRapidement("plutotEnAccord")
+                .contactsFaciles("plutotEnAccord")
+                .commentairesRelationsInterpersonnelles("plutotEnAccord")
+                .contractId(1L)
+                .dateSignature("2021-05-01")
+                .discuteAvecStagiaire("oui")
+                .doubleCheckTravail("plutotEnAccord")
+                .etablirPriorites("plutotEnAccord")
+                .exprimeIdees("plutotEnAccord")
+                .ecouteActiveComprendrePDVautre("plutotEnAccord")
+                .formationTechniqueSuffisante("plutotEnAccord")
+                .habiletesDemontres("repondentAttentes")
+                .heuresEncadrement(145)
+                .initiative("plutotEnAccord")
+                .interetMotivation("plutotEnAccord")
+                .occasionsDePerfectionnement("plutotEnAccord")
+                .planifieTravail("plutotEnAccord")
+                .ponctuel("plutotEnAccord")
+                .respecteAutres("plutotEnAccord")
+                .respecteEcheances("plutotEnAccord")
+                .rythmeSoutenu("plutotEnAccord")
+                .responsableAutonome("plutotEnAccord")
+                .respecteMandatsDemandes("plutotEnAccord")
+                .signature(byteToString(new byte[]{0, 1, 2, 3, 4, 5, 6, 7, 8, 9}))
+                .travailEnEquipe("plutotEnAccord")
+                .travailSecuritaire("plutotEnAccord")
+                .travailEfficace("plutotEnAccord")
                 .build();
     }
 
@@ -953,7 +1000,7 @@ public class GestionnaireServiceTest {
     @Test
     void testEvaluateStageHappyDay() {
         when(evaluationMillieuStageRepository.save(any())).thenReturn(EvaluationMillieuStage.builder().id(1L).build());
-        gestionnaireService.evaluateStage(evalInDTO);
+        gestionnaireService.evaluateStage(millieuStageEvaluationInDTO);
         verify(evaluationMillieuStageRepository, times(1)).save(any());
     }
 
@@ -988,7 +1035,7 @@ public class GestionnaireServiceTest {
     @Test
     void testCreateEvaluationStagePDFHappyDay() throws NonExistentOfferExeption, NonExistentEntityException, DocumentException, EmptySignatureException {
         when(evaluationMillieuStageRepository.findByContractId(anyLong())).thenReturn(
-                Optional.of(new EvaluationMillieuStage(evalInDTO)));
+                Optional.of(new EvaluationMillieuStage(millieuStageEvaluationInDTO)));
         when(stageContractRepository.findById(anyLong())).thenReturn(Optional.of(stageContract));
         when(offreRepository.findById(anyLong())).thenReturn(Optional.of(offerTest));
         when(studentRepository.findById(anyLong())).thenReturn(Optional.of(studentTest));
@@ -1015,7 +1062,7 @@ public class GestionnaireServiceTest {
     @Test
     void testCreateEvaluationStagePDFNonExistentOfferException() {
         when(evaluationMillieuStageRepository.findByContractId(anyLong()))
-                .thenReturn(Optional.of(new EvaluationMillieuStage(evalInDTO)));
+                .thenReturn(Optional.of(new EvaluationMillieuStage(millieuStageEvaluationInDTO)));
         when(stageContractRepository.findById(anyLong())).thenReturn(Optional.of(stageContract));
         when(offreRepository.findById(anyLong())).thenReturn(Optional.empty());
         try {
@@ -1030,7 +1077,7 @@ public class GestionnaireServiceTest {
     @Test
     void testCreateEvaluationStagePDFNonExistentStudentException() {
         when(evaluationMillieuStageRepository.findByContractId(anyLong()))
-                .thenReturn(Optional.of(new EvaluationMillieuStage(evalInDTO)));
+                .thenReturn(Optional.of(new EvaluationMillieuStage(millieuStageEvaluationInDTO)));
         when(stageContractRepository.findById(anyLong())).thenReturn(Optional.of(stageContract));
         when(offreRepository.findById(anyLong())).thenReturn(Optional.of(offerTest));
         when(studentRepository.findById(anyLong())).thenReturn(Optional.empty());
@@ -1046,7 +1093,7 @@ public class GestionnaireServiceTest {
     @Test
     void testCreateEvaluationStagePDFNonExistentCompanyException() {
         when(evaluationMillieuStageRepository.findByContractId(anyLong()))
-                .thenReturn(Optional.of(new EvaluationMillieuStage(evalInDTO)));
+                .thenReturn(Optional.of(new EvaluationMillieuStage(millieuStageEvaluationInDTO)));
         when(stageContractRepository.findById(anyLong())).thenReturn(Optional.of(stageContract));
         when(offreRepository.findById(anyLong())).thenReturn(Optional.of(offerTest));
         when(studentRepository.findById(anyLong())).thenReturn(Optional.of(studentTest));
@@ -1062,10 +1109,10 @@ public class GestionnaireServiceTest {
 
     @Test
     void testCreateEvaluationStagePDFEmptySignatureException() throws NonExistentOfferExeption, NonExistentEntityException, DocumentException {
-        evalInDTO.setSignature("");
+        millieuStageEvaluationInDTO.setSignature("");
 
         when(evaluationMillieuStageRepository.findByContractId(anyLong()))
-                .thenReturn(Optional.of(new EvaluationMillieuStage(evalInDTO)));
+                .thenReturn(Optional.of(new EvaluationMillieuStage(millieuStageEvaluationInDTO)));
         when(stageContractRepository.findById(anyLong())).thenReturn(Optional.of(stageContract));
         when(offreRepository.findById(anyLong())).thenReturn(Optional.of(offerTest));
         when(studentRepository.findById(anyLong())).thenReturn(Optional.of(studentTest));
@@ -1101,7 +1148,7 @@ public class GestionnaireServiceTest {
     @Test
     void testGetEvaluatedContractsMillieuStageHappyDay() {
         when(evaluationMillieuStageRepository.findByContractId(anyLong()))
-                .thenReturn(Optional.of(new EvaluationMillieuStage(evalInDTO)), Optional.empty());
+                .thenReturn(Optional.of(new EvaluationMillieuStage(millieuStageEvaluationInDTO)), Optional.empty());
         when(stageContractRepository.findAll()).thenReturn(List.of(stageContract, stageContract));
 
         List<StageContractOutDTO> evaluatedContractsMillieuStage = gestionnaireService.getEvaluatedContractsMillieuStage();
@@ -1122,5 +1169,18 @@ public class GestionnaireServiceTest {
         verify(evaluationMillieuStageRepository, times(2)).findByContractId(anyLong());
         verify(stageContractRepository, times(1)).findAll();
         assertThat(evaluatedContractsMillieuStage).hasSize(0);
+    }
+
+    @Test
+    void testGetEvaluatedStudentsContractsHappyDay() {
+        when(stageContractRepository.findById(anyLong()))
+                .thenReturn(Optional.of(new EvaluationEtudiant(evaluationetu)), Optional.empty());
+        when(evaluationEtudiantRepository.findAll()).thenReturn(List.of(stageContract, stageContract));
+
+        List<StageContractOutDTO> evaluatedContractsMillieuStage = gestionnaireService.getEvaluatedStudentsContracts();
+
+        verify(evaluationStageRepository, times(2)).findByContractId(anyLong());
+        verify(stageContractRepository, times(1)).findAll();
+        assertThat(evaluatedContractsMillieuStage).hasSize(1);
     }
 }
