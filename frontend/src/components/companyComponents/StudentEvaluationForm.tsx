@@ -12,10 +12,14 @@ const StudentEvaluationForm = ({
                                    contractId,
                                    connectedUser,
                                    setShowEvaluationForm,
+                                   setEvaluatedStudentContracts,
+                                   evaluatedStudentContracts
                                }: {
     contractId: string,
     connectedUser: IUser,
-    setShowEvaluationForm: Function
+    setShowEvaluationForm: Function,
+    setEvaluatedStudentContracts: Function,
+    evaluatedStudentContracts: string[]
 }): JSX.Element => {
     const [waiting, setWaiting] = useState<boolean>(false);
     const [hasSigned, setHasSigned] = useState<boolean>(true);
@@ -35,6 +39,7 @@ const StudentEvaluationForm = ({
 
             if (response.ok) {
                 setShowEvaluationForm(false)
+                setEvaluatedStudentContracts([...evaluatedStudentContracts, contractId])
             } else {
                 generateAlert()
             }

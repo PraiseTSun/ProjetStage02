@@ -30,7 +30,7 @@ const CompanyContractsPage = ({connectedUser}: { connectedUser: IUser }): JSX.El
                 setEvaluatedStudentContracts(data)
             });
     }, [connectedUser]);
-    
+
     useEffect(() => {
         const fetchCompanyContracts = async () => {
             try {
@@ -81,7 +81,9 @@ const CompanyContractsPage = ({connectedUser}: { connectedUser: IUser }): JSX.El
             <StudentEvaluationForm
                 contractId={currentlySelectedContract}
                 connectedUser={connectedUser}
-                setShowEvaluationForm={setShowEvaluationForm}/>
+                setShowEvaluationForm={setShowEvaluationForm}
+                setEvaluatedStudentContracts={fetchEvaluatedStudentContracts}
+                evaluatedStudentContracts={evaluatedStudentContracts}/>
         );
     }
 
@@ -97,7 +99,6 @@ const CompanyContractsPage = ({connectedUser}: { connectedUser: IUser }): JSX.El
                         if (sigPad!.isEmpty()) {
                             alert("Vous devez signer!")
                         } else {
-                            console.log()
                             signer(sigPad!.toDataURL())
                         }
                     }}>Signer</Button></Col>
@@ -140,12 +141,12 @@ const CompanyContractsPage = ({connectedUser}: { connectedUser: IUser }): JSX.El
                                             {
                                                 evaluatedStudentContracts.includes(contrat.contractId) && "Déjà évalué"
                                                 || !evaluatedStudentContracts.includes(contrat.contractId) &&
-                                                contrat.companySignature.length > 0
+                                                (contrat.companySignature.length > 0
                                                     ? <Button variant="warning" onClick={() => {
                                                         setCurrentlySelectedContract(contrat.contractId)
                                                         setShowEvaluationForm(true)
                                                     }}>Évaluer</Button>
-                                                    : "Vous devez signé avant"
+                                                    : "Vous devez signé avant")
                                             }
                                         </td>
                                         <td>
