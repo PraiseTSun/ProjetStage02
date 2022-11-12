@@ -1059,7 +1059,7 @@ public class RootController {
         try {
             logger.log(Level.INFO, "Put /getEvaluatedStudents entered");
             authService.getToken(token.getToken(), COMPANY);
-            List<Long> contractIds = companyService.getEvaluatedStudentsContrats(companyId);
+            List<Long> contractIds = companyService.getEvaluatedStudentsContracts(companyId);
             logger.log(Level.INFO, "Put /getEvaluatedStudents sent 200 response");
             return ResponseEntity.ok(contractIds);
         } catch (InvalidTokenException e) {

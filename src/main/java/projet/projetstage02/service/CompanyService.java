@@ -293,7 +293,7 @@ public class CompanyService {
         evaluationEtudiantRepository.save(new EvaluationEtudiant(studentEvaluationInDTO));
     }
 
-    public List<Long> getEvaluatedStudentsContrats(long companyId) {
+    public List<Long> getEvaluatedStudentsContracts(long companyId) {
         return stageContractRepository.findByCompanyId(companyId).stream().filter(stageContract -> {
             Optional<EvaluationEtudiant> opt = evaluationEtudiantRepository.findByContractId(stageContract.getId());
             return opt.isPresent();
