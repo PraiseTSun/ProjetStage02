@@ -44,11 +44,11 @@ public class Offre {
     @Max(999)
     private int salaire;
     @NotBlank
-    @Pattern(regexp = "^([0-2][0-9]|3[0-1])/(0[0-9]|1[0-2])/(19|20[0-9][0-9])$")
+    @Pattern(regexp = "^(19|20[0-9][0-9])-(0[0-9]|1[0-2])-([0-2][0-9]|3[0-1])$")
     private String dateStageFin;
 
     @NotBlank
-    @Pattern(regexp = "^([0-2][0-9]|3[0-1])/(0[0-9]|1[0-2])/(19|20[0-9][0-9])$")
+    @Pattern(regexp = "^(19|20[0-9][0-9])-(0[0-9]|1[0-2])-([0-2][0-9]|3[0-1])$")
     private String dateStageDebut;
     @NotBlank
     @Size(min = 2)

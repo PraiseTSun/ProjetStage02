@@ -9,4 +9,6 @@ export default interface IOffer {
     adresse: string,
     token: string,
     companyId: string
+    dateStageDebut: string,
+    dateStageFin: string,
 }

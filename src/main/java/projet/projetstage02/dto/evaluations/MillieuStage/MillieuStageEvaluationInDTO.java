@@ -17,22 +17,22 @@ public class MillieuStageEvaluationInDTO {
     @Min(1)
     private long contractId;
     @NotBlank
-    @Pattern(regexp = "Totalement en accord|Plutôt en accord|Plutôt en désaccord|Totalement en désaccord|Impossible de se prononcer")
+    @Pattern(regexp = "totalementEnAccord|plutotEnAccord|plutotEnDesaccord|totalementEnDesaccord|impossibleDeSePronnoncer")
     private String tachesAnnonces;
     @NotBlank
-    @Pattern(regexp = "Totalement en accord|Plutôt en accord|Plutôt en désaccord|Totalement en désaccord|Impossible de se prononcer")
+    @Pattern(regexp = "totalementEnAccord|plutotEnAccord|plutotEnDesaccord|totalementEnDesaccord|impossibleDeSePronnoncer")
     private String integration;
     @NotBlank
-    @Pattern(regexp = "Totalement en accord|Plutôt en accord|Plutôt en désaccord|Totalement en désaccord|Impossible de se prononcer")
+    @Pattern(regexp = "totalementEnAccord|plutotEnAccord|plutotEnDesaccord|totalementEnDesaccord|impossibleDeSePronnoncer")
     private String tempsReelConsacre;
     @NotBlank
-    @Pattern(regexp = "Totalement en accord|Plutôt en accord|Plutôt en désaccord|Totalement en désaccord|Impossible de se prononcer")
+    @Pattern(regexp = "totalementEnAccord|plutotEnAccord|plutotEnDesaccord|totalementEnDesaccord|impossibleDeSePronnoncer")
     private String environementTravail;
     @NotBlank
-    @Pattern(regexp = "Totalement en accord|Plutôt en accord|Plutôt en désaccord|Totalement en désaccord|Impossible de se prononcer")
+    @Pattern(regexp = "totalementEnAccord|plutotEnAccord|plutotEnDesaccord|totalementEnDesaccord|impossibleDeSePronnoncer")
     private String climatTravail;
     @NotBlank
-    @Pattern(regexp = "Totalement en accord|Plutôt en accord|Plutôt en désaccord|Totalement en désaccord|Impossible de se prononcer")
+    @Pattern(regexp = "totalementEnAccord|plutotEnAccord|plutotEnDesaccord|totalementEnDesaccord|impossibleDeSePronnoncer")
     private String milieuDeStage;
     @Min(1)
     private long heureTotalPremierMois;
@@ -41,18 +41,19 @@ public class MillieuStageEvaluationInDTO {
     @Min(1)
     private long heureTotalTroisiemeMois;
     @NotBlank
-    @Pattern(regexp = "Totalement en accord|Plutôt en accord|Plutôt en désaccord|Totalement en désaccord|Impossible de se prononcer")
+    @Pattern(regexp = "totalementEnAccord|plutotEnAccord|plutotEnDesaccord|totalementEnDesaccord|impossibleDeSePronnoncer")
     private String communicationAvecSuperviser;
     @NotBlank
-    @Pattern(regexp = "Totalement en accord|Plutôt en accord|Plutôt en désaccord|Totalement en désaccord|Impossible de se prononcer")
+    @Pattern(regexp = "totalementEnAccord|plutotEnAccord|plutotEnDesaccord|totalementEnDesaccord|impossibleDeSePronnoncer")
     private String equipementFourni;
     @NotBlank
-    @Pattern(regexp = "Totalement en accord|Plutôt en accord|Plutôt en désaccord|Totalement en désaccord|Impossible de se prononcer")
+    @Pattern(regexp = "totalementEnAccord|plutotEnAccord|plutotEnDesaccord|totalementEnDesaccord|impossibleDeSePronnoncer")
     private String volumeDeTravail;
     @NotBlank
     private String commentaires;
     @NotBlank
     private String signature;
     @NotBlank
+    @Pattern(regexp = "^(19|20[0-9][0-9])-(0[0-9]|1[0-2])-([0-2][0-9]|3[0-1])$")
     private String dateSignature;
 }
