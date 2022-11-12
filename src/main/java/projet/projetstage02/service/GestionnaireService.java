@@ -456,11 +456,11 @@ public class GestionnaireService {
 
 
         evaluationParagraph.put("Les taches confiées sont celles annoncées dans l'entente de stage",
-                evaluationMillieuStage.getTachesAnnonces());
+                fieldToText(evaluationMillieuStage.getTachesAnnonces()));
         evaluationParagraph.put("Des mesures d'accueil facilitent l'intégration du nouveau stagiaire",
-                evaluationMillieuStage.getIntegration());
+                fieldToText(evaluationMillieuStage.getIntegration()));
         evaluationParagraph.put("Le temps réel consacré à l'encadrement du stagiaire est suffisant",
-                evaluationMillieuStage.getTempsReelConsacre());
+                fieldToText(evaluationMillieuStage.getTempsReelConsacre()));
         evaluationParagraph.put("Nombre d'heures pour le premier mois",
                 evaluationMillieuStage.getHeureTotalPremierMois() + " heures");
         evaluationParagraph.put("Nombre d'heures pour le deuxième mois",
@@ -468,17 +468,17 @@ public class GestionnaireService {
         evaluationParagraph.put("Nombre d'heures pour le troisième mois",
                 evaluationMillieuStage.getHeureTotalTroisiemeMois() + " heures");
         evaluationParagraph.put("L'environnement de travail respecte les normes de sécurité",
-                evaluationMillieuStage.getEnvironementTravail());
+                fieldToText(evaluationMillieuStage.getEnvironementTravail()));
         evaluationParagraph.put("Le climat de travail est agréable",
-                evaluationMillieuStage.getClimatTravail());
+                fieldToText(evaluationMillieuStage.getClimatTravail()));
         evaluationParagraph.put("Le millieu de stage est accessible par transport en commun",
-                evaluationMillieuStage.getMilieuDeStage());
+                fieldToText(evaluationMillieuStage.getMilieuDeStage()));
         evaluationParagraph.put("La communication avec le superviseur est efficace",
-                evaluationMillieuStage.getCommunicationAvecSuperviser());
+                fieldToText(evaluationMillieuStage.getCommunicationAvecSuperviser()));
         evaluationParagraph.put("L'équipement de travail est adéquat",
-                evaluationMillieuStage.getEquipementFourni());
+                fieldToText(evaluationMillieuStage.getEquipementFourni()));
         evaluationParagraph.put("Le volume de travail est raisonnable",
-                evaluationMillieuStage.getVolumeDeTravail());
+                fieldToText(evaluationMillieuStage.getVolumeDeTravail()));
 
         commentaires.put("", evaluationMillieuStage.getCommentaires());
 
@@ -522,5 +522,23 @@ public class GestionnaireService {
             Optional<EvaluationMillieuStage> opt = evaluationMillieuStageRepository.findByContractId(stageContract.getId());
             return opt.isPresent();
         }).map(StageContractOutDTO::new).toList();
+    }
+
+    private String fieldToText(String original) {
+        return switch (original) {
+            case "totalementEnAccord" -> "Totalement en accord";
+            case "plutotEnAccord" -> "Plutôt en accord";
+            case "plutotEnDesaccord" -> "Plutôt en désaccord";
+            case "totalementEnDesaccord" -> "Totalement en désaccord";
+            case "impossibleDeSePrononcer" -> "Impossible de se prononcer";
+            case "oui" -> "Oui";
+            case "non" -> "Non";
+            case "depassentBeacoupAttentes" -> "Dépassent beaucoup les attentes";
+            case "depassentAttentes" -> "Dépassent les attentes";
+            case "repondentAttentes" -> "Répondent aux attentes";
+            case "repondentPartiellementAttentes" -> "Répondent partiellement aux attentes";
+            case "repondentPasAttentes" -> "Ne répondent pas aux attentes";
+            default -> original;
+        };
     }
 }
