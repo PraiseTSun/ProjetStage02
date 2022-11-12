@@ -136,6 +136,7 @@ public class EvaluationEtudiant {
         this.commentairesQualite = evaluationEtudiantInDTO.getCommentairesQualite();
         this.commentairesHabilites = evaluationEtudiantInDTO.getCommentairesHabilites();
         this.commentairesRelationsInterpersonnelles = evaluationEtudiantInDTO.getCommentairesRelationsInterpersonnelles();
+        this.commentairesAppreciation = evaluationEtudiantInDTO.getCommentairesAppreciation();
         this.discuteAvecStagiaire = evaluationEtudiantInDTO.getDiscuteAvecStagiaire();
         this.doubleCheckTravail = evaluationEtudiantInDTO.getDoubleCheckTravail();
         this.ecouteActiveComprendrePDVautre = evaluationEtudiantInDTO.getEcouteActiveComprendrePDVautre();
