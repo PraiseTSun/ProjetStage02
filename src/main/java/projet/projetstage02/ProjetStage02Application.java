@@ -205,6 +205,7 @@ public class ProjetStage02Application implements CommandLineRunner {
                 .commentairesProductivite("Un long commentaire qui fait du sens. Il est long. looooooooooooooooooooooong. loooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooong. assez long.")
                 .commentairesQualite("petit commentaire")
                 .commentairesRelationsInterpersonnelles("commentaire")
+                .commentairesAppreciation("commentaire")
                 .comprendRapidement("plutotEnAccord")
                 .contactsFaciles("plutotEnAccord")
                 .contractId(stageContract.getContractId())

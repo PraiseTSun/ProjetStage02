@@ -533,6 +533,7 @@ public class GestionnaireService {
             case "impossibleDeSePrononcer" -> "Impossible de se prononcer";
             case "oui" -> "Oui";
             case "non" -> "Non";
+            case "peutEtre" -> "Peut-être";
             case "depassentBeacoupAttentes" -> "Dépassent beaucoup les attentes";
             case "depassentAttentes" -> "Dépassent les attentes";
             case "repondentAttentes" -> "Répondent aux attentes";
@@ -637,8 +638,13 @@ public class GestionnaireService {
         habiletesPersonnelles.put("Ponctuel", fieldToText(evaluation.getPonctuel()));
         habiletesPersonnelles.put("Commentaires", evaluation.getCommentairesHabilites());
 
-        appreciationGlobale.put("", fieldToText(evaluation.getHabiletesDemontres()));
-        appreciationGlobale.put("", fieldToText(evaluation.getPonctuel()));
+        appreciationGlobale.put("Habilitées démontrées", fieldToText(evaluation.getHabiletesDemontres()));
+        appreciationGlobale.put("Commentaires", evaluation.getCommentairesAppreciation());
+        appreciationGlobale.put("Evaluation discutée avec le stagiaire", fieldToText(evaluation.getDiscuteAvecStagiaire()));
+        appreciationGlobale.put("Heures d'encadrement par semaine", evaluation.getHeuresEncadrement() + " heures");
+
+        prochainStage.put("Souhaite un autre stage avec cet etudiant", fieldToText(evaluation.getAcueillirPourProchainStage()));
+        prochainStage.put("Formation suffisante?", evaluation.getFormationTechniqueSuffisante());
 
         signPara.put("Signé le", evaluation.getDateSignature());
 
@@ -653,7 +659,6 @@ public class GestionnaireService {
         map.put("Prochain stage", prochainStage);
         map.put("Signature", signPara);
         map.put("_signature_", getSignature(evaluation.getSignature()));
-
         return map;
     }
 }
