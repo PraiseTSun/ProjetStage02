@@ -47,7 +47,7 @@ const CompanyContractsPage = ({connectedUser}: { connectedUser: IUser }): JSX.El
         }
         fetchCompanyContracts()
         fetchEvaluatedStudentContracts()
-    }, [fetchEvaluatedStudentContracts, connectedUser])
+    }, [fetchEvaluatedStudentContracts, connectedUser, nextYear])
 
 
     async function getEntente(contratId: number): Promise<void> {
@@ -139,9 +139,9 @@ const CompanyContractsPage = ({connectedUser}: { connectedUser: IUser }): JSX.El
                                         <td>{contrat.description}</td>
                                         <td>
                                             {
-                                                evaluatedStudentContracts.includes(contrat.contractId) && "Déjà évalué"
-                                                || !evaluatedStudentContracts.includes(contrat.contractId) &&
-                                                (contrat.companySignature.length > 0
+                                                (evaluatedStudentContracts.includes(contrat.contractId) && "Déjà évalué")
+                                                || (!evaluatedStudentContracts.includes(contrat.contractId) &&
+                                                contrat.companySignature.length > 0
                                                     ? <Button variant="warning" onClick={() => {
                                                         setCurrentlySelectedContract(contrat.contractId)
                                                         setShowEvaluationForm(true)
