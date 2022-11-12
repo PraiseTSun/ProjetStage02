@@ -927,10 +927,9 @@ public class RootController {
         }
     }
 
-    //Todo create endpoint and page to see an evaluation and print it to pdf
     @PostMapping("/evaluateStage/{token}")
     public ResponseEntity<?> evaluateStage
-    (@PathVariable String token, @RequestBody MillieuStageEvaluationInDTO millieuStageEvaluationInDTO) {
+            (@PathVariable String token, @RequestBody MillieuStageEvaluationInDTO millieuStageEvaluationInDTO) {
         try {
             logger.log(Level.INFO, "put /evaluateStage/id entered with id : " + token);
             authService.getToken(token, GESTIONNAIRE);
@@ -1087,11 +1086,51 @@ public class RootController {
             logger.log(Level.INFO, "put /evaluateStudent entered");
             authService.getToken(token, COMPANY);
             companyService.evaluateStudent(studentEvaluationInDTO);
+            gestionnaireService.createEvaluationMillieuStagePDF(studentEvaluationInDTO.getContractId());
             logger.log(Level.INFO, "PutMapping: /evaluateStudent sent 201 response");
             return ResponseEntity.status(CREATED).build();
         } catch (InvalidTokenException e) {
             logger.log(Level.INFO, "PutMapping: /evaluateStudent sent 403 response");
             return ResponseEntity.status(FORBIDDEN).build();
+        } catch (NonExistentOfferExeption e) {
+            throw new RuntimeException(e);
+        } catch (NonExistentEntityException e) {
+            throw new RuntimeException(e);
+        } catch (DocumentException e) {
+            throw new RuntimeException(e);
+        } catch (EmptySignatureException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @PutMapping("/getEvaluatedContracts/etudiants")
+    public ResponseEntity<List<StageContractOutDTO>> getEvaluatedContractsEtudiants(@RequestBody TokenDTO tokenId) {
+        logger.log(Level.INFO, "Put /getEvaluatedContracts/etudiants");
+        try {
+            authService.getToken(tokenId.getToken(), GESTIONNAIRE);
+            List<StageContractOutDTO> dto = gestionnaireService.getEvaluatedContractsEtudiants();
+            logger.log(Level.INFO, "Put /getEvaluatedContracts/etudiants sent request 200 : " + dto);
+            return ResponseEntity.ok(dto);
+        } catch (InvalidTokenException e) {
+            logger.log(Level.INFO, "Put /getEvaluatedContracts/etudiants sent request 403");
+            return ResponseEntity.status(FORBIDDEN).build();
+        }
+    }
+
+    @PutMapping("/getEvaluationPDF/etudiant/{id}")
+    public ResponseEntity<PdfOutDTO> getEvaluationPDFEtudiant(@PathVariable long id, @RequestBody TokenDTO tokenId) {
+        logger.log(Level.INFO, "Put /getEvaluationPDF/etudiant/{id}");
+        try {
+            authService.getToken(tokenId.getToken(), GESTIONNAIRE);
+            PdfOutDTO pdf = gestionnaireService.getEvaluationPDFEtudiant(id);
+            logger.log(Level.INFO, "Put /getEvaluationPDF/etudiant/{id} sent request 200");
+            return ResponseEntity.ok(pdf);
+        } catch (InvalidTokenException e) {
+            logger.log(Level.INFO, "Put /getEvaluationPDF/etudiant/{id} sent request 403");
+            return ResponseEntity.status(FORBIDDEN).build();
+        } catch (NonExistentEntityException e) {
+            logger.log(Level.INFO, "Put /getEvaluationPDF/etudiant/{id} sent request 404");
+            return ResponseEntity.status(NOT_FOUND).build();
         }
     }
 }

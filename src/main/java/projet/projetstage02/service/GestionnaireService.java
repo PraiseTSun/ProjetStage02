@@ -37,7 +37,9 @@ public class GestionnaireService {
     private final StageContractRepository stageContractRepository;
     private final ApplicationAcceptationRepository applicationAcceptationRepository;
     private final EvaluationMillieuStageRepository evaluationMillieuStageRepository;
+    private final EvaluationEtudiantRepository evaluationEtudiantRepository;
     private final EvaluationMillieuStagePDFRepository evaluationMillieuStagePDFRepository;
+    private final EvaluationEtudiantPDFRepository evaluationEtudiantPDFRepository;
 
     public long saveGestionnaire(String firstname, String lastname, String email, String password) {
         GestionnaireDTO dto = GestionnaireDTO.builder()
@@ -489,12 +491,11 @@ public class GestionnaireService {
         map.put("Évaluation", evaluationParagraph);
         map.put("Commentaires", commentaires);
         map.put("Signature", signPara);
-        map.put("_signature_", getSignatureGestionnaire(evaluationMillieuStage));
+        map.put("_signature_", getSignature(evaluationMillieuStage.getSignature()));
         return map;
     }
 
-    private Map<String, String> getSignatureGestionnaire(EvaluationMillieuStage evaluationMillieuStage) throws EmptySignatureException {
-        String signature = evaluationMillieuStage.getSignature();
+    private Map<String, String> getSignature(String signature) throws EmptySignatureException {
         String[] split = signature.split(",");
         if (split.length != 2) {
             throw new EmptySignatureException();
@@ -517,10 +518,56 @@ public class GestionnaireService {
     }
 
     public List<StageContractOutDTO> getEvaluatedContractsMillieuStage() {
-        List<StageContract> stageContracts = stageContractRepository.findAll();
-        return stageContracts.stream().filter(stageContract -> {
+        return stageContractRepository.findAll().stream().filter(stageContract -> {
             Optional<EvaluationMillieuStage> opt = evaluationMillieuStageRepository.findByContractId(stageContract.getId());
             return opt.isPresent();
         }).map(StageContractOutDTO::new).toList();
+    }
+
+    public List<StageContractOutDTO> getEvaluatedContractsEtudiants() {
+        return stageContractRepository.findAll().stream().filter(
+                stageContract -> evaluationEtudiantRepository.findByContractId(stageContract.getId()).isPresent()
+        ).map(StageContractOutDTO::new).toList();
+    }
+
+    public PdfOutDTO getEvaluationPDFEtudiant(long contractID) throws NonExistentEntityException {
+        Optional<EvaluationPDF> optional = evaluationEtudiantPDFRepository.findById(contractID);
+        if (optional.isEmpty()) throw new NonExistentEntityException();
+        EvaluationPDF evaluationPDF = optional.get();
+        return PdfOutDTO.builder().id(contractID).pdf(evaluationPDF.getPdf()).build();
+    }
+
+    public void createEvaluationEtudiantPDF(long contractId)
+            throws NonExistentEntityException, NonExistentOfferExeption, DocumentException, EmptySignatureException {
+        Optional<EvaluationEtudiant> optional = evaluationEtudiantRepository.findByContractId(contractId);
+        if (optional.isEmpty()) {
+            throw new NonExistentEntityException();
+        }
+        EvaluationEtudiant evaluationMillieuStage = optional.get();
+        evaluationMillieuStagePDFRepository.save(EvaluationPDF.builder()
+                .pdf(PDFCreationUtil.createPDFFromMap("Évaluation du millieu stage",
+                        evaluationEtudiantToMap(evaluationMillieuStage)))
+                .contractId(contractId)
+                .build());
+
+    }
+
+    private Map<String, Map<String, String>> evaluationEtudiantToMap(EvaluationEtudiant evaluationEtudiant) throws EmptySignatureException {
+        Map<String, Map<String, String>> map = new LinkedHashMap<>();
+        Map<String, String> information = new LinkedHashMap<>();
+        Map<String, String> productivite = new LinkedHashMap<>();
+        Map<String, String> qualiteDuTravail = new LinkedHashMap<>();
+        Map<String, String> qualiteRelationInterpesonnelles = new LinkedHashMap<>();
+        Map<String, String> habiletesPersonnelles = new LinkedHashMap<>();
+        Map<String, String> appreciationGlobale = new LinkedHashMap<>();
+        Map<String, String> prochainStage = new LinkedHashMap<>();
+        Map<String, String> signPara = new LinkedHashMap<>();
+
+        signPara.put("Signé le", evaluationEtudiant.getDateSignature());
+
+        map.put("Information sur la compagnie", information);
+        map.put("_signature_", getSignature(evaluationEtudiant.getSignature()));
+
+        return map;
     }
 }
