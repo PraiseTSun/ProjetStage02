@@ -10,8 +10,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import projet.projetstage02.dto.contracts.ContractsDTO;
 import projet.projetstage02.dto.contracts.StageContractInDTO;
 import projet.projetstage02.dto.contracts.StageContractOutDTO;
+import projet.projetstage02.dto.evaluations.EvaluationInfoDTO;
 import projet.projetstage02.dto.evaluations.MillieuStage.MillieuStageEvaluationInDTO;
-import projet.projetstage02.dto.evaluations.MillieuStage.MillieuStageEvaluationInfoDTO;
 import projet.projetstage02.dto.offres.OffreOutDTO;
 import projet.projetstage02.dto.pdf.PdfOutDTO;
 import projet.projetstage02.dto.users.CompanyDTO;
@@ -876,7 +876,7 @@ public class GestionnaireServiceTest {
         when(companyRepository.findById(anyLong())).thenReturn(Optional.of(companyTest));
         when(stageContractRepository.findById(anyLong())).thenReturn(Optional.of(stageContract));
 
-        MillieuStageEvaluationInfoDTO dto = gestionnaireService.getMillieuEvaluationInfoForContract(1L);
+        EvaluationInfoDTO dto = gestionnaireService.getEvaluationInfoForContract(1L);
 
         assertThat(dto.getAdresse()).isEqualTo(offerTest.getAdresse());
         assertThat(dto.getNomCompagnie()).isEqualTo(companyTest.getCompanyName());
@@ -901,7 +901,7 @@ public class GestionnaireServiceTest {
         when(stageContractRepository.findById(anyLong())).thenReturn(Optional.empty());
 
         try {
-            gestionnaireService.getMillieuEvaluationInfoForContract(1L);
+            gestionnaireService.getEvaluationInfoForContract(1L);
         } catch (NonExistentEntityException e) {
             return;
         }
@@ -914,7 +914,7 @@ public class GestionnaireServiceTest {
         when(stageContractRepository.findById(anyLong())).thenReturn(Optional.of(stageContract));
 
         try {
-            gestionnaireService.getMillieuEvaluationInfoForContract(1L);
+            gestionnaireService.getEvaluationInfoForContract(1L);
         } catch (NonExistentOfferExeption e) {
             return;
         }
@@ -928,7 +928,7 @@ public class GestionnaireServiceTest {
         when(studentRepository.findById(anyLong())).thenReturn(Optional.empty());
 
         try {
-            gestionnaireService.getMillieuEvaluationInfoForContract(1L);
+            gestionnaireService.getEvaluationInfoForContract(1L);
         } catch (NonExistentEntityException e) {
             return;
         }
@@ -943,7 +943,7 @@ public class GestionnaireServiceTest {
         when(companyRepository.findById(anyLong())).thenReturn(Optional.empty());
 
         try {
-            gestionnaireService.getMillieuEvaluationInfoForContract(1L);
+            gestionnaireService.getEvaluationInfoForContract(1L);
         } catch (NonExistentEntityException e) {
             return;
         }

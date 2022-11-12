@@ -22,8 +22,8 @@ import projet.projetstage02.dto.contracts.StageContractOutDTO;
 import projet.projetstage02.dto.cv.CvRefusalDTO;
 import projet.projetstage02.dto.cv.CvStatusDTO;
 import projet.projetstage02.dto.evaluations.Etudiant.EvaluationEtudiantInDTO;
+import projet.projetstage02.dto.evaluations.EvaluationInfoDTO;
 import projet.projetstage02.dto.evaluations.MillieuStage.MillieuStageEvaluationInDTO;
-import projet.projetstage02.dto.evaluations.MillieuStage.MillieuStageEvaluationInfoDTO;
 import projet.projetstage02.dto.interview.CreateInterviewDTO;
 import projet.projetstage02.dto.interview.InterviewOutDTO;
 import projet.projetstage02.dto.interview.InterviewSelectInDTO;
@@ -909,13 +909,13 @@ public class RootController {
     }
 
     @PutMapping("/evaluateStage/{contractId}/getInfo")
-    public ResponseEntity<MillieuStageEvaluationInfoDTO> getEvaluateStageInfo
+    public ResponseEntity<EvaluationInfoDTO> getEvaluateStageInfo
             (@PathVariable long contractId, @RequestBody TokenDTO tokenId) {
         try {
             logger.log(Level.INFO, "put /evaluateStage/id/getInfo entered with id : " + contractId);
             authService.getToken(tokenId.getToken(), GESTIONNAIRE);
-            MillieuStageEvaluationInfoDTO eval =
-                    gestionnaireService.getMillieuEvaluationInfoForContract(contractId);
+            EvaluationInfoDTO eval =
+                    gestionnaireService.getEvaluationInfoForContract(contractId);
             logger.log(Level.INFO, "PutMapping: /evaluateStage/id/getInfo sent 201 response");
             return ResponseEntity.status(CREATED).body(eval);
         } catch (InvalidTokenException e) {

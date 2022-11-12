@@ -25,8 +25,8 @@ import projet.projetstage02.dto.contracts.StageContractOutDTO;
 import projet.projetstage02.dto.cv.CvRefusalDTO;
 import projet.projetstage02.dto.cv.CvStatusDTO;
 import projet.projetstage02.dto.evaluations.Etudiant.EvaluationEtudiantInDTO;
+import projet.projetstage02.dto.evaluations.EvaluationInfoDTO;
 import projet.projetstage02.dto.evaluations.MillieuStage.MillieuStageEvaluationInDTO;
-import projet.projetstage02.dto.evaluations.MillieuStage.MillieuStageEvaluationInfoDTO;
 import projet.projetstage02.dto.interview.CreateInterviewDTO;
 import projet.projetstage02.dto.interview.InterviewOutDTO;
 import projet.projetstage02.dto.interview.InterviewSelectInDTO;
@@ -119,7 +119,7 @@ public class RootControllerTest {
     OfferApplicationDTO offerApplicationDTO;
 
     CvStatusDTO cvStatusDTO;
-    MillieuStageEvaluationInfoDTO evalInfoDTO;
+    EvaluationInfoDTO evalInfoDTO;
     MillieuStageEvaluationInDTO evalInDTO;
     EvaluationEtudiantInDTO evaluationEtudiantInDTO;
     CreateInterviewDTO createInterviewDTO;
@@ -272,7 +272,7 @@ public class RootControllerTest {
         contractsDTO.add(stageContractOutDTO);
         contractsDTO.add(stageContractOutDTO);
 
-        evalInfoDTO = new MillieuStageEvaluationInfoDTO(duffBeer.toModel(), duffOffre.toModel(), bart.toModel());
+        evalInfoDTO = new EvaluationInfoDTO(duffBeer.toModel(), duffOffre.toModel(), bart.toModel());
 
         evalInDTO = MillieuStageEvaluationInDTO.builder()
                 .climatTravail("Plutôt en accord")
@@ -1782,7 +1782,7 @@ public class RootControllerTest {
 
     @Test
     void testGetEvaluationInfoHappyDay() throws Exception {
-        when(gestionnaireService.getMillieuEvaluationInfoForContract(anyLong())).thenReturn(evalInfoDTO);
+        when(gestionnaireService.getEvaluationInfoForContract(anyLong())).thenReturn(evalInfoDTO);
 
         mockMvc.perform(put("/evaluateStage/{contractId}/getInfo", 1L)
                         .contentType(MediaType.APPLICATION_JSON)
@@ -1793,7 +1793,7 @@ public class RootControllerTest {
 
     @Test
     void testGetEvaluationInfoNotFound() throws Exception {
-        when(gestionnaireService.getMillieuEvaluationInfoForContract(anyLong())).thenThrow(new NonExistentEntityException());
+        when(gestionnaireService.getEvaluationInfoForContract(anyLong())).thenThrow(new NonExistentEntityException());
 
         mockMvc.perform(put("/evaluateStage/{contractId}/getInfo", 1L)
                         .contentType(MediaType.APPLICATION_JSON)
