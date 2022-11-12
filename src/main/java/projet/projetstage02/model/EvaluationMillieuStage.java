@@ -58,7 +58,6 @@ public class EvaluationMillieuStage {
     @NotBlank
     @Pattern(regexp = "totalementEnAccord|plutotEnAccord|plutotEnDesaccord|totalementEnDesaccord|impossibleDeSePrononcer")
     private String volumeDeTravail;
-    @NotBlank
     private String commentaires;
     @NotBlank
     @Lob

@@ -74,6 +74,7 @@ public class PDFCreationUtil {
     }
 
     private static void addKeyValueLine(Document document, String key, String value) throws DocumentException {
+        if (value == null || value.isEmpty()) return;
         document.add(new Paragraph(
                 key +
                         (key.length() > 0 ? " : " : "")

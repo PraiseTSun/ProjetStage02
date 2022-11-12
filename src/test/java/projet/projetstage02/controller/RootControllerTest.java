@@ -275,7 +275,6 @@ public class RootControllerTest {
 
         millieuStageEvaluationInDTO = MillieuStageEvaluationInDTO.builder()
                 .climatTravail("plutotEnAccord")
-                .commentaires("plutotEnAccord")
                 .communicationAvecSuperviser("plutotEnAccord")
                 .contractId(1L)
                 .dateSignature("2021-05-01")
