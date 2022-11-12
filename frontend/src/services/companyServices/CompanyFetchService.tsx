@@ -1,4 +1,5 @@
 import IOffer from "../../models/IOffer";
+import IStudentEvaluationFormFields from "../../models/IStudentEvaluationFormFields";
 
 export const postCreateOffre = (offer: IOffer): Promise<Response> => {
     return fetch("http://localhost:8080/createOffre", {
@@ -96,6 +97,17 @@ export const putGetCompanyInterviews = (companyId: string, token: string): Promi
             'Content-Type': 'application/json',
         },
         body: JSON.stringify({"token": token})
+    });
+}
+
+export const postEvaluateStudent = (token: string, studentEvaluationFormFields: IStudentEvaluationFormFields): Promise<Response> => {
+    return fetch(`http://localhost:8080/evaluateStudent/${token}`, {
+        method: "POST",
+        headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(studentEvaluationFormFields)
     });
 }
 

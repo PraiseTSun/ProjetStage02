@@ -15,7 +15,7 @@ import OffersListPage from './pages/studentPages/OffersListPage';
 import StudentCvUploadPage from './pages/studentPages/StudentCvUploadPage';
 import {putUserType} from "./services/universalServices/UniversalFetchService";
 import OfferHistoryPage from "./pages/gestionnairePages/OfferHistoryPage";
-import SignerEntenteDeStageParCompagnie from "./pages/companyPages/SignerEntenteDeStageParCompagnie";
+import CompanyContractsPage from "./pages/companyPages/CompanyContractsPage";
 import CompanyOffersPage from "./pages/companyPages/CompanyOffersPage";
 import StudentContractsPage from "./pages/studentPages/StudentContractsPage";
 import ContractsPage from "./pages/gestionnairePages/ContractsPage";
@@ -128,7 +128,8 @@ function App() {
                         <Route path="*"
                                element={<h1 className="min-vh-100 text-center text-white display-1">404 - Page pas
                                    trouvé</h1>}/>
-                        <Route path="/SignerEntenteDeStageParCompagnie" element={<SignerEntenteDeStageParCompagnie user={connectedUser}/>}/>
+                        <Route path="/CompanyContractsPage"
+                               element={<CompanyContractsPage connectedUser={connectedUser}/>}/>
                     </Routes>
                 </BrowserRouter>
             </Container>

@@ -4,19 +4,41 @@ import RatingComponent from "./RatingComponent";
 import IStudentEvaluationFormFields from "../../models/IStudentEvaluationFormFields";
 import SignaturePad from "react-signature-canvas";
 import {BeatLoader} from "react-spinners";
+import IUser from "../../models/IUser";
+import {postEvaluateStudent} from "../../services/companyServices/CompanyFetchService";
+import {generateAlert} from "../../services/universalServices/UniversalUtilService";
 
-const StudentEvaluationForm = (): JSX.Element => {
+const StudentEvaluationForm = ({
+                                   contractId,
+                                   connectedUser,
+                                   setShowEvaluationForm,
+                               }: {
+    contractId: string,
+    connectedUser: IUser,
+    setShowEvaluationForm: Function
+}): JSX.Element => {
     const [waiting, setWaiting] = useState<boolean>(false);
     const [hasSigned, setHasSigned] = useState<boolean>(true);
     const [formFields, setformFields] = useState<IStudentEvaluationFormFields>(new IStudentEvaluationFormFields())
     let sigPad: SignaturePad | null
 
-    const onSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+    const onSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
 
         if (!sigPad?.isEmpty()) {
             setWaiting(true);
-            console.log("data sent")
+
+            formFields.contractId = contractId;
+            formFields.signature = sigPad!.toDataURL();
+            formFields.dateSignature = new Date().toISOString().split("T")[0];
+            const response: Response = await postEvaluateStudent(connectedUser.token, formFields);
+
+            if (response.ok) {
+                setShowEvaluationForm(false)
+            } else {
+                generateAlert()
+            }
+
         } else {
             setHasSigned(false)
         }
@@ -24,8 +46,18 @@ const StudentEvaluationForm = (): JSX.Element => {
 
     return (
         <Form className="bg-white text-dark p-3" onSubmit={event => onSubmit(event)}>
-            <h1 className="text-center">FICHE D'ÉVALUATION DU STAGIAIRE</h1>
-            <div className="bg-primary p-2 rounded">
+            <Row>
+                <Col sm={2}>
+                    <Button variant="danger" onClick={() => {
+                        setShowEvaluationForm(false);
+                    }}>Fermer</Button>
+                </Col>
+                <Col>
+                    <h1 className="text-center">FICHE D'ÉVALUATION DU STAGIAIRE</h1>
+                </Col>
+                <Col sm={2}></Col>
+            </Row>
+            <div className="bg-primary p-3 rounded">
                 <h2>PRODUCTIVITÉ</h2>
                 <p className="fw-bold">Capacité d'optimiser son rendement au travail</p>
                 <RatingComponent value={formFields.travailEfficace}
@@ -61,7 +93,7 @@ const StudentEvaluationForm = (): JSX.Element => {
                 </Form.Group>
             </div>
 
-            <div className="bg-primary p-2 rounded mt-3">
+            <div className="bg-primary p-3 rounded mt-3">
                 <h2>QUALITÉ DU TRAVAIL</h2>
                 <p className="fw-bold">
                     Capacité de s’acquitter des tâches sous sa responsabilité
@@ -103,7 +135,7 @@ const StudentEvaluationForm = (): JSX.Element => {
                 </Form.Group>
             </div>
 
-            <div className="bg-primary rounded p-2 mt-3">
+            <div className="bg-primary rounded p-3 mt-3">
                 <h2>QUALITÉ DES RELATIONS INTERPERSONNELLES</h2>
                 <p className="fw-bold">
                     Capacité d’établir des interrelations harmonieuses
@@ -169,7 +201,7 @@ const StudentEvaluationForm = (): JSX.Element => {
                 </Form.Group>
             </div>
 
-            <div className="bg-primary rounded p-2 mt-3">
+            <div className="bg-primary rounded p-3 mt-3">
                 <h2>HABILETÉS PERSONNELLES</h2>
                 <p className="fw-bold">
                     Capacité de faire preuve d’attitudes ou de
@@ -228,7 +260,7 @@ const StudentEvaluationForm = (): JSX.Element => {
                 </Form.Group>
             </div>
 
-            <div className="bg-primary p-2 rounded mt-3">
+            <div className="bg-primary p-3 rounded mt-3">
                 <h2>APPRÉCIATION GLOBALE DU STAGIARE</h2>
                 <Form.Group className="mt-2">
                     <Form.Select value={formFields.habiletesDemontres} required
@@ -290,12 +322,14 @@ const StudentEvaluationForm = (): JSX.Element => {
                                       ...formFields,
                                       heuresEncadrement: event.target.value
                                   })}
+                                  min={0}
+                                  max={40}
                                   required
                                   type="number"/>
                 </Form.Group>
             </div>
 
-            <div className="bg-primary p-2 rounded mt-3">
+            <div className="bg-primary p-3 rounded mt-3">
                 <h2>L'ENTREPRISE AIMERAIT ACCUEILLIR CET ÉLÈVE POUR SON PROCHAIN STAGE</h2>
                 <Form.Group className="mt-2">
                     <Form.Select value={formFields.acueillirPourProchainStage} required
@@ -328,13 +362,14 @@ const StudentEvaluationForm = (): JSX.Element => {
                                   rows={3}/>
                 </Form.Group>
             </div>
-            <Row>
-                <Col sm={4} className="mx-auto mt-3">
+            <Row className="bg-primary p-2 rounded mt-3">
+                <h2>Signature</h2>
+                <Col sm={4} className="mt-3">
                     <SignaturePad canvasProps={{width: 500, height: 200, className: 'border border-5 bg-light'}}
                                   ref={(ref) => {
                                       sigPad = ref
                                   }}/>
-                    <Button onClick={() => {
+                    <Button variant="warning" onClick={() => {
                         sigPad!.clear()
                     }}>Recommencer</Button>
                     {!hasSigned && <h2 className="text-danger">Vous devez signez!</h2>}

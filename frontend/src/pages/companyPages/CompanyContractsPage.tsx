@@ -5,19 +5,21 @@ import {generateAlert} from "../../services/universalServices/UniversalUtilServi
 import {putcompanyContracts, putCompanySignatureContract} from "../../services/companyServices/CompanyFetchService";
 import SignaturePad from "react-signature-canvas";
 import PageHeader from "../../components/universalComponents/PageHeader";
+import StudentEvaluationForm from "../../components/companyComponents/StudentEvaluationForm";
 
-const SignerEntenteDeStageParCompagnie = ({user}: { user: IUser }): JSX.Element => {
+const CompanyContractsPage = ({connectedUser}: { connectedUser: IUser }): JSX.Element => {
     const [contratsNonSigner, setContratsNonSigner] = useState<any[]>([])
     const [isSigner, setIsSigner] = useState(false)
     const [contratId, setContratId] = useState(0)
+    const [currentlySelectedContract, setCurrentlySelectedContract] = useState<string>("");
+    const [showEvaluationForm, setShowEvaluationForm] = useState(false)
     const nextYear: number = new Date().getFullYear() + 1
     let sigPad: SignaturePad | null
-    const [signature, setSignature] = useState<Uint8Array>(new Uint8Array([]))
 
     useEffect(() => {
         const fetchCompanyContracts = async () => {
             try {
-                const response = await putcompanyContracts(user.id, user.token, "Hiver", nextYear)
+                const response = await putcompanyContracts(connectedUser.id, connectedUser.token, "Hiver", nextYear)
                 if (response.ok) {
                     const data = await response.json();
                     setContratsNonSigner(data.contracts)
@@ -39,7 +41,7 @@ const SignerEntenteDeStageParCompagnie = ({user}: { user: IUser }): JSX.Element 
     async function signer(signature: string): Promise<void> {
         setIsSigner(false)
         try {
-            const response = await putCompanySignatureContract(user.token, user.id, contratId, signature)
+            const response = await putCompanySignatureContract(connectedUser.token, connectedUser.id, contratId, signature)
             if (response.ok) {
                 contratsNonSigner.forEach(contrat => {
                     if (contrat.contractId === contratId) {
@@ -55,6 +57,15 @@ const SignerEntenteDeStageParCompagnie = ({user}: { user: IUser }): JSX.Element 
         } catch {
             generateAlert()
         }
+    }
+
+    if (showEvaluationForm) {
+        return (
+            <StudentEvaluationForm
+                contractId={currentlySelectedContract}
+                connectedUser={connectedUser}
+                setShowEvaluationForm={setShowEvaluationForm}/>
+        );
     }
 
     if (isSigner) {
@@ -92,13 +103,14 @@ const SignerEntenteDeStageParCompagnie = ({user}: { user: IUser }): JSX.Element 
     return (
         <Container className="d-flex justify-content-center">
             <Col>
-                <PageHeader title={"Signer Entente De Stage"}></PageHeader>
+                <PageHeader title={"Mes contrats"}></PageHeader>
                 <Row className="mt-5">
                     <Col className="bg-light p-0">
                         <Table className="text-center table table-bordered" hover>
                             <thead className="bg-primary">
                             <tr className="text-white">
                                 <th>Description</th>
+                                <th>Evaluation</th>
                                 <th>Ententes</th>
                             </tr>
                             </thead>
@@ -107,15 +119,28 @@ const SignerEntenteDeStageParCompagnie = ({user}: { user: IUser }): JSX.Element 
                                 return (
                                     <tr key={index}>
                                         <td>{contrat.description}</td>
-                                        <td>{
-                                            contrat.companySignature.length > 0 ?
-                                                <p>Déjà signé</p>
-                                                :
-
-                                                <Button className="btn btn-warning"
-                                                        onClick={async () => await getEntente(contrat.contractId)}>Signer</Button>
-
-                                        }</td>
+                                        <td>
+                                            {
+                                                contrat.companySignature.length > 0
+                                                    ? <Button variant="warning" onClick={() => {
+                                                        setCurrentlySelectedContract(contrat.contractId)
+                                                        setShowEvaluationForm(true)
+                                                    }}>Évaluer</Button>
+                                                    : "Vous devez signé avant"
+                                            }
+                                        </td>
+                                        <td>
+                                            {
+                                                contrat.companySignature.length > 0
+                                                    ? <p>Déjà signé</p>
+                                                    : <Button className="btn btn-warning"
+                                                              onClick={async () =>
+                                                                  await getEntente(contrat.contractId)
+                                                              }>
+                                                        Signer
+                                                    </Button>
+                                            }
+                                        </td>
                                     </tr>
                                 );
                             })}
@@ -128,4 +153,4 @@ const SignerEntenteDeStageParCompagnie = ({user}: { user: IUser }): JSX.Element 
     )
 }
 
-export default SignerEntenteDeStageParCompagnie
+export default CompanyContractsPage
