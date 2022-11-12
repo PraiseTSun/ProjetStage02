@@ -3,6 +3,7 @@ import React, {useState} from "react";
 import RatingComponent from "./RatingComponent";
 import IStudentEvaluationFormFields from "../../models/IStudentEvaluationFormFields";
 import SignaturePad from "react-signature-canvas";
+import {BeatLoader} from "react-spinners";
 
 const StudentEvaluationForm = (): JSX.Element => {
     const [waiting, setWaiting] = useState<boolean>(false);
@@ -14,6 +15,7 @@ const StudentEvaluationForm = (): JSX.Element => {
         event.preventDefault();
 
         if (!sigPad?.isEmpty()) {
+            setWaiting(true);
             console.log("data sent")
         } else {
             setHasSigned(false)
@@ -26,34 +28,34 @@ const StudentEvaluationForm = (): JSX.Element => {
             <div className="bg-primary p-2 rounded">
                 <h2>PRODUCTIVITÉ</h2>
                 <p className="fw-bold">Capacité d'optimiser son rendement au travail</p>
-                <RatingComponent value={formFields.productivityOne}
+                <RatingComponent value={formFields.travailEfficace}
                                  label="Planifier et organiser son travail de façon efficace"
                                  setValue={(value: string) => {
-                                     setformFields({...formFields, productivityOne: value})
+                                     setformFields({...formFields, travailEfficace: value})
                                  }}/>
-                <RatingComponent value={formFields.productivityTwo}
+                <RatingComponent value={formFields.comprendRapidement}
                                  label="Comprendre rapidement les directives relatives à son travail"
                                  setValue={(value: string) => {
-                                     setformFields({...formFields, productivityTwo: value})
+                                     setformFields({...formFields, comprendRapidement: value})
                                  }}/>
-                <RatingComponent value={formFields.productivityThree}
+                <RatingComponent value={formFields.rythmeSoutenu}
                                  label="Maintenir un rythme de travail soutenu"
                                  setValue={(value: string) => {
-                                     setformFields({...formFields, productivityThree: value})
+                                     setformFields({...formFields, rythmeSoutenu: value})
                                  }}/>
-                <RatingComponent value={formFields.productivityFour} label="Établir ses priorités"
+                <RatingComponent value={formFields.etablirPriorites} label="Établir ses priorités"
                                  setValue={(value: string) => {
-                                     setformFields({...formFields, productivityFour: value})
+                                     setformFields({...formFields, etablirPriorites: value})
                                  }}/>
-                <RatingComponent value={formFields.productivityFive} label="Respecter ses échéanciers"
+                <RatingComponent value={formFields.respecteEcheances} label="Respecter ses échéanciers"
                                  setValue={(value: string) => {
-                                     setformFields({...formFields, productivityFive: value})
+                                     setformFields({...formFields, respecteEcheances: value})
                                  }}/>
                 <Form.Group className="mt-2">
                     <Form.Label>Commentaires</Form.Label>
-                    <Form.Control value={formFields.productivityComments}
+                    <Form.Control value={formFields.commentairesProductivite}
                                   onChange={event =>
-                                      setformFields({...formFields, productivityComments: event.target.value})}
+                                      setformFields({...formFields, commentairesProductivite: event.target.value})}
                                   as="textarea"
                                   rows={3}/>
                 </Form.Group>
@@ -65,35 +67,37 @@ const StudentEvaluationForm = (): JSX.Element => {
                     Capacité de s’acquitter des tâches sous sa responsabilité
                     en s’imposant personnellement des normes de qualité
                 </p>
-                <RatingComponent value={formFields.workQualityOne} label="Respecter les mandats qui lui ont été confiés"
+                <RatingComponent value={formFields.respecteMandatsDemandes}
+                                 label="Respecter les mandats qui lui ont été confiés"
                                  setValue={(value: string) => {
-                                     setformFields({...formFields, workQualityOne: value})
+                                     setformFields({...formFields, respecteMandatsDemandes: value})
                                  }}/>
-                <RatingComponent value={formFields.workQualityTwo}
+                <RatingComponent value={formFields.attentionAuxDetails}
                                  label="Porter attention aux détails dans la réalisation de ses tâches"
                                  setValue={(value: string) => {
-                                     setformFields({...formFields, workQualityTwo: value})
+                                     setformFields({...formFields, attentionAuxDetails: value})
                                  }}/>
-                <RatingComponent value={formFields.workQualityThree}
+                <RatingComponent value={formFields.doubleCheckTravail}
                                  label="Vérifier son travail, s'assurer que rien n'a été oublié"
                                  setValue={(value: string) => {
-                                     setformFields({...formFields, workQualityThree: value})
+                                     setformFields({...formFields, doubleCheckTravail: value})
                                  }}/>
-                <RatingComponent value={formFields.workQualityFour} label="Rechercher des occasions de se perfectionner"
+                <RatingComponent value={formFields.occasionsDePerfectionnement}
+                                 label="Rechercher des occasions de se perfectionner"
                                  setValue={(value: string) => {
-                                     setformFields({...formFields, workQualityFour: value})
+                                     setformFields({...formFields, occasionsDePerfectionnement: value})
                                  }}/>
-                <RatingComponent value={formFields.workQualityFive}
+                <RatingComponent value={formFields.bonneAnalyseProblemes}
                                  label="Faire une bonne analyse des problèmes rencontrés"
                                  setValue={(value: string) => {
-                                     setformFields({...formFields, workQualityFive: value})
+                                     setformFields({...formFields, bonneAnalyseProblemes: value})
                                  }}/>
                 <Form.Group className="mt-2">
                     <Form.Label>Commentaires</Form.Label>
-                    <Form.Control value={formFields.workQualityComments}
+                    <Form.Control value={formFields.commentairesQualite}
                                   onChange={event => setformFields({
                                       ...formFields,
-                                      workQualityComments: event.target.value
+                                      commentairesQualite: event.target.value
                                   })} as="textarea"
                                   rows={3}/>
                 </Form.Group>
@@ -105,60 +109,60 @@ const StudentEvaluationForm = (): JSX.Element => {
                     Capacité d’établir des interrelations harmonieuses
                     dans son milieu de travail
                 </p>
-                <RatingComponent value={formFields.workRelationshipsOne}
+                <RatingComponent value={formFields.planifieTravail}
                                  label="Planifier et organiser son travail de façon efficace"
                                  setValue={(value: string) => setformFields({
                                      ...formFields,
-                                     workRelationshipsOne: value
+                                     planifieTravail: value
                                  })}/>
-                <RatingComponent value={formFields.workRelationshipsTwo}
+                <RatingComponent value={formFields.contactsFaciles}
                                  label="Établir facilement des contacts avec les gens"
                                  setValue={
                                      (value: string) => setformFields({
                                          ...formFields,
-                                         workRelationshipsTwo: value
+                                         contactsFaciles: value
                                      })}/>
-                <RatingComponent value={formFields.workRelationshipsThree}
+                <RatingComponent value={formFields.travailEnEquipe}
                                  label="Contribuer activement au travail d’équipe"
                                  setValue={
                                      (value: string) => setformFields({
                                          ...formFields,
-                                         workRelationshipsThree: value
+                                         travailEnEquipe: value
                                      })}/>
-                <RatingComponent value={formFields.workRelationshipsFour}
+                <RatingComponent value={formFields.adapteCulture}
                                  label="S’adapter facilement à la culture de l’entreprise"
                                  setValue={
                                      (value: string) => setformFields({
                                          ...formFields,
-                                         workRelationshipsFour: value
+                                         adapteCulture: value
                                      })}/>
-                <RatingComponent value={formFields.workRelationshipsFive} label="Accepter les critiques constructives"
+                <RatingComponent value={formFields.accepteCritiques} label="Accepter les critiques constructives"
                                  setValue={
                                      (value: string) => setformFields({
                                          ...formFields,
-                                         workRelationshipsFive: value
+                                         accepteCritiques: value
                                      })}/>
-                <RatingComponent value={formFields.workRelationshipsSix} label="Être respectueux envers les gens"
+                <RatingComponent value={formFields.respecteAutres} label="Être respectueux envers les gens"
                                  setValue={
                                      (value: string) => setformFields({
                                          ...formFields,
-                                         workRelationshipsSix: value
+                                         respecteAutres: value
                                      })}/>
-                <RatingComponent value={formFields.workRelationshipsSeven}
+                <RatingComponent value={formFields.ecouteActiveComprendrePDVautre}
                                  label=" Faire preuve d’écoute active en essayant
                                  de comprendre le point de vue de l’autre"
                                  setValue={
                                      (value: string) => setformFields({
                                          ...formFields,
-                                         workRelationshipsSeven: value
+                                         ecouteActiveComprendrePDVautre: value
                                      })}/>
                 <Form.Group className="mt-2">
                     <Form.Label>Commentaires</Form.Label>
-                    <Form.Control value={formFields.workRelationshipsComments}
+                    <Form.Control value={formFields.commentairesRelationsInterpersonnelles}
                                   onChange={event =>
                                       setformFields({
                                           ...formFields,
-                                          workRelationshipsComments: event.target.value
+                                          commentairesRelationsInterpersonnelles: event.target.value
                                       })}
                                   as="textarea"
                                   rows={3}/>
@@ -171,53 +175,53 @@ const StudentEvaluationForm = (): JSX.Element => {
                     Capacité de faire preuve d’attitudes ou de
                     comportements matures et responsables
                 </p>
-                <RatingComponent value={formFields.personalAbilitiesOne}
+                <RatingComponent value={formFields.interetMotivation}
                                  label="Démontrer de l’intérêt et de la motivation au travail"
                                  setValue={
                                      (value: string) => setformFields({
                                          ...formFields,
-                                         personalAbilitiesOne: value
+                                         interetMotivation: value
                                      })}/>
-                <RatingComponent value={formFields.personalAbilitiesTwo}
+                <RatingComponent value={formFields.exprimeIdees}
                                  label="Exprimer clairement ses idées"
                                  setValue={
                                      (value: string) => setformFields({
                                          ...formFields,
-                                         personalAbilitiesTwo: value
+                                         exprimeIdees: value
                                      })}/>
-                <RatingComponent value={formFields.personalAbilitiesThree} label="Faire preuve d’initiative"
+                <RatingComponent value={formFields.initiative} label="Faire preuve d’initiative"
                                  setValue={
                                      (value: string) => setformFields({
                                          ...formFields,
-                                         personalAbilitiesThree: value
+                                         initiative: value
                                      })}/>
-                <RatingComponent value={formFields.personalAbilitiesFour} label="Travailler de façon sécuritaire"
+                <RatingComponent value={formFields.travailSecuritaire} label="Travailler de façon sécuritaire"
                                  setValue={
                                      (value: string) => setformFields({
                                          ...formFields,
-                                         personalAbilitiesFour: value
+                                         travailSecuritaire: value
                                      })}/>
-                <RatingComponent value={formFields.personalAbilitiesFive} label="Démontrer un bon sens des responsabilités ne
+                <RatingComponent value={formFields.responsableAutonome} label="Démontrer un bon sens des responsabilités ne
                                     requérant qu’un minimum de supervision"
                                  setValue={
                                      (value: string) => setformFields({
                                          ...formFields,
-                                         personalAbilitiesFive: value
+                                         responsableAutonome: value
                                      })}/>
-                <RatingComponent value={formFields.personalAbilitiesSix}
+                <RatingComponent value={formFields.ponctuel}
                                  label="Être ponctuel et assidu à son travail"
                                  setValue={
                                      (value: string) => setformFields({
                                          ...formFields,
-                                         personalAbilitiesSix: value
+                                         ponctuel: value
                                      })}/>
                 <Form.Group className="mt-2">
                     <Form.Label>Commentaires</Form.Label>
-                    <Form.Control value={formFields.personalAbilitiesComments}
+                    <Form.Control value={formFields.commentairesHabilites}
                                   onChange={event =>
                                       setformFields({
                                           ...formFields,
-                                          personalAbilitiesComments: event.target.value
+                                          commentairesHabilites: event.target.value
                                       })}
                                   as="textarea"
                                   rows={3}/>
@@ -227,46 +231,46 @@ const StudentEvaluationForm = (): JSX.Element => {
             <div className="bg-primary p-2 rounded mt-3">
                 <h2>APPRÉCIATION GLOBALE DU STAGIARE</h2>
                 <Form.Group className="mt-2">
-                    <Form.Select value={formFields.globalAppreciation} required
+                    <Form.Select value={formFields.habiletesDemontres} required
                                  onChange={event => setformFields({
                                      ...formFields,
-                                     globalAppreciation: event.target.value
+                                     habiletesDemontres: event.target.value
                                  })}>
                         <option value="" hidden disabled>Veuillez choisir une option</option>
-                        <option value="Les habiletés démontrées dépassent de beaucoup les attentes">
+                        <option value="depassentBeacoupAttentes">
                             Les habiletés démontrées dépassent de beaucoup les attentes
                         </option>
-                        <option value="Les habiletés démontrées dépassent les attentes">
+                        <option value="depassentAttentes">
                             Les habiletés démontrées dépassent les attentes
                         </option>
-                        <option value="Les habiletés démontrées répondent pleinement aux attentes">
+                        <option value="repondentAttentes">
                             Les habiletés démontrées répondent pleinement aux attentes
                         </option>
-                        <option value="Les habiletés démontrées répondent partiellement aux attentes">
+                        <option value="repondentPartiellementAttentes">
                             Les habiletés démontrées répondent partiellement aux attentes
                         </option>
-                        <option value="Les habiletés démontrées ne répondent pas aux attentes">
+                        <option value="repondentPasAttentes">
                             Les habiletés démontrées ne répondent pas aux attentes
                         </option>
                     </Form.Select>
                 </Form.Group>
                 <Form.Group className="mt-2">
                     <Form.Label>Commentaires</Form.Label>
-                    <Form.Control value={formFields.globalAppreciationComments}
+                    <Form.Control value={formFields.commentairesAppreciation}
                                   onChange={event =>
                                       setformFields({
                                           ...formFields,
-                                          globalAppreciationComments: event.target.value
+                                          commentairesAppreciation: event.target.value
                                       })}
                                   as="textarea"
                                   rows={3}/>
                 </Form.Group>
                 <Form.Group className="mt-2">
                     <Form.Label>Cette évaluation a été discutée avec le stagiaire</Form.Label>
-                    <Form.Select value={formFields.evaluationSharedWithStudent} required
+                    <Form.Select value={formFields.discuteAvecStagiaire} required
                                  onChange={event => setformFields({
                                      ...formFields,
-                                     evaluationSharedWithStudent: event.target.value
+                                     discuteAvecStagiaire: event.target.value
                                  })}>
                         <option value="" hidden disabled>Veuillez choisir une option</option>
                         <option value="oui">
@@ -281,10 +285,10 @@ const StudentEvaluationForm = (): JSX.Element => {
                     <Form.Label>
                         Veuillez indiquer le nombre d’heures réel par semaine d’encadrement accordé au stagiaire
                     </Form.Label>
-                    <Form.Control value={formFields.weeklyMentoringHours}
+                    <Form.Control value={formFields.heuresEncadrement}
                                   onChange={event => setformFields({
                                       ...formFields,
-                                      weeklyMentoringHours: event.target.value
+                                      heuresEncadrement: event.target.value
                                   })}
                                   required
                                   type="number"/>
@@ -294,10 +298,10 @@ const StudentEvaluationForm = (): JSX.Element => {
             <div className="bg-primary p-2 rounded mt-3">
                 <h2>L'ENTREPRISE AIMERAIT ACCUEILLIR CET ÉLÈVE POUR SON PROCHAIN STAGE</h2>
                 <Form.Group className="mt-2">
-                    <Form.Select value={formFields.companyWouldHireAgain} required
+                    <Form.Select value={formFields.acueillirPourProchainStage} required
                                  onChange={event => setformFields({
                                      ...formFields,
-                                     companyWouldHireAgain: event.target.value
+                                     acueillirPourProchainStage: event.target.value
                                  })}>
                         <option value="" hidden disabled>Veuillez choisir une option</option>
                         <option value="oui">
@@ -306,7 +310,7 @@ const StudentEvaluationForm = (): JSX.Element => {
                         <option value="non">
                             Non
                         </option>
-                        <option value="peut-être">
+                        <option value="peutEtre">
                             Peut-être
                         </option>
                     </Form.Select>
@@ -315,10 +319,10 @@ const StudentEvaluationForm = (): JSX.Element => {
                     <Form.Label>
                         La formation technique du stagiaire était-elle suffisante pour accomplir le mandat de stage?
                     </Form.Label>
-                    <Form.Control value={formFields.wasTheDecEnough}
+                    <Form.Control value={formFields.formationTechniqueSuffisante}
                                   onChange={event => setformFields({
                                       ...formFields,
-                                      wasTheDecEnough: event.target.value
+                                      formationTechniqueSuffisante: event.target.value
                                   })}
                                   as="textarea"
                                   rows={3}/>
@@ -337,7 +341,11 @@ const StudentEvaluationForm = (): JSX.Element => {
                 </Col>
             </Row>
             <Row>
-                <Button variant="success" className="mt-2" type="submit">Soumettre</Button>
+                {
+                    waiting
+                        ? <BeatLoader className="text-center" color="#292b2c"/>
+                        : <Button variant="success" className="mt-2" type="submit">Soumettre</Button>
+                }
             </Row>
         </Form>
     );

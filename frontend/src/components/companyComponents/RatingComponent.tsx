@@ -12,11 +12,11 @@ const RatingComponent = ({
             <Form.Label>{label}</Form.Label>
             <Form.Select value={value} required onChange={event => setValue(event.target.value)}>
                 <option value="" hidden disabled>Veuillez choisir une option</option>
-                <option value="Totalement en accord">Totalement en accord</option>
-                <option value="Plutôt en accord">Plutôt en accord</option>
-                <option value="Plutôt en désaccord">Plutôt en désaccord</option>
-                <option value="Totalement en désaccord">Totalement en désaccord</option>
-                <option value="N/A">N/A</option>
+                <option value="totalementEnAccord">Totalement en accord</option>
+                <option value="plutotEnAccord">Plutôt en accord</option>
+                <option value="plutotEnDesaccord">Plutôt en désaccord</option>
+                <option value="totalementEnDesaccord">Totalement en désaccord</option>
+                <option value="impossibleDeSePronnoncer">N/A</option>
             </Form.Select>
         </Form.Group>
     );
