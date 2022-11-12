@@ -566,7 +566,7 @@ public class GestionnaireService {
         StageContract stageContract = opt.get();
         EvaluationEtudiant evaluationMillieuStage = optional.get();
         evaluationMillieuStagePDFRepository.save(EvaluationPDF.builder()
-                .pdf(PDFCreationUtil.createPDFFromMap("Évaluation du millieu stage",
+                .pdf(PDFCreationUtil.createPDFFromMap("Évaluation de l'étudiant",
                         evaluationEtudiantToMap(evaluationMillieuStage, getEvaluationInfoForContract(contractId))))
                 .contractId(contractId)
                 .build());
@@ -605,12 +605,40 @@ public class GestionnaireService {
         offerInfo.put("Nombre d'heures par semaine", infoDTO.getHeureParSemaine() + " heures");
         offerInfo.put("Salaire", infoDTO.getSalaire() + " $/h");
 
-        productivite.put("Planifier son travail efficacement", evaluation.getTravailEfficace());
-        productivite.put("Comprendre rapidement les directives", evaluation.getComprendRapidement());
-        productivite.put("Rythme de travail soutenu", evaluation.getRythmeSoutenu());
-        productivite.put("Établir ses prioritées", evaluation.getEtablirPriorites());
-        productivite.put("Respect des echeances", evaluation.getRespecteEcheances());
-        productivite.put("Commentaires", evaluation.getCommentairesProductivite());
+        productivite.put("Planifier son travail efficacement", fieldToText(evaluation.getTravailEfficace()));
+        productivite.put("Comprendre rapidement les directives", fieldToText(evaluation.getComprendRapidement()));
+        productivite.put("Rythme de travail soutenu", fieldToText(evaluation.getRythmeSoutenu()));
+        productivite.put("Établir ses prioritées", fieldToText(evaluation.getEtablirPriorites()));
+        productivite.put("Respect des echeances", fieldToText(evaluation.getRespecteEcheances()));
+        productivite.put("Commentaires", fieldToText(evaluation.getCommentairesProductivite()));
+
+        qualiteDuTravail.put("Respect des mandats demandés", fieldToText(evaluation.getRespecteMandatsDemandes()));
+        qualiteDuTravail.put("Attention aux détails", fieldToText(evaluation.getAttentionAuxDetails()));
+        qualiteDuTravail.put("Revérifier son travail", fieldToText(evaluation.getDoubleCheckTravail()));
+        qualiteDuTravail.put("Rechercher des occasions pour se perfectionner", fieldToText(evaluation.getOccasionsDePerfectionnement()));
+        qualiteDuTravail.put("Bonne analyse des problèmes rencontrés", fieldToText(evaluation.getBonneAnalyseProblemes()));
+        qualiteDuTravail.put("Commentaires", evaluation.getCommentairesQualite());
+
+        qualiteRelationInterpesonnelles.put("Planifie son travail efficacement", fieldToText(evaluation.getPlanifieTravail()));
+        qualiteRelationInterpesonnelles.put("Etabli facilement des contacts avec les gens", fieldToText(evaluation.getContactsFaciles()));
+        qualiteRelationInterpesonnelles.put("Contribue au travail d'équipe", fieldToText(evaluation.getTravailEnEquipe()));
+        qualiteRelationInterpesonnelles.put("S'adapte facilement a la culture d'entreprise", fieldToText(evaluation.getAdapteCulture()));
+        qualiteRelationInterpesonnelles.put("Accepte les critiques constructives", fieldToText(evaluation.getAccepteCritiques()));
+        qualiteRelationInterpesonnelles.put("Respecte les autres", fieldToText(evaluation.getRespecteAutres()));
+        qualiteRelationInterpesonnelles.put("Essaie de comprendre le point de vue des autres", fieldToText(evaluation.getEcouteActiveComprendrePDVautre()));
+        qualiteRelationInterpesonnelles.put("Commentaires", evaluation.getCommentairesRelationsInterpersonnelles());
+
+
+        habiletesPersonnelles.put("Démontre de l'interet de la motivation", fieldToText(evaluation.getInteretMotivation()));
+        habiletesPersonnelles.put("Exprime clairement ses idées", fieldToText(evaluation.getExprimeIdees()));
+        habiletesPersonnelles.put("Fait preuve d'initiative", fieldToText(evaluation.getInitiative()));
+        habiletesPersonnelles.put("Travail de façon sécuritaire", fieldToText(evaluation.getTravailSecuritaire()));
+        habiletesPersonnelles.put("Bon sens des responsabilitées et d'autonomie", fieldToText(evaluation.getResponsableAutonome()));
+        habiletesPersonnelles.put("Ponctuel", fieldToText(evaluation.getPonctuel()));
+        habiletesPersonnelles.put("Commentaires", evaluation.getCommentairesHabilites());
+
+        appreciationGlobale.put("", fieldToText(evaluation.getHabiletesDemontres()));
+        appreciationGlobale.put("", fieldToText(evaluation.getPonctuel()));
 
         signPara.put("Signé le", evaluation.getDateSignature());
 
