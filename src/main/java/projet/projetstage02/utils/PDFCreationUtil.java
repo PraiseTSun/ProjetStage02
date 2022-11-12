@@ -3,9 +3,9 @@ package projet.projetstage02.utils;
 import com.itextpdf.text.*;
 import com.itextpdf.text.pdf.PdfWriter;
 
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.util.Base64;
 import java.util.Map;
 
 public class PDFCreationUtil {
@@ -29,13 +29,7 @@ public class PDFCreationUtil {
      * @throws DocumentException
      */
     public static String createPDFFromMap(String title, Map<String, Map<String, String>> paragraphs) throws DocumentException {
-//        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-        FileOutputStream outputStream = null;
-        try {
-            outputStream = new FileOutputStream("test.pdf");
-        } catch (FileNotFoundException e) {
-            throw new RuntimeException(e);
-        }
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         Document document = new Document(PageSize.A4, 25, 25, 25, 25);
         PdfWriter writer = PdfWriter.getInstance(document, outputStream);
 
@@ -44,8 +38,7 @@ public class PDFCreationUtil {
         addText(document, paragraphs);
         document.close();
         writer.close();
-        return "";
-//        return Base64.getEncoder().encodeToString(outputStream.toByteArray());
+        return Base64.getEncoder().encodeToString(outputStream.toByteArray());
     }
 
     private static void addText(Document document, Map<String, Map<String, String>> paragraphs) {
@@ -81,6 +74,7 @@ public class PDFCreationUtil {
     }
 
     private static void addKeyValueLine(Document document, String key, String value) throws DocumentException {
+        if (value == null || value.isEmpty()) return;
         document.add(new Paragraph(
                 key +
                         (key.length() > 0 ? " : " : "")

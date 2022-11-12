@@ -489,7 +489,9 @@ public class GestionnaireService {
         map.put("Information sur l'étudiant", studentInfo);
         map.put("Information sur l'offre de stage", offerInfo);
         map.put("Évaluation", evaluationParagraph);
-        map.put("Commentaires", commentaires);
+        if (evaluationMillieuStage.getCommentaires() != null && !evaluationMillieuStage.getCommentaires().isEmpty()) {
+            map.put("Commentaires", commentaires);
+        }
         map.put("Signature", signPara);
         map.put("_signature_", getSignature(evaluationMillieuStage.getSignature()));
         return map;
@@ -564,7 +566,6 @@ public class GestionnaireService {
         }
         Optional<StageContract> opt = stageContractRepository.findById(contractId);
         if (opt.isEmpty()) throw new NonExistentEntityException();
-        StageContract stageContract = opt.get();
         EvaluationEtudiant evaluationMillieuStage = optional.get();
         evaluationMillieuStagePDFRepository.save(EvaluationPDF.builder()
                 .pdf(PDFCreationUtil.createPDFFromMap("Évaluation de l'étudiant",

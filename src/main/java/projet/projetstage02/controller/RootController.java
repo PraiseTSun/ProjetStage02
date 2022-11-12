@@ -1060,7 +1060,7 @@ public class RootController {
             return ResponseEntity.status(FORBIDDEN).build();
         } catch (NonExistentEntityException e) {
             logger.log(Level.INFO, "Put/getStudentInterviews/{studentId} return 404");
-            return ResponseEntity.status(NOT_FOUND).build();
+            return ResponseEntity.notFound().build();
         }
     }
 
@@ -1086,21 +1086,22 @@ public class RootController {
             logger.log(Level.INFO, "put /evaluateStudent entered");
             authService.getToken(token, COMPANY);
             companyService.evaluateStudent(studentEvaluationInDTO);
-//            gestionnaireService.createEvaluationMillieuStagePDF(studentEvaluationInDTO.getContractId());
+            gestionnaireService.createEvaluationEtudiantPDF(studentEvaluationInDTO.getContractId());
             logger.log(Level.INFO, "PutMapping: /evaluateStudent sent 201 response");
             return ResponseEntity.status(CREATED).build();
         } catch (InvalidTokenException e) {
             logger.log(Level.INFO, "PutMapping: /evaluateStudent sent 403 response");
             return ResponseEntity.status(FORBIDDEN).build();
-        } // catch (NonExistentOfferExeption e) {
-//            throw new RuntimeException(e);
-//        } catch (NonExistentEntityException e) {
-//            throw new RuntimeException(e);
-//        } catch (DocumentException e) {
-//            throw new RuntimeException(e);
-//        } catch (EmptySignatureException e) {
-//            throw new RuntimeException(e);
-//        }
+        } catch (NonExistentOfferExeption | NonExistentEntityException e) {
+            logger.log(Level.INFO, "PutMapping: /evaluateStudent sent 404 response");
+            return ResponseEntity.notFound().build();
+        } catch (EmptySignatureException e) {
+            logger.log(Level.INFO, "PutMapping: /evaluateStudent sent 401 response");
+            return ResponseEntity.status(BAD_REQUEST).build();
+        } catch (DocumentException e) {
+            logger.log(Level.INFO, "PutMapping: /evaluateStudent sent 500 response");
+            return ResponseEntity.status(INTERNAL_SERVER_ERROR).build();
+        }
     }
 
     @PutMapping("/getEvaluatedContracts/etudiants")
@@ -1130,7 +1131,7 @@ public class RootController {
             return ResponseEntity.status(FORBIDDEN).build();
         } catch (NonExistentEntityException e) {
             logger.log(Level.INFO, "Put /getEvaluationPDF/etudiant/{id} sent request 404");
-            return ResponseEntity.status(NOT_FOUND).build();
+            return ResponseEntity.notFound().build();
         }
     }
 

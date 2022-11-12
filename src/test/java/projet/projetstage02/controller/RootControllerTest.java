@@ -91,11 +91,10 @@ public class RootControllerTest {
     JacksonTester<CvRefusalDTO> jsonCvRefusalDTO;
     JacksonTester<PdfDTO> jsonPdfDTO;
     JacksonTester<SignatureInDTO> jsonSignatureDTO;
-    JacksonTester<MillieuStageEvaluationInDTO> jsonEvalInDTO;
+    JacksonTester<MillieuStageEvaluationInDTO> jsonEvalMillieuStageInDTO;
     JacksonTester<EvaluationEtudiantInDTO> jsonEvalEtudiantInDTO;
     JacksonTester<InterviewOutDTO> jsonInterviewOutDTO;
     JacksonTester<InterviewSelectInDTO> jsonInterviewSelectDTO;
-    JacksonTester<MillieuStageEvaluationInDTO> getJsonEvalInDTO;
 
     StudentInDTO bart;
     StudentOutDTO bartOut;
@@ -120,7 +119,7 @@ public class RootControllerTest {
 
     CvStatusDTO cvStatusDTO;
     EvaluationInfoDTO evalInfoDTO;
-    MillieuStageEvaluationInDTO evalInDTO;
+    MillieuStageEvaluationInDTO millieuStageEvaluationInDTO;
     EvaluationEtudiantInDTO evaluationEtudiantInDTO;
     CreateInterviewDTO createInterviewDTO;
     InterviewOutDTO interviewOutDTO;
@@ -274,22 +273,21 @@ public class RootControllerTest {
 
         evalInfoDTO = new EvaluationInfoDTO(duffBeer.toModel(), duffOffre.toModel(), bart.toModel());
 
-        evalInDTO = MillieuStageEvaluationInDTO.builder()
-                .climatTravail("Plutôt en accord")
-                .commentaires("Plutôt en accord")
-                .communicationAvecSuperviser("Plutôt en accord")
+        millieuStageEvaluationInDTO = MillieuStageEvaluationInDTO.builder()
+                .climatTravail("plutotEnAccord")
+                .communicationAvecSuperviser("plutotEnAccord")
                 .contractId(1L)
                 .dateSignature("2021-05-01")
-                .environementTravail("Plutôt en accord")
-                .equipementFourni("Plutôt en accord")
+                .environementTravail("plutotEnAccord")
+                .equipementFourni("plutotEnAccord")
                 .heureTotalDeuxiemeMois(23)
                 .heureTotalPremierMois(23)
                 .heureTotalTroisiemeMois(23)
-                .integration("Plutôt en accord")
-                .milieuDeStage("Plutôt en accord")
-                .tachesAnnonces("Plutôt en accord")
-                .volumeDeTravail("Plutôt en accord")
-                .tempsReelConsacre("Plutôt en accord")
+                .integration("plutotEnAccord")
+                .milieuDeStage("plutotEnAccord")
+                .tachesAnnonces("plutotEnAccord")
+                .volumeDeTravail("plutotEnAccord")
+                .tempsReelConsacre("plutotEnAccord")
                 .signature(byteToString(new byte[]{0, 1, 2, 3, 4, 5, 6, 7, 8, 9}))
                 .build();
 
@@ -1807,7 +1805,7 @@ public class RootControllerTest {
         when(gestionnaireService.evaluateStage(any())).thenReturn(1L);
         mockMvc.perform(post("/evaluateStage/{token}", token.getToken())
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(jsonEvalMillieuStageInDTO.write(evalInDTO).getJson()))
+                        .content(jsonEvalMillieuStageInDTO.write(millieuStageEvaluationInDTO).getJson()))
                 .andExpect(status().isCreated());
     }
 
@@ -1943,7 +1941,7 @@ public class RootControllerTest {
     }
 
     @Test
-    void testGetCompanyInterviewsInvalidTokken() throws Exception {
+    void testGetCompanyInterviewsInvalidToken() throws Exception {
         when(authService.getToken(any(), any())).thenThrow(new InvalidTokenException());
 
         mockMvc.perform(put("/getCompanyInterviews/{companyId}", 1)
@@ -2043,7 +2041,7 @@ public class RootControllerTest {
 
         mockMvc.perform(post("/evaluateStage/{token}", token.getToken())
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(jsonEvalMillieuStageInDTO.write(evalInDTO).getJson()))
+                        .content(jsonEvalMillieuStageInDTO.write(millieuStageEvaluationInDTO).getJson()))
                 .andExpect(status().isForbidden());
     }
 
@@ -2053,7 +2051,7 @@ public class RootControllerTest {
 
         mockMvc.perform(post("/evaluateStage/{token}", token.getToken())
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(jsonEvalMillieuStageInDTO.write(evalInDTO).getJson()))
+                        .content(jsonEvalMillieuStageInDTO.write(millieuStageEvaluationInDTO).getJson()))
                 .andExpect(status().isNotFound());
     }
 
@@ -2063,7 +2061,7 @@ public class RootControllerTest {
 
         mockMvc.perform(post("/evaluateStage/{token}", token.getToken())
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(jsonEvalMillieuStageInDTO.write(evalInDTO).getJson()))
+                        .content(jsonEvalMillieuStageInDTO.write(millieuStageEvaluationInDTO).getJson()))
                 .andExpect(status().isInternalServerError());
     }
 
@@ -2126,4 +2124,97 @@ public class RootControllerTest {
                         .content(jsonEvalEtudiantInDTO.write(evaluationEtudiantInDTO).getJson()))
                 .andExpect(status().isCreated());
     }
+
+    @Test
+    void testEvaluateStudentInvalidToken() throws Exception {
+        when(authService.getToken(anyString(), any())).thenThrow(new InvalidTokenException());
+
+        mockMvc.perform(post("/evaluateStudent/{token}", token.getToken())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(jsonEvalEtudiantInDTO.write(evaluationEtudiantInDTO).getJson()))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    void testEvaluateStudentNotFound() throws Exception {
+        doThrow(new NonExistentEntityException()).when(gestionnaireService).createEvaluationEtudiantPDF(anyLong());
+
+        mockMvc.perform(post("/evaluateStudent/{token}", token.getToken())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(jsonEvalEtudiantInDTO.write(evaluationEtudiantInDTO).getJson()))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    void testEvaluateStudentInternalServerError() throws Exception {
+        doThrow(new DocumentException()).when(gestionnaireService).createEvaluationEtudiantPDF(anyLong());
+
+        mockMvc.perform(post("/evaluateStudent/{token}", token.getToken())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(jsonEvalEtudiantInDTO.write(evaluationEtudiantInDTO).getJson()))
+                .andExpect(status().isInternalServerError());
+    }
+
+    @Test
+    void testEvaluateStudentBadRequest() throws Exception {
+        doThrow(new EmptySignatureException()).when(gestionnaireService).createEvaluationEtudiantPDF(anyLong());
+
+        mockMvc.perform(post("/evaluateStudent/{token}", token.getToken())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(jsonEvalEtudiantInDTO.write(evaluationEtudiantInDTO).getJson()))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void testGetEvaluationEtudiantPDFHappyDay() throws Exception {
+        when(gestionnaireService.getEvaluationPDFEtudiant(anyLong())).thenReturn(duffOffrePdfOut);
+
+        mockMvc.perform(put("/getEvaluationPDF/etudiant/{id}", 1)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(jsonTokenDTO.write(token).getJson()))
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    void testGetEvaluationEtudiantPDFNotFound() throws Exception {
+        when(gestionnaireService.getEvaluationPDFEtudiant(anyLong())).thenThrow(new NonExistentEntityException());
+
+        mockMvc.perform(put("/getEvaluationPDF/etudiant/{id}", 1)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(jsonTokenDTO.write(token).getJson()))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    void testGetEvaluationEtudiantPDFInvalidToken() throws Exception {
+        when(authService.getToken(anyString(), any())).thenThrow(new InvalidTokenException());
+
+        mockMvc.perform(put("/getEvaluationPDF/etudiant/{id}", 1)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(jsonTokenDTO.write(token).getJson()))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    void testGetEvaluatedContractsEtudiantHappyDay() throws Exception {
+        when(gestionnaireService.getEvaluatedContractsEtudiants()).thenReturn(contractsDTO.getContracts());
+
+        mockMvc.perform(put("/getEvaluatedContracts/etudiants")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(jsonTokenDTO.write(token).getJson()))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.size()", is(2)));
+    }
+
+    @Test
+    void testGetEvaluatedContractsEtudiantInvalidToken() throws Exception {
+        when(authService.getToken(anyString(), any())).thenThrow(new InvalidTokenException());
+
+        mockMvc.perform(put("/getEvaluatedContracts/etudiants")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(jsonTokenDTO.write(token).getJson()))
+                .andExpect(status().isForbidden());
+    }
+
+
 }
