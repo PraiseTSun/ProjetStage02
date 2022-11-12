@@ -839,4 +839,43 @@ public class CompanyServiceTest {
         companyService.evaluateStudent(evaluationEtudiantInDTO);
         verify(evaluationEtudiantRepository, times(1)).save(any());
     }
+
+    @Test
+    void testGetEvaluatedStudentsContractsHappyDay() {
+        when(stageContractRepository.findByCompanyId(anyLong())).thenReturn(new ArrayList<>() {{
+            add(stageContract);
+            add(stageContract);
+            add(stageContract);
+        }});
+        when(evaluationEtudiantRepository.findByContractId(anyLong()))
+                .thenReturn(Optional.of(new EvaluationEtudiant(evaluationEtudiantInDTO))
+                );
+
+        List<Long> evaluations = companyService.getEvaluatedStudentsContracts(1L);
+
+        assertThat(evaluations.size()).isEqualTo(3);
+    }
+
+    @Test
+    void testGetEvaluatedStudentsContractsEmptyNoContracts() {
+        when(stageContractRepository.findByCompanyId(anyLong())).thenReturn(new ArrayList<>());
+
+        List<Long> evaluations = companyService.getEvaluatedStudentsContracts(1L);
+
+        assertThat(evaluations.size()).isEqualTo(0);
+    }
+
+    @Test
+    void testGetEvaluatedStudentsContractsEmptyNoEvaluation() {
+        when(stageContractRepository.findByCompanyId(anyLong())).thenReturn(new ArrayList<>() {{
+            add(stageContract);
+            add(stageContract);
+            add(stageContract);
+        }});
+        when(evaluationEtudiantRepository.findByContractId(anyLong())).thenReturn(Optional.empty());
+
+        List<Long> evaluations = companyService.getEvaluatedStudentsContracts(1L);
+
+        assertThat(evaluations.size()).isEqualTo(0);
+    }
 }
