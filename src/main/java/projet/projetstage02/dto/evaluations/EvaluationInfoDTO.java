@@ -1,4 +1,4 @@
-package projet.projetstage02.dto.evaluations.MillieuStage;
+package projet.projetstage02.dto.evaluations;
 
 
 import lombok.Data;
@@ -7,7 +7,7 @@ import projet.projetstage02.model.Offre;
 import projet.projetstage02.model.Student;
 
 @Data
-public class MillieuStageEvaluationInfoDTO {
+public class EvaluationInfoDTO {
     private String session;
     private String dateStageDebut;
     private String dateStageFin;
@@ -24,7 +24,7 @@ public class MillieuStageEvaluationInfoDTO {
     private String prenomEtudiant;
     private String emailEtudiant;
 
-    public MillieuStageEvaluationInfoDTO(Company company, Offre offre, Student student) {
+    public EvaluationInfoDTO(Company company, Offre offre, Student student) {
         session = offre.getSession();
         dateStageDebut = offre.getDateStageDebut();
         dateStageFin = offre.getDateStageFin();
