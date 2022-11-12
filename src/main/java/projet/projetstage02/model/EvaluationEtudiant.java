@@ -42,7 +42,6 @@ public class EvaluationEtudiant {
     @NotBlank
     @Pattern(regexp = "totalementEnAccord|plutotEnAccord|plutotEnDesaccord|totalementEnDesaccord|iimpossibleDeSePrononcer")
     private String respecteEcheances;
-    @NotBlank
     private String commentairesProductivite;
     @NotBlank
     @Pattern(regexp = "totalementEnAccord|plutotEnAccord|plutotEnDesaccord|totalementEnDesaccord|iimpossibleDeSePrononcer")
@@ -59,7 +58,6 @@ public class EvaluationEtudiant {
     @NotBlank
     @Pattern(regexp = "totalementEnAccord|plutotEnAccord|plutotEnDesaccord|totalementEnDesaccord|iimpossibleDeSePrononcer")
     private String bonneAnalyseProblemes;
-    @NotBlank
     private String commentairesQualite;
     @NotBlank
     @Pattern(regexp = "totalementEnAccord|plutotEnAccord|plutotEnDesaccord|totalementEnDesaccord|iimpossibleDeSePrononcer")
@@ -82,7 +80,6 @@ public class EvaluationEtudiant {
     @NotBlank
     @Pattern(regexp = "totalementEnAccord|plutotEnAccord|plutotEnDesaccord|totalementEnDesaccord|iimpossibleDeSePrononcer")
     private String ecouteActiveComprendrePDVautre;
-    @NotBlank
     private String commentairesRelationsInterpersonnelles;
     @NotBlank
     @Pattern(regexp = "totalementEnAccord|plutotEnAccord|plutotEnDesaccord|totalementEnDesaccord|iimpossibleDeSePrononcer")
@@ -102,12 +99,10 @@ public class EvaluationEtudiant {
     @NotBlank
     @Pattern(regexp = "totalementEnAccord|plutotEnAccord|plutotEnDesaccord|totalementEnDesaccord|iimpossibleDeSePrononcer")
     private String ponctuel;
-    @NotBlank
     private String commentairesHabilites;
     @Pattern(regexp = "depassentBeacoupAttentes|depassentAttentes|repondentAttentes|repondentPartiellementAttentes|repondentPasAttentes")
     @NotBlank
     private String habiletesDemontres;
-    @NotBlank
     private String commentairesAppreciation;
     @Pattern(regexp = "oui|non")
     @NotBlank
