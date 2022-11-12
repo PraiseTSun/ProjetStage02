@@ -101,6 +101,8 @@ public class EvaluationEtudiantInDTO {
     @Pattern(regexp = "depassentBeacoupAttentes|depassentAttentes|repondentAttentes|repondentPartiellementAttentes|repondentPasAttentes")
     @NotBlank
     private String habiletesDemontres;
+    @NotBlank
+    private String commentairesAppreciation;
     @Pattern(regexp = "oui|non")
     @NotBlank
     private String discuteAvecStagiaire;
