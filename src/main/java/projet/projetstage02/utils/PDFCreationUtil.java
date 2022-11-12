@@ -35,13 +35,13 @@ public class PDFCreationUtil {
 
         document.open();
         addCenteredTitle(document, title, 30);
-        addText(document, paragraphs);
+        addPDFBody(document, paragraphs);
         document.close();
         writer.close();
         return Base64.getEncoder().encodeToString(outputStream.toByteArray());
     }
 
-    private static void addText(Document document, Map<String, Map<String, String>> paragraphs) {
+    private static void addPDFBody(Document document, Map<String, Map<String, String>> paragraphs) {
         paragraphs.forEach((paragraphTitle, paragraph) -> {
             try {
                 if (paragraphTitle.contains("_signature_")) {
