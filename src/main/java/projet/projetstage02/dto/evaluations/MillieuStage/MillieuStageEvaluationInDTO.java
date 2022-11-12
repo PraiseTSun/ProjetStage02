@@ -49,7 +49,6 @@ public class MillieuStageEvaluationInDTO {
     @NotBlank
     @Pattern(regexp = "totalementEnAccord|plutotEnAccord|plutotEnDesaccord|totalementEnDesaccord|impossibleDeSePrononcer")
     private String volumeDeTravail;
-    @NotBlank
     private String commentaires;
     @NotBlank
     private String signature;
