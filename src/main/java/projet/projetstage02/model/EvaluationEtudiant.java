@@ -10,6 +10,7 @@ import projet.projetstage02.dto.evaluations.Etudiant.EvaluationEtudiantInDTO;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.Lob;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Pattern;
@@ -117,6 +118,7 @@ public class EvaluationEtudiant {
     @NotBlank
     private String formationTechniqueSuffisante;
     @NotBlank
+    @Lob
     private String signature;
     @NotBlank
     @Pattern(regexp = "^(19|20[0-9][0-9])-(0[0-9]|1[0-2])-([0-2][0-9]|3[0-1])$")
