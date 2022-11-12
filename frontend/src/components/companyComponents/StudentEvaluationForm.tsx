@@ -1,15 +1,27 @@
-import {Form} from "react-bootstrap";
-import {useState} from "react";
+import {Button, Col, Form, Row} from "react-bootstrap";
+import React, {useState} from "react";
 import RatingComponent from "./RatingComponent";
 import IStudentEvaluationFormFields from "../../models/IStudentEvaluationFormFields";
+import SignaturePad from "react-signature-canvas";
 
 const StudentEvaluationForm = (): JSX.Element => {
-    const [validated, setValidated] = useState<boolean>(false);
     const [waiting, setWaiting] = useState<boolean>(false);
+    const [hasSigned, setHasSigned] = useState<boolean>(true);
     const [formFields, setformFields] = useState<IStudentEvaluationFormFields>(new IStudentEvaluationFormFields())
+    let sigPad: SignaturePad | null
+
+    const onSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+        event.preventDefault();
+
+        if (!sigPad?.isEmpty()) {
+            console.log("data sent")
+        } else {
+            setHasSigned(false)
+        }
+    }
 
     return (
-        <Form className="bg-white text-dark p-3">
+        <Form className="bg-white text-dark p-3" onSubmit={event => onSubmit(event)}>
             <h1 className="text-center">FICHE D'ÉVALUATION DU STAGIAIRE</h1>
             <div className="bg-primary p-2 rounded">
                 <h2>PRODUCTIVITÉ</h2>
@@ -312,6 +324,21 @@ const StudentEvaluationForm = (): JSX.Element => {
                                   rows={3}/>
                 </Form.Group>
             </div>
+            <Row>
+                <Col sm={4} className="mx-auto mt-3">
+                    <SignaturePad canvasProps={{width: 500, height: 200, className: 'border border-5 bg-light'}}
+                                  ref={(ref) => {
+                                      sigPad = ref
+                                  }}/>
+                    <Button onClick={() => {
+                        sigPad!.clear()
+                    }}>Recommencer</Button>
+                    {!hasSigned && <h2 className="text-danger">Vous devez signez!</h2>}
+                </Col>
+            </Row>
+            <Row>
+                <Button variant="success" className="mt-2" type="submit">Soumettre</Button>
+            </Row>
         </Form>
     );
 }

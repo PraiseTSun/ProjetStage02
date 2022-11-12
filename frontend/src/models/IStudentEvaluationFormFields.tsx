@@ -32,5 +32,4 @@ export default class IStudentEvaluationFormFields {
     weeklyMentoringHours = "";
     companyWouldHireAgain = "";
     wasTheDecEnough = "";
-    signature = "";
 }
