@@ -233,7 +233,7 @@ public class ProjetStage02Application implements CommandLineRunner {
                 .travailSecuritaire("plutotEnAccord")
                 .travailEfficace("plutotEnAccord")
                 .build());
-        //gestionnaireService.createEvaluationMillieuStagePDF(stageContract.getContractId());
+        gestionnaireService.createEvaluationMillieuStagePDF(stageContract.getContractId());
         gestionnaireService.createEvaluationEtudiantPDF(stageContract.getContractId());
     }
 }
