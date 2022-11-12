@@ -174,6 +174,7 @@ public class CompanyServiceTest {
                 .bonneAnalyseProblemes("plutotEnAccord")
                 .commentairesHabilites("plutotEnAccord")
                 .commentairesProductivite("plutotEnAccord")
+                .commentairesAppreciation("plutotEnAccord")
                 .commentairesQualite("plutotEnAccord")
                 .comprendRapidement("plutotEnAccord")
                 .contactsFaciles("plutotEnAccord")

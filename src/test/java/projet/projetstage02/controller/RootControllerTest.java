@@ -331,6 +331,7 @@ public class RootControllerTest {
                 .commentairesHabilites("plutotEnAccord")
                 .commentairesProductivite("plutotEnAccord")
                 .commentairesQualite("plutotEnAccord")
+                .commentairesAppreciation("plutotEnAccord")
                 .comprendRapidement("plutotEnAccord")
                 .contactsFaciles("plutotEnAccord")
                 .commentairesRelationsInterpersonnelles("plutotEnAccord")
