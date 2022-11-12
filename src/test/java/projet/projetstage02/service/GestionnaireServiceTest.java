@@ -1150,7 +1150,7 @@ public class GestionnaireServiceTest {
                 .thenReturn(Optional.of(new EvaluationMillieuStage(millieuStageEvaluationInDTO)), Optional.empty());
         when(stageContractRepository.findAll()).thenReturn(List.of(stageContract, stageContract));
 
-        List<StageContractOutDTO> evaluatedContractsMillieuStage = gestionnaireService.getEvaluatedContractsMillieuStage();
+        List<StageContractOutDTO> evaluatedContractsMillieuStage = gestionnaireService.getEvaluationMillieuStage();
 
         verify(evaluationMillieuStageRepository, times(2)).findByContractId(anyLong());
         verify(stageContractRepository, times(1)).findAll();
@@ -1163,7 +1163,7 @@ public class GestionnaireServiceTest {
                 .thenReturn(Optional.empty());
         when(stageContractRepository.findAll()).thenReturn(List.of(stageContract, stageContract));
 
-        List<StageContractOutDTO> evaluatedContractsMillieuStage = gestionnaireService.getEvaluatedContractsMillieuStage();
+        List<StageContractOutDTO> evaluatedContractsMillieuStage = gestionnaireService.getEvaluationMillieuStage();
 
         verify(evaluationMillieuStageRepository, times(2)).findByContractId(anyLong());
         verify(stageContractRepository, times(1)).findAll();

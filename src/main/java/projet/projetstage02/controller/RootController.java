@@ -1070,7 +1070,7 @@ public class RootController {
 
         try {
             authService.getToken(tokenId.getToken(), GESTIONNAIRE);
-            List<StageContractOutDTO> evaluatedContracts = gestionnaireService.getEvaluatedContractsMillieuStage();
+            List<StageContractOutDTO> evaluatedContracts = gestionnaireService.getEvaluationMillieuStage();
             logger.log(Level.INFO, "Put /getEvaluatedContracts/millieuStage return 200");
             return ResponseEntity.ok(evaluatedContracts);
         } catch (InvalidTokenException e) {

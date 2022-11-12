@@ -519,7 +519,7 @@ public class GestionnaireService {
         return new PdfOutDTO(evaluationPDF.getContractId(), evaluationPDF.getPdf());
     }
 
-    public List<StageContractOutDTO> getEvaluatedContractsMillieuStage() {
+    public List<StageContractOutDTO> getEvaluationMillieuStage() {
         return stageContractRepository.findAll().stream().filter(stageContract -> {
             Optional<EvaluationMillieuStage> opt = evaluationMillieuStageRepository.findByContractId(stageContract.getId());
             return opt.isPresent();

@@ -2097,7 +2097,7 @@ public class RootControllerTest {
 
     @Test
     void testGetEvaluatedContractsMillieuStageHappyDay() throws Exception {
-        when(gestionnaireService.getEvaluatedContractsMillieuStage()).thenReturn(contractsDTO.getContracts());
+        when(gestionnaireService.getEvaluationMillieuStage()).thenReturn(contractsDTO.getContracts());
 
         mockMvc.perform(put("/getEvaluatedContracts/millieuStage")
                         .contentType(MediaType.APPLICATION_JSON)
