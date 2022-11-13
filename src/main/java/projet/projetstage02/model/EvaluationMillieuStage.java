@@ -58,12 +58,12 @@ public class EvaluationMillieuStage {
     @NotBlank
     @Pattern(regexp = "totalementEnAccord|plutotEnAccord|plutotEnDesaccord|totalementEnDesaccord|impossibleDeSePrononcer")
     private String volumeDeTravail;
-    @NotBlank
     private String commentaires;
     @NotBlank
     @Lob
     private String signature;
     @NotBlank
+    @Pattern(regexp = "^(19|20[0-9][0-9])-(0[0-9]|1[0-2])-([0-2][0-9]|3[0-1])$")
     private String dateSignature;
 
     public EvaluationMillieuStage(MillieuStageEvaluationInDTO millieuStageEvaluationInDTO) {
