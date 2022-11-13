@@ -225,4 +225,27 @@ export const putRefuseCv = (studentId: string, message : string, token:string):P
         body: JSON.stringify({"token": token, "refusalReason" : message})
     });
 }
+export const putEvaluationParEntreprisePdf = (contratId: number, token: string): Promise<Response> => {
+    return fetch("http://localhost:8080/getEvaluationPDF/etudiant/" + contratId, {
+        method: "PUT",
+        headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({"token": token})
+    });
+}
+
+export const putGetContractsPourEvaluationParEntreprise = (token: string): Promise<Response> => {
+    return fetch(`http://localhost:8080/getEvaluatedContracts/etudiants`, {
+        method: "PUT",
+        headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({"token": token})
+    });
+}
+
+
 
