@@ -75,7 +75,7 @@ public class ProjetStage02Application implements CommandLineRunner {
         companyService.saveCompany( CompanyDTO.builder()
                 .firstName("Bob")
                 .lastName("Marley")
-                .email("Bob@bell.com")
+                .email("Bob@bell.com".toLowerCase())
                 .password("bestcompany")
                 .isConfirmed(false)
                 .inscriptionTimestamp(Timestamp.valueOf(LocalDateTime.now()).getTime())
@@ -87,7 +87,14 @@ public class ProjetStage02Application implements CommandLineRunner {
         company.setEmailConfirmed(true);
         companyService.saveCompany(company);
 
-        gestionnaireService.saveGestionnaire("Dave", "Douch", "dave@gmail.ca", "cooldude");
+        gestionnaireService.saveGestionnaire( GestionnaireDTO.builder()
+                .firstName("Dave")
+                .lastName("Douch")
+                .email("dave@gmail.ca".toLowerCase())
+                .password("cooldude")
+                .isConfirmed(true)
+                .inscriptionTimestamp(Timestamp.valueOf(LocalDateTime.now()).getTime())
+                .build());
         GestionnaireDTO gestionnaire = gestionnaireService.getGestionnaireById(3L);
         gestionnaire.setEmailConfirmed(true);
         gestionnaireService.saveGestionnaire(gestionnaire);
@@ -172,7 +179,6 @@ public class ProjetStage02Application implements CommandLineRunner {
         System.out.println(gestionnaireService.getGestionnaireById(3L));
         System.out.println(gestionnaireService.getGestionnaireById(3L));
         System.out.println(studentService.getStudentByEmailPassword("Samir@gmail.com", "cooldude"));
-        System.out.println(gestionnaireService.getGestionnaireByEmailPassword("dave@gmail.ca", "cooldude"));
         System.out.println(gestionnaireService.getUnvalidatedOffers());
         System.out.println(gestionnaireService.getUnvalidatedCVStudents());
         studentService.createPostulation(student.getId(), offreId);

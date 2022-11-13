@@ -437,7 +437,7 @@ public class GestionnaireRootController {
         try {
             logger.log(INFO, "put /evaluateStage/id entered with id : " + token);
             authService.getToken(token, GESTIONNAIRE);
-            gestionnaireService.evaluateStage(millieuStageEvaluationInDTO);
+            gestionnaireService.saveEvaluateStage(millieuStageEvaluationInDTO);
             logger.log(INFO, "PutMapping: /evaluateStage/id sent 201 response");
             return ResponseEntity.status(CREATED).build();
         } catch (InvalidTokenException e) {

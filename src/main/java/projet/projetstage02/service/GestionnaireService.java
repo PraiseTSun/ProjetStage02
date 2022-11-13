@@ -17,8 +17,6 @@ import projet.projetstage02.model.*;
 import projet.projetstage02.repository.*;
 
 import javax.validation.constraints.NotNull;
-import java.sql.Timestamp;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -40,60 +38,34 @@ public class GestionnaireService {
     private final ApplicationRepository applicationRepository;
     private final EvaluationRepository evaluationRepository;
 
-    public long saveGestionnaire(String firstname, String lastname, String email, String password) {
-        GestionnaireDTO dto = GestionnaireDTO.builder()
-                .firstName(firstname)
-                .lastName(lastname)
-                .email(email.toLowerCase())
-                .password(password)
-                .isConfirmed(true)
-                .inscriptionTimestamp(Timestamp.valueOf(LocalDateTime.now()).getTime())
-                .build();
-        return saveGestionnaire(dto);
-    }
-
     public long saveGestionnaire(GestionnaireDTO dto) {
         return gestionnaireRepository.save(dto.toModel()).getId();
     }
 
-    private boolean isEmailUnique(String email) {
-        return gestionnaireRepository.findByEmail(email).isEmpty();
-    }
-
     public GestionnaireDTO getGestionnaireById(Long id) throws NonExistentEntityException {
-        var gestionnaireOpt = gestionnaireRepository.findById(id);
-        if (gestionnaireOpt.isEmpty()) throw new NonExistentEntityException();
-        return new GestionnaireDTO(gestionnaireOpt.get());
-    }
-
-    public GestionnaireDTO getGestionnaireByEmailPassword(String email, String password) throws NonExistentEntityException {
-        var gestionnaireOpt = gestionnaireRepository.findByEmailAndPassword(email.toLowerCase(), password);
+        Optional<Gestionnaire> gestionnaireOpt = gestionnaireRepository.findById(id);
         if (gestionnaireOpt.isEmpty()) throw new NonExistentEntityException();
         return new GestionnaireDTO(gestionnaireOpt.get());
     }
 
     public void validateCompany(Long id) throws NonExistentEntityException {
-        // Throws NonExistentUserException
         Company company = getCompany(id);
         company.setConfirm(true);
         companyRepository.save(company);
     }
 
     public void validateStudent(Long id) throws NonExistentEntityException {
-        // Throws NonExistentUserException
         Student student = getStudent(id);
         student.setConfirm(true);
         studentRepository.save(student);
     }
 
     public void removeCompany(long id) throws NonExistentEntityException {
-        // Throws NonExistentUserException
         Company company = getCompany(id);
         companyRepository.delete(company);
     }
 
     public void removeStudent(long id) throws NonExistentEntityException {
-        // Throws NonExistentUserException
         Student student = getStudent(id);
         studentRepository.delete(student);
     }
@@ -116,17 +88,6 @@ public class GestionnaireService {
         return offreOpt.get();
     }
 
-    public List<OffreOutDTO> getUnvalidatedOffers() {
-        List<OffreOutDTO> offres = new ArrayList<>();
-        offreRepository.findAll().stream().
-                filter(offre ->
-                        !offre.isValide() && isRightSession(offre.getSession(), getNextYear()))
-                .forEach(offre ->
-                        offres.add(new OffreOutDTO(offre)));
-        offres.forEach(offre -> offre.setPdf(byteToString(new byte[0])));
-        return offres;
-    }
-
     public List<OffreOutDTO> getValidatedOffers(int year) {
         List<OffreOutDTO> offres = new ArrayList<>();
         offreRepository.findAll().stream().
@@ -138,6 +99,16 @@ public class GestionnaireService {
         return offres;
     }
 
+    public List<OffreOutDTO> getUnvalidatedOffers() {
+        List<OffreOutDTO> offres = new ArrayList<>();
+        offreRepository.findAll().stream().
+                filter(offre ->
+                        !offre.isValide() && isRightSession(offre.getSession(), getNextYear()))
+                .forEach(offre ->
+                        offres.add(new OffreOutDTO(offre)));
+        offres.forEach(offre -> offre.setPdf(byteToString(new byte[0])));
+        return offres;
+    }
 
     public OffreOutDTO validateOfferById(Long id) throws NonExistentOfferExeption, ExpiredSessionException {
 
@@ -251,6 +222,15 @@ public class GestionnaireService {
         return new PdfOutDTO(studentOpt.get().getId(), cvConvert);
     }
 
+    public boolean isGestionnaireInvalid(String email) throws NonExistentEntityException {
+        return !isEmailUnique(email)
+                && !deleteUnconfirmedGestionnaire(email);
+    }
+
+    private boolean isEmailUnique(String email) {
+        return gestionnaireRepository.findByEmail(email).isEmpty();
+    }
+
     private boolean deleteUnconfirmedGestionnaire(String email) throws NonExistentEntityException {
         Optional<Gestionnaire> studentOpt = gestionnaireRepository.findByEmail(email);
         if (studentOpt.isEmpty())
@@ -261,11 +241,6 @@ public class GestionnaireService {
             return true;
         }
         return false;
-    }
-
-    public boolean isGestionnaireInvalid(String email) throws NonExistentEntityException {
-        return !isEmailUnique(email)
-                && !deleteUnconfirmedGestionnaire(email);
     }
 
     public StageContractOutDTO createStageContract(StageContractInDTO contract)
@@ -375,7 +350,7 @@ public class GestionnaireService {
         return new MillieuStageEvaluationInfoDTO(company, offre, student);
     }
 
-    public void evaluateStage(MillieuStageEvaluationInDTO millieuStageEvaluationInDTO) {
+    public void saveEvaluateStage(MillieuStageEvaluationInDTO millieuStageEvaluationInDTO) {
         evaluationRepository.save(new Evaluation(millieuStageEvaluationInDTO));
     }
 

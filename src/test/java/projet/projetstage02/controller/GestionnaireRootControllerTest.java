@@ -875,7 +875,7 @@ public class GestionnaireRootControllerTest {
 
     @Test
     void testEvaluateStageHappyDay() throws Exception {
-        doNothing().when(gestionnaireService).evaluateStage(any());
+        doNothing().when(gestionnaireService).saveEvaluateStage(any());
         gestionnaireMockMvc.perform(post("/evaluateStage/{token}", token.getToken())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(jsonEvalInDTO.write(evalInDTO).getJson()))
