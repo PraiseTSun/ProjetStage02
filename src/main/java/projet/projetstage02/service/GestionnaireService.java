@@ -415,9 +415,9 @@ public class GestionnaireService {
         stageContractRepository.findAll()
                 .stream()
                 .filter(stageContract ->
-                        !stageContract.getCompanySignature().equals("")
-                                && !stageContract.getStudentSignature().equals("")
-                                && stageContract.getGestionnaireSignature().equals("")
+                        !stageContract.getCompanySignature().isBlank()
+                                && !stageContract.getStudentSignature().isBlank()
+                                && stageContract.getGestionnaireSignature().isBlank()
                 )
                 .forEach(stageContract -> contractsDTO.add(new StageContractOutDTO(stageContract)));
 
@@ -433,7 +433,7 @@ public class GestionnaireService {
         if(contractOpt.isEmpty()) throw new NonExistentEntityException();
         StageContract contract = contractOpt.get();
 
-        if(contract.getCompanySignature().equals("") || contract.getStudentSignature().equals(""))
+        if(contract.getCompanySignature().isBlank() || contract.getStudentSignature().isBlank())
             throw new NotReadyToBeSignedException();
 
         contract.setGestionnaireSignature(signature.getSignature());
