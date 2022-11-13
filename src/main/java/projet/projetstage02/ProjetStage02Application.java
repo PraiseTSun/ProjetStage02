@@ -17,6 +17,9 @@ import projet.projetstage02.service.CompanyService;
 import projet.projetstage02.service.GestionnaireService;
 import projet.projetstage02.service.StudentService;
 
+import java.sql.Timestamp;
+import java.time.LocalDateTime;
+
 @SpringBootApplication
 @AllArgsConstructor
 public class ProjetStage02Application implements CommandLineRunner {
@@ -69,8 +72,17 @@ public class ProjetStage02Application implements CommandLineRunner {
         student.setEmailConfirmed(true);
         studentService.saveStudent(new StudentInDTO(student.toModel()));
 
-        companyService.saveCompany("Bob", "Marley", "Bell", "Bob@bell.com", "bestcompany",
-                AbstractUser.Department.Informatique);
+        companyService.saveCompany( CompanyDTO.builder()
+                .firstName("Bob")
+                .lastName("Marley")
+                .email("Bob@bell.com")
+                .password("bestcompany")
+                .isConfirmed(false)
+                .inscriptionTimestamp(Timestamp.valueOf(LocalDateTime.now()).getTime())
+                .emailConfirmed(true)
+                .department(AbstractUser.Department.Informatique.departement)
+                .companyName("Bell")
+                .build());
         CompanyDTO company = companyService.getCompanyById(2L);
         company.setEmailConfirmed(true);
         companyService.saveCompany(company);
@@ -160,7 +172,6 @@ public class ProjetStage02Application implements CommandLineRunner {
         System.out.println(gestionnaireService.getGestionnaireById(3L));
         System.out.println(gestionnaireService.getGestionnaireById(3L));
         System.out.println(studentService.getStudentByEmailPassword("Samir@gmail.com", "cooldude"));
-        System.out.println(companyService.getCompanyByEmailPassword("Bob@bell.com", "bestcompany"));
         System.out.println(gestionnaireService.getGestionnaireByEmailPassword("dave@gmail.ca", "cooldude"));
         System.out.println(gestionnaireService.getUnvalidatedOffers());
         System.out.println(gestionnaireService.getUnvalidatedCVStudents());

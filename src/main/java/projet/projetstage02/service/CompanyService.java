@@ -58,42 +58,17 @@ public class CompanyService {
         return offreRepository.save(offre).getId();
     }
 
-    public void saveCompany(String firstName, String lastName, String name, String email, String password,
-                            Department department) {
-        CompanyDTO dto = CompanyDTO.builder()
-                .firstName(firstName)
-                .lastName(lastName)
-                .email(email.toLowerCase())
-                .password(password)
-                .isConfirmed(false)
-                .inscriptionTimestamp(Timestamp.valueOf(LocalDateTime.now()).getTime())
-                .emailConfirmed(true)
-                .department(department.departement)
-                .companyName(name)
-                .build();
-        saveCompany(dto);
-    }
-
     public long saveCompany(CompanyDTO dto) {
         return companyRepository.save(dto.toModel()).getId();
     }
 
+    public boolean isCompanyInvalid(String email) throws NonExistentEntityException {
+        return !isEmailUnique(email)
+                && !deleteUnconfirmedCompany(email);
+    }
+
     private boolean isEmailUnique(String email) {
         return companyRepository.findByEmail(email).isEmpty();
-    }
-
-    public CompanyDTO getCompanyById(Long id) throws NonExistentEntityException {
-        var companyOpt = companyRepository.findById(id);
-        if (companyOpt.isEmpty())
-            throw new NonExistentEntityException();
-        return new CompanyDTO(companyOpt.get());
-    }
-
-    public CompanyDTO getCompanyByEmailPassword(String email, String password) throws NonExistentEntityException {
-        var companyOpt = companyRepository.findByEmailAndPassword(email.toLowerCase(), password);
-        if (companyOpt.isEmpty())
-            throw new NonExistentEntityException();
-        return new CompanyDTO(companyOpt.get());
     }
 
     private boolean deleteUnconfirmedCompany(String email) throws NonExistentEntityException {
@@ -108,9 +83,11 @@ public class CompanyService {
         return false;
     }
 
-    public boolean isCompanyInvalid(String email) throws NonExistentEntityException {
-        return !isEmailUnique(email)
-                && !deleteUnconfirmedCompany(email);
+    public CompanyDTO getCompanyById(Long id) throws NonExistentEntityException {
+        var companyOpt = companyRepository.findById(id);
+        if (companyOpt.isEmpty())
+            throw new NonExistentEntityException();
+        return new CompanyDTO(companyOpt.get());
     }
 
     public ApplicationAcceptationDTO saveStudentApplicationAccepted(long offerId, long studentId) throws NonExistentEntityException, NonExistentOfferExeption, AlreadyExistingAcceptationException {

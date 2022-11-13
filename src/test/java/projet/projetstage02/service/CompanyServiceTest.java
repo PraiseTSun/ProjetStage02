@@ -165,90 +165,15 @@ public class CompanyServiceTest {
     }
 
     @Test
-    void getCompanyByIdHappyDayTest() throws NonExistentEntityException {
+    void createOffreTest() {
         // Arrange
-        when(companyRepository.findById(anyLong()))
-                .thenReturn(Optional.of(duffBeer));
+        when(offreRepository.save(any())).thenReturn(duffBeerOffreInDTO.toModel());
 
         // Act
-        CompanyDTO companyDTO = companyService.getCompanyById(1L);
+        companyService.createOffre(duffBeerOffreInDTO);
 
         // Assert
-        assertThat(companyDTO.toModel()).isEqualTo(duffBeer);
-    }
-
-    @Test
-    void getCompanyByIdNonExistentTest() {
-        // Arrange
-        when(companyRepository.findById(anyLong()))
-                .thenReturn(Optional.empty());
-
-        // Act
-        try {
-            companyService.getCompanyById(1L);
-        } catch (NonExistentEntityException e) {
-
-            // Assert
-            return;
-        }
-        fail("NonExistentUserException not caught");
-    }
-
-    @Test
-    void getCompanyByEmailAndPasswordHappyDayTest() throws NonExistentEntityException {
-        // Arrange
-        when(companyRepository.findByEmailAndPassword(
-                "duff.beer@springfield.com",
-                "bestBeer"))
-                .thenReturn(Optional.of(duffBeer));
-
-        // Act
-        CompanyDTO companyDTO = companyService
-                .getCompanyByEmailPassword(
-                        "duff.beer@springfield.com",
-                        "bestBeer");
-
-        // Assert
-        assertThat(companyDTO.toModel()).isEqualTo(duffBeer);
-    }
-
-    @Test
-    void getCompanyByEmailAndPasswordNonExistentTest() {
-        // Arrange
-        when(companyRepository.findByEmailAndPassword(anyString(), anyString()))
-                .thenReturn(Optional.empty());
-
-        // Act
-        try {
-            companyService.getCompanyByEmailPassword(
-                    "duff.beer@springfield.com",
-                    "bestBeer");
-        } catch (NonExistentEntityException e) {
-
-            // Assert
-            return;
-        }
-        fail("NonExistentUserException not caught");
-    }
-
-    @Test
-    void saveCompanyMultipleParametersTest() {
-        // Arrange
-        duffBeer.setId(1L);
-        when(companyRepository.save(any()))
-                .thenReturn(duffBeer);
-
-        // Act
-        companyService.saveCompany(
-                duffBeer.getFirstName(),
-                duffBeer.getLastName(),
-                duffBeer.getCompanyName(),
-                duffBeer.getEmail(),
-                duffBeer.getPassword(),
-                duffBeer.getDepartment());
-
-        // Assert
-        verify(companyRepository, times(1)).save(any());
+        verify(offreRepository, times(1)).save(any());
     }
 
     @Test
@@ -265,32 +190,34 @@ public class CompanyServiceTest {
     }
 
     @Test
-    void createOffreTest() {
+    void testIsCompanyInvalidEmailUniqueHappyDay() throws NonExistentEntityException {
         // Arrange
-        when(offreRepository.save(any())).thenReturn(duffBeerOffreInDTO.toModel());
+        duffBeer.setInscriptionTimestamp(0);
+        when(companyRepository.findByEmail(any())).thenReturn(Optional.empty());
 
         // Act
-        companyService.createOffre(duffBeerOffreInDTO);
+        boolean isUnique = companyService.isCompanyInvalid(duffBeer.getEmail());
 
         // Assert
-        verify(offreRepository, times(1)).save(any());
+        assertThat(isUnique).isFalse();
     }
 
     @Test
-    void testInvalidCompanyHappyDay() throws NonExistentEntityException {
+    void testIsCompanyInvalidDeleteUnconfirmedHappyDay() throws NonExistentEntityException {
         // Arrange
         duffBeer.setInscriptionTimestamp(0);
         when(companyRepository.findByEmail(any())).thenReturn(Optional.of(duffBeer));
 
         // Act
-        companyService.isCompanyInvalid(duffBeer.getEmail());
+        boolean isUnique = companyService.isCompanyInvalid(duffBeer.getEmail());
 
         // Assert
         verify(companyRepository, times(1)).delete(any());
+        assertThat(isUnique).isFalse();
     }
 
     @Test
-    void testInvalidCompanyReturnFalse() throws NonExistentEntityException {
+    void testIsCompanyInvalidForbidden() throws NonExistentEntityException {
         // Arrange
         duffBeer.setInscriptionTimestamp(currentTimestamp());
         when(companyRepository.findByEmail(any())).thenReturn(Optional.empty());
@@ -299,7 +226,7 @@ public class CompanyServiceTest {
     }
 
     @Test
-    void testInvalidCompanyThrowsException() {
+    void testIsCompanyInvalidDeleteUnconfirmedNotFound() {
         // Arrange
         duffBeer.setInscriptionTimestamp(0);
         when(companyRepository.findByEmail(any())).thenReturn(Optional.of(duffBeer), Optional.empty());
@@ -489,8 +416,8 @@ public class CompanyServiceTest {
             add(Application.builder().studentId(4L).build());
             add(Application.builder().studentId(5L).build());
         }});
-
         when(studentRepository.findById(anyLong())).thenReturn(Optional.of(bart));
+
         // Act
         OfferApplicationDTO studentsForOffer = companyService.getStudentsForOffer(1L);
 
@@ -535,7 +462,7 @@ public class CompanyServiceTest {
     }
 
     @Test
-    void testGetApplicantsForOfferNonExistentEntity() throws NonExistentOfferExeption {
+    void testGetApplicantsForOfferNotFound() throws NonExistentOfferExeption {
         // Arrange
         when(offreRepository.findById(anyLong())).thenReturn(Optional.of(duffBeerOffer));
 
@@ -550,45 +477,7 @@ public class CompanyServiceTest {
     }
 
     @Test
-    void testGetApplicantsForOfferEmpty() throws NonExistentOfferExeption, NonExistentEntityException {
-        // Arrange
-        when(offreRepository.findById(anyLong())).thenReturn(Optional.of(duffBeerOffer));
-        when(companyRepository.findById(anyLong())).thenReturn(Optional.of(duffBeer));
-        when(applicationRepository.findByOfferId(anyLong())).thenReturn(new ArrayList<>());
-
-        // Act
-        OfferApplicationDTO studentsForOffer = companyService.getStudentsForOffer(1L);
-
-        // Assert
-        assertThat(studentsForOffer.getApplicants().size()).isEqualTo(0);
-    }
-
-    @Test
-    void testGetOffersForCompanyHappyDay() {
-        // Arrange
-        when(offreRepository.findAllByIdCompagnie(anyLong())).thenReturn(List.of(duffBeerOffer));
-
-        // Act
-        List<OffreOutDTO> validatedOffers = companyService.getValidatedOffers(1L);
-
-        // Assert
-        assertThat(validatedOffers.size()).isEqualTo(1);
-    }
-
-    @Test
-    void testGetOffersForCompanyEmpty() {
-        // Arrange
-        when(offreRepository.findAllByIdCompagnie(anyLong())).thenReturn(new ArrayList<>());
-
-        // Act
-        List<OffreOutDTO> validatedOffers = companyService.getValidatedOffers(1L);
-
-        // Assert
-        assertThat(validatedOffers.size()).isEqualTo(0);
-    }
-
-    @Test
-    void testGetStudentCvToValidateSuccess() throws NonExistentEntityException {
+    void testGetStudentCvToValidateHappyDay() throws NonExistentEntityException {
         // Arrange
         String result = "[72,101,108,108,111,32,87,111,114,100]";
         byte[] stored = HexFormat.of().parseHex("48656c6c6f20576f7264");
@@ -614,6 +503,30 @@ public class CompanyServiceTest {
             return;
         }
         PathCompiler.fail("NonExistentUserException not caught");
+    }
+
+    @Test
+    void testGetOffersForCompanyHappyDay() {
+        // Arrange
+        when(offreRepository.findAllByIdCompagnie(anyLong())).thenReturn(List.of(duffBeerOffer));
+
+        // Act
+        List<OffreOutDTO> validatedOffers = companyService.getValidatedOffers(1L);
+
+        // Assert
+        assertThat(validatedOffers.size()).isEqualTo(1);
+    }
+
+    @Test
+    void testGetOffersForCompanyEmpty() {
+        // Arrange
+        when(offreRepository.findAllByIdCompagnie(anyLong())).thenReturn(new ArrayList<>());
+
+        // Act
+        List<OffreOutDTO> validatedOffers = companyService.getValidatedOffers(1L);
+
+        // Assert
+        assertThat(validatedOffers.size()).isEqualTo(0);
     }
 
     @Test
