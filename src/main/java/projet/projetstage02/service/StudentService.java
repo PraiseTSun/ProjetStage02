@@ -39,30 +39,9 @@ public class StudentService {
     private final CvStatusRepository cvStatusRepository;
     private final InterviewRepository interviewRepository;
 
-    public void saveStudent(String firstName,
-                            String lastName,
-                            String email,
-                            String password,
-                            Department department) {
-        StudentInDTO dto = StudentInDTO.builder()
-                .firstName(firstName)
-                .lastName(lastName)
-                .email(email.toLowerCase())
-                .password(password)
-                .department(department.departement)
-                .isConfirmed(false)
-                .emailConfirmed(false)
-                .inscriptionTimestamp(Timestamp.valueOf(LocalDateTime.now()).getTime())
-                .build();
-        saveStudent(dto);
-    }
 
     public long saveStudent(StudentInDTO dto) {
         return studentRepository.save(dto.toModel()).getId();
-    }
-
-    private boolean isEmailUnique(String email) {
-        return studentRepository.findByEmail(email).isEmpty();
     }
 
     public StudentOutDTO getStudentById(Long id) throws NonExistentEntityException {
@@ -93,18 +72,6 @@ public class StudentService {
         status.setRefusalMessage("");
         cvStatusRepository.save(status);
         return new StudentOutDTO(student);
-    }
-
-    private boolean deleteUnconfirmedStudent(String email) throws NonExistentEntityException {
-        Optional<Student> studentOpt = studentRepository.findByEmail(email);
-        if (studentOpt.isEmpty())
-            throw new NonExistentEntityException();
-        Student student = studentOpt.get();
-        if (currentTimestamp() - student.getInscriptionTimestamp() > MILLI_SECOND_DAY) {
-            studentRepository.delete(student);
-            return true;
-        }
-        return false;
     }
 
     public List<OffreOutDTO> getOffersByStudentDepartment(long id) throws NonExistentEntityException {
@@ -164,6 +131,22 @@ public class StudentService {
     public boolean isStudentInvalid(String email) throws NonExistentEntityException {
         return !isEmailUnique(email)
                 && !deleteUnconfirmedStudent(email);
+    }
+
+    private boolean isEmailUnique(String email) {
+        return studentRepository.findByEmail(email).isEmpty();
+    }
+
+    private boolean deleteUnconfirmedStudent(String email) throws NonExistentEntityException {
+        Optional<Student> studentOpt = studentRepository.findByEmail(email);
+        if (studentOpt.isEmpty())
+            throw new NonExistentEntityException();
+        Student student = studentOpt.get();
+        if (currentTimestamp() - student.getInscriptionTimestamp() > MILLI_SECOND_DAY) {
+            studentRepository.delete(student);
+            return true;
+        }
+        return false;
     }
 
     public ApplicationListDTO getPostulsOfferId(long studentId) throws NonExistentEntityException {

@@ -66,8 +66,16 @@ public class ProjetStage02Application implements CommandLineRunner {
 
     @Override
     public void run(String... args) throws Exception {
-        studentService.saveStudent("Samir", "Badi", "Samir@gmail.com", "cooldude",
-                AbstractUser.Department.Informatique);
+        studentService.saveStudent( StudentInDTO.builder()
+                .firstName("Samir")
+                .lastName("Badi")
+                .email("Samir@gmail.com".toLowerCase())
+                .password("cooldude")
+                .department(AbstractUser.Department.Informatique.departement)
+                .isConfirmed(false)
+                .emailConfirmed(false)
+                .inscriptionTimestamp(Timestamp.valueOf(LocalDateTime.now()).getTime())
+                .build());
         StudentOutDTO student = studentService.getStudentById(1L);
         student.setEmailConfirmed(true);
         studentService.saveStudent(new StudentInDTO(student.toModel()));
@@ -99,8 +107,16 @@ public class ProjetStage02Application implements CommandLineRunner {
         gestionnaire.setEmailConfirmed(true);
         gestionnaireService.saveGestionnaire(gestionnaire);
 
-        studentService.saveStudent("Peter", "Griffin", "peter.griffin@quahog.com", "loislois",
-                AbstractUser.Department.Informatique);
+        studentService.saveStudent( StudentInDTO.builder()
+                .firstName("Peter")
+                .lastName("Griffin")
+                .email("peter.griffin@quahog.com".toLowerCase())
+                .password("loislois")
+                .department(AbstractUser.Department.Informatique.departement)
+                .isConfirmed(false)
+                .emailConfirmed(false)
+                .inscriptionTimestamp(Timestamp.valueOf(LocalDateTime.now()).getTime())
+                .build());
         StudentOutDTO student2 = studentService.getStudentByEmailPassword("peter.griffin@quahog.com", "loislois");
         student2.setEmailConfirmed(true);
         studentService.saveStudent(new StudentInDTO(student2.toModel()));

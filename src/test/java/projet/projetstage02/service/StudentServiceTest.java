@@ -133,97 +133,11 @@ public class StudentServiceTest {
                 .build();
     }
 
-    @Test
-    void getStudentByIdHappyDayTest() throws NonExistentEntityException {
-        // Arrange
-        bart.setCv(new byte[]{23, 45, 2, 13, 42});
-        when(studentRepository.findById(anyLong()))
-                .thenReturn(Optional.of(bart));
-
-        // Act
-        StudentOutDTO studentDTO = studentService.getStudentById(1L);
-
-        // Assert
-        assertThat(studentDTO.toModel()).isEqualTo(bart);
-    }
 
     @Test
-    void getStudentByIdNonExistentTest() {
+    void testSaveStudentHappyDay() {
         // Arrange
-        when(studentRepository.findById(anyLong()))
-                .thenReturn(Optional.empty());
-
-        // Act
-        try {
-            studentService.getStudentById(1L);
-        } catch (NonExistentEntityException e) {
-
-            // Assert
-            return;
-        }
-        fail("NonExistentUserException not caught");
-    }
-
-    @Test
-    void getStudentByEmailAndPasswordHappyDayTest() throws NonExistentEntityException {
-        // Arrange
-        when(studentRepository.findByEmailAndPassword(
-                "bart.simpson@springfield.com",
-                "eatMyShorts"))
-                .thenReturn(Optional.of(bart));
-
-        // Act
-        StudentOutDTO studentDTO = studentService
-                .getStudentByEmailPassword(
-                        "bart.simpson@springfield.com",
-                        "eatMyShorts");
-
-        // Assert
-        assertThat(studentDTO.toModel()).isEqualTo(bart);
-    }
-
-    @Test
-    void getStudentByEmailAndPasswordNonExistentTest() {
-        // Arrange
-        when(studentRepository.findByEmailAndPassword(anyString(), anyString()))
-                .thenReturn(Optional.empty());
-
-        // Act
-        try {
-            studentService.getStudentByEmailPassword(
-                    "bart.simpson@springfield.com",
-                    "eatMyShorts");
-        } catch (NonExistentEntityException e) {
-
-            // Assert
-            return;
-        }
-        fail("NonExistentUserException not caught");
-    }
-
-    @Test
-    void saveStudentMultipleParametersTest() {
-        // Arrange
-        bart.setId(1L);
         when(studentRepository.save(any())).thenReturn(bart);
-
-        // Act
-        studentService.saveStudent(
-                bart.getFirstName(),
-                bart.getLastName(),
-                bart.getEmail(),
-                bart.getPassword(),
-                bart.getDepartment());
-
-        // Assert
-        verify(studentRepository, times(1)).save(any());
-    }
-
-    @Test
-    void saveStudentDTOTest() {
-        // Arrange
-        when(studentRepository.save(any()))
-                .thenReturn(bart);
 
         // Act
         studentService.saveStudent(new StudentInDTO(bart));
@@ -233,7 +147,7 @@ public class StudentServiceTest {
     }
 
     @Test
-    void testUploadCurriculumVitaeSuccess() throws NonExistentEntityException {
+    void testUploadCurriculumVitaeHappyDay() throws NonExistentEntityException {
         // Arrange
         when(studentRepository.findById(anyLong())).thenReturn(Optional.of(bart));
         when(studentRepository.save(any())).thenReturn(bart);
@@ -263,7 +177,7 @@ public class StudentServiceTest {
     }
 
     @Test
-    void testInvalidStudentHappyDay() throws NonExistentEntityException {
+    void testIsStudentInvalidHappyDay() throws NonExistentEntityException {
         // Arrange
         bart.setInscriptionTimestamp(0);
         when(studentRepository.findByEmail(any())).thenReturn(Optional.of(bart));
@@ -276,7 +190,17 @@ public class StudentServiceTest {
     }
 
     @Test
-    void testInvalidStudentThrowsException() {
+    void testIsStudentInvalidReturnsFalse() throws NonExistentEntityException {
+        // Arrange
+        bart.setInscriptionTimestamp(currentTimestamp());
+        when(studentRepository.findByEmail(any())).thenReturn(Optional.empty());
+
+        // Act
+        assertThat(studentService.isStudentInvalid(bart.getEmail())).isFalse();
+    }
+
+    @Test
+    void testIsStudentInvalidThrowsException() {
         // Arrange
         bart.setInscriptionTimestamp(0);
         when(studentRepository.findByEmail(any())).thenReturn(Optional.of(bart), Optional.empty());
@@ -292,7 +216,7 @@ public class StudentServiceTest {
     }
 
     @Test
-    void testGetOffersByStudentDepartmentSuccess() throws NonExistentEntityException {
+    void testGetOffersByStudentDepartmentHappyDay() throws NonExistentEntityException {
         // Arrange
         Department department = Department.Informatique;
         Offre successOffer = Offre.builder().valide(true).department(Department.Informatique).build();
@@ -332,7 +256,7 @@ public class StudentServiceTest {
     }
 
     @Test
-    void testGetOfferByIdSuccess() throws NonExistentEntityException {
+    void testGetOfferByIdHappyDay() throws NonExistentEntityException {
         // Arrange
         when(offreRepository.findById(anyLong())).thenReturn(Optional.of(duffOffer));
 
@@ -360,17 +284,7 @@ public class StudentServiceTest {
     }
 
     @Test
-    void testInvalidStudentReturnsFalse() throws NonExistentEntityException {
-        // Arrange
-        bart.setInscriptionTimestamp(currentTimestamp());
-        when(studentRepository.findByEmail(any())).thenReturn(Optional.empty());
-
-        // Act
-        assertThat(studentService.isStudentInvalid(bart.getEmail())).isFalse();
-    }
-
-    @Test
-    void testCreatePostulationSuccess() throws Exception {
+    void testCreatePostulationHappyDay() throws Exception {
         // Arrange
         when(studentRepository.findById(anyLong())).thenReturn(Optional.of(bart));
         when(offreRepository.findById(anyLong())).thenReturn(Optional.of(duffOffer));
@@ -439,7 +353,7 @@ public class StudentServiceTest {
     }
 
     @Test
-    void testGetPostulsOfferIdSuccess() throws NonExistentEntityException {
+    void testGetPostulsOfferIdHappyDay() throws NonExistentEntityException {
         // Arrange
         when(studentRepository.findById(anyLong())).thenReturn(Optional.of(bart));
         when(applicationRepository.findByStudentId(anyLong())).thenReturn(Arrays.asList(bartApplication));
