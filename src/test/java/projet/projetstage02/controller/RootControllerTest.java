@@ -2040,7 +2040,7 @@ public class RootControllerTest {
 
     @Test
     void testGestionnaireSignatureConflict() throws Exception{
-        when(gestionnaireService.contractSignature(any())).thenThrow(new NotReadyToBeSigneException());
+        when(gestionnaireService.contractSignature(any())).thenThrow(new NotReadyToBeSignedException());
 
         mockMvc.perform(put("/gestionnaireSignature")
                         .contentType(MediaType.APPLICATION_JSON)

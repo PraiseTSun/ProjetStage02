@@ -18,7 +18,6 @@ import projet.projetstage02.model.*;
 import projet.projetstage02.repository.*;
 
 import javax.validation.constraints.NotNull;
-import java.security.Signature;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -401,7 +400,7 @@ public class GestionnaireService {
     }
 
     public StageContractOutDTO contractSignature(SignatureInDTO signature)
-            throws NonExistentEntityException, NotReadyToBeSigneException {
+            throws NonExistentEntityException, NotReadyToBeSignedException {
         Optional<Gestionnaire> gestionnaireOpt = gestionnaireRepository.findById(signature.getUserId());
         if(gestionnaireOpt.isEmpty()) throw new NonExistentEntityException();
 
@@ -410,7 +409,7 @@ public class GestionnaireService {
         StageContract contract = contractOpt.get();
 
         if(contract.getCompanySignature().equals("") || contract.getStudentSignature().equals(""))
-            throw new NotReadyToBeSigneException();
+            throw new NotReadyToBeSignedException();
 
         contract.setGestionnaireSignature(signature.getSignature());
         contract.setGestionnaireSignatureDate(LocalDateTime.now());

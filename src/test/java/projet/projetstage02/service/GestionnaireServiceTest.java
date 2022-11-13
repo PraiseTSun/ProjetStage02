@@ -999,7 +999,7 @@ public class GestionnaireServiceTest {
 
     @Test
     void testContractSignatureHappyDay()
-            throws NonExistentEntityException, NotReadyToBeSigneException {
+            throws NonExistentEntityException, NotReadyToBeSignedException {
         stageContract.setCompanySignature("done");
         stageContract.setStudentSignature("done");
         when(gestionnaireRepository.findById(anyLong())).thenReturn(Optional.of(gestionnaireTest));
@@ -1029,7 +1029,7 @@ public class GestionnaireServiceTest {
                     .contractId(0L)
                     .signature("IAmSoOverIt")
                     .build());
-        } catch (NotReadyToBeSigneException e) {
+        } catch (NotReadyToBeSignedException e) {
             return;
         } catch (NonExistentEntityException e) {}
 
@@ -1050,7 +1050,7 @@ public class GestionnaireServiceTest {
                     .contractId(0L)
                     .signature("IAmSoOverIt")
                     .build());
-        } catch (NotReadyToBeSigneException e) {
+        } catch (NotReadyToBeSignedException e) {
             return;
         } catch (NonExistentEntityException e) {}
 
@@ -1071,7 +1071,7 @@ public class GestionnaireServiceTest {
                     .build());
         } catch (NonExistentEntityException e) {
             return;
-        } catch (NotReadyToBeSigneException e) {}
+        } catch (NotReadyToBeSignedException e) {}
 
         fail("Fail to catch the NonExistentEntityException");
     }
@@ -1089,7 +1089,7 @@ public class GestionnaireServiceTest {
                     .build());
         } catch (NonExistentEntityException e) {
             return;
-        } catch (NotReadyToBeSigneException e) {}
+        } catch (NotReadyToBeSignedException e) {}
 
         fail("Fail to catch the NonExistentEntityException");
     }

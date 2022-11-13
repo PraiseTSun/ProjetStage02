@@ -1066,7 +1066,7 @@ public class RootController {
         } catch (NonExistentEntityException e) {
             logger.log(Level.INFO, "Put gestionnaireSignature return 404");
             return ResponseEntity.status(NOT_FOUND).build();
-        } catch (NotReadyToBeSigneException e) {
+        } catch (NotReadyToBeSignedException e) {
             logger.log(Level.INFO, "Put gestionnaireSignature return 409");
             return ResponseEntity.status(CONFLICT).build();
         }
