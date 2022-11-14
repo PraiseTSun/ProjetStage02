@@ -1,7 +1,9 @@
 package projet.projetstage02.service;
 
+import com.itextpdf.text.DocumentException;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
+import projet.projetstage02.dto.SignatureInDTO;
 import projet.projetstage02.dto.contracts.ContractsDTO;
 import projet.projetstage02.dto.contracts.StageContractInDTO;
 import projet.projetstage02.dto.contracts.StageContractOutDTO;
@@ -15,13 +17,12 @@ import projet.projetstage02.dto.users.Students.StudentOutDTO;
 import projet.projetstage02.exception.*;
 import projet.projetstage02.model.*;
 import projet.projetstage02.repository.*;
+import projet.projetstage02.utils.PDFCreationUtil;
 
 import javax.validation.constraints.NotNull;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 import static projet.projetstage02.utils.ByteConverter.byteToString;
 import static projet.projetstage02.utils.TimeUtil.*;
@@ -36,9 +37,8 @@ public class GestionnaireService {
     private final OffreRepository offreRepository;
     private final StageContractRepository stageContractRepository;
     private final ApplicationAcceptationRepository applicationAcceptationRepository;
-
-    private final ApplicationRepository applicationRepository;
-    private final EvaluationRepository evaluationRepository;
+    private final EvaluationMillieuStageRepository evaluationMillieuStageRepository;
+    private final EvaluationMillieuStagePDFRepository evaluationMillieuStagePDFRepository;
 
     public long saveGestionnaire(String firstname, String lastname, String email, String password) {
         GestionnaireDTO dto = GestionnaireDTO.builder()
@@ -291,8 +291,6 @@ public class GestionnaireService {
                 .offerId(offer.getId())
                 .companyId(company.getId())
                 .session(offer.getSession())
-                .companySignature("")
-                .studentSignature("")
                 .description(getContractDescription(student, offer, company))
                 .build();
 
@@ -369,14 +367,16 @@ public class GestionnaireService {
         return new MillieuStageEvaluationInfoDTO(company, offre, student);
     }
 
-    public void evaluateStage(MillieuStageEvaluationInDTO millieuStageEvaluationInDTO) {
-        evaluationRepository.save(new Evaluation(millieuStageEvaluationInDTO));
+    public long evaluateStage(MillieuStageEvaluationInDTO millieuStageEvaluationInDTO) {
+        EvaluationMillieuStage evaluationMillieuStage = new EvaluationMillieuStage(millieuStageEvaluationInDTO);
+        EvaluationMillieuStage save = evaluationMillieuStageRepository.save(evaluationMillieuStage);
+        return save.getId();
     }
 
     public ContractsDTO getContractsToEvaluateMillieuStage() {
         List<StageContractOutDTO> contracts = new ArrayList<>();
         stageContractRepository.findAll().stream().filter(
-                stageContract -> evaluationRepository.findByContractId(stageContract.getId()).isEmpty()
+                stageContract -> evaluationMillieuStageRepository.findByContractId(stageContract.getId()).isEmpty()
         ).forEach(stageContract -> {
             Optional<Company> companyOptional = companyRepository.findById(stageContract.getCompanyId());
             Optional<Student> studentOptional = studentRepository.findById(stageContract.getStudentId());
@@ -410,5 +410,172 @@ public class GestionnaireService {
         return ContractsDTO.builder().contracts(contracts).build();
     }
 
+    public void createEvaluationMillieuStagePDF(long contractId) throws NonExistentEntityException, NonExistentOfferExeption, DocumentException, EmptySignatureException {
+        Optional<EvaluationMillieuStage> optional = evaluationMillieuStageRepository.findByContractId(contractId);
+        if (optional.isEmpty()) {
+            throw new NonExistentEntityException();
+        }
+        EvaluationMillieuStage evaluationMillieuStage = optional.get();
+        MillieuStageEvaluationInfoDTO millieuStageEvaluationInfoDTO =
+                getMillieuEvaluationInfoForContract(contractId);
 
+        evaluationMillieuStagePDFRepository.save(EvaluationPDF.builder()
+                .pdf(PDFCreationUtil.createPDFFromMap("Évaluation du millieu stage",
+                        evaluationMillieuStageToMap(millieuStageEvaluationInfoDTO, evaluationMillieuStage)))
+                .contractId(contractId)
+                .build());
+
+    }
+
+    private Map<String, Map<String, String>> evaluationMillieuStageToMap(MillieuStageEvaluationInfoDTO millieuStageEvaluationInfoDTO,
+                                                                         EvaluationMillieuStage evaluationMillieuStage) throws EmptySignatureException {
+        Map<String, Map<String, String>> map = new LinkedHashMap<>();
+        Map<String, String> companyInfo = new LinkedHashMap<>();
+        Map<String, String> studentInfo = new LinkedHashMap<>();
+        Map<String, String> offerInfo = new LinkedHashMap<>();
+        Map<String, String> evaluationParagraph = new LinkedHashMap<>();
+        Map<String, String> commentaires = new LinkedHashMap<>();
+        Map<String, String> signPara = new LinkedHashMap<>();
+
+        studentInfo.put("Nom de l'étudiant", millieuStageEvaluationInfoDTO.getNomEtudiant());
+        studentInfo.put("Prénom de l'étudiant", millieuStageEvaluationInfoDTO.getPrenomEtudiant());
+        studentInfo.put("Email de l'étudiant", millieuStageEvaluationInfoDTO.getEmailEtudiant());
+
+        companyInfo.put("Nom de la compagnie", millieuStageEvaluationInfoDTO.getNomCompagnie());
+        companyInfo.put("Nom de la personne contact", millieuStageEvaluationInfoDTO.getNomContact());
+        companyInfo.put("Prénom de la personne contact", millieuStageEvaluationInfoDTO.getPrenomContact());
+        companyInfo.put("Adresse de la compagnie", millieuStageEvaluationInfoDTO.getAdresse());
+        companyInfo.put("Département", millieuStageEvaluationInfoDTO.getDepartement());
+        companyInfo.put("Email de la compagnie", millieuStageEvaluationInfoDTO.getEmailCompagnie());
+
+        offerInfo.put("Titre du poste", millieuStageEvaluationInfoDTO.getPoste());
+        offerInfo.put("Session", millieuStageEvaluationInfoDTO.getSession());
+        offerInfo.put("Date de début", millieuStageEvaluationInfoDTO.getDateStageDebut());
+        offerInfo.put("Date de fin", millieuStageEvaluationInfoDTO.getDateStageFin());
+        offerInfo.put("Nombre d'heures par semaine", millieuStageEvaluationInfoDTO.getHeureParSemaine() + " heures");
+        offerInfo.put("Salaire", millieuStageEvaluationInfoDTO.getSalaire() + " $/h");
+
+
+        evaluationParagraph.put("Les taches confiées sont celles annoncées dans l'entente de stage",
+                fieldToText(evaluationMillieuStage.getTachesAnnonces()));
+        evaluationParagraph.put("Des mesures d'accueil facilitent l'intégration du nouveau stagiaire",
+                fieldToText(evaluationMillieuStage.getIntegration()));
+        evaluationParagraph.put("Le temps réel consacré à l'encadrement du stagiaire est suffisant",
+                fieldToText(evaluationMillieuStage.getTempsReelConsacre()));
+        evaluationParagraph.put("Nombre d'heures pour le premier mois",
+                evaluationMillieuStage.getHeureTotalPremierMois() + " heures");
+        evaluationParagraph.put("Nombre d'heures pour le deuxième mois",
+                evaluationMillieuStage.getHeureTotalDeuxiemeMois() + " heures");
+        evaluationParagraph.put("Nombre d'heures pour le troisième mois",
+                evaluationMillieuStage.getHeureTotalTroisiemeMois() + " heures");
+        evaluationParagraph.put("L'environnement de travail respecte les normes de sécurité",
+                fieldToText(evaluationMillieuStage.getEnvironementTravail()));
+        evaluationParagraph.put("Le climat de travail est agréable",
+                fieldToText(evaluationMillieuStage.getClimatTravail()));
+        evaluationParagraph.put("Le millieu de stage est accessible par transport en commun",
+                fieldToText(evaluationMillieuStage.getMilieuDeStage()));
+        evaluationParagraph.put("La communication avec le superviseur est efficace",
+                fieldToText(evaluationMillieuStage.getCommunicationAvecSuperviser()));
+        evaluationParagraph.put("L'équipement de travail est adéquat",
+                fieldToText(evaluationMillieuStage.getEquipementFourni()));
+        evaluationParagraph.put("Le volume de travail est raisonnable",
+                fieldToText(evaluationMillieuStage.getVolumeDeTravail()));
+
+        commentaires.put("", evaluationMillieuStage.getCommentaires());
+
+        signPara.put("Signé le", evaluationMillieuStage.getDateSignature().toString());
+        map.put("Information sur la compagnie", companyInfo);
+        map.put("Information sur l'étudiant", studentInfo);
+        map.put("Information sur l'offre de stage", offerInfo);
+        map.put("Évaluation", evaluationParagraph);
+        if (evaluationMillieuStage.getCommentaires() != null && !evaluationMillieuStage.getCommentaires().isEmpty()) {
+            map.put("Commentaires", commentaires);
+        }
+        map.put("Signature", signPara);
+        map.put("_signature_", getSignatureGestionnaire(evaluationMillieuStage));
+        return map;
+    }
+
+    private Map<String, String> getSignatureGestionnaire(EvaluationMillieuStage evaluationMillieuStage) throws EmptySignatureException {
+        String signature = evaluationMillieuStage.getSignature();
+        String[] split = signature.split(",");
+        if (split.length != 2) {
+            throw new EmptySignatureException();
+        }
+        signature = split[1];
+        if (signature.length() < 2) throw new EmptySignatureException();
+        Base64.Decoder decoder = Base64.getDecoder();
+        byte[] decodedByteArray = decoder.decode(signature);
+        String bytes = byteToString(decodedByteArray);
+        Map<String, String> map = new LinkedHashMap<>();
+        map.put("signature", bytes);
+        return map;
+    }
+
+    public PdfOutDTO getEvaluationMillieuStagePDF(long id) throws NonExistentEntityException {
+        Optional<EvaluationPDF> optional = evaluationMillieuStagePDFRepository.findById(id);
+        if (optional.isEmpty()) throw new NonExistentEntityException();
+        EvaluationPDF evaluationPDF = optional.get();
+        return new PdfOutDTO(evaluationPDF.getContractId(), evaluationPDF.getPdf());
+    }
+
+    public List<StageContractOutDTO> getEvaluationMillieuStage() {
+        List<StageContract> stageContracts = stageContractRepository.findAll();
+        return stageContracts.stream().filter(stageContract -> {
+            Optional<EvaluationMillieuStage> opt = evaluationMillieuStageRepository.findByContractId(stageContract.getId());
+            return opt.isPresent();
+        }).map(StageContractOutDTO::new).toList();
+    }
+
+    private String fieldToText(String original) {
+        return switch (original) {
+            case "totalementEnAccord" -> "Totalement en accord";
+            case "plutotEnAccord" -> "Plutôt en accord";
+            case "plutotEnDesaccord" -> "Plutôt en désaccord";
+            case "totalementEnDesaccord" -> "Totalement en désaccord";
+            case "impossibleDeSePrononcer" -> "Impossible de se prononcer";
+            case "oui" -> "Oui";
+            case "non" -> "Non";
+            case "depassentBeacoupAttentes" -> "Dépassent beaucoup les attentes";
+            case "depassentAttentes" -> "Dépassent les attentes";
+            case "repondentAttentes" -> "Répondent aux attentes";
+            case "repondentPartiellementAttentes" -> "Répondent partiellement aux attentes";
+            case "repondentPasAttentes" -> "Ne répondent pas aux attentes";
+            default -> original;
+        };
+    }
+
+    public List<StageContractOutDTO> getContractsToSigne(){
+        List<StageContractOutDTO> contractsDTO = new ArrayList<>();
+
+        stageContractRepository.findAll()
+                .stream()
+                .filter(stageContract ->
+                        !stageContract.getCompanySignature().isBlank()
+                                && !stageContract.getStudentSignature().isBlank()
+                                && stageContract.getGestionnaireSignature().isBlank()
+                )
+                .forEach(stageContract -> contractsDTO.add(new StageContractOutDTO(stageContract)));
+
+        return contractsDTO;
+    }
+
+    public StageContractOutDTO contractSignature(SignatureInDTO signature)
+            throws NonExistentEntityException, NotReadyToBeSignedException {
+        Optional<Gestionnaire> gestionnaireOpt = gestionnaireRepository.findById(signature.getUserId());
+        if(gestionnaireOpt.isEmpty()) throw new NonExistentEntityException();
+
+        Optional<StageContract> contractOpt = stageContractRepository.findById(signature.getContractId());
+        if(contractOpt.isEmpty()) throw new NonExistentEntityException();
+        StageContract contract = contractOpt.get();
+
+        if(contract.getCompanySignature().isBlank() || contract.getStudentSignature().isBlank())
+            throw new NotReadyToBeSignedException();
+
+        contract.setGestionnaireSignature(signature.getSignature());
+        contract.setGestionnaireSignatureDate(LocalDateTime.now());
+        stageContractRepository.save(contract);
+
+        return new StageContractOutDTO(contract);
+    }
 }

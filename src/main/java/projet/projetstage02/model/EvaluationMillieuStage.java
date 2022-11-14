@@ -9,6 +9,7 @@ import projet.projetstage02.dto.evaluations.MillieuStage.MillieuStageEvaluationI
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.Lob;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Pattern;
@@ -19,7 +20,7 @@ import java.time.LocalDate;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class Evaluation {
+public class EvaluationMillieuStage {
     @Id
     @GeneratedValue
     private long id;
@@ -58,14 +59,13 @@ public class Evaluation {
     @NotBlank
     @Pattern(regexp = "totalementEnAccord|plutotEnAccord|plutotEnDesaccord|totalementEnDesaccord|impossibleDeSePrononcer")
     private String volumeDeTravail;
-    @NotBlank
     private String commentaires;
     @NotBlank
+    @Lob
     private String signature;
-    @NotBlank
     private LocalDate dateSignature;
 
-    public Evaluation(MillieuStageEvaluationInDTO millieuStageEvaluationInDTO) {
+    public EvaluationMillieuStage(MillieuStageEvaluationInDTO millieuStageEvaluationInDTO) {
         contractId = millieuStageEvaluationInDTO.getContractId();
         tachesAnnonces = millieuStageEvaluationInDTO.getTachesAnnonces();
         integration = millieuStageEvaluationInDTO.getIntegration();
