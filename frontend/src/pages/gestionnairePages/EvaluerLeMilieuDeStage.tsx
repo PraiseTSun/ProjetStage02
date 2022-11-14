@@ -7,7 +7,8 @@ import PageHeader from "../../components/universalComponents/PageHeader";
 import {generateAlert} from "../../services/universalServices/UniversalUtilService";
 import InfoDuContrat from "../../models/InfoDuContrat";
 import {
-    postEvaluationStage, putGetContrats,
+    postEvaluationStage,
+    putGetContrats,
     putInfoContratPourEvaluateStage
 } from "../../services/gestionnaireServices/GestionnaireFetchService";
 import IContrat from "../../models/IContrat";
@@ -54,8 +55,8 @@ const EvaluerLeMilieuDeStage = ({user}: { user: IUser }): JSX.Element => {
     const [volumeDeTravail, setVolumeDeTravail] = useState<string>("")
     const [commentaires, setCommentaires] = useState<string>("")
     const [signature, setSignature] = useState<string>("")
-    const [dateNow, setDateNow] = useState<Date>(new Date())
-    const [dateSignature, setDateSignature] = useState<string>(`${dateNow.getDate().toString()}-${(dateNow.getMonth()+1).toString()}-${dateNow.getFullYear().toString()}`)
+    const currentDate = new Date();
+    const dateSignature = `${currentDate.getDate().toString()}-${(currentDate.getMonth() + 1).toString()}-${currentDate.getFullYear().toString()}`
     const [isSigner, setIsSigner] = useState(false)
     let sigPad: SignaturePad | null
     useEffect(() => {
