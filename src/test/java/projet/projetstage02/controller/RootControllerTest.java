@@ -2044,6 +2044,30 @@ public class RootControllerTest {
                         .content(jsonEvalMillieuStageInDTO.write(millieuStageEvaluationInDTO).getJson()))
                 .andExpect(status().isForbidden());
     }
+    @Test
+    void testGetGestionnaireContractsHappyDay() throws Exception{
+        when(gestionnaireService.getContractsToSigne()).thenReturn(new ArrayList<>(){{
+            add(new StageContractOutDTO());
+            add(new StageContractOutDTO());
+            add(new StageContractOutDTO());
+        }});
+
+        mockMvc.perform(put("/getGestionnaireContracts")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(jsonInterviewSelectDTO.write(interviewSelectInDTO).getJson()))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.size()", is(3)));
+    }
+
+    @Test
+    void testGetGestionnaireContractsInvalidToken() throws Exception{
+        when(authService.getToken(anyString(), any())).thenThrow(new InvalidTokenException());
+
+        mockMvc.perform(put("/getGestionnaireContracts")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(jsonInterviewSelectDTO.write(interviewSelectInDTO).getJson()))
+                .andExpect(status().isForbidden());
+    }
 
     @Test
     void testEvaluateNotFound() throws Exception {
@@ -2066,13 +2090,44 @@ public class RootControllerTest {
     }
 
     @Test
-    void testGetEvaluationMillieuStagePDFHappyDay() throws Exception {
-        when(gestionnaireService.getEvaluationMillieuStagePDF(anyLong())).thenReturn(duffOffrePdfOut);
+    void testGestionnaireSignatureHappyDay() throws Exception{
+        when(gestionnaireService.contractSignature(any())).thenReturn(new StageContractOutDTO());
 
-        mockMvc.perform(put("/getEvaluationPDF/millieuStage/{id}", 1)
+        mockMvc.perform(put("/gestionnaireSignature")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(jsonTokenDTO.write(token).getJson()))
+                        .content(jsonSignatureDTO.write(signatureInDTO).getJson()))
                 .andExpect(status().isOk());
+    }
+
+    @Test
+    void testGestionnaireSignatureNotFound() throws Exception{
+        when(gestionnaireService.contractSignature(any())).thenThrow(new NonExistentEntityException());
+
+        mockMvc.perform(put("/gestionnaireSignature")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(jsonSignatureDTO.write(signatureInDTO).getJson()))
+                .andExpect(status().isNotFound());
+    }
+
+
+    @Test
+    void testGestionnaireSignatureConflict() throws Exception{
+        when(gestionnaireService.contractSignature(any())).thenThrow(new NotReadyToBeSignedException());
+
+        mockMvc.perform(put("/gestionnaireSignature")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(jsonSignatureDTO.write(signatureInDTO).getJson()))
+                .andExpect(status().isConflict());
+    }
+
+    @Test
+    void testGestionnaireSignatureInvalidToken() throws Exception{
+        when(authService.getToken(anyString(), any())).thenThrow(new InvalidTokenException());
+
+        mockMvc.perform(put("/gestionnaireSignature")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(jsonSignatureDTO.write(signatureInDTO).getJson()))
+                .andExpect(status().isForbidden());
     }
 
     @Test
@@ -2083,6 +2138,16 @@ public class RootControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(jsonTokenDTO.write(token).getJson()))
                 .andExpect(status().isNotFound());
+    }
+
+    @Test
+    void testGetEvaluationMillieuStagePDFHappyDay() throws Exception {
+        when(gestionnaireService.getEvaluationMillieuStagePDF(anyLong())).thenReturn(duffOffrePdfOut);
+
+        mockMvc.perform(put("/getEvaluationPDF/millieuStage/{id}", 1)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(jsonTokenDTO.write(token).getJson()))
+                .andExpect(status().isOk());
     }
 
     @Test
