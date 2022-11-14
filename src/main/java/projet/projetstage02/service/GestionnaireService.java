@@ -7,8 +7,8 @@ import projet.projetstage02.dto.SignatureInDTO;
 import projet.projetstage02.dto.contracts.ContractsDTO;
 import projet.projetstage02.dto.contracts.StageContractInDTO;
 import projet.projetstage02.dto.contracts.StageContractOutDTO;
+import projet.projetstage02.dto.evaluations.EvaluationInfoDTO;
 import projet.projetstage02.dto.evaluations.MillieuStage.MillieuStageEvaluationInDTO;
-import projet.projetstage02.dto.evaluations.MillieuStage.MillieuStageEvaluationInfoDTO;
 import projet.projetstage02.dto.offres.OffreOutDTO;
 import projet.projetstage02.dto.pdf.PdfOutDTO;
 import projet.projetstage02.dto.users.CompanyDTO;
@@ -38,7 +38,9 @@ public class GestionnaireService {
     private final StageContractRepository stageContractRepository;
     private final ApplicationAcceptationRepository applicationAcceptationRepository;
     private final EvaluationMillieuStageRepository evaluationMillieuStageRepository;
+    private final EvaluationEtudiantRepository evaluationEtudiantRepository;
     private final EvaluationMillieuStagePDFRepository evaluationMillieuStagePDFRepository;
+    private final EvaluationEtudiantPDFRepository evaluationEtudiantPDFRepository;
 
     public long saveGestionnaire(String firstname, String lastname, String email, String password) {
         GestionnaireDTO dto = GestionnaireDTO.builder()
@@ -343,7 +345,7 @@ public class GestionnaireService {
     }
 
 
-    public MillieuStageEvaluationInfoDTO getMillieuEvaluationInfoForContract(long contractId) throws NonExistentOfferExeption, NonExistentEntityException {
+    public EvaluationInfoDTO getEvaluationInfoForContract(long contractId) throws NonExistentOfferExeption, NonExistentEntityException {
         Optional<StageContract> optional = stageContractRepository.findById(contractId);
         if (optional.isEmpty()) {
             throw new NonExistentEntityException();
@@ -364,7 +366,7 @@ public class GestionnaireService {
             throw new NonExistentEntityException();
         }
         Company company = optionalCompany.get();
-        return new MillieuStageEvaluationInfoDTO(company, offre, student);
+        return new EvaluationInfoDTO(company, offre, student);
     }
 
     public long evaluateStage(MillieuStageEvaluationInDTO millieuStageEvaluationInDTO) {
@@ -414,18 +416,18 @@ public class GestionnaireService {
             throw new NonExistentEntityException();
         }
         EvaluationMillieuStage evaluationMillieuStage = optional.get();
-        MillieuStageEvaluationInfoDTO millieuStageEvaluationInfoDTO =
-                getMillieuEvaluationInfoForContract(contractId);
+        EvaluationInfoDTO evaluationInfoDTO =
+                getEvaluationInfoForContract(contractId);
 
         evaluationMillieuStagePDFRepository.save(EvaluationPDF.builder()
                 .pdf(PDFCreationUtil.createPDFFromMap("Évaluation du millieu stage",
-                        evaluationMillieuStageToMap(millieuStageEvaluationInfoDTO, evaluationMillieuStage)))
+                        evaluationMillieuStageToMap(evaluationInfoDTO, evaluationMillieuStage)))
                 .contractId(contractId)
                 .build());
 
     }
 
-    private Map<String, Map<String, String>> evaluationMillieuStageToMap(MillieuStageEvaluationInfoDTO millieuStageEvaluationInfoDTO,
+    private Map<String, Map<String, String>> evaluationMillieuStageToMap(EvaluationInfoDTO evaluationInfoDTO,
                                                                          EvaluationMillieuStage evaluationMillieuStage) throws EmptySignatureException {
         Map<String, Map<String, String>> map = new LinkedHashMap<>();
         Map<String, String> companyInfo = new LinkedHashMap<>();
@@ -435,23 +437,23 @@ public class GestionnaireService {
         Map<String, String> commentaires = new LinkedHashMap<>();
         Map<String, String> signPara = new LinkedHashMap<>();
 
-        studentInfo.put("Nom de l'étudiant", millieuStageEvaluationInfoDTO.getNomEtudiant());
-        studentInfo.put("Prénom de l'étudiant", millieuStageEvaluationInfoDTO.getPrenomEtudiant());
-        studentInfo.put("Email de l'étudiant", millieuStageEvaluationInfoDTO.getEmailEtudiant());
+        studentInfo.put("Nom de l'étudiant", evaluationInfoDTO.getNomEtudiant());
+        studentInfo.put("Prénom de l'étudiant", evaluationInfoDTO.getPrenomEtudiant());
+        studentInfo.put("Email de l'étudiant", evaluationInfoDTO.getEmailEtudiant());
 
-        companyInfo.put("Nom de la compagnie", millieuStageEvaluationInfoDTO.getNomCompagnie());
-        companyInfo.put("Nom de la personne contact", millieuStageEvaluationInfoDTO.getNomContact());
-        companyInfo.put("Prénom de la personne contact", millieuStageEvaluationInfoDTO.getPrenomContact());
-        companyInfo.put("Adresse de la compagnie", millieuStageEvaluationInfoDTO.getAdresse());
-        companyInfo.put("Département", millieuStageEvaluationInfoDTO.getDepartement());
-        companyInfo.put("Email de la compagnie", millieuStageEvaluationInfoDTO.getEmailCompagnie());
+        companyInfo.put("Nom de la compagnie", evaluationInfoDTO.getNomCompagnie());
+        companyInfo.put("Nom de la personne contact", evaluationInfoDTO.getNomContact());
+        companyInfo.put("Prénom de la personne contact", evaluationInfoDTO.getPrenomContact());
+        companyInfo.put("Adresse de la compagnie", evaluationInfoDTO.getAdresse());
+        companyInfo.put("Département", evaluationInfoDTO.getDepartement());
+        companyInfo.put("Email de la compagnie", evaluationInfoDTO.getEmailCompagnie());
 
-        offerInfo.put("Titre du poste", millieuStageEvaluationInfoDTO.getPoste());
-        offerInfo.put("Session", millieuStageEvaluationInfoDTO.getSession());
-        offerInfo.put("Date de début", millieuStageEvaluationInfoDTO.getDateStageDebut());
-        offerInfo.put("Date de fin", millieuStageEvaluationInfoDTO.getDateStageFin());
-        offerInfo.put("Nombre d'heures par semaine", millieuStageEvaluationInfoDTO.getHeureParSemaine() + " heures");
-        offerInfo.put("Salaire", millieuStageEvaluationInfoDTO.getSalaire() + " $/h");
+        offerInfo.put("Titre du poste", evaluationInfoDTO.getPoste());
+        offerInfo.put("Session", evaluationInfoDTO.getSession());
+        offerInfo.put("Date de début", evaluationInfoDTO.getDateStageDebut());
+        offerInfo.put("Date de fin", evaluationInfoDTO.getDateStageFin());
+        offerInfo.put("Nombre d'heures par semaine", evaluationInfoDTO.getHeureParSemaine() + " heures");
+        offerInfo.put("Salaire", evaluationInfoDTO.getSalaire() + " $/h");
 
 
         evaluationParagraph.put("Les taches confiées sont celles annoncées dans l'entente de stage",
@@ -490,12 +492,11 @@ public class GestionnaireService {
             map.put("Commentaires", commentaires);
         }
         map.put("Signature", signPara);
-        map.put("_signature_", getSignatureGestionnaire(evaluationMillieuStage));
+        map.put("_signature_", getSignature(evaluationMillieuStage.getSignature()));
         return map;
     }
 
-    private Map<String, String> getSignatureGestionnaire(EvaluationMillieuStage evaluationMillieuStage) throws EmptySignatureException {
-        String signature = evaluationMillieuStage.getSignature();
+    private Map<String, String> getSignature(String signature) throws EmptySignatureException {
         String[] split = signature.split(",");
         if (split.length != 2) {
             throw new EmptySignatureException();
@@ -518,8 +519,7 @@ public class GestionnaireService {
     }
 
     public List<StageContractOutDTO> getEvaluationMillieuStage() {
-        List<StageContract> stageContracts = stageContractRepository.findAll();
-        return stageContracts.stream().filter(stageContract -> {
+        return stageContractRepository.findAll().stream().filter(stageContract -> {
             Optional<EvaluationMillieuStage> opt = evaluationMillieuStageRepository.findByContractId(stageContract.getId());
             return opt.isPresent();
         }).map(StageContractOutDTO::new).toList();
@@ -534,6 +534,7 @@ public class GestionnaireService {
             case "impossibleDeSePrononcer" -> "Impossible de se prononcer";
             case "oui" -> "Oui";
             case "non" -> "Non";
+            case "peutEtre" -> "Peut-être";
             case "depassentBeacoupAttentes" -> "Dépassent beaucoup les attentes";
             case "depassentAttentes" -> "Dépassent les attentes";
             case "repondentAttentes" -> "Répondent aux attentes";
@@ -575,5 +576,123 @@ public class GestionnaireService {
         stageContractRepository.save(contract);
 
         return new StageContractOutDTO(contract);
+    }
+
+    public List<StageContractOutDTO> getEvaluatedContractsEtudiants() {
+        return stageContractRepository.findAll().stream().filter(
+                stageContract -> evaluationEtudiantRepository.findByContractId(stageContract.getId()).isPresent()
+        ).map(StageContractOutDTO::new).toList();
+    }
+
+    public PdfOutDTO getEvaluationPDFEtudiant(long contractID) throws NonExistentEntityException {
+        Optional<EvaluationPDF> optional = evaluationEtudiantPDFRepository.findById(contractID);
+        if (optional.isEmpty()) throw new NonExistentEntityException();
+        EvaluationPDF evaluationPDF = optional.get();
+        return PdfOutDTO.builder().id(contractID).pdf(evaluationPDF.getPdf()).build();
+    }
+
+    public void createEvaluationEtudiantPDF(long contractId)
+            throws NonExistentEntityException, NonExistentOfferExeption, DocumentException, EmptySignatureException {
+        Optional<EvaluationEtudiant> optional = evaluationEtudiantRepository.findByContractId(contractId);
+        if (optional.isEmpty()) {
+            throw new NonExistentEntityException();
+        }
+        Optional<StageContract> opt = stageContractRepository.findById(contractId);
+        if (opt.isEmpty()) throw new NonExistentEntityException();
+        EvaluationEtudiant evaluationMillieuStage = optional.get();
+        evaluationMillieuStagePDFRepository.save(EvaluationPDF.builder()
+                .pdf(PDFCreationUtil.createPDFFromMap("Évaluation de l'étudiant",
+                        evaluationEtudiantToMap(evaluationMillieuStage, getEvaluationInfoForContract(contractId))))
+                .contractId(contractId)
+                .build());
+
+    }
+
+    private Map<String, Map<String, String>> evaluationEtudiantToMap(EvaluationEtudiant evaluation, EvaluationInfoDTO infoDTO)
+            throws EmptySignatureException {
+        Map<String, Map<String, String>> map = new LinkedHashMap<>();
+        Map<String, String> studentInfo = new LinkedHashMap<>();
+        Map<String, String> companyInfo = new LinkedHashMap<>();
+        Map<String, String> offerInfo = new LinkedHashMap<>();
+        Map<String, String> productivite = new LinkedHashMap<>();
+        Map<String, String> qualiteDuTravail = new LinkedHashMap<>();
+        Map<String, String> qualiteRelationInterpesonnelles = new LinkedHashMap<>();
+        Map<String, String> habiletesPersonnelles = new LinkedHashMap<>();
+        Map<String, String> appreciationGlobale = new LinkedHashMap<>();
+        Map<String, String> prochainStage = new LinkedHashMap<>();
+        Map<String, String> signPara = new LinkedHashMap<>();
+
+        studentInfo.put("Nom de l'étudiant", infoDTO.getNomEtudiant());
+        studentInfo.put("Prénom de l'étudiant", infoDTO.getPrenomEtudiant());
+        studentInfo.put("Email de l'étudiant", infoDTO.getEmailEtudiant());
+
+        companyInfo.put("Nom de la compagnie", infoDTO.getNomCompagnie());
+        companyInfo.put("Nom de la personne contact", infoDTO.getNomContact());
+        companyInfo.put("Prénom de la personne contact", infoDTO.getPrenomContact());
+        companyInfo.put("Adresse de la compagnie", infoDTO.getAdresse());
+        companyInfo.put("Département", infoDTO.getDepartement());
+        companyInfo.put("Email de la compagnie", infoDTO.getEmailCompagnie());
+
+        offerInfo.put("Titre du poste", infoDTO.getPoste());
+        offerInfo.put("Session", infoDTO.getSession());
+        offerInfo.put("Date de début", infoDTO.getDateStageDebut());
+        offerInfo.put("Date de fin", infoDTO.getDateStageFin());
+        offerInfo.put("Nombre d'heures par semaine", infoDTO.getHeureParSemaine() + " heures");
+        offerInfo.put("Salaire", infoDTO.getSalaire() + " $/h");
+
+        productivite.put("Planifier son travail efficacement", fieldToText(evaluation.getTravailEfficace()));
+        productivite.put("Comprendre rapidement les directives", fieldToText(evaluation.getComprendRapidement()));
+        productivite.put("Rythme de travail soutenu", fieldToText(evaluation.getRythmeSoutenu()));
+        productivite.put("Établir ses prioritées", fieldToText(evaluation.getEtablirPriorites()));
+        productivite.put("Respect des echeances", fieldToText(evaluation.getRespecteEcheances()));
+        productivite.put("Commentaires", fieldToText(evaluation.getCommentairesProductivite()));
+
+        qualiteDuTravail.put("Respect des mandats demandés", fieldToText(evaluation.getRespecteMandatsDemandes()));
+        qualiteDuTravail.put("Attention aux détails", fieldToText(evaluation.getAttentionAuxDetails()));
+        qualiteDuTravail.put("Revérifier son travail", fieldToText(evaluation.getDoubleCheckTravail()));
+        qualiteDuTravail.put("Rechercher des occasions pour se perfectionner", fieldToText(evaluation.getOccasionsDePerfectionnement()));
+        qualiteDuTravail.put("Bonne analyse des problèmes rencontrés", fieldToText(evaluation.getBonneAnalyseProblemes()));
+        qualiteDuTravail.put("Commentaires", evaluation.getCommentairesQualite());
+
+        qualiteRelationInterpesonnelles.put("Planifie son travail efficacement", fieldToText(evaluation.getPlanifieTravail()));
+        qualiteRelationInterpesonnelles.put("Etabli facilement des contacts avec les gens", fieldToText(evaluation.getContactsFaciles()));
+        qualiteRelationInterpesonnelles.put("Contribue au travail d'équipe", fieldToText(evaluation.getTravailEnEquipe()));
+        qualiteRelationInterpesonnelles.put("S'adapte facilement a la culture d'entreprise", fieldToText(evaluation.getAdapteCulture()));
+        qualiteRelationInterpesonnelles.put("Accepte les critiques constructives", fieldToText(evaluation.getAccepteCritiques()));
+        qualiteRelationInterpesonnelles.put("Respecte les autres", fieldToText(evaluation.getRespecteAutres()));
+        qualiteRelationInterpesonnelles.put("Essaie de comprendre le point de vue des autres", fieldToText(evaluation.getEcouteActiveComprendrePDVautre()));
+        qualiteRelationInterpesonnelles.put("Commentaires", evaluation.getCommentairesRelationsInterpersonnelles());
+
+
+        habiletesPersonnelles.put("Démontre de l'interet de la motivation", fieldToText(evaluation.getInteretMotivation()));
+        habiletesPersonnelles.put("Exprime clairement ses idées", fieldToText(evaluation.getExprimeIdees()));
+        habiletesPersonnelles.put("Fait preuve d'initiative", fieldToText(evaluation.getInitiative()));
+        habiletesPersonnelles.put("Travail de façon sécuritaire", fieldToText(evaluation.getTravailSecuritaire()));
+        habiletesPersonnelles.put("Bon sens des responsabilitées et d'autonomie", fieldToText(evaluation.getResponsableAutonome()));
+        habiletesPersonnelles.put("Ponctuel", fieldToText(evaluation.getPonctuel()));
+        habiletesPersonnelles.put("Commentaires", evaluation.getCommentairesHabilites());
+
+        appreciationGlobale.put("Habilitées démontrées", fieldToText(evaluation.getHabiletesDemontres()));
+        appreciationGlobale.put("Commentaires", evaluation.getCommentairesAppreciation());
+        appreciationGlobale.put("Evaluation discutée avec le stagiaire", fieldToText(evaluation.getDiscuteAvecStagiaire()));
+        appreciationGlobale.put("Heures d'encadrement par semaine", evaluation.getHeuresEncadrement() + " heures");
+
+        prochainStage.put("Souhaite un autre stage avec cet etudiant", fieldToText(evaluation.getAcueillirPourProchainStage()));
+        prochainStage.put("Formation suffisante?", evaluation.getFormationTechniqueSuffisante());
+
+        signPara.put("Signé le", evaluation.getDateSignature());
+
+        map.put("Information sur la compagnie", companyInfo);
+        map.put("Information sur l'étudiant", studentInfo);
+        map.put("Information sur l'offre", offerInfo);
+        map.put("Productivité", productivite);
+        map.put("Qualité du travail", qualiteDuTravail);
+        map.put("Qualité des relations interpersonnelles", qualiteRelationInterpesonnelles);
+        map.put("Habiletées personnelles", habiletesPersonnelles);
+        map.put("Appréciation globale du stagiaire", appreciationGlobale);
+        map.put("Prochain stage", prochainStage);
+        map.put("Signature", signPara);
+        map.put("_signature_", getSignature(evaluation.getSignature()));
+        return map;
     }
 }
