@@ -8,6 +8,7 @@ import {
 import {generateAlert} from "../../services/universalServices/UniversalUtilService";
 import IContract from "../../models/IContract";
 import PdfComponent from "../../components/universalComponents/PdfComponent";
+import PageHeader from "../../components/universalComponents/PageHeader";
 
 const ConsulterEvaluationParEntreprise = ({connectedUser}:
                                  { connectedUser: IUser }): JSX.Element => {
@@ -55,15 +56,7 @@ const ConsulterEvaluationParEntreprise = ({connectedUser}:
 
     return (
         <Container className="min-vh-100">
-            <Row>
-                <Col sm={2}>
-                    <Link to="/" className="btn btn-primary my-3">Home</Link>
-                </Col>
-                <Col sm={8} className="text-center pt-2">
-                    <h1 className="fw-bold text-white display-3 pb-2">Évaluations par l'entreprise</h1>
-                </Col>
-                <Col sm={2}></Col>
-            </Row>
+            <PageHeader title={"Évaluations par l'entreprise"}/>
             <Row>
                 <Col className="bg-light p-0">
                     <Table className="text-center text-light" hover>
