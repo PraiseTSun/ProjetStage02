@@ -49,43 +49,49 @@ public class GestionnaireService {
     }
 
     public void validateCompany(Long id) throws NonExistentEntityException {
-        Company company = getCompany(id);
+        Company company = getCompanyById(id);
         company.setConfirm(true);
         companyRepository.save(company);
     }
 
     public void validateStudent(Long id) throws NonExistentEntityException {
-        Student student = getStudent(id);
+        Student student = getStudentById(id);
         student.setConfirm(true);
         studentRepository.save(student);
     }
 
     public void removeCompany(long id) throws NonExistentEntityException {
-        Company company = getCompany(id);
+        Company company = getCompanyById(id);
         companyRepository.delete(company);
     }
 
     public void removeStudent(long id) throws NonExistentEntityException {
-        Student student = getStudent(id);
+        Student student = getStudentById(id);
         studentRepository.delete(student);
     }
 
-    private Company getCompany(long id) throws NonExistentEntityException {
+    private Company getCompanyById(long id) throws NonExistentEntityException {
         Optional<Company> companyOptional = companyRepository.findById(id);
         if (companyOptional.isEmpty()) throw new NonExistentEntityException();
         return companyOptional.get();
     }
 
-    private Student getStudent(long id) throws NonExistentEntityException {
+    private Student getStudentById(long id) throws NonExistentEntityException {
         Optional<Student> studentOptional = studentRepository.findById(id);
         if (studentOptional.isEmpty()) throw new NonExistentEntityException();
         return studentOptional.get();
     }
 
-    private Offre getOffer(long id) throws NonExistentOfferExeption {
+    private Offre getOfferById(long id) throws NonExistentOfferExeption {
         Optional<Offre> offreOpt = offreRepository.findById(id);
         if (offreOpt.isEmpty()) throw new NonExistentOfferExeption();
         return offreOpt.get();
+    }
+
+    private CvStatus getCvStatusOptById(long id) throws NonExistentEntityException {
+        Optional<CvStatus> cvStatusOpt = cvStatusRepository.findById(id);
+        if (cvStatusOpt.isEmpty()) throw new NonExistentEntityException();
+        return cvStatusOpt.get();
     }
 
     public List<OffreOutDTO> getValidatedOffers(int year) {
@@ -112,7 +118,7 @@ public class GestionnaireService {
 
     public OffreOutDTO validateOfferById(Long id) throws NonExistentOfferExeption, ExpiredSessionException {
 
-        Offre offre = getOffer(id);
+        Offre offre = getOfferById(id);
         if (!isRightSession(offre.getSession(), getNextYear())) {
             throw new ExpiredSessionException();
         }
@@ -123,7 +129,7 @@ public class GestionnaireService {
     }
 
     public void removeOfferById(long id) throws NonExistentOfferExeption {
-        offreRepository.delete(getOffer(id));
+        offreRepository.delete(getOfferById(id));
     }
 
     public List<StudentOutDTO> getUnvalidatedStudents() {
@@ -149,7 +155,7 @@ public class GestionnaireService {
     }
 
     public PdfOutDTO getOffrePdfById(long id) throws NonExistentOfferExeption {
-        @NotNull byte[] offer = getOffer(id).getPdf();
+        @NotNull byte[] offer = getOfferById(id).getPdf();
         String offreString = byteToString(offer);
         return PdfOutDTO.builder().pdf(offreString).build();
     }
@@ -175,51 +181,49 @@ public class GestionnaireService {
     }
 
     public StudentOutDTO validateStudentCV(long id) throws NonExistentEntityException, InvalidStatusException {
-        Optional<Student> studentOpt = studentRepository.findById(id);
-        if (studentOpt.isEmpty()) throw new NonExistentEntityException();
-        Student student = studentOpt.get();
-        Optional<CvStatus> cvStatusOpt = cvStatusRepository.findById(student.getId());
-        if (cvStatusOpt.isEmpty()) {
-            throw new NonExistentEntityException();
-        }
-        CvStatus cvStatus = cvStatusOpt.get();
+        Student student = getStudentById(id);
+
+        CvStatus cvStatus = getCvStatusOptById(student.getId());
+
         if (!cvStatus.getStatus().equals("PENDING")) {
             throw new InvalidStatusException();
         }
+
         cvStatus.setStatus("ACCEPTED");
         student.setCv(student.getCvToValidate());
         cvStatus.setRefusalMessage("");
+
         student.setCvToValidate(new byte[0]);
+
         studentRepository.save(student);
         cvStatusRepository.save(cvStatus);
+
         return new StudentOutDTO(student);
     }
 
     public StudentOutDTO removeStudentCvValidation(long id, String refusalReason) throws NonExistentEntityException, InvalidStatusException {
-        Optional<Student> studentOpt = studentRepository.findById(id);
-        if (studentOpt.isEmpty()) throw new NonExistentEntityException();
-        Optional<CvStatus> cvStatusOpt = cvStatusRepository.findById(id);
-        if (cvStatusOpt.isEmpty()) {
-            throw new NonExistentEntityException();
-        }
-        CvStatus cvStatus = cvStatusOpt.get();
+        Student student = getStudentById(id);
+
+        CvStatus cvStatus = getCvStatusOptById(id);
+
         if (!cvStatus.getStatus().equals("PENDING")) {
             throw new InvalidStatusException();
         }
         cvStatus.setStatus("REFUSED");
         cvStatus.setRefusalMessage(refusalReason);
-        Student student = studentOpt.get();
+
         student.setCvToValidate(new byte[0]);
         studentRepository.save(student);
+
         return new StudentOutDTO(student);
     }
 
     public PdfOutDTO getStudentCvToValidate(long studentId) throws NonExistentEntityException {
-        Optional<Student> studentOpt = studentRepository.findById(studentId);
-        if (studentOpt.isEmpty()) throw new NonExistentEntityException();
-        byte[] cv = studentOpt.get().getCvToValidate();
+        Student student = getStudentById(studentId);
+
+        byte[] cv = student.getCvToValidate();
         String cvConvert = byteToString(cv);
-        return new PdfOutDTO(studentOpt.get().getId(), cvConvert);
+        return new PdfOutDTO(student.getId(), cvConvert);
     }
 
     public boolean isGestionnaireInvalid(String email) throws NonExistentEntityException {
@@ -245,17 +249,11 @@ public class GestionnaireService {
 
     public StageContractOutDTO createStageContract(StageContractInDTO contract)
             throws NonExistentEntityException, NonExistentOfferExeption, AlreadyExistingStageContractException {
-        Optional<Student> studentOpt = studentRepository.findById(contract.getStudentId());
-        if (studentOpt.isEmpty()) throw new NonExistentEntityException();
-        Student student = studentOpt.get();
+        Student student = getStudentById(contract.getStudentId());
 
-        Optional<Offre> offerOpt = offreRepository.findById(contract.getOfferId());
-        if (offerOpt.isEmpty()) throw new NonExistentOfferExeption();
-        Offre offer = offerOpt.get();
+        Offre offer = getOfferById(contract.getOfferId());
 
-        Optional<Company> companyOpt = companyRepository.findById(offer.getIdCompagnie());
-        if (companyOpt.isEmpty()) throw new NonExistentEntityException();
-        Company company = companyOpt.get();
+        Company company = getCompanyById(offer.getIdCompagnie());
 
         Optional<StageContract> stageContractOpt
                 = stageContractRepository.findByStudentIdAndCompanyIdAndOfferId(student.getId(), company.getId(), offer.getId());
@@ -332,21 +330,13 @@ public class GestionnaireService {
             throw new NonExistentEntityException();
         }
         StageContract stageContract = optional.get();
-        Optional<Offre> offreOptional = offreRepository.findById(stageContract.getOfferId());
-        if (offreOptional.isEmpty()) {
-            throw new NonExistentOfferExeption();
-        }
-        Offre offre = offreOptional.get();
-        Optional<Student> optionalStudent = studentRepository.findById(stageContract.getStudentId());
-        if (optionalStudent.isEmpty()) {
-            throw new NonExistentEntityException();
-        }
-        Student student = optionalStudent.get();
-        Optional<Company> optionalCompany = companyRepository.findById(stageContract.getCompanyId());
-        if (optionalCompany.isEmpty()) {
-            throw new NonExistentEntityException();
-        }
-        Company company = optionalCompany.get();
+
+        Offre offre = getOfferById(stageContract.getOfferId());
+
+        Student student = getStudentById(stageContract.getStudentId());
+
+        Company company = getCompanyById(stageContract.getCompanyId());
+
         return new MillieuStageEvaluationInfoDTO(company, offre, student);
     }
 
