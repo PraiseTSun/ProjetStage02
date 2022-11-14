@@ -1,26 +1,24 @@
 import IUser from "../../models/IUser";
 import React, {useEffect, useState} from "react";
 import {Button, Col, Container, Row, Table} from "react-bootstrap";
-import {Link} from "react-router-dom";
 import {
-    putEvaluationPdf,
-    putGetContractsPourMillieuStage
+    putEvaluationParEntreprisePdf,
+    putGetContractsPourEvaluationParEntreprise
 } from "../../services/gestionnaireServices/GestionnaireFetchService";
 import {generateAlert} from "../../services/universalServices/UniversalUtilService";
 import IContract from "../../models/IContract";
 import PdfComponent from "../../components/universalComponents/PdfComponent";
 import PageHeader from "../../components/universalComponents/PageHeader";
 
-const ConsulterEvaluation = ({connectedUser}:
-                                 { connectedUser: IUser }): JSX.Element => {
+const ConsulterEvaluationDeEtudiants = ({connectedUser}:
+                                            { connectedUser: IUser }): JSX.Element => {
     const [contrats, setContrats] = useState<any>([])
-    const [evaluation, setEvaluation] = useState<Uint8Array>(new Uint8Array([]));
-    const [showEvaluation, setShowEvaluation] = useState<boolean>(false);
-
+    const [evaluationParEntreprise, setEvaluationParEntreprise] = useState<Uint8Array>(new Uint8Array([]))
+    const [showEvaluationParEntreprise, setShowEvaluationParEntreprise] = useState<boolean>(false)
     useEffect(() => {
         const fetchContrat = async () => {
             try {
-                const response = await putGetContractsPourMillieuStage(connectedUser.token);
+                const response = await putGetContractsPourEvaluationParEntreprise(connectedUser.token);
                 if (response.ok) {
                     const data = await response.json();
                     setContrats(data);
@@ -34,14 +32,14 @@ const ConsulterEvaluation = ({connectedUser}:
         fetchContrat()
     }, [connectedUser])
 
-    const getEvaluation = async (contratId: number): Promise<void> => {
+    const getEvaluationParEntreprise = async (contartId: number): Promise<void> => {
         try {
-            const response = await putEvaluationPdf(contratId, connectedUser.token)
+            const response = await putEvaluationParEntreprisePdf(contartId, connectedUser.token)
             if (response.ok) {
                 const data = await response.json();
                 var toUint8Array = require('base64-to-uint8array')
-                setEvaluation(toUint8Array(data.pdf))
-                setShowEvaluation(true);
+                setEvaluationParEntreprise(toUint8Array(data.pdf))
+                setShowEvaluationParEntreprise(true);
             } else {
                 generateAlert()
             }
@@ -50,22 +48,22 @@ const ConsulterEvaluation = ({connectedUser}:
         }
     }
 
-    if (showEvaluation) {
+    if (showEvaluationParEntreprise) {
         return (
-            <PdfComponent pdf={evaluation} setShowPdf={setShowEvaluation}/>
+            <PdfComponent pdf={evaluationParEntreprise} setShowPdf={setShowEvaluationParEntreprise}/>
         );
     }
 
     return (
         <Container className="min-vh-100">
-            <PageHeader title={"Évaluations"}/>
+            <PageHeader title={"Évaluations par l'entreprise"}/>
             <Row>
                 <Col className="bg-light p-0">
                     <Table className="text-center text-light" hover>
                         <thead className="bg-primary">
                         <tr>
                             <th>Description du contrat</th>
-                            <th>Évaluation (pdf)</th>
+                            <th>Évaluation par l'entreprise</th>
                         </tr>
                         </thead>
                         <tbody className="bg-light text-dark">
@@ -74,7 +72,7 @@ const ConsulterEvaluation = ({connectedUser}:
                                 <tr key={index}>
                                     <td>{contrat.description}</td>
                                     <td><Button className="btn btn-warning"
-                                                onClick={async () => await getEvaluation(Number(contrat.contractId))}>pdf</Button>
+                                                onClick={async () => await getEvaluationParEntreprise(Number(contrat.contractId))}>pdf</Button>
                                     </td>
                                 </tr>
                             );
@@ -86,4 +84,4 @@ const ConsulterEvaluation = ({connectedUser}:
         </Container>
     )
 }
-export default ConsulterEvaluation
+export default ConsulterEvaluationDeEtudiants

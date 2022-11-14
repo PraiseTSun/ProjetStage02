@@ -19,8 +19,8 @@ import SignerEntenteDeStageParCompagnie from "./pages/companyPages/SignerEntente
 import CompanyOffersPage from "./pages/companyPages/CompanyOffersPage";
 import StudentContractsPage from "./pages/studentPages/StudentContractsPage";
 import ContractsPage from "./pages/gestionnairePages/ContractsPage";
-import ConsulterEvaluation from "./pages/gestionnairePages/ConsulterEvaluation";
-import ConsulterEvaluationParEntreprise from "./pages/gestionnairePages/ConsulterEvaluationParEntreprise";
+import ConsulterEvaluationDeStages from "./pages/gestionnairePages/ConsulterEvaluationDeStages";
+import ConsulterEvaluationDeEtudiants from "./pages/gestionnairePages/ConsulterEvaluationDeEtudiants";
 
 export const LOCAL_STORAGE_KEY = "MASSI_BEST_PROGRAMMER_PROJET_STAGE_02_CURRENT_CONNECTED_USER"
 export const emptyUser: IUser = {
@@ -130,7 +130,8 @@ function App() {
                         <Route path="*"
                                element={<h1 className="min-vh-100 text-center text-white display-1">404 - Page pas
                                    trouvé</h1>}/>
-                        <Route path="/SignerEntenteDeStageParCompagnie" element={<SignerEntenteDeStageParCompagnie user={connectedUser}/>}/>
+                        <Route path="/SignerEntenteDeStageParCompagnie"
+                               element={<SignerEntenteDeStageParCompagnie user={connectedUser}/>}/>
                     </Routes>
                 </BrowserRouter>
             </Container>
@@ -155,9 +156,9 @@ function App() {
                         <Route path="/validerNouvelleOffre"
                                element={<ValiderNouvelleOffreStagePage connectedUser={connectedUser}/>}/>
                         <Route path="/consulterEvaluation"
-                               element={<ConsulterEvaluation connectedUser={connectedUser}/>}></Route>
+                               element={<ConsulterEvaluationDeStages connectedUser={connectedUser}/>}></Route>
                         <Route path="/consulterEvaluationParEntreprise"
-                               element={<ConsulterEvaluationParEntreprise connectedUser={connectedUser}/>}></Route>
+                               element={<ConsulterEvaluationDeEtudiants connectedUser={connectedUser}/>}></Route>
                     </Routes>
                 </BrowserRouter>
             </Container>
