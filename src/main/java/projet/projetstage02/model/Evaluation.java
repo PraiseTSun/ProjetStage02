@@ -12,6 +12,7 @@ import javax.persistence.Id;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Pattern;
+import java.time.LocalDate;
 
 @Entity
 @Data
@@ -62,8 +63,7 @@ public class Evaluation {
     @NotBlank
     private String signature;
     @NotBlank
-    @Pattern(regexp = "^(19|20[0-9][0-9])-(0[0-9]|1[0-2])-([0-2][0-9]|3[0-1])$")
-    private String dateSignature;
+    private LocalDate dateSignature;
 
     public Evaluation(MillieuStageEvaluationInDTO millieuStageEvaluationInDTO) {
         contractId = millieuStageEvaluationInDTO.getContractId();
@@ -81,6 +81,6 @@ public class Evaluation {
         volumeDeTravail = millieuStageEvaluationInDTO.getVolumeDeTravail();
         commentaires = millieuStageEvaluationInDTO.getCommentaires();
         signature = millieuStageEvaluationInDTO.getSignature();
-        dateSignature = millieuStageEvaluationInDTO.getDateSignature();
+        dateSignature = LocalDate.parse(millieuStageEvaluationInDTO.getDateSignature());
     }
 }

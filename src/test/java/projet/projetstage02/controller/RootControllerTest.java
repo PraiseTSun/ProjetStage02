@@ -48,6 +48,7 @@ import projet.projetstage02.service.GestionnaireService;
 import projet.projetstage02.service.StudentService;
 
 import java.sql.Timestamp;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -277,7 +278,7 @@ public class RootControllerTest {
                 .commentaires("Plutôt en accord")
                 .communicationAvecSuperviser("Plutôt en accord")
                 .contractId(1L)
-                .dateSignature("2021-05-01")
+                .dateSignature(LocalDate.now().toString())
                 .environementTravail("Plutôt en accord")
                 .equipementFourni("Plutôt en accord")
                 .heureTotalDeuxiemeMois(23)

@@ -20,6 +20,7 @@ import projet.projetstage02.exception.*;
 import projet.projetstage02.model.*;
 import projet.projetstage02.repository.*;
 
+import java.time.LocalDate;
 import java.util.*;
 
 import static com.jayway.jsonpath.internal.path.PathCompiler.fail;
@@ -132,7 +133,7 @@ public class GestionnaireServiceTest {
                 .commentaires("Plutôt en accord")
                 .communicationAvecSuperviser("Plutôt en accord")
                 .contractId(1L)
-                .dateSignature("2021-05-01")
+                .dateSignature(LocalDate.now().toString())
                 .environementTravail("Plutôt en accord")
                 .equipementFourni("Plutôt en accord")
                 .heureTotalDeuxiemeMois(23)
