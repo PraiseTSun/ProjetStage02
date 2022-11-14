@@ -120,6 +120,7 @@ const EvaluerLeMilieuDeStage = ({user}: { user: IUser }): JSX.Element => {
 
             if (res.ok) {
                 alert("L'évaluation a été envoyé.");
+                window.location.href = "/evaluerLeMilieuDeStage"
             } else {
                 generateAlert()
             }
@@ -161,7 +162,7 @@ const EvaluerLeMilieuDeStage = ({user}: { user: IUser }): JSX.Element => {
             setCommentaires("")
         }
         setValidated(true)
-        window.location.href = "/evaluerLeMilieuDeStage"
+
     }
 
     if (waiting) {
