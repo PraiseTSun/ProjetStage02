@@ -265,7 +265,7 @@ public class StudentRootControllerTest {
 
     @Test
     void testConfirmStudentEmailHappyDay() throws Exception {
-        when(studentService.getStudentById(1L)).thenReturn(bartOut);
+        when(studentService.getStudentByIdDTO(1L)).thenReturn(bartOut);
         when(studentService.saveStudent(any())).thenReturn(1L);
 
         studentMockMvc.perform(
@@ -276,7 +276,7 @@ public class StudentRootControllerTest {
 
     @Test
     void testConfirmStudentEmailNotFound() throws Exception {
-        when(studentService.getStudentById(1L)).thenThrow(new NonExistentEntityException());
+        when(studentService.getStudentByIdDTO(1L)).thenThrow(new NonExistentEntityException());
 
         studentMockMvc.perform(
                         put("/confirmEmail/student/{id}", 1))
@@ -287,7 +287,7 @@ public class StudentRootControllerTest {
     @Test
     void testConfirmStudentEmailExpired() throws Exception {
         bartOut.setInscriptionTimestamp(Timestamp.valueOf(LocalDateTime.now().minusMonths(1)).getTime());
-        when(studentService.getStudentById(1L)).thenReturn(bartOut);
+        when(studentService.getStudentByIdDTO(1L)).thenReturn(bartOut);
 
         studentMockMvc.perform(
                         put("/confirmEmail/student/{id}", 1))
@@ -299,7 +299,7 @@ public class StudentRootControllerTest {
     void testLoginStudentHappyDay() throws Exception {
         bartOut.setEmailConfirmed(true);
         when(authService.getToken(token.getToken(), STUDENT)).thenReturn(Token.builder().userId(1L).build());
-        when(studentService.getStudentById(1L)).thenReturn(bartOut);
+        when(studentService.getStudentByIdDTO(1L)).thenReturn(bartOut);
 
         studentMockMvc.perform(put("/student")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -312,7 +312,7 @@ public class StudentRootControllerTest {
     @Test
     void testLoginStudentNotFound() throws Exception {
         when(authService.getToken(token.getToken(), STUDENT)).thenReturn(Token.builder().userId(1).build());
-        when(studentService.getStudentById(anyLong()))
+        when(studentService.getStudentByIdDTO(anyLong()))
                 .thenThrow(new NonExistentEntityException());
 
         studentMockMvc.perform(put("/student")

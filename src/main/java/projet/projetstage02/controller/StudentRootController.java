@@ -84,7 +84,7 @@ public class StudentRootController {
     public ResponseEntity<Map<String, String>> confirmStudentMail(@PathVariable String id) {
         logger.log(INFO, "Put /confirmEmail/student/{id} entered with id : " + id);
         try {
-            StudentOutDTO studentDTO = studentService.getStudentById(Long.parseLong(id));
+            StudentOutDTO studentDTO = studentService.getStudentByIdDTO(Long.parseLong(id));
             if (currentTimestamp() - studentDTO.getInscriptionTimestamp() > MILLI_SECOND_DAY) {
                 logger.log(INFO, "PutMapping: /confirmEmail/student sent 400 response");
                 return ResponseEntity.status(BAD_REQUEST)
@@ -105,7 +105,7 @@ public class StudentRootController {
         logger.log(INFO, "Put /student entered with body : " + tokenId.toString());
         try {
             Token token = authService.getToken(tokenId.getToken(), STUDENT);
-            StudentOutDTO dto = studentService.getStudentById(token.getUserId());
+            StudentOutDTO dto = studentService.getStudentByIdDTO(token.getUserId());
             dto.setPassword("");
             logger.log(INFO, "PutMapping: /student sent "
                     + (!dto.isEmailConfirmed() ? "404" : "200") + " response");

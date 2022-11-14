@@ -76,7 +76,7 @@ public class ProjetStage02Application implements CommandLineRunner {
                 .emailConfirmed(false)
                 .inscriptionTimestamp(Timestamp.valueOf(LocalDateTime.now()).getTime())
                 .build());
-        StudentOutDTO student = studentService.getStudentById(1L);
+        StudentOutDTO student = studentService.getStudentByIdDTO(1L);
         student.setEmailConfirmed(true);
         studentService.saveStudent(new StudentInDTO(student.toModel()));
 
@@ -190,7 +190,7 @@ public class ProjetStage02Application implements CommandLineRunner {
         gestionnaireService.validateCompany(company.getId());
         gestionnaireService.validateStudentCV(student.getId());
         gestionnaireService.validateStudentCV(student2.getId());
-        System.out.println(studentService.getStudentById(1L));
+        System.out.println(studentService.getStudentByIdDTO(1L));
         System.out.println(companyService.getCompanyByIdDTO(2L));
         System.out.println(gestionnaireService.getGestionnaireById(3L));
         System.out.println(gestionnaireService.getGestionnaireById(3L));
