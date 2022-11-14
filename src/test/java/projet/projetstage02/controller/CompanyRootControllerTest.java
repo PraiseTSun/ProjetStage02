@@ -295,7 +295,7 @@ public class CompanyRootControllerTest {
 
     @Test
     void testConfirmCompanyEmailHappyDay() throws Exception {
-        when(companyService.getCompanyById(1L)).thenReturn(duffBeer);
+        when(companyService.getCompanyByIdDTO(1L)).thenReturn(duffBeer);
         when(companyService.saveCompany(duffBeer)).thenReturn(1L);
 
         companyMockMvc.perform(
@@ -306,7 +306,7 @@ public class CompanyRootControllerTest {
 
     @Test
     void testConfirmCompanyEmailNotFound() throws Exception {
-        when(companyService.getCompanyById(1L)).thenThrow(new NonExistentEntityException());
+        when(companyService.getCompanyByIdDTO(1L)).thenThrow(new NonExistentEntityException());
 
         companyMockMvc.perform(
                         put("/confirmEmail/company/{id}", 1))
@@ -317,7 +317,7 @@ public class CompanyRootControllerTest {
     @Test
     void testConfirmCompanyEmailExpired() throws Exception {
         duffBeer.setInscriptionTimestamp(Timestamp.valueOf(LocalDateTime.now().minusMonths(1)).getTime());
-        when(companyService.getCompanyById(1L)).thenReturn(duffBeer);
+        when(companyService.getCompanyByIdDTO(1L)).thenReturn(duffBeer);
 
         companyMockMvc.perform(
                         put("/confirmEmail/company/{id}", 1))
@@ -329,7 +329,7 @@ public class CompanyRootControllerTest {
     void testLoginCompanyHappyDay() throws Exception {
         duffBeer.setEmailConfirmed(true);
         when(authService.getToken(token.getToken(), COMPANY)).thenReturn(Token.builder().userId(1L).build());
-        when(companyService.getCompanyById(1L)).thenReturn(duffBeer);
+        when(companyService.getCompanyByIdDTO(1L)).thenReturn(duffBeer);
 
         companyMockMvc.perform(put("/company")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -342,8 +342,7 @@ public class CompanyRootControllerTest {
     @Test
     void testLoginCompanyNotFound() throws Exception {
         when(authService.getToken(token.getToken(), COMPANY)).thenReturn(Token.builder().userId(1).build());
-        when(companyService.getCompanyById(anyLong()))
-                .thenThrow(new NonExistentEntityException());
+        when(companyService.getCompanyByIdDTO(anyLong())).thenThrow(new NonExistentEntityException());
 
         companyMockMvc.perform(put("/company")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -417,7 +416,7 @@ public class CompanyRootControllerTest {
 
     @Test
     void testGetAcceptedStudentsForOfferNotFound() throws Exception {
-        when(companyService.getAcceptedStudentsForOffer(anyLong())).thenThrow(new NonExistentOfferExeption());
+        when(companyService.getAcceptedStudentsForOffer(anyLong())).thenThrow(new NonExistentEntityException());
 
         companyMockMvc.perform(put("/getAcceptedStudentsForOffer/{offerId}", 1)
                         .contentType(MediaType.APPLICATION_JSON)
@@ -448,7 +447,7 @@ public class CompanyRootControllerTest {
 
     @Test
     void testGetApplicationsForOfferNotFound() throws Exception {
-        when(companyService.getStudentsForOffer(anyLong())).thenThrow(new NonExistentOfferExeption());
+        when(companyService.getStudentsForOffer(anyLong())).thenThrow(new NonExistentEntityException());
 
         companyMockMvc.perform(put("/offer/{id}/applications", 1)
                         .contentType(MediaType.APPLICATION_JSON)

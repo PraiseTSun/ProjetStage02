@@ -286,9 +286,9 @@ public class CompanyServiceTest {
         // Act
         try {
             companyService.saveStudentApplicationAccepted(1L, 2L);
-        } catch (NonExistentOfferExeption e) {
+        } catch (NonExistentEntityException e) {
             return;
-        } catch (Exception ignored) {
+        } catch (AlreadyExistingAcceptationException | NonExistentOfferExeption ignored) {
         }
         // Assert
         fail("NonExistentOfferException not thrown");
@@ -314,7 +314,7 @@ public class CompanyServiceTest {
     }
 
     @Test
-    void testGetAcceptedStudentForOfferHappyDay() throws NonExistentOfferExeption {
+    void testGetAcceptedStudentForOfferHappyDay() throws NonExistentEntityException {
         // Arrange
         List<ApplicationAcceptation> applications = new ArrayList<>() {{
             add(ApplicationAcceptation.builder().offerId(duffBeerOffer.getId()).studentId(bart.getId()).build());
@@ -339,10 +339,10 @@ public class CompanyServiceTest {
         // Act
         try {
             companyService.getAcceptedStudentsForOffer(1L);
-        } catch (NonExistentOfferExeption e) {
+        } catch (NonExistentEntityException e) {
             return;
         }
-        fail("NonExistentOfferException not thrown");
+        fail("NonExistentEntityException not thrown");
     }
 
     @Test
@@ -447,18 +447,18 @@ public class CompanyServiceTest {
     }
 
     @Test
-    void testGetApplicantsForOfferNonExistentOffer() throws NonExistentEntityException {
+    void testGetApplicantsForOfferNonExistentOffer() {
         // Arrange
         when(offreRepository.findById(anyLong())).thenReturn(Optional.empty());
 
         // Act
         try {
             companyService.getStudentsForOffer(1L);
-        } catch (NonExistentOfferExeption e) {
+        } catch (NonExistentEntityException e) {
             return;
         }
 
-        fail("NonExistentOfferExeption not thrown");
+        fail("NonExistingEntityException not thrown");
     }
 
     @Test

@@ -91,7 +91,7 @@ public class ProjetStage02Application implements CommandLineRunner {
                 .department(AbstractUser.Department.Informatique.departement)
                 .companyName("Bell")
                 .build());
-        CompanyDTO company = companyService.getCompanyById(2L);
+        CompanyDTO company = companyService.getCompanyByIdDTO(2L);
         company.setEmailConfirmed(true);
         companyService.saveCompany(company);
 
@@ -191,7 +191,7 @@ public class ProjetStage02Application implements CommandLineRunner {
         gestionnaireService.validateStudentCV(student.getId());
         gestionnaireService.validateStudentCV(student2.getId());
         System.out.println(studentService.getStudentById(1L));
-        System.out.println(companyService.getCompanyById(2L));
+        System.out.println(companyService.getCompanyByIdDTO(2L));
         System.out.println(gestionnaireService.getGestionnaireById(3L));
         System.out.println(gestionnaireService.getGestionnaireById(3L));
         System.out.println(studentService.getStudentByEmailPassword("Samir@gmail.com", "cooldude"));

@@ -20,7 +20,6 @@ import projet.projetstage02.model.AbstractUser.Department;
 import projet.projetstage02.model.*;
 import projet.projetstage02.repository.*;
 
-import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -83,21 +82,32 @@ public class CompanyService {
         return false;
     }
 
-    public CompanyDTO getCompanyById(Long id) throws NonExistentEntityException {
-        var companyOpt = companyRepository.findById(id);
-        if (companyOpt.isEmpty())
-            throw new NonExistentEntityException();
-        return new CompanyDTO(companyOpt.get());
+    private Student getStudentById(long id) throws NonExistentEntityException {
+        Optional<Student> studentOpt = studentRepository.findById(id);
+        if (studentOpt.isEmpty()) throw new NonExistentEntityException();
+        return studentOpt.get();
+    }
+
+    private Offre getOfferById(long id) throws NonExistentEntityException {
+        Optional<Offre> offerOpt = offreRepository.findById(id);
+        if (offerOpt.isEmpty()) throw new NonExistentEntityException();
+        return offerOpt.get();
+    }
+
+    private Company getCompanyById(long id) throws NonExistentEntityException {
+        Optional<Company> companyOpt = companyRepository.findById(id);
+        if(companyOpt.isEmpty()) throw new NonExistentEntityException();
+        return companyOpt.get();
+    }
+
+    public CompanyDTO getCompanyByIdDTO(long id) throws NonExistentEntityException {
+        return new CompanyDTO(getCompanyById(id));
     }
 
     public ApplicationAcceptationDTO saveStudentApplicationAccepted(long offerId, long studentId) throws NonExistentEntityException, NonExistentOfferExeption, AlreadyExistingAcceptationException {
-        Optional<Student> studentOpt = studentRepository.findById(studentId);
-        if (studentOpt.isEmpty()) throw new NonExistentEntityException();
-        Student student = studentOpt.get();
+        Student student = getStudentById(studentId);
 
-        Optional<Offre> offerOpt = offreRepository.findById(offerId);
-        if (offerOpt.isEmpty()) throw new NonExistentOfferExeption();
-        Offre offre = offerOpt.get();
+        Offre offre = getOfferById(offerId);
 
         Optional<ApplicationAcceptation> applicationOpt
                 = applicationAcceptationRepository.findByOfferIdAndStudentId(offerId, studentId);
@@ -116,10 +126,8 @@ public class CompanyService {
         return new ApplicationAcceptationDTO(applicationOpt.get());
     }
 
-    public OfferAcceptedStudentsDTO getAcceptedStudentsForOffer(long offerId) throws NonExistentOfferExeption {
-        Optional<Offre> offreOpt = offreRepository.findById(offerId);
-        if (offreOpt.isEmpty()) throw new NonExistentOfferExeption();
-        Offre offre = offreOpt.get();
+    public OfferAcceptedStudentsDTO getAcceptedStudentsForOffer(long offerId) throws NonExistentEntityException {
+        Offre offre = getOfferById(offerId);
 
         List<Long> studentsId = new ArrayList<>();
 
@@ -135,13 +143,11 @@ public class CompanyService {
     }
 
     public StageContractOutDTO addSignatureToContract(SignatureInDTO signature) throws NonExistentEntityException, InvalidOwnershipException {
-        Optional<Company> companyOpt = companyRepository.findById(signature.getUserId());
-        if (companyOpt.isEmpty()) throw new NonExistentEntityException();
+        Company company = getCompanyById(signature.getUserId());
 
         Optional<StageContract> stageContractOpt = stageContractRepository.findById(signature.getContractId());
         if (stageContractOpt.isEmpty()) throw new NonExistentEntityException();
 
-        Company company = companyOpt.get();
         StageContract stageContract = stageContractOpt.get();
 
         if (company.getId() != stageContract.getCompanyId())
@@ -154,13 +160,11 @@ public class CompanyService {
         return new StageContractOutDTO(stageContract);
     }
 
-    public OfferApplicationDTO getStudentsForOffer(long offerId) throws NonExistentOfferExeption, NonExistentEntityException {
-        Optional<Offre> optionalOffre = offreRepository.findById(offerId);
-        if (optionalOffre.isEmpty()) throw new NonExistentOfferExeption();
-        Offre offre = optionalOffre.get();
-        Optional<Company> optionalCompany = companyRepository.findById(offre.getIdCompagnie());
-        if (optionalCompany.isEmpty()) throw new NonExistentEntityException();
-        Company company = optionalCompany.get();
+    public OfferApplicationDTO getStudentsForOffer(long offerId) throws NonExistentEntityException {
+        Offre offre = getOfferById(offerId);
+
+        Company company = getCompanyById(offre.getIdCompagnie());
+
         List<StudentOutDTO> studentDTOS = new ArrayList<>();
         applicationRepository.findByOfferId(offerId).stream()
                 .map(Application::getStudentId)
@@ -178,11 +182,11 @@ public class CompanyService {
 
 
     public PdfOutDTO getStudentCv(long studentId) throws NonExistentEntityException {
-        Optional<Student> studentOpt = studentRepository.findById(studentId);
-        if (studentOpt.isEmpty()) throw new NonExistentEntityException();
-        byte[] cv = studentOpt.get().getCv();
+        Student student = getStudentById(studentId);
+
+        byte[] cv = student.getCv();
         String cvConvert = Arrays.toString(cv).replaceAll("\\s+", "");
-        return new PdfOutDTO(studentOpt.get().getId(), cvConvert);
+        return new PdfOutDTO(student.getId(), cvConvert);
     }
 
 
@@ -199,8 +203,7 @@ public class CompanyService {
 
 
     public ContractsDTO getContracts(long companyId, String session) throws NonExistentEntityException {
-        Optional<Company> companyOpt = companyRepository.findById(companyId);
-        if (companyOpt.isEmpty()) throw new NonExistentEntityException();
+        getCompanyById(companyId);
 
         List<StageContractOutDTO> contracts = new ArrayList<>();
 
@@ -213,17 +216,11 @@ public class CompanyService {
 
     public InterviewOutDTO createInterview(CreateInterviewDTO interviewDTO)
             throws NonExistentEntityException, InvalidDateFormatException, InvalidOwnershipException {
-        Optional<Company> companyOpt = companyRepository.findById(interviewDTO.getCompanyId());
-        if(companyOpt.isEmpty()) throw new NonExistentEntityException();
-        Company company = companyOpt.get();
+        Company company = getCompanyById(interviewDTO.getCompanyId());
 
-        Optional<Student> studentOpt = studentRepository.findById(interviewDTO.getStudentId());
-        if(studentOpt.isEmpty()) throw new NonExistentEntityException();
-        Student student = studentOpt.get();
+        Student student = getStudentById(interviewDTO.getStudentId());
 
-        Optional<Offre> offerOpt = offreRepository.findById(interviewDTO.getOfferId());
-        if(offerOpt.isEmpty()) throw new NonExistentEntityException();
-        Offre offer = offerOpt.get();
+        Offre offer = getOfferById(interviewDTO.getOfferId());
 
         if(offer.getIdCompagnie() != company.getId()) throw new InvalidOwnershipException();
 
@@ -252,8 +249,7 @@ public class CompanyService {
     public List<InterviewOutDTO> getInterviews(long companyId) throws NonExistentEntityException {
         List<InterviewOutDTO> interviews = new ArrayList<>();
 
-        Optional<Company> companyOpt = companyRepository.findById(companyId);
-        if(companyOpt.isEmpty()) throw new NonExistentEntityException();
+        getCompanyById(companyId);
 
         interviewRepository.findByCompanyId(companyId)
                 .stream()

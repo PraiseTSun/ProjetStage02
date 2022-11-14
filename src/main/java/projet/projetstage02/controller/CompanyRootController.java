@@ -97,7 +97,7 @@ public class CompanyRootController {
     public ResponseEntity<Map<String, String>> confirmCompanyMail(@PathVariable String id) {
         logger.log(INFO, "Put /confirmEmail/company/{id} entered with id : " + id);
         try {
-            CompanyDTO companyDTO = companyService.getCompanyById(Long.parseLong(id));
+            CompanyDTO companyDTO = companyService.getCompanyByIdDTO(Long.parseLong(id));
             if (currentTimestamp() - companyDTO.getInscriptionTimestamp() > MILLI_SECOND_DAY) {
                 logger.log(INFO, "PutMapping: /confirmEmail/company sent 400 response");
                 return ResponseEntity.status(BAD_REQUEST)
@@ -118,8 +118,7 @@ public class CompanyRootController {
         logger.log(INFO, "Put /company entered with body : " + tokenId.toString());
         try {
             Token token = authService.getToken(tokenId.getToken(), COMPANY);
-
-            CompanyDTO dto = companyService.getCompanyById(token.getUserId());
+            CompanyDTO dto = companyService.getCompanyByIdDTO(token.getUserId());
             dto.setPassword("");
             logger.log(INFO, !dto.isEmailConfirmed() ? "Put /company entered sent 400 response"
                     : "Put /company entered sent 200 response");
@@ -188,7 +187,7 @@ public class CompanyRootController {
         } catch (InvalidTokenException e) {
             logger.log(INFO, "Put /getAcceptedStudentsForOffer/{offerId} sent 403 response");
             return ResponseEntity.status(FORBIDDEN).build();
-        } catch (NonExistentOfferExeption e) {
+        } catch (NonExistentEntityException e) {
             logger.log(INFO, "Put /getAcceptedStudentsForOffer/{offerId} sent 404 response");
             return ResponseEntity.notFound().build();
         }
@@ -245,7 +244,7 @@ public class CompanyRootController {
         } catch (InvalidTokenException e) {
             logger.log(INFO, "/offer/{id}/applications sent 403 response");
             return ResponseEntity.status(FORBIDDEN).build();
-        } catch (NonExistentOfferExeption | NonExistentEntityException e) {
+        } catch (NonExistentEntityException e) {
             logger.log(INFO, "/offer/{id}/applications sent 404 response");
             return ResponseEntity.notFound().build();
         }
