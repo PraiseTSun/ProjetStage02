@@ -956,12 +956,21 @@ public class GestionnaireServiceTest {
 
     @Test
     void testGetContractsHappyDay() {
+        StageContractOutDTO expected = new StageContractOutDTO(stageContract);
+        expected.setStudentFullName(studentTest.getFirstName() + " " + studentTest.getLastName());
+        expected.setEmployFullName(companyTest.getFirstName() + " " + companyTest.getLastName());
+        expected.setPosition(offerTest.getPosition());
+        expected.setCompanyName(companyTest.getCompanyName());
+        when(evaluationRepository.findByContractId(anyLong())).thenReturn(Optional.empty());
         when(stageContractRepository.findAll()).thenReturn(List.of(stageContract, stageContract, stageContract));
-
+        when(companyRepository.findById(anyLong())).thenReturn(Optional.of(companyTest));
+        when(studentRepository.findById(anyLong())).thenReturn(Optional.of(studentTest));
+        when(offreRepository.findById(anyLong())).thenReturn(Optional.of(offerTest));
         ContractsDTO dto = gestionnaireService.getContractsToEvaluateMillieuStage();
 
+
         assertThat(dto.size()).isEqualTo(3);
-        assertThat(dto.getContracts().get(0)).isEqualTo(new StageContractOutDTO(stageContract));
+        assertThat(dto.getContracts().get(0)).isEqualTo(expected);
     }
 
     @Test

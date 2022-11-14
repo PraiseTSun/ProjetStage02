@@ -55,7 +55,6 @@ const StudentCvUploadPage = ({connectedUser}: { connectedUser: IUser }) => {
                 generateAlert()
             }
             setWaiting(false);
-            window.location.href = "/uploaderCV"
         }
         setValidated(true);
     }
