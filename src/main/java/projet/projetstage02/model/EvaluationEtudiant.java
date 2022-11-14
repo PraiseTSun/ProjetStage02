@@ -118,7 +118,6 @@ public class EvaluationEtudiant {
     @NotBlank
     @Lob
     private String signature;
-    @NotBlank
     private LocalDate dateSignature;
 
     public EvaluationEtudiant(EvaluationEtudiantInDTO evaluationEtudiantInDTO) {
