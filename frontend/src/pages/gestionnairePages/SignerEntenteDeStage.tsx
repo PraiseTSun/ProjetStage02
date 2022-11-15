@@ -91,19 +91,19 @@ const SignerEntenteDeStage = ({connectedUser}: { connectedUser: IUser }): JSX.El
     return (
         <Container className="d-flex justify-content-center vh-100">
             <Col>
-                <PageHeader title={"Signer Entente De Stage"}></PageHeader>
+                <PageHeader title={"Signer Entente De Stage"}/>
                 <Row className="mt-5">
                     <Col className="bg-light p-0">
                         <Table className="text-center table table-bordered" hover>
                             <thead className="bg-primary">
                             <tr className="text-white">
-                                <th>companyName</th>
-                                <th>studentFullName</th>
+                                <th>Nom de compagnie</th>
+                                <th>Nom complet de l'étudiant</th>
                                 <th>position</th>
                                 <th>session</th>
                                 <th>Description</th>
-                                <th>companySignatureDate</th>
-                                <th>studentSignatureDate</th>
+                                <th>Date de signature de l'entreprise</th>
+                                <th>Date de signature de l'étudiant</th>
                                 <th>Signature</th>
                             </tr>
                             </thead>
@@ -116,8 +116,8 @@ const SignerEntenteDeStage = ({connectedUser}: { connectedUser: IUser }): JSX.El
                                         <td>{contrat.position}</td>
                                         <td>{contrat.session}</td>
                                         <td>{contrat.description}</td>
-                                        <td>{contrat.companySignatureDate}</td>
-                                        <td>{contrat.studentSignatureDate}</td>
+                                        <td>{contrat.companySignatureDate.split("T")[0]}</td>
+                                        <td>{contrat.studentSignatureDate.split("T")[0]}</td>
                                         <td>{
                                             contrat.gestionnaireSignature.length > 0 ?
                                                 <p>Déjà signé</p>
