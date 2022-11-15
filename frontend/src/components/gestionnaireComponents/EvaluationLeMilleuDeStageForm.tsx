@@ -3,23 +3,22 @@ import IEvaluationLeMilieuDeStageForm from "../../models/IEvaluationLeMilieuDeSt
 import {Button, Col, Container, Form, ListGroup, Row, Tab} from "react-bootstrap";
 import {Link} from "react-router-dom";
 import SignaturePad from "react-signature-canvas";
-import {
-    postEvaluationStage
-} from "../../services/gestionnaireServices/GestionnaireFetchService";
+import {postEvaluationStage} from "../../services/gestionnaireServices/GestionnaireFetchService";
 import IUser from "../../models/IUser";
 import {BeatLoader} from "react-spinners";
 import InfoDuContrat from "../../models/InfoDuContrat";
+import {generateAlert} from "../../services/universalServices/UniversalUtilService";
 
-const EvaluationLeMilleuDeStageForm = ({hideFormulaires,
+const EvaluationLeMilleuDeStageForm = ({
+                                           hideFormulaires,
                                            user,
-                                           setAfficheFormuaire,
-                                           infosContrat, contratId}
-                                           :
-                                           {hideFormulaires: Function,
-                                               user: IUser,
-                                               setAfficheFormuaire: Function,
-                                               infosContrat: InfoDuContrat,
-                                           contratId : number}): JSX.Element => {
+                                           infosContrat, contratId
+                                       }: {
+    hideFormulaires: Function,
+    user: IUser,
+    infosContrat: InfoDuContrat,
+    contratId: number
+}): JSX.Element => {
     const [waiting, setWaiting] = useState<boolean>(false);
     const [validated, setValidated] = useState<boolean>(false);
     const [evaluerForm, setEvaluerForm] = useState<IEvaluationLeMilieuDeStageForm>({
@@ -47,7 +46,7 @@ const EvaluationLeMilleuDeStageForm = ({hideFormulaires,
 
 
     const onSubmit = async (event: React.SyntheticEvent) => {
-        if(evaluerForm.signature === ""){
+        if (evaluerForm.signature === "") {
             alert("Vous devez cliquer signer!")
         }
         const form: any = event.currentTarget;
@@ -67,31 +66,11 @@ const EvaluationLeMilleuDeStageForm = ({hideFormulaires,
             if (res.ok) {
                 alert("L'évaluation a été envoyé.");
                 window.location.href = "/evaluerLeMilieuDeStage"
+            } else {
+                generateAlert()
             }
-            setWaiting(false)
-            setValidated(false)
-            setAfficheFormuaire(false)
-            setEvaluerForm({
-                climatDeTravail: "",
-                commentaires: "",
-                communicationAvecSuperviser: "",
-                environnementDeTravail: "",
-                equipementFourni: "",
-                heureTotalDeuxiemeMois: 0,
-                heureTotalPremierMois: 0,
-                heureTotalTroisiemeMois: 0,
-                integration: "",
-                milieuDeStage: "",
-                salaireOffert: "",
-                salaireParHeure: "",
-                signature: "",
-                tachesAnnonces: "",
-                tempsReelConsacre: "",
-                volumeDeTravail: ""
-            })
         }
         setValidated(true)
-
     }
 
     if (waiting) {
@@ -179,7 +158,10 @@ const EvaluationLeMilleuDeStageForm = ({hideFormulaires,
                                         </Form.Label>
                                         <Form.Select className="mt-2" required
                                                      value={evaluerForm.tachesAnnonces}
-                                                     onChange={(e) => setEvaluerForm({...evaluerForm, tachesAnnonces: e.target.value})}>
+                                                     onChange={(e) => setEvaluerForm({
+                                                         ...evaluerForm,
+                                                         tachesAnnonces: e.target.value
+                                                     })}>
                                             <option hidden value="" disabled>Choix
                                             </option>
                                             <option value="totalementEnAccord">Totalement en accord
@@ -204,7 +186,10 @@ const EvaluationLeMilleuDeStageForm = ({hideFormulaires,
                                         </Form.Label>
                                         <Form.Select className="mt-2" required
                                                      value={evaluerForm.integration}
-                                                     onChange={(e) => setEvaluerForm({...evaluerForm, integration: e.target.value})}>
+                                                     onChange={(e) => setEvaluerForm({
+                                                         ...evaluerForm,
+                                                         integration: e.target.value
+                                                     })}>
                                             <option hidden value="" disabled>Choix
                                             </option>
                                             <option value="totalementEnAccord">Totalement en accord
@@ -229,7 +214,10 @@ const EvaluationLeMilleuDeStageForm = ({hideFormulaires,
                                         </Form.Label>
                                         <Form.Select className="mt-2" required
                                                      value={evaluerForm.tempsReelConsacre}
-                                                     onChange={(e) => setEvaluerForm({...evaluerForm, tempsReelConsacre: e.target.value})}>
+                                                     onChange={(e) => setEvaluerForm({
+                                                         ...evaluerForm,
+                                                         tempsReelConsacre: e.target.value
+                                                     })}>
                                             <option hidden value="" disabled>Choix
                                             </option>
                                             <option value="totalementEnAccord">Totalement en accord
@@ -256,7 +244,10 @@ const EvaluationLeMilleuDeStageForm = ({hideFormulaires,
                                             <Form.Label className="fw-bold h5">Premier mois</Form.Label>
                                             <Form.Control type="number" minLength={1} required min={1}
                                                           value={evaluerForm.heureTotalPremierMois}
-                                                          onChange={e => setEvaluerForm({...evaluerForm, heureTotalPremierMois:Number(e.target.value)})}></Form.Control>
+                                                          onChange={e => setEvaluerForm({
+                                                              ...evaluerForm,
+                                                              heureTotalPremierMois: Number(e.target.value)
+                                                          })}></Form.Control>
                                             <Form.Control.Feedback type="invalid">Premier mois
                                                 invalide</Form.Control.Feedback>
                                         </Form.Group>
@@ -266,7 +257,10 @@ const EvaluationLeMilleuDeStageForm = ({hideFormulaires,
                                             <Form.Label className="fw-bold h5">Deuxième mois</Form.Label>
                                             <Form.Control type="number" minLength={1} required min={1}
                                                           value={evaluerForm.heureTotalDeuxiemeMois}
-                                                          onChange={e => setEvaluerForm({...evaluerForm, heureTotalDeuxiemeMois: Number(e.target.value)})}></Form.Control>
+                                                          onChange={e => setEvaluerForm({
+                                                              ...evaluerForm,
+                                                              heureTotalDeuxiemeMois: Number(e.target.value)
+                                                          })}></Form.Control>
                                             <Form.Control.Feedback type="invalid">Deuxième mois
                                                 invalide</Form.Control.Feedback>
                                         </Form.Group>
@@ -276,7 +270,10 @@ const EvaluationLeMilleuDeStageForm = ({hideFormulaires,
                                             <Form.Label className="fw-bold h5">Troisième mois</Form.Label>
                                             <Form.Control type="number" minLength={1} required min={1}
                                                           value={evaluerForm.heureTotalTroisiemeMois}
-                                                          onChange={e => setEvaluerForm({...evaluerForm, heureTotalTroisiemeMois: Number(e.target.value)})}></Form.Control>
+                                                          onChange={e => setEvaluerForm({
+                                                              ...evaluerForm,
+                                                              heureTotalTroisiemeMois: Number(e.target.value)
+                                                          })}></Form.Control>
                                             <Form.Control.Feedback type="invalid">Troisième mois
                                                 invalide</Form.Control.Feedback>
                                         </Form.Group>
@@ -288,8 +285,12 @@ const EvaluationLeMilleuDeStageForm = ({hideFormulaires,
                                             L'environnement de travail respecte les normes d'hygiène et
                                             de sécurité au travail.
                                         </Form.Label>
-                                        <Form.Select className="mt-2" required value={evaluerForm.environnementDeTravail}
-                                                     onChange={(e) => setEvaluerForm({...evaluerForm, environnementDeTravail: e.target.value})}>
+                                        <Form.Select className="mt-2" required
+                                                     value={evaluerForm.environnementDeTravail}
+                                                     onChange={(e) => setEvaluerForm({
+                                                         ...evaluerForm,
+                                                         environnementDeTravail: e.target.value
+                                                     })}>
                                             <option hidden value="" disabled>Choix
                                             </option>
                                             <option value="totalementEnAccord">Totalement en accord
@@ -313,7 +314,10 @@ const EvaluationLeMilleuDeStageForm = ({hideFormulaires,
                                             Le climat de travail est agréable.
                                         </Form.Label>
                                         <Form.Select className="mt-2" required value={evaluerForm.climatDeTravail}
-                                                     onChange={(e) => setEvaluerForm({...evaluerForm, climatDeTravail: e.target.value})}>
+                                                     onChange={(e) => setEvaluerForm({
+                                                         ...evaluerForm,
+                                                         climatDeTravail: e.target.value
+                                                     })}>
                                             <option hidden value="" disabled>Choix
                                             </option>
                                             <option value="totalementEnAccord">Totalement en accord
@@ -337,7 +341,10 @@ const EvaluationLeMilleuDeStageForm = ({hideFormulaires,
                                             Le milieu de stage est accessble par transport en commun.
                                         </Form.Label>
                                         <Form.Select className="mt-2" required value={evaluerForm.milieuDeStage}
-                                                     onChange={(e) => setEvaluerForm({...evaluerForm, milieuDeStage: e.target.value})}>
+                                                     onChange={(e) => setEvaluerForm({
+                                                         ...evaluerForm,
+                                                         milieuDeStage: e.target.value
+                                                     })}>
                                             <option hidden value="" disabled>Choix
                                             </option>
                                             <option value="totalementEnAccord">Totalement en accord
@@ -361,7 +368,10 @@ const EvaluationLeMilleuDeStageForm = ({hideFormulaires,
                                             Le salaire offert est intéressant pour le stagiaire.
                                         </Form.Label>
                                         <Form.Select className="mt-2" required value={evaluerForm.salaireOffert}
-                                                     onChange={(e) => setEvaluerForm({...evaluerForm, salaireOffert: e.target.value})}>
+                                                     onChange={(e) => setEvaluerForm({
+                                                         ...evaluerForm,
+                                                         salaireOffert: e.target.value
+                                                     })}>
                                             <option hidden value="" disabled>Choix
                                             </option>
                                             <option value="totalementEnAccord">Totalement en accord
@@ -385,7 +395,10 @@ const EvaluationLeMilleuDeStageForm = ({hideFormulaires,
                                     </Col>
                                     <Col className="col-8">
                                         <Form.Control type="number" min={1} required value={evaluerForm.salaireParHeure}
-                                                      onChange={e => setEvaluerForm({...evaluerForm, salaireParHeure: e.target.value})}></Form.Control>
+                                                      onChange={e => setEvaluerForm({
+                                                          ...evaluerForm,
+                                                          salaireParHeure: e.target.value
+                                                      })}></Form.Control>
                                     </Col>
                                     <Col className="fw-bold h5 col-2">/l'heure. </Col>
                                 </Row>
@@ -397,7 +410,10 @@ const EvaluationLeMilleuDeStageForm = ({hideFormulaires,
                                         </Form.Label>
                                         <Form.Select className="mt-2" required
                                                      value={evaluerForm.communicationAvecSuperviser}
-                                                     onChange={(e) => setEvaluerForm({...evaluerForm, communicationAvecSuperviser: e.target.value})}>
+                                                     onChange={(e) => setEvaluerForm({
+                                                         ...evaluerForm,
+                                                         communicationAvecSuperviser: e.target.value
+                                                     })}>
                                             <option hidden value="" disabled>Choix
                                             </option>
                                             <option value="totalementEnAccord">Totalement en accord
@@ -421,7 +437,10 @@ const EvaluationLeMilleuDeStageForm = ({hideFormulaires,
                                             L'équipement fourni est adéquat pour réaliser les tâches confiées.
                                         </Form.Label>
                                         <Form.Select className="mt-2" required value={evaluerForm.equipementFourni}
-                                                     onChange={(e) => setEvaluerForm({...evaluerForm, equipementFourni: e.target.value})}>
+                                                     onChange={(e) => setEvaluerForm({
+                                                         ...evaluerForm,
+                                                         equipementFourni: e.target.value
+                                                     })}>
                                             <option hidden value="" disabled>Choix
                                             </option>
                                             <option value="totalementEnAccord">Totalement en accord
@@ -445,7 +464,10 @@ const EvaluationLeMilleuDeStageForm = ({hideFormulaires,
                                             Le volume de travail est acceptable.
                                         </Form.Label>
                                         <Form.Select className="mt-2" required value={evaluerForm.volumeDeTravail}
-                                                     onChange={(e) => setEvaluerForm({...evaluerForm, volumeDeTravail: e.target.value})}>
+                                                     onChange={(e) => setEvaluerForm({
+                                                         ...evaluerForm,
+                                                         volumeDeTravail: e.target.value
+                                                     })}>
                                             <option hidden value="" disabled>Choix
                                             </option>
                                             <option value="totalementEnAccord">Totalement en accord
@@ -469,7 +491,10 @@ const EvaluationLeMilleuDeStageForm = ({hideFormulaires,
                                             <Form.Label className="fw-bold mt-2 h5">Commentaires</Form.Label>
                                             <Form.Control as="textarea" type="text" minLength={2} required
                                                           value={evaluerForm.commentaires}
-                                                          onChange={e => setEvaluerForm({...evaluerForm, commentaires: e.target.value})}></Form.Control>
+                                                          onChange={e => setEvaluerForm({
+                                                              ...evaluerForm,
+                                                              commentaires: e.target.value
+                                                          })}></Form.Control>
                                             <Form.Control.Feedback type="invalid">Champ
                                                 requis</Form.Control.Feedback>
                                         </Form.Group>
@@ -498,7 +523,7 @@ const EvaluationLeMilleuDeStageForm = ({hideFormulaires,
                                             <Col className="col-6 ">
                                                 <Button onClick={() => {
                                                     sigPad!.clear()
-                                                    setEvaluerForm({...evaluerForm, signature:""})
+                                                    setEvaluerForm({...evaluerForm, signature: ""})
                                                 }}>Recommencer</Button>
                                             </Col>
                                             <Col className="col-6"><Button variant="success" onClick={() => {
@@ -511,7 +536,7 @@ const EvaluationLeMilleuDeStageForm = ({hideFormulaires,
                                         </Row>
 
                                     </Col>
-                                    <Col  className="col-5 m-4" >
+                                    <Col className="col-5 m-4">
                                         <Form.Group>
                                             <Form.Label className="fw-bold mt-2 h5">Date
                                                 Signature(JJ-MM-AAAA)</Form.Label>
