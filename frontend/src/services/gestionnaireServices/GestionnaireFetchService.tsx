@@ -130,7 +130,6 @@ export const putValidateCv = (studentId: string, token: string): Promise<Respons
     });
 }
 
-
 export const putUnvalidatedCompanies = (token: string): Promise<Response> => {
     return fetch('http://localhost:8080/unvalidatedCompanies', {
         method: "PUT",
@@ -194,6 +193,28 @@ export const postCreateGestionnaire = (firstName: string,
     });
 }
 
+export const putEvaluationPdf = (contratId: number, token: string): Promise<Response> => {
+    return fetch("http://localhost:8080/getEvaluationPDF/millieuStage/" + contratId, {
+        method: "PUT",
+        headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({"token": token})
+    });
+}
+
+export const putGetContractsPourMillieuStage = (token: string): Promise<Response> => {
+    return fetch(`http://localhost:8080/getEvaluatedContracts/millieuStage`, {
+        method: "PUT",
+        headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({"token": token})
+    });
+}
+
 export const putRefuseCv = (studentId: string, message : string, token:string):Promise<Response> => {
     return fetch("http://localhost:8080/refuseCv/" + studentId, {
         method: "PUT",
@@ -204,6 +225,29 @@ export const putRefuseCv = (studentId: string, message : string, token:string):P
         body: JSON.stringify({"token": token, "refusalReason" : message})
     });
 }
+export const putEvaluationParEntreprisePdf = (contratId: number, token: string): Promise<Response> => {
+    return fetch("http://localhost:8080/getEvaluationPDF/etudiant/" + contratId, {
+        method: "PUT",
+        headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({"token": token})
+    });
+}
+
+export const putGetContractsPourEvaluationParEntreprise = (token: string): Promise<Response> => {
+    return fetch(`http://localhost:8080/getEvaluatedContracts/etudiants`, {
+        method: "PUT",
+        headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({"token": token})
+    });
+}
+
+
 
 
 export const putContracts = (token: string): Promise<Response> => {

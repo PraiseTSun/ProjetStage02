@@ -8,11 +8,12 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import projet.projetstage02.dto.*;
+import projet.projetstage02.dto.SignatureInDTO;
 import projet.projetstage02.dto.applications.ApplicationAcceptationDTO;
 import projet.projetstage02.dto.applications.OfferApplicationDTO;
 import projet.projetstage02.dto.contracts.ContractsDTO;
 import projet.projetstage02.dto.contracts.StageContractOutDTO;
+import projet.projetstage02.dto.evaluations.Etudiant.EvaluationEtudiantInDTO;
 import projet.projetstage02.dto.interview.CreateInterviewDTO;
 import projet.projetstage02.dto.interview.InterviewOutDTO;
 import projet.projetstage02.dto.offres.OfferAcceptedStudentsDTO;
@@ -32,9 +33,9 @@ import java.util.Optional;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.assertj.core.api.Fail.fail;
-import static org.assertj.core.api.Fail.failBecauseExceptionWasNotThrown;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
+import static projet.projetstage02.utils.ByteConverter.byteToString;
 import static projet.projetstage02.utils.TimeUtil.currentTimestamp;
 
 @ExtendWith(MockitoExtension.class)
@@ -59,6 +60,8 @@ public class CompanyServiceTest {
     ApplicationRepository applicationRepository;
     @Mock
     InterviewRepository interviewRepository;
+    @Mock
+    EvaluationEtudiantRepository evaluationEtudiantRepository;
 
     Company duffBeer;
     OffreInDTO duffBeerOffreInDTO;
@@ -70,6 +73,7 @@ public class CompanyServiceTest {
     CreateInterviewDTO createInterviewDTO;
     Interview interview;
     OfferApplicationDTO offerApplicationDTO;
+    EvaluationEtudiantInDTO evaluationEtudiantInDTO;
 
     @BeforeEach
     void setup() {
@@ -143,7 +147,7 @@ public class CompanyServiceTest {
                 .companyId(duffBeer.getId())
                 .offerId(duffBeerOffer.getId())
                 .studentId(bart.getId())
-                .companyDateOffers(new ArrayList<>(){{
+                .companyDateOffers(new ArrayList<>() {{
                     add("2022-11-28T12:30:00");
                     add("2022-11-29T12:30:00");
                     add("2022-11-30T12:30:00");
@@ -155,12 +159,50 @@ public class CompanyServiceTest {
                 .companyId(duffBeer.getId())
                 .offerId(duffBeerOffer.getId())
                 .studentId(bart.getId())
-                .companyDateOffers(new ArrayList<>(){{
+                .companyDateOffers(new ArrayList<>() {{
                     add(LocalDateTime.parse("2022-11-28T12:30:00"));
                     add(LocalDateTime.parse("2022-11-29T12:30:00"));
                     add(LocalDateTime.parse("2022-11-30T12:30:00"));
                 }})
                 .studentSelectedDate(null)
+                .build();
+        evaluationEtudiantInDTO = EvaluationEtudiantInDTO.builder()
+                .accepteCritiques("plutotEnAccord")
+                .acueillirPourProchainStage("oui")
+                .adapteCulture("plutotEnAccord")
+                .attentionAuxDetails("plutotEnAccord")
+                .bonneAnalyseProblemes("plutotEnAccord")
+                .commentairesHabilites("plutotEnAccord")
+                .commentairesProductivite("plutotEnAccord")
+                .commentairesAppreciation("plutotEnAccord")
+                .commentairesQualite("plutotEnAccord")
+                .comprendRapidement("plutotEnAccord")
+                .contactsFaciles("plutotEnAccord")
+                .commentairesRelationsInterpersonnelles("plutotEnAccord")
+                .contractId(1L)
+                .dateSignature("2021-05-01")
+                .discuteAvecStagiaire("oui")
+                .doubleCheckTravail("plutotEnAccord")
+                .etablirPriorites("plutotEnAccord")
+                .exprimeIdees("plutotEnAccord")
+                .ecouteActiveComprendrePDVautre("plutotEnAccord")
+                .formationTechniqueSuffisante("plutotEnAccord")
+                .habiletesDemontres("repondentAttentes")
+                .heuresEncadrement(145)
+                .initiative("plutotEnAccord")
+                .interetMotivation("plutotEnAccord")
+                .occasionsDePerfectionnement("plutotEnAccord")
+                .planifieTravail("plutotEnAccord")
+                .ponctuel("plutotEnAccord")
+                .respecteAutres("plutotEnAccord")
+                .respecteEcheances("plutotEnAccord")
+                .rythmeSoutenu("plutotEnAccord")
+                .responsableAutonome("plutotEnAccord")
+                .respecteMandatsDemandes("plutotEnAccord")
+                .signature(byteToString(new byte[]{0, 1, 2, 3, 4, 5, 6, 7, 8, 9}))
+                .travailEnEquipe("plutotEnAccord")
+                .travailSecuritaire("plutotEnAccord")
+                .travailEfficace("plutotEnAccord")
                 .build();
     }
 
@@ -676,7 +718,7 @@ public class CompanyServiceTest {
     }
 
     @Test
-    void testCreateInterviewOfferNotFound(){
+    void testCreateInterviewOfferNotFound() {
         when(companyRepository.findById(anyLong())).thenReturn(Optional.of(duffBeer));
         when(studentRepository.findById(anyLong())).thenReturn(Optional.of(bart));
         when(offreRepository.findById(anyLong())).thenReturn(Optional.empty());
@@ -686,13 +728,14 @@ public class CompanyServiceTest {
             companyService.createInterview(createInterviewDTO);
         } catch (NonExistentEntityException e) {
             return;
-        } catch (InvalidDateFormatException | InvalidOwnershipException ignored) {}
+        } catch (InvalidDateFormatException | InvalidOwnershipException ignored) {
+        }
 
         fail("Fail to catch the NonExistentEntityException");
     }
 
     @Test
-    void testCreateInterviewStudentNotFound(){
+    void testCreateInterviewStudentNotFound() {
         when(companyRepository.findById(anyLong())).thenReturn(Optional.of(duffBeer));
         when(studentRepository.findById(anyLong())).thenReturn(Optional.empty());
 
@@ -701,13 +744,14 @@ public class CompanyServiceTest {
             companyService.createInterview(createInterviewDTO);
         } catch (NonExistentEntityException e) {
             return;
-        } catch (InvalidDateFormatException | InvalidOwnershipException ignored) {}
+        } catch (InvalidDateFormatException | InvalidOwnershipException ignored) {
+        }
 
         fail("Fail to catch the NonExistentEntityException");
     }
 
     @Test
-    void testCreateInterviewCompanyNotFound(){
+    void testCreateInterviewCompanyNotFound() {
         when(companyRepository.findById(anyLong())).thenReturn(Optional.empty());
 
         // Act
@@ -715,13 +759,14 @@ public class CompanyServiceTest {
             companyService.createInterview(createInterviewDTO);
         } catch (NonExistentEntityException e) {
             return;
-        } catch (InvalidDateFormatException | InvalidOwnershipException ignored) {}
+        } catch (InvalidDateFormatException | InvalidOwnershipException ignored) {
+        }
 
         fail("Fail to catch the NonExistentEntityException");
     }
 
     @Test
-    void testCreateInterviewConflict(){
+    void testCreateInterviewConflict() {
         // Arrange
         createInterviewDTO.getCompanyDateOffers().add("test");
         when(companyRepository.findById(anyLong())).thenReturn(Optional.of(duffBeer));
@@ -733,13 +778,14 @@ public class CompanyServiceTest {
             companyService.createInterview(createInterviewDTO);
         } catch (InvalidDateFormatException e) {
             return;
-        } catch (InvalidOwnershipException | NonExistentEntityException ignored) {}
+        } catch (InvalidOwnershipException | NonExistentEntityException ignored) {
+        }
 
         fail("Fail to catch the InvalidDateFormatException");
     }
 
     @Test
-    void testCreateInterviewForbiden(){
+    void testCreateInterviewForbiden() {
         // Arrange
         duffBeer.setId(0L);
         when(companyRepository.findById(anyLong())).thenReturn(Optional.of(duffBeer));
@@ -751,7 +797,8 @@ public class CompanyServiceTest {
             companyService.createInterview(createInterviewDTO);
         } catch (InvalidOwnershipException e) {
             return;
-        } catch (InvalidDateFormatException | NonExistentEntityException ignored) {}
+        } catch (InvalidDateFormatException | NonExistentEntityException ignored) {
+        }
 
         fail("Fail to catch the InvalidOwnershipException");
     }
@@ -760,11 +807,11 @@ public class CompanyServiceTest {
     void testGetInterviewsHappyDay() throws NonExistentEntityException {
         when(companyRepository.findById(anyLong())).thenReturn(Optional.of(duffBeer));
         when(interviewRepository.findByCompanyId(anyLong())).thenReturn(
-            new ArrayList<>(){{
-                add(interview);
-                add(interview);
-                add(interview);
-            }}
+                new ArrayList<>() {{
+                    add(interview);
+                    add(interview);
+                    add(interview);
+                }}
         );
 
         List<InterviewOutDTO> interviews = companyService.getInterviews(1L);
@@ -775,7 +822,7 @@ public class CompanyServiceTest {
     }
 
     @Test
-    void testGetInterviewsNotFound(){
+    void testGetInterviewsNotFound() {
         when(companyRepository.findById(anyLong())).thenReturn(Optional.empty());
 
         try {
@@ -785,5 +832,50 @@ public class CompanyServiceTest {
         }
 
         fail("Fail to catch the NonExistentEntityException");
+    }
+
+    @Test
+    void testEvaluateEtudiantHappyDay() {
+        companyService.evaluateStudent(evaluationEtudiantInDTO);
+        verify(evaluationEtudiantRepository, times(1)).save(any());
+    }
+
+    @Test
+    void testGetEvaluatedStudentsContractsHappyDay() {
+        when(stageContractRepository.findByCompanyId(anyLong())).thenReturn(new ArrayList<>() {{
+            add(stageContract);
+            add(stageContract);
+            add(stageContract);
+        }});
+        when(evaluationEtudiantRepository.findByContractId(anyLong()))
+                .thenReturn(Optional.of(new EvaluationEtudiant(evaluationEtudiantInDTO))
+                );
+
+        List<Long> evaluations = companyService.getEvaluatedStudentsContracts(1L);
+
+        assertThat(evaluations.size()).isEqualTo(3);
+    }
+
+    @Test
+    void testGetEvaluatedStudentsContractsEmptyNoContracts() {
+        when(stageContractRepository.findByCompanyId(anyLong())).thenReturn(new ArrayList<>());
+
+        List<Long> evaluations = companyService.getEvaluatedStudentsContracts(1L);
+
+        assertThat(evaluations.size()).isEqualTo(0);
+    }
+
+    @Test
+    void testGetEvaluatedStudentsContractsEmptyNoEvaluation() {
+        when(stageContractRepository.findByCompanyId(anyLong())).thenReturn(new ArrayList<>() {{
+            add(stageContract);
+            add(stageContract);
+            add(stageContract);
+        }});
+        when(evaluationEtudiantRepository.findByContractId(anyLong())).thenReturn(Optional.empty());
+
+        List<Long> evaluations = companyService.getEvaluatedStudentsContracts(1L);
+
+        assertThat(evaluations.size()).isEqualTo(0);
     }
 }

@@ -19,6 +19,8 @@ import SignerEntenteDeStageParCompagnie from "./pages/companyPages/SignerEntente
 import CompanyOffersPage from "./pages/companyPages/CompanyOffersPage";
 import StudentContractsPage from "./pages/studentPages/StudentContractsPage";
 import ContractsPage from "./pages/gestionnairePages/ContractsPage";
+import ConsulterEvaluationDeStages from "./pages/gestionnairePages/ConsulterEvaluationDeStages";
+import ConsulterEvaluationDeEtudiants from "./pages/gestionnairePages/ConsulterEvaluationDeEtudiants";
 import SignerEntenteDeStage from "./pages/gestionnairePages/SignerEntenteDeStage";
 
 export const LOCAL_STORAGE_KEY = "MASSI_BEST_PROGRAMMER_PROJET_STAGE_02_CURRENT_CONNECTED_USER"
@@ -129,7 +131,8 @@ function App() {
                         <Route path="*"
                                element={<h1 className="min-vh-100 text-center text-white display-1">404 - Page pas
                                    trouvé</h1>}/>
-                        <Route path="/SignerEntenteDeStageParCompagnie" element={<SignerEntenteDeStageParCompagnie user={connectedUser}/>}/>
+                        <Route path="/SignerEntenteDeStageParCompagnie"
+                               element={<SignerEntenteDeStageParCompagnie user={connectedUser}/>}/>
                     </Routes>
                 </BrowserRouter>
             </Container>
@@ -153,6 +156,10 @@ function App() {
                                    trouvé</h1>}/>
                         <Route path="/validerNouvelleOffre"
                                element={<ValiderNouvelleOffreStagePage connectedUser={connectedUser}/>}/>
+                        <Route path="/consulterEvaluation"
+                               element={<ConsulterEvaluationDeStages connectedUser={connectedUser}/>}></Route>
+                        <Route path="/consulterEvaluationParEntreprise"
+                               element={<ConsulterEvaluationDeEtudiants connectedUser={connectedUser}/>}></Route>
                         <Route path="/signerententedestage"
                                element={<SignerEntenteDeStage connectedUser={connectedUser}/>}/>
                     </Routes>
