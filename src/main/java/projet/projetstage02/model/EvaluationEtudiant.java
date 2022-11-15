@@ -14,6 +14,7 @@ import javax.persistence.Lob;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Pattern;
+import java.time.LocalDate;
 
 @Entity
 @Data
@@ -118,8 +119,7 @@ public class EvaluationEtudiant {
     @Lob
     private String signature;
     @NotBlank
-    @Pattern(regexp = "^(19|20[0-9][0-9])-(0[0-9]|1[0-2])-([0-2][0-9]|3[0-1])$")
-    private String dateSignature;
+    private LocalDate dateSignature;
 
     public EvaluationEtudiant(EvaluationEtudiantInDTO evaluationEtudiantInDTO) {
         this.contractId = evaluationEtudiantInDTO.getContractId();
@@ -149,7 +149,7 @@ public class EvaluationEtudiant {
         this.travailSecuritaire = evaluationEtudiantInDTO.getTravailSecuritaire();
         this.bonneAnalyseProblemes = evaluationEtudiantInDTO.getBonneAnalyseProblemes();
         this.planifieTravail = evaluationEtudiantInDTO.getPlanifieTravail();
-        this.dateSignature = evaluationEtudiantInDTO.getDateSignature();
+        this.dateSignature = LocalDate.parse(evaluationEtudiantInDTO.getDateSignature());
         this.exprimeIdees = evaluationEtudiantInDTO.getExprimeIdees();
         this.travailEfficace = evaluationEtudiantInDTO.getTravailEfficace();
         this.rythmeSoutenu = evaluationEtudiantInDTO.getRythmeSoutenu();

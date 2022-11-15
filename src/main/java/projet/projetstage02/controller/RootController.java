@@ -1135,6 +1135,21 @@ public class RootController {
         }
     }
 
+    @PutMapping("/getEvaluatedContracts/millieuStage")
+    public ResponseEntity<List<StageContractOutDTO>> getEvaluatedContractsMillieuStage(@RequestBody TokenDTO tokenId) {
+        logger.log(Level.INFO, "Put /getEvaluatedContracts/millieuStage");
+
+        try {
+            authService.getToken(tokenId.getToken(), GESTIONNAIRE);
+            List<StageContractOutDTO> evaluatedContracts = gestionnaireService.getEvaluationMillieuStage();
+            logger.log(Level.INFO, "Put /getEvaluatedContracts/millieuStage return 200");
+            return ResponseEntity.ok(evaluatedContracts);
+        } catch (InvalidTokenException e) {
+            logger.log(Level.INFO, "Put /getEvaluatedContracts/millieuStage return 403");
+            return ResponseEntity.status(FORBIDDEN).build();
+        }
+    }
+
     @PutMapping("/getEvaluatedStudentsContracts/{companyId}")
     public ResponseEntity<List<Long>> getEvaluatedStudents(@PathVariable long companyId,
                                                            @RequestBody TokenDTO token) {
@@ -1147,6 +1162,41 @@ public class RootController {
         } catch (InvalidTokenException e) {
             logger.log(Level.INFO, "Put /getEvaluatedStudents sent 403 response");
             return ResponseEntity.status(FORBIDDEN).build();
+        }
+    }
+
+    @PutMapping("/getGestionnaireContracts")
+    public ResponseEntity<List<StageContractOutDTO>> GetGestionnaireContract(@RequestBody TokenDTO token){
+        logger.log(Level.INFO, "Put getGestionnaireContracts");
+        try {
+            authService.getToken(token.getToken(), GESTIONNAIRE);
+            List<StageContractOutDTO> contracts = gestionnaireService.getContractsToSigne();
+            logger.log(Level.INFO, "Put getGestionnaireContracts return 200");
+            return ResponseEntity.ok(contracts);
+        } catch (InvalidTokenException e) {
+            logger.log(Level.INFO, "Put getGestionnaireContracts return 403");
+            return ResponseEntity.status(FORBIDDEN).build();
+        }
+    }
+
+    @PutMapping("/gestionnaireSignature")
+    public ResponseEntity<StageContractOutDTO> GestionnaireSignature(@RequestBody SignatureInDTO signature){
+        logger.log(Level.INFO, "Put gestionnaireSignature");
+
+        try {
+            authService.getToken(signature.getToken(), GESTIONNAIRE);
+            StageContractOutDTO dto = gestionnaireService.contractSignature(signature);
+            logger.log(Level.INFO, "Put gestionnaireSignature return 200");
+            return ResponseEntity.ok(dto);
+        } catch (InvalidTokenException e) {
+            logger.log(Level.INFO, "Put gestionnaireSignature return 403");
+            return ResponseEntity.status(FORBIDDEN).build();
+        } catch (NonExistentEntityException e) {
+            logger.log(Level.INFO, "Put gestionnaireSignature return 404");
+            return ResponseEntity.status(NOT_FOUND).build();
+        } catch (NotReadyToBeSignedException e) {
+            logger.log(Level.INFO, "Put gestionnaireSignature return 409");
+            return ResponseEntity.status(CONFLICT).build();
         }
     }
 }
