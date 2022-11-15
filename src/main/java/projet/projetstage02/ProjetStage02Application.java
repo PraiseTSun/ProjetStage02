@@ -194,6 +194,18 @@ public class ProjetStage02Application implements CommandLineRunner {
         gestionnaireService.validateStudent(student2.getId());
         gestionnaireService.validateCompany(company.getId());
         gestionnaireService.validateStudentCV(student.getId());
+        studentService.createPostulation(student.getId(), offreId);
+        studentService.createPostulation(student2.getId(), offreId);
+        companyService.saveStudentApplicationAccepted(offreId, student.getId());
+        companyService.saveStudentApplicationAccepted(offreId, student2.getId());
+        StageContractOutDTO stageContract = gestionnaireService.createStageContract(StageContractInDTO.builder()
+                .offerId(offreId)
+                .studentId(1L)
+                .build());
+        gestionnaireService.createStageContract(StageContractInDTO.builder()
+                .offerId(offreId)
+                .studentId(student2.getId())
+                .build());
         gestionnaireService.validateStudentCV(student2.getId());
         System.out.println(studentService.getStudentByIdDTO(1L));
         System.out.println(companyService.getCompanyByIdDTO(2L));
@@ -202,13 +214,8 @@ public class ProjetStage02Application implements CommandLineRunner {
         System.out.println(studentService.getStudentByEmailPassword("Samir@gmail.com", "cooldude"));
         System.out.println(gestionnaireService.getUnvalidatedOffers());
         System.out.println(gestionnaireService.getUnvalidatedCVStudents());
-        studentService.createPostulation(student.getId(), offreId);
-        studentService.createPostulation(student2.getId(), offreId);
         companyService.saveStudentApplicationAccepted(offreId, student.getId());
 
-        StageContractOutDTO stageContract = gestionnaireService.createStageContract(
-                new StageContractInDTO("noToken", student.getId(), offreId)
-        );
         SignatureInDTO signatureCompany = new SignatureInDTO("", company.getId(), stageContract.getContractId(), "dsfsfdfs");
         companyService.addSignatureToContract(signatureCompany);
         SignatureInDTO signatureStudent = new SignatureInDTO("", student.getId(), stageContract.getContractId(), "studanenn");

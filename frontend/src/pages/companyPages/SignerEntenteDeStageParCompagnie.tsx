@@ -12,7 +12,6 @@ const SignerEntenteDeStageParCompagnie = ({user}: { user: IUser }): JSX.Element 
     const [contratId, setContratId] = useState(0)
     const nextYear: number = new Date().getFullYear() + 1
     let sigPad: SignaturePad | null
-    const [signature, setSignature] = useState<Uint8Array>(new Uint8Array([]))
 
     useEffect(() => {
         const fetchCompanyContracts = async () => {
@@ -29,7 +28,7 @@ const SignerEntenteDeStageParCompagnie = ({user}: { user: IUser }): JSX.Element 
             }
         }
         fetchCompanyContracts()
-    }, [])
+    }, [user])
 
     async function getEntente(contratId: number): Promise<void> {
         setIsSigner(true)

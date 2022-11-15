@@ -43,7 +43,7 @@ const StudentCvValidationPage = ({connectedUser}:
         event.preventDefault();
         if (form.checkValidity()) {
 
-            const response = await putRefuseCv(studentId.toString(), refuserMessge, connectedUser.token)
+            const response = await putRefuseCv(studentId.toString(), connectedUser.token, refuserMessge,)
 
             if (response.ok) {
                 setIsRefuse(false)

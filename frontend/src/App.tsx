@@ -17,6 +17,7 @@ import {putUserType} from "./services/universalServices/UniversalFetchService";
 import OfferHistoryPage from "./pages/gestionnairePages/OfferHistoryPage";
 import SignerEntenteDeStageParCompagnie from "./pages/companyPages/SignerEntenteDeStageParCompagnie";
 import CompanyOffersPage from "./pages/companyPages/CompanyOffersPage";
+import EvaluerLeMilieuDeStage from "./pages/gestionnairePages/EvaluerLeMilieuDeStage";
 import StudentContractsPage from "./pages/studentPages/StudentContractsPage";
 import ContractsPage from "./pages/gestionnairePages/ContractsPage";
 import ConsulterEvaluationDeStages from "./pages/gestionnairePages/ConsulterEvaluationDeStages";
@@ -156,6 +157,8 @@ function App() {
                                    trouvé</h1>}/>
                         <Route path="/validerNouvelleOffre"
                                element={<ValiderNouvelleOffreStagePage connectedUser={connectedUser}/>}/>
+                        <Route path="/evaluerLeMilieuDeStage"
+                               element={<EvaluerLeMilieuDeStage user={connectedUser}/>}/>
                         <Route path="/consulterEvaluation"
                                element={<ConsulterEvaluationDeStages connectedUser={connectedUser}/>}></Route>
                         <Route path="/consulterEvaluationParEntreprise"
