@@ -34,6 +34,7 @@ import projet.projetstage02.model.Token;
 import projet.projetstage02.service.AuthService;
 import projet.projetstage02.service.CompanyService;
 import projet.projetstage02.service.GestionnaireService;
+import projet.projetstage02.utils.EmailUtil;
 
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
@@ -388,6 +389,16 @@ public class CompanyRootControllerTest {
                         .content(jsonTokenDTO.write(token).getJson()))
 
                 .andExpect(status().isNotFound());
+    }
+
+    @Test
+    void testLoginCompanyInvalidToken() throws Exception {
+        when(authService.getToken(token.getToken(), COMPANY)).thenThrow(new InvalidTokenException());
+
+        companyMockMvc.perform(put("/company")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(jsonTokenDTO.write(token).getJson()))
+                .andExpect(status().isForbidden());
     }
 
     @Test
