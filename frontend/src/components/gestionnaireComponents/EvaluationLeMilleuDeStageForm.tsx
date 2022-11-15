@@ -1,5 +1,4 @@
-import React, {useEffect, useState} from "react";
-import EvaluerLeMilieuDeStage from "../../pages/gestionnairePages/EvaluerLeMilieuDeStage";
+import React, {useState} from "react";
 import IEvaluationLeMilieuDeStageForm from "../../models/IEvaluationLeMilieuDeStageForm";
 import {Button, Col, Container, Form, ListGroup, Row, Tab} from "react-bootstrap";
 import {Link} from "react-router-dom";
@@ -68,9 +67,6 @@ const EvaluationLeMilleuDeStageForm = ({hideFormulaires,
             if (res.ok) {
                 alert("L'évaluation a été envoyé.");
                 window.location.href = "/evaluerLeMilieuDeStage"
-            }
-            else{
-                alert("error")
             }
             setWaiting(false)
             setValidated(false)
