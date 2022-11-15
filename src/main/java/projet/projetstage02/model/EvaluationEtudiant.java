@@ -13,6 +13,7 @@ import javax.persistence.Id;
 import javax.persistence.Lob;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 import java.time.LocalDate;
 
@@ -118,7 +119,7 @@ public class EvaluationEtudiant {
     @NotBlank
     @Lob
     private String signature;
-    @NotBlank
+    @NotNull
     private LocalDate dateSignature;
 
     public EvaluationEtudiant(EvaluationEtudiantInDTO evaluationEtudiantInDTO) {

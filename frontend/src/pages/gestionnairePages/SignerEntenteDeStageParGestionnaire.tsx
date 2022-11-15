@@ -7,7 +7,7 @@ import PageHeader from "../../components/universalComponents/PageHeader";
 import {putContracts, putSignatureContract} from "../../services/gestionnaireServices/GestionnaireFetchService";
 import StageContract from "../../models/StageContract";
 
-const SignerEntenteDeStage = ({connectedUser}: { connectedUser: IUser }): JSX.Element => {
+const SignerEntenteDeStageParGestionnaire = ({connectedUser}: { connectedUser: IUser }): JSX.Element => {
     const [contratsNonSigner, setContratsNonSigner] = useState<StageContract[]>([])
     const [isSigner, setIsSigner] = useState(false)
     const [contratId, setContratId] = useState(0)
@@ -30,7 +30,7 @@ const SignerEntenteDeStage = ({connectedUser}: { connectedUser: IUser }): JSX.El
         }
         fetchContracts()
     }, [connectedUser])
-    console.log(contratsNonSigner)
+
     async function getEntente(contratId: number): Promise<void> {
         setIsSigner(true)
         setContratId(contratId)
@@ -138,4 +138,4 @@ const SignerEntenteDeStage = ({connectedUser}: { connectedUser: IUser }): JSX.El
     )
 }
 
-export default SignerEntenteDeStage
+export default SignerEntenteDeStageParGestionnaire;
