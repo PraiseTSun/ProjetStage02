@@ -3,7 +3,11 @@ import {Button, Col, Container, Row, Table, ToggleButton, ToggleButtonGroup} fro
 import {Link} from "react-router-dom";
 import IUser from "../../models/IUser";
 import {Viewer} from '@react-pdf-viewer/core';
-import {putOfferPdf, putValidatedOffersByYear} from "../../services/gestionnaireServices/GestionnaireFetchService";
+import {
+    putEvaluationPdf,
+    putOfferPdf,
+    putValidatedOffersByYear
+} from "../../services/gestionnaireServices/GestionnaireFetchService";
 import {generateAlert} from "../../services/universalServices/UniversalUtilService";
 import IOffer from "../../models/IOffer";
 

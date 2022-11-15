@@ -521,8 +521,7 @@ public class GestionnaireService {
     }
 
     public List<StageContractOutDTO> getEvaluationMillieuStage() {
-        List<StageContract> stageContracts = stageContractRepository.findAll();
-        return stageContracts.stream().filter(stageContract -> {
+        return stageContractRepository.findAll().stream().filter(stageContract -> {
             Optional<EvaluationMillieuStage> opt = evaluationMillieuStageRepository.findByContractId(stageContract.getId());
             return opt.isPresent();
         }).map(StageContractOutDTO::new).toList();
@@ -557,9 +556,42 @@ public class GestionnaireService {
                                 && !stageContract.getStudentSignature().isBlank()
                                 && stageContract.getGestionnaireSignature().isBlank()
                 )
-                .forEach(stageContract -> contractsDTO.add(new StageContractOutDTO(stageContract)));
-
+                .forEach(stageContract -> {
+                    StageContractOutDTO stageContractOutDTO = new StageContractOutDTO(stageContract);
+                    Optional<Offre> offerOpt = offreRepository.findById(stageContract.getOfferId());
+                    if (offerOpt.isEmpty()) return;
+                    Offre offer = offerOpt.get();
+                    Optional<Company> companyOpt = companyRepository.findById(stageContract.getCompanyId());
+                    if (companyOpt.isEmpty()) return;
+                    Company company = companyOpt.get();
+                    Optional<Student> studentOpt = studentRepository.findById(stageContract.getStudentId());
+                    if (studentOpt.isEmpty()) return;
+                    Student student = studentOpt.get();
+                    stageContractOutDTO.setCompanyName(company.getCompanyName());
+                    stageContractOutDTO.setStudentFullName(student.getFirstName() + " " + student.getLastName());
+                    stageContractOutDTO.setPosition(offer.getPosition());
+                    contractsDTO.add(stageContractOutDTO);
+                });
         return contractsDTO;
+    }
+
+    public StageContractOutDTO contractSignature(SignatureInDTO signature)
+            throws NonExistentEntityException, NotReadyToBeSignedException {
+        Optional<Gestionnaire> gestionnaireOpt = gestionnaireRepository.findById(signature.getUserId());
+        if (gestionnaireOpt.isEmpty()) throw new NonExistentEntityException();
+
+        Optional<StageContract> contractOpt = stageContractRepository.findById(signature.getContractId());
+        if (contractOpt.isEmpty()) throw new NonExistentEntityException();
+        StageContract contract = contractOpt.get();
+
+        if(contract.getCompanySignature().isBlank() || contract.getStudentSignature().isBlank())
+            throw new NotReadyToBeSignedException();
+
+        contract.setGestionnaireSignature(signature.getSignature());
+        contract.setGestionnaireSignatureDate(LocalDateTime.now());
+        stageContractRepository.save(contract);
+
+        return new StageContractOutDTO(contract);
     }
 
     public List<StageContractOutDTO> getEvaluatedContractsEtudiants() {
