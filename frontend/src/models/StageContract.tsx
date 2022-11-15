@@ -1,8 +1,8 @@
-export default interface IContract {
-    contractId: string,
-    studentId: string,
-    offerId: string,
-    companyId: string,
+export default interface StageContract {
+    contractId: number,
+    studentId: number,
+    offerId: number,
+    companyId: number,
     employFullName: string,
     companyName: string,
     studentFullName: string,
@@ -11,6 +11,8 @@ export default interface IContract {
     description: string,
     companySignature: string,
     companySignatureDate: string,
+    gestionnaireSignature: string,
+    gestionnaireSignatureDate: string
     studentSignature: string,
     studentSignatureDate: string
 }

@@ -1,5 +1,6 @@
 package projet.projetstage02.controller;
 
+import com.itextpdf.text.DocumentException;
 import lombok.AllArgsConstructor;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -11,6 +12,7 @@ import projet.projetstage02.dto.applications.OfferApplicationDTO;
 import projet.projetstage02.dto.auth.TokenDTO;
 import projet.projetstage02.dto.contracts.ContractsDTO;
 import projet.projetstage02.dto.contracts.StageContractOutDTO;
+import projet.projetstage02.dto.evaluations.Etudiant.EvaluationEtudiantInDTO;
 import projet.projetstage02.dto.interview.CreateInterviewDTO;
 import projet.projetstage02.dto.interview.InterviewOutDTO;
 import projet.projetstage02.dto.offres.OfferAcceptedStudentsDTO;
@@ -22,6 +24,7 @@ import projet.projetstage02.exception.*;
 import projet.projetstage02.model.Token;
 import projet.projetstage02.service.AuthService;
 import projet.projetstage02.service.CompanyService;
+import projet.projetstage02.service.GestionnaireService;
 import projet.projetstage02.utils.EmailUtil;
 
 import javax.validation.Valid;
@@ -41,6 +44,7 @@ import static projet.projetstage02.utils.TimeUtil.*;
 @RequestMapping("/")
 public class CompanyRootController {
     final CompanyService companyService;
+    final GestionnaireService gestionnaireService;
     final AuthService authService;
 
     private final Logger logger = LogManager.getLogger(RootController.class);
@@ -303,6 +307,46 @@ public class CompanyRootController {
         } catch (InvalidTokenException e) {
             logger.log(INFO, "Put /getCompanyInterviews/{companyId} return 403");
             return ResponseEntity.status(FORBIDDEN).build();
+        }
+    }
+
+    @PutMapping("/getEvaluatedStudentsContracts/{companyId}")
+    public ResponseEntity<List<Long>> getEvaluatedStudents(@PathVariable long companyId, @RequestBody TokenDTO token) {
+        try {
+            logger.log(INFO, "Put /getEvaluatedStudents entered");
+            authService.getToken(token.getToken(), COMPANY);
+            List<Long> contractIds = companyService.getEvaluatedStudentsContracts(companyId);
+            logger.log(INFO, "Put /getEvaluatedStudents sent 200 response");
+            return ResponseEntity.ok(contractIds);
+        } catch (InvalidTokenException e) {
+            logger.log(INFO, "Put /getEvaluatedStudents sent 403 response");
+            return ResponseEntity.status(FORBIDDEN).build();
+        }
+    }
+
+
+
+    @PostMapping("/evaluateStudent/{token}")
+    public ResponseEntity<?> evaluateStudent(@PathVariable String token, @RequestBody @Valid EvaluationEtudiantInDTO studentEvaluationInDTO) {
+        try {
+            logger.log(INFO, "put /evaluateStudent entered");
+            authService.getToken(token, COMPANY);
+            companyService.evaluateStudent(studentEvaluationInDTO);
+            gestionnaireService.createEvaluationEtudiantPDF(studentEvaluationInDTO.getContractId());
+            logger.log(INFO, "PutMapping: /evaluateStudent sent 201 response");
+            return ResponseEntity.status(CREATED).build();
+        } catch (InvalidTokenException e) {
+            logger.log(INFO, "PutMapping: /evaluateStudent sent 403 response");
+            return ResponseEntity.status(FORBIDDEN).build();
+        } catch (NonExistentOfferExeption | NonExistentEntityException e) {
+            logger.log(INFO, "PutMapping: /evaluateStudent sent 404 response");
+            return ResponseEntity.notFound().build();
+        } catch (EmptySignatureException e) {
+            logger.log(INFO, "PutMapping: /evaluateStudent sent 401 response");
+            return ResponseEntity.status(BAD_REQUEST).build();
+        } catch (DocumentException e) {
+            logger.log(INFO, "PutMapping: /evaluateStudent sent 500 response");
+            return ResponseEntity.status(INTERNAL_SERVER_ERROR).build();
         }
     }
 }

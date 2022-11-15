@@ -1,6 +1,7 @@
 package projet.projetstage02.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.itextpdf.text.DocumentException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -17,8 +18,9 @@ import projet.projetstage02.dto.contracts.ContractsDTO;
 import projet.projetstage02.dto.contracts.StageContractInDTO;
 import projet.projetstage02.dto.contracts.StageContractOutDTO;
 import projet.projetstage02.dto.cv.CvRefusalDTO;
+import projet.projetstage02.dto.evaluations.EvaluationInfoDTO;
 import projet.projetstage02.dto.evaluations.MillieuStage.MillieuStageEvaluationInDTO;
-import projet.projetstage02.dto.evaluations.MillieuStage.MillieuStageEvaluationInfoDTO;
+import projet.projetstage02.dto.interview.InterviewSelectInDTO;
 import projet.projetstage02.dto.offres.OffreInDTO;
 import projet.projetstage02.dto.offres.OffreOutDTO;
 import projet.projetstage02.dto.pdf.PdfOutDTO;
@@ -26,10 +28,7 @@ import projet.projetstage02.dto.users.CompanyDTO;
 import projet.projetstage02.dto.users.GestionnaireDTO;
 import projet.projetstage02.dto.users.Students.StudentInDTO;
 import projet.projetstage02.dto.users.Students.StudentOutDTO;
-import projet.projetstage02.exception.AlreadyExistingStageContractException;
-import projet.projetstage02.exception.InvalidTokenException;
-import projet.projetstage02.exception.NonExistentEntityException;
-import projet.projetstage02.exception.NonExistentOfferExeption;
+import projet.projetstage02.exception.*;
 import projet.projetstage02.model.AbstractUser;
 import projet.projetstage02.model.Token;
 import projet.projetstage02.service.AuthService;
@@ -71,11 +70,15 @@ public class GestionnaireRootControllerTest {
     JacksonTester<OffreInDTO> jsonOffreDTO;
     JacksonTester<TokenDTO> jsonTokenDTO;
     JacksonTester<CvRefusalDTO> jsonCvRefusalDTO;
+    JacksonTester<SignatureInDTO> jsonSignatureDTO;
+    JacksonTester<MillieuStageEvaluationInDTO> jsonEvalMillieuStageInDTO;
+    JacksonTester<InterviewSelectInDTO> jsonInterviewSelectDTO;
 
     StudentInDTO bart;
     StudentOutDTO bartOut;
     CompanyDTO duffBeer;
     TokenDTO token;
+    PdfOutDTO duffOffrePdfOut;
     GestionnaireDTO burns;
     OffreInDTO duffOffre;
     OffreOutDTO duffOffreOut;
@@ -84,9 +87,11 @@ public class GestionnaireRootControllerTest {
     StageContractOutDTO stageContractOutDTO;
     SignatureInDTO signatureInDTO;
     ContractsDTO contractsDTO;
-
-    MillieuStageEvaluationInfoDTO evalInfoDTO;
+    MillieuStageEvaluationInDTO millieuStageEvaluationInDTO;
+    EvaluationInfoDTO evalInfoDTO;
     MillieuStageEvaluationInDTO evalInDTO;
+    InterviewSelectInDTO interviewSelectInDTO;
+
     // https://thepracticaldeveloper.com/guide-spring-boot-controller-tests/
     @BeforeEach
     void setup() {
@@ -151,6 +156,11 @@ public class GestionnaireRootControllerTest {
                 .pdf(byteToString(new byte[0]))
                 .build();
 
+        duffOffrePdfOut = PdfOutDTO.builder()
+                .id(1L)
+                .pdf("[1,2,3,4,5,6,7,8,9]")
+                .build();
+
         token = TokenDTO.builder()
                 .token("9f0b0e68-c177-4504-9087-eea175653ee3")
                 .build();
@@ -190,7 +200,12 @@ public class GestionnaireRootControllerTest {
         contractsDTO.add(stageContractOutDTO);
         contractsDTO.add(stageContractOutDTO);
 
-        evalInfoDTO = new MillieuStageEvaluationInfoDTO(duffBeer.toModel(), duffOffre.toModel(), bart.toModel());
+        interviewSelectInDTO = InterviewSelectInDTO.builder()
+                .token("token")
+                .interviewId(0L)
+                .studentId(bart.getId())
+                .selectedDate("2022-11-29T12:30")
+                .build();
 
         evalInDTO = MillieuStageEvaluationInDTO.builder()
                 .climatTravail("Plutôt en accord")
@@ -210,6 +225,26 @@ public class GestionnaireRootControllerTest {
                 .tempsReelConsacre("Plutôt en accord")
                 .signature(byteToString(new byte[]{0, 1, 2, 3, 4, 5, 6, 7, 8, 9}))
                 .build();
+
+        millieuStageEvaluationInDTO = MillieuStageEvaluationInDTO.builder()
+                .climatTravail("plutotEnAccord")
+                .communicationAvecSuperviser("plutotEnAccord")
+                .contractId(1L)
+                .dateSignature("2021-05-01")
+                .environementTravail("plutotEnAccord")
+                .equipementFourni("plutotEnAccord")
+                .heureTotalDeuxiemeMois(23)
+                .heureTotalPremierMois(23)
+                .heureTotalTroisiemeMois(23)
+                .integration("plutotEnAccord")
+                .milieuDeStage("plutotEnAccord")
+                .tachesAnnonces("plutotEnAccord")
+                .volumeDeTravail("plutotEnAccord")
+                .tempsReelConsacre("plutotEnAccord")
+                .signature(byteToString(new byte[]{0, 1, 2, 3, 4, 5, 6, 7, 8, 9}))
+                .build();
+
+        evalInfoDTO = new EvaluationInfoDTO(duffBeer.toModel(), duffOffre.toModel(), bart.toModel());
     }
 
     @Test
@@ -854,7 +889,7 @@ public class GestionnaireRootControllerTest {
 
     @Test
     void testGetEvaluationInfoHappyDay() throws Exception {
-        when(gestionnaireService.getMillieuEvaluationInfoForContract(anyLong())).thenReturn(evalInfoDTO);
+        when(gestionnaireService.getEvaluationInfoForContract(anyLong())).thenReturn(evalInfoDTO);
 
         gestionnaireMockMvc.perform(put("/evaluateStage/{contractId}/getInfo", 1L)
                         .contentType(MediaType.APPLICATION_JSON)
@@ -865,7 +900,7 @@ public class GestionnaireRootControllerTest {
 
     @Test
     void testGetEvaluationInfoNotFound() throws Exception {
-        when(gestionnaireService.getMillieuEvaluationInfoForContract(anyLong())).thenThrow(new NonExistentEntityException());
+        when(gestionnaireService.getEvaluationInfoForContract(anyLong())).thenThrow(new NonExistentEntityException());
 
         gestionnaireMockMvc.perform(put("/evaluateStage/{contractId}/getInfo", 1L)
                         .contentType(MediaType.APPLICATION_JSON)
@@ -875,18 +910,48 @@ public class GestionnaireRootControllerTest {
 
     @Test
     void testEvaluateStageHappyDay() throws Exception {
-        doNothing().when(gestionnaireService).saveEvaluateStage(any());
+        when(gestionnaireService.evaluateStage(any())).thenReturn(1L);
         gestionnaireMockMvc.perform(post("/evaluateStage/{token}", token.getToken())
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(jsonEvalInDTO.write(evalInDTO).getJson()))
+                        .content(jsonEvalMillieuStageInDTO.write(millieuStageEvaluationInDTO).getJson()))
                 .andExpect(status().isCreated());
     }
 
     @Test
-    void testGetAllContractsHappyDay() throws Exception {
-        when(gestionnaireService.getContracts()).thenReturn(contractsDTO);
+    void testEvaluateNotFound() throws Exception {
+        doThrow(new NonExistentEntityException()).when(gestionnaireService).createEvaluationMillieuStagePDF(anyLong());
 
-        gestionnaireMockMvc.perform(put("/getContracts")
+        gestionnaireMockMvc.perform(post("/evaluateStage/{token}", token.getToken())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(jsonEvalMillieuStageInDTO.write(millieuStageEvaluationInDTO).getJson()))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    void testEvaluateInternalServerError() throws Exception {
+        doThrow(new DocumentException()).when(gestionnaireService).createEvaluationMillieuStagePDF(anyLong());
+
+        gestionnaireMockMvc.perform(post("/evaluateStage/{token}", token.getToken())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(jsonEvalMillieuStageInDTO.write(millieuStageEvaluationInDTO).getJson()))
+                .andExpect(status().isInternalServerError());
+    }
+
+    @Test
+    void testEvaluateInvalidToken() throws Exception {
+        when(authService.getToken(anyString(), any())).thenThrow(new InvalidTokenException());
+
+        gestionnaireMockMvc.perform(post("/evaluateStage/{token}", token.getToken())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(jsonEvalMillieuStageInDTO.write(millieuStageEvaluationInDTO).getJson()))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    void testGetAllContractsHappyDay() throws Exception {
+        when(gestionnaireService.getContractsToEvaluateMillieuStage()).thenReturn(contractsDTO);
+
+        gestionnaireMockMvc.perform(put("/getContractsToEvaluate/millieuStage")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(jsonTokenDTO.write(token).getJson()))
                 .andExpect(status().isOk())
@@ -896,12 +961,180 @@ public class GestionnaireRootControllerTest {
     @Test
     void testGetAllContractsEmpty() throws Exception {
         contractsDTO.setContracts(new ArrayList<>());
-        when(gestionnaireService.getContracts()).thenReturn(contractsDTO);
+        when(gestionnaireService.getContractsToEvaluateMillieuStage()).thenReturn(contractsDTO);
 
-        gestionnaireMockMvc.perform(put("/getContracts")
+        gestionnaireMockMvc.perform(put("/getContractsToEvaluate/millieuStage")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(jsonTokenDTO.write(token).getJson()))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.contracts.size()", is(0)));
+    }
+
+    @Test
+    void testGetGestionnaireContractsHappyDay() throws Exception{
+        when(gestionnaireService.getContractsToSigne()).thenReturn(new ArrayList<>(){{
+            add(new StageContractOutDTO());
+            add(new StageContractOutDTO());
+            add(new StageContractOutDTO());
+        }});
+
+        gestionnaireMockMvc.perform(put("/getGestionnaireContracts")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(jsonInterviewSelectDTO.write(interviewSelectInDTO).getJson()))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.size()", is(3)));
+    }
+
+    @Test
+    void testGetGestionnaireContractsInvalidToken() throws Exception{
+        when(authService.getToken(anyString(), any())).thenThrow(new InvalidTokenException());
+
+        gestionnaireMockMvc.perform(put("/getGestionnaireContracts")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(jsonInterviewSelectDTO.write(interviewSelectInDTO).getJson()))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    void testGestionnaireSignatureHappyDay() throws Exception{
+        when(gestionnaireService.contractSignature(any())).thenReturn(new StageContractOutDTO());
+
+        gestionnaireMockMvc.perform(put("/gestionnaireSignature")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(jsonSignatureDTO.write(signatureInDTO).getJson()))
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    void testGestionnaireSignatureNotFound() throws Exception{
+        when(gestionnaireService.contractSignature(any())).thenThrow(new NonExistentEntityException());
+
+        gestionnaireMockMvc.perform(put("/gestionnaireSignature")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(jsonSignatureDTO.write(signatureInDTO).getJson()))
+                .andExpect(status().isNotFound());
+    }
+
+
+    @Test
+    void testGestionnaireSignatureConflict() throws Exception{
+        when(gestionnaireService.contractSignature(any())).thenThrow(new NotReadyToBeSignedException());
+
+        gestionnaireMockMvc.perform(put("/gestionnaireSignature")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(jsonSignatureDTO.write(signatureInDTO).getJson()))
+                .andExpect(status().isConflict());
+    }
+
+    @Test
+    void testGestionnaireSignatureInvalidToken() throws Exception{
+        when(authService.getToken(anyString(), any())).thenThrow(new InvalidTokenException());
+
+        gestionnaireMockMvc.perform(put("/gestionnaireSignature")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(jsonSignatureDTO.write(signatureInDTO).getJson()))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    void testGetEvaluationMillieuStagePDFHappyDay() throws Exception {
+        when(gestionnaireService.getEvaluationMillieuStagePDF(anyLong())).thenReturn(duffOffrePdfOut);
+
+        gestionnaireMockMvc.perform(put("/getEvaluationPDF/millieuStage/{id}", 1)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(jsonTokenDTO.write(token).getJson()))
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    void testGetEvaluationMillieuStagePDFNotFound() throws Exception {
+        when(gestionnaireService.getEvaluationMillieuStagePDF(anyLong())).thenThrow(new NonExistentEntityException());
+
+        gestionnaireMockMvc.perform(put("/getEvaluationPDF/millieuStage/{id}", 1)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(jsonTokenDTO.write(token).getJson()))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    void testGetEvaluationMillieuStagePDFInvalidToken() throws Exception {
+        when(authService.getToken(anyString(), any())).thenThrow(new InvalidTokenException());
+
+        gestionnaireMockMvc.perform(put("/getEvaluationPDF/millieuStage/{id}", 1)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(jsonTokenDTO.write(token).getJson()))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    void testGetEvaluatedContractsMillieuStageHappyDay() throws Exception {
+        when(gestionnaireService.getEvaluationMillieuStage()).thenReturn(contractsDTO.getContracts());
+
+        gestionnaireMockMvc.perform(put("/getEvaluatedContracts/millieuStage")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(jsonTokenDTO.write(token).getJson()))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.size()", is(2)));
+    }
+
+    @Test
+    void testGetEvaluatedContractsMillieuStageInvalidToken() throws Exception {
+        when(authService.getToken(anyString(), any())).thenThrow(new InvalidTokenException());
+
+        gestionnaireMockMvc.perform(put("/getEvaluatedContracts/millieuStage")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(jsonTokenDTO.write(token).getJson()))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    void testGetEvaluationEtudiantPDFHappyDay() throws Exception {
+        when(gestionnaireService.getEvaluationPDFEtudiant(anyLong())).thenReturn(duffOffrePdfOut);
+
+        gestionnaireMockMvc.perform(put("/getEvaluationPDF/etudiant/{id}", 1)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(jsonTokenDTO.write(token).getJson()))
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    void testGetEvaluationEtudiantPDFNotFound() throws Exception {
+        when(gestionnaireService.getEvaluationPDFEtudiant(anyLong())).thenThrow(new NonExistentEntityException());
+
+        gestionnaireMockMvc.perform(put("/getEvaluationPDF/etudiant/{id}", 1)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(jsonTokenDTO.write(token).getJson()))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    void testGetEvaluationEtudiantPDFInvalidToken() throws Exception {
+        when(authService.getToken(anyString(), any())).thenThrow(new InvalidTokenException());
+
+        gestionnaireMockMvc.perform(put("/getEvaluationPDF/etudiant/{id}", 1)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(jsonTokenDTO.write(token).getJson()))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    void testGetEvaluatedContractsEtudiantHappyDay() throws Exception {
+        when(gestionnaireService.getEvaluatedContractsEtudiants()).thenReturn(contractsDTO.getContracts());
+
+        gestionnaireMockMvc.perform(put("/getEvaluatedContracts/etudiants")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(jsonTokenDTO.write(token).getJson()))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.size()", is(2)));
+    }
+
+    @Test
+    void testGetEvaluatedContractsEtudiantInvalidToken() throws Exception {
+        when(authService.getToken(anyString(), any())).thenThrow(new InvalidTokenException());
+
+        gestionnaireMockMvc.perform(put("/getEvaluatedContracts/etudiants")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(jsonTokenDTO.write(token).getJson()))
+                .andExpect(status().isForbidden());
     }
 }

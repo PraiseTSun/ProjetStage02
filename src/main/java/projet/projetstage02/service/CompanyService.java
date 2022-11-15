@@ -7,6 +7,7 @@ import projet.projetstage02.dto.applications.ApplicationAcceptationDTO;
 import projet.projetstage02.dto.applications.OfferApplicationDTO;
 import projet.projetstage02.dto.contracts.ContractsDTO;
 import projet.projetstage02.dto.contracts.StageContractOutDTO;
+import projet.projetstage02.dto.evaluations.Etudiant.EvaluationEtudiantInDTO;
 import projet.projetstage02.dto.interview.CreateInterviewDTO;
 import projet.projetstage02.dto.interview.InterviewOutDTO;
 import projet.projetstage02.dto.offres.OfferAcceptedStudentsDTO;
@@ -38,6 +39,7 @@ public class CompanyService {
     private final ApplicationRepository applicationRepository;
     private final StageContractRepository stageContractRepository;
     private final InterviewRepository interviewRepository;
+    private final EvaluationEtudiantRepository evaluationEtudiantRepository;
 
     public long createOffre(OffreInDTO offreInDTO) {
         Offre offre = Offre.builder()
@@ -222,14 +224,14 @@ public class CompanyService {
 
         Offre offer = getOfferById(interviewDTO.getOfferId());
 
-        if(offer.getIdCompagnie() != company.getId()) throw new InvalidOwnershipException();
+        if (offer.getIdCompagnie() != company.getId()) throw new InvalidOwnershipException();
 
         List<LocalDateTime> dates = new ArrayList<>();
 
-        for (String dateInt : interviewDTO.getCompanyDateOffers()){
-            try{
+        for (String dateInt : interviewDTO.getCompanyDateOffers()) {
+            try {
                 dates.add(LocalDateTime.parse(dateInt));
-            } catch(Exception e){
+            } catch (Exception e) {
                 throw new InvalidDateFormatException();
             }
         }
@@ -254,9 +256,20 @@ public class CompanyService {
         interviewRepository.findByCompanyId(companyId)
                 .stream()
                 .forEach(
-                    interview -> interviews.add(new InterviewOutDTO(interview))
+                        interview -> interviews.add(new InterviewOutDTO(interview))
                 );
 
         return interviews;
+    }
+
+    public void evaluateStudent(EvaluationEtudiantInDTO studentEvaluationInDTO) {
+        evaluationEtudiantRepository.save(new EvaluationEtudiant(studentEvaluationInDTO));
+    }
+
+    public List<Long> getEvaluatedStudentsContracts(long companyId) {
+        return stageContractRepository.findByCompanyId(companyId).stream().filter(stageContract -> {
+            Optional<EvaluationEtudiant> opt = evaluationEtudiantRepository.findByContractId(stageContract.getId());
+            return opt.isPresent();
+        }).map(StageContract::getId).toList();
     }
 }
