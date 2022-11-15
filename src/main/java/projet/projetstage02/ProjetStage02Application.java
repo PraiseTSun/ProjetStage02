@@ -176,9 +176,6 @@ public class ProjetStage02Application implements CommandLineRunner {
         companyService.addSignatureToContract(signatureCompany);
         SignatureInDTO signatureStudent = new SignatureInDTO("",student.getId(),stageContractOutDTO.getContractId(), "studanenn");
         studentService.addSignatureToContract(signatureStudent);
-        stageContractOutDTO.setPosition("position");
-        stageContractOutDTO.setCompanyName(company.getCompanyName());
-        stageContractOutDTO.setStudentFullName(student.getFirstName());
         stageContractOutDTO.setContractId(stageContractOutDTO.getContractId());
         stageContractOutDTO.setSession("Hiver 2023");
         stageContractOutDTO.setStudentSignature(signatureStudent.getSignature());
