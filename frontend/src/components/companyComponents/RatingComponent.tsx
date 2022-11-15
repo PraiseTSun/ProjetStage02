@@ -1,4 +1,5 @@
 import {Form} from "react-bootstrap";
+import FormFeedBackInvalid from "../universalComponents/FormFeedBackInvalid";
 
 const RatingComponent = ({
                              label,
@@ -18,6 +19,7 @@ const RatingComponent = ({
                 <option value="totalementEnDesaccord">Totalement en désaccord</option>
                 <option value="impossibleDeSePrononcer">N/A</option>
             </Form.Select>
+            <FormFeedBackInvalid/>
         </Form.Group>
     );
 }

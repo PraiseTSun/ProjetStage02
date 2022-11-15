@@ -664,7 +664,7 @@ public class GestionnaireService {
         prochainStage.put("Souhaite un autre stage avec cet etudiant", fieldToText(evaluation.getAcueillirPourProchainStage()));
         prochainStage.put("Formation suffisante?", evaluation.getFormationTechniqueSuffisante());
 
-        signPara.put("Signé le", evaluation.getDateSignature());
+        signPara.put("Signé le", evaluation.getDateSignature().toString());
 
         map.put("Information sur la compagnie", companyInfo);
         map.put("Information sur l'étudiant", studentInfo);
