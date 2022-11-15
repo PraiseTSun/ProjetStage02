@@ -57,8 +57,8 @@ const EvaluerLeMilieuDeStage = ({user}: { user: IUser }): JSX.Element => {
     const [signature, setSignature] = useState<string>("")
     const currentDate = new Date();
     const dateSignature = `${currentDate.getDate().toString()}-${(currentDate.getMonth() + 1).toString()}-${currentDate.getFullYear().toString()}`
-    const [isSigner, setIsSigner] = useState(false)
     let sigPad: SignaturePad | null
+
     useEffect(() => {
         const fetchContracts = async (): Promise<void> => {
             try {
@@ -99,9 +99,13 @@ const EvaluerLeMilieuDeStage = ({user}: { user: IUser }): JSX.Element => {
         setAfficheFormuaire(false)
     }
     const onSubmit = async (event: React.SyntheticEvent) => {
+        if(signature === ""){
+            alert("Vous devez cliquer signer!")
+        }
         const form: any = event.currentTarget;
         event.preventDefault();
-        if (form.checkValidity()) {
+
+        if (form.checkValidity() && signature !== "") {
             setWaiting(true)
 
             const res = await postEvaluationStage(contratId, user.token, tachesAnnonces, integration, tempsReelConsacre,
@@ -163,37 +167,7 @@ const EvaluerLeMilieuDeStage = ({user}: { user: IUser }): JSX.Element => {
             </div>
         );
     }
-    if (isSigner) {
-        return (
-            <Container className="vh-100">
-                <Row className="bg-dark p-2">
-                    <Col sm={1}><Button variant="danger" onClick={() => {
-                        setIsSigner(false)
-                    }}>Fermer</Button></Col>
-                    <Col sm={10}></Col>
-                    <Col sm={1}><Button variant="success" onClick={() => {
-                        if (sigPad!.isEmpty()) {
-                            alert("Vous devez signer!")
-                        } else {
-                            setSignature(sigPad!.toDataURL())
-                            setIsSigner(false)
-                        }
-                    }}>Signer</Button></Col>
-                </Row>
-                <Row>
-                    <Col sm={4} className="mx-auto mt-3">
-                        <SignaturePad canvasProps={{width: 500, height: 200, className: 'border border-5 bg-light'}}
-                                      ref={(ref) => {
-                                          sigPad = ref
-                                      }}/>
-                        <Button onClick={() => {
-                            sigPad!.clear()
-                        }}>Recommencer</Button>
-                    </Col>
-                </Row>
-            </Container>
-        );
-    }
+
     if (afficheFormulaire) {
         return (
             <Container className="min-vh-100">
@@ -477,7 +451,7 @@ const EvaluerLeMilieuDeStage = ({user}: { user: IUser }): JSX.Element => {
                                         <Col className="fw-bold h5 text-nowrap col-2">Préciser :
                                         </Col>
                                         <Col className="col-8">
-                                            <Form.Control type="number" required value={salaireParHeure}
+                                            <Form.Control type="number" min={1} required value={salaireParHeure}
                                                           onChange={e => setSalaireParHeure(e.target.value)}></Form.Control>
                                         </Col>
                                         <Col className="fw-bold h5 col-2">/l'heure. </Col>
@@ -569,21 +543,42 @@ const EvaluerLeMilieuDeStage = ({user}: { user: IUser }): JSX.Element => {
                                         </Col>
                                     </Row>
                                     <Row className="mb-4">
-                                        <Col>
+                                        <Col className="col-6">
                                             {
                                                 signature === ""
                                                     ?
                                                     <p className="fw-bold h5">Signature</p>
                                                     :
                                                     <p className="fw-bold h5">Signature
-                                                        <span className="text-success">   (vous avez déjà signé)</span>
+                                                        <span className="text-success"> (vous avez déjà signé) </span>
                                                     </p>
                                             }
-                                            <Button className="btn btn-primary mt-2 w-75" onClick={() => {
-                                                setIsSigner(true)
-                                            }}>Signer</Button>
+                                            <SignaturePad canvasProps={{
+                                                width: 300,
+                                                height: 150,
+                                                className: 'border border-5 bg-light'
+                                            }}
+                                                          ref={(ref) => {
+                                                              sigPad = ref
+                                                          }}/>
+                                            <Row>
+                                                <Col className="col-6 ">
+                                                    <Button onClick={() => {
+                                                        sigPad!.clear()
+                                                        setSignature("")
+                                                    }}>Recommencer</Button>
+                                                </Col>
+                                                <Col className="col-6"><Button variant="success" onClick={() => {
+                                                    if (sigPad!.isEmpty()) {
+                                                        alert("Vous devez signer!")
+                                                    } else {
+                                                        setSignature(sigPad!.toDataURL())
+                                                    }
+                                                }}>Signer</Button></Col>
+                                            </Row>
+
                                         </Col>
-                                        <Col>
+                                        <Col  className="col-5 m-4" >
                                             <Form.Group>
                                                 <Form.Label className="fw-bold mt-2 h5">Date
                                                     Signature(JJ-MM-AAAA)</Form.Label>
