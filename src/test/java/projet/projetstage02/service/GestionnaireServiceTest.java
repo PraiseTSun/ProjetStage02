@@ -975,8 +975,8 @@ public class GestionnaireServiceTest {
     }
 
     @Test
-    void testGetContractsToSigneHappyDay(){
-        List<StageContract> contracts = new ArrayList<>(){{
+    void testGetContractsToSigneHappyDay() {
+        List<StageContract> contracts = new ArrayList<>() {{
             add(StageContract.builder().id(0L).studentId(0L).offerId(0L).companyId(0L).session("").description("")
                     .companySignature("").studentSignature("").gestionnaireSignature("").build());
             add(StageContract.builder().id(0L).studentId(0L).offerId(0L).companyId(0L).session("").description("")
@@ -991,6 +991,9 @@ public class GestionnaireServiceTest {
                     .companySignature("Test").studentSignature("Test").gestionnaireSignature("Test").build());
         }};
         when(stageContractRepository.findAll()).thenReturn(contracts);
+        when(offreRepository.findById(anyLong())).thenReturn(Optional.of(offerTest));
+        when(studentRepository.findById(anyLong())).thenReturn(Optional.of(studentTest));
+        when(companyRepository.findById(anyLong())).thenReturn(Optional.of(companyTest));
 
         List<StageContractOutDTO> contractsDTO = gestionnaireService.getContractsToSigne();
 
@@ -1016,7 +1019,7 @@ public class GestionnaireServiceTest {
     }
 
     @Test
-    void testContractSignatureCompanyMissing(){
+    void testContractSignatureCompanyMissing() {
         stageContract.setCompanySignature("");
         stageContract.setStudentSignature("done");
         when(gestionnaireRepository.findById(anyLong())).thenReturn(Optional.of(gestionnaireTest));
@@ -1031,13 +1034,14 @@ public class GestionnaireServiceTest {
                     .build());
         } catch (NotReadyToBeSigneException e) {
             return;
-        } catch (NonExistentEntityException e) {}
+        } catch (NonExistentEntityException e) {
+        }
 
         fail("Fail to catch the NotReadyToBeSigneException");
     }
 
     @Test
-    void testContractSignatureStudentMissing(){
+    void testContractSignatureStudentMissing() {
         stageContract.setCompanySignature("done");
         stageContract.setStudentSignature("");
         when(gestionnaireRepository.findById(anyLong())).thenReturn(Optional.of(gestionnaireTest));
@@ -1052,13 +1056,14 @@ public class GestionnaireServiceTest {
                     .build());
         } catch (NotReadyToBeSigneException e) {
             return;
-        } catch (NonExistentEntityException e) {}
+        } catch (NonExistentEntityException e) {
+        }
 
         fail("Fail to catch the NotReadyToBeSigneException");
     }
 
     @Test
-    void testContractSignatureContractNotFound(){
+    void testContractSignatureContractNotFound() {
         when(gestionnaireRepository.findById(anyLong())).thenReturn(Optional.of(gestionnaireTest));
         when(stageContractRepository.findById(anyLong())).thenReturn(Optional.empty());
 
@@ -1071,13 +1076,14 @@ public class GestionnaireServiceTest {
                     .build());
         } catch (NonExistentEntityException e) {
             return;
-        } catch (NotReadyToBeSigneException e) {}
+        } catch (NotReadyToBeSigneException e) {
+        }
 
         fail("Fail to catch the NonExistentEntityException");
     }
 
     @Test
-    void testContractSignatureGestionnaireNotFound(){
+    void testContractSignatureGestionnaireNotFound() {
         when(gestionnaireRepository.findById(anyLong())).thenReturn(Optional.empty());
 
         try {
@@ -1089,7 +1095,8 @@ public class GestionnaireServiceTest {
                     .build());
         } catch (NonExistentEntityException e) {
             return;
-        } catch (NotReadyToBeSigneException e) {}
+        } catch (NotReadyToBeSigneException e) {
+        }
 
         fail("Fail to catch the NonExistentEntityException");
     }
