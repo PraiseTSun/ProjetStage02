@@ -933,14 +933,15 @@ public class RootController {
         try {
             logger.log(Level.INFO, "put /evaluateStage/id entered with id : " + token);
             authService.getToken(token, GESTIONNAIRE);
-            long id = gestionnaireService.evaluateStage(millieuStageEvaluationInDTO);
-            gestionnaireService.createEvaluationMillieuStagePDF(id);
+            gestionnaireService.evaluateStage(millieuStageEvaluationInDTO);
+            gestionnaireService.createEvaluationMillieuStagePDF(millieuStageEvaluationInDTO.getContractId());
             logger.log(Level.INFO, "PutMapping: /evaluateStage/id sent 201 response");
             return ResponseEntity.status(CREATED).build();
         } catch (InvalidTokenException e) {
             logger.log(Level.INFO, "PutMapping: /evaluateStage/id sent 403 response");
             return ResponseEntity.status(FORBIDDEN).build();
         } catch (NonExistentOfferExeption | NonExistentEntityException e) {
+            e.printStackTrace();
             logger.log(Level.INFO, "PutMapping: /evaluateStage/id sent 404 response");
             return ResponseEntity.status(NOT_FOUND).build();
         } catch (EmptySignatureException e) {

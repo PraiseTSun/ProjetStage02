@@ -41,8 +41,7 @@ const EvaluationLeMilleuDeStageForm = ({hideFormulaires,
         volumeDeTravail: ""
     })
 
-    const currentDate = new Date();
-    const dateSignature = `${currentDate.getDate().toString()}-${(currentDate.getMonth() + 1).toString()}-${currentDate.getFullYear().toString()}`
+    const dateSignature = new Date().toISOString().split("T")[0]
     let sigPad: SignaturePad | null
 
 
