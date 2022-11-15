@@ -63,7 +63,6 @@ const EvaluerLeMilieuDeStage = ({user}: { user: IUser }): JSX.Element => {
         const fetchContracts = async (): Promise<void> => {
             try {
                 const response: Response = await putGetContrats(user.token);
-
                 if (response.ok) {
                     const data = await response.json()
                     setContrats(await data.contracts)
@@ -104,15 +103,6 @@ const EvaluerLeMilieuDeStage = ({user}: { user: IUser }): JSX.Element => {
         event.preventDefault();
         if (form.checkValidity()) {
             setWaiting(true)
-
-            if (!tachesAnnonces || !integration || !tempsReelConsacre || !heureTotalPremierMois || !heureTotalDeuxiemeMois
-                || !heureTotalTroisiemeMois || !environnementDeTravail || !climatDeTravail || !milieuDeStage
-                || !salaireOffert || !salaireParHeure || !communicationAvecSuperviser
-                || !equipementFourni || !volumeDeTravail || !commentaires || !signature || !dateSignature) {
-                alert("Veuillez remplir chaque champ de  la partie l'évaluation.")
-                setWaiting(false)
-                return;
-            }
 
             const res = await postEvaluationStage(contratId, user.token, tachesAnnonces, integration, tempsReelConsacre,
                 environnementDeTravail, climatDeTravail, milieuDeStage, heureTotalPremierMois,
@@ -357,7 +347,7 @@ const EvaluerLeMilieuDeStage = ({user}: { user: IUser }): JSX.Element => {
                                         <Col>
                                             <Form.Group>
                                                 <Form.Label className="fw-bold h5">Premier mois</Form.Label>
-                                                <Form.Control type="number" minLength={1} required min={0}
+                                                <Form.Control type="number" minLength={1} required min={1}
                                                               value={heureTotalPremierMois}
                                                               onChange={e => setHeureTotalPremierMois(Number(e.target.value))}></Form.Control>
                                                 <Form.Control.Feedback type="invalid">Premier mois
@@ -367,7 +357,7 @@ const EvaluerLeMilieuDeStage = ({user}: { user: IUser }): JSX.Element => {
                                         <Col>
                                             <Form.Group>
                                                 <Form.Label className="fw-bold h5">Deuxième mois</Form.Label>
-                                                <Form.Control type="number" minLength={1} required min={0}
+                                                <Form.Control type="number" minLength={1} required min={1}
                                                               value={heureTotalDeuxiemeMois}
                                                               onChange={e => setHeureTotalDeuxiemeMois(Number(e.target.value))}></Form.Control>
                                                 <Form.Control.Feedback type="invalid">Deuxième mois
@@ -377,7 +367,7 @@ const EvaluerLeMilieuDeStage = ({user}: { user: IUser }): JSX.Element => {
                                         <Col>
                                             <Form.Group>
                                                 <Form.Label className="fw-bold h5">Troisième mois</Form.Label>
-                                                <Form.Control type="number" minLength={1} required min={0}
+                                                <Form.Control type="number" minLength={1} required min={1}
                                                               value={heureTotalTroisiemeMois}
                                                               onChange={e => setHeureTotalTroisiemeMois(Number(e.target.value))}></Form.Control>
                                                 <Form.Control.Feedback type="invalid">Troisième mois
