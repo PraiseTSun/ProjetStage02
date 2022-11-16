@@ -401,14 +401,14 @@ public class GestionnaireRootController {
 
     @PutMapping("/contractsToCreate")
     public ResponseEntity<ContractsDTO> getContracts(@RequestBody TokenDTO tokenId) {
-        logger.log(INFO, "Put /contracts");
+        logger.log(INFO, "Put /contractsToCreate");
         try {
             authService.getToken(tokenId.getToken(), GESTIONNAIRE);
             ContractsDTO dto = gestionnaireService.getContractsToCreate();
-            logger.log(INFO, "Put /contracts sent request 200 : " + dto);
+            logger.log(INFO, "Put /contractsToCreate sent request 200 : " + dto);
             return ResponseEntity.ok(dto);
         } catch (InvalidTokenException e) {
-            logger.log(INFO, "Put /contracts sent request 403");
+            logger.log(INFO, "Put /contractsToCreate sent request 403");
             return ResponseEntity.status(FORBIDDEN).build();
         }
     }
@@ -438,7 +438,7 @@ public class GestionnaireRootController {
         try {
             logger.log(INFO, "put /evaluateStage/id entered with id : " + token);
             authService.getToken(token, GESTIONNAIRE);
-            long id = gestionnaireService.evaluateStage(millieuStageEvaluationInDTO);
+            gestionnaireService.evaluateStage(millieuStageEvaluationInDTO);
             gestionnaireService.createEvaluationMillieuStagePDF(millieuStageEvaluationInDTO.getContractId());
             logger.log(INFO, "PutMapping: /evaluateStage/id sent 201 response");
             return ResponseEntity.status(CREATED).build();

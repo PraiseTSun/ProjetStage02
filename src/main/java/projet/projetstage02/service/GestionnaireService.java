@@ -299,6 +299,13 @@ public class GestionnaireService {
                     Optional<Student> studentOpt = studentRepository.findById(application.getStudentId());
                     if (studentOpt.isEmpty()) return;
 
+
+                    Optional<StageContract> opt = stageContractRepository.findByStudentIdAndCompanyIdAndOfferId(
+                            studentOpt.get().getId(),
+                            companyOpt.get().getId(),
+                            offer.getId());
+
+                    if (opt.isPresent()) return;
                     Student student = studentOpt.get();
                     Company company = companyOpt.get();
                     Offre offre = offerOpt.get();
