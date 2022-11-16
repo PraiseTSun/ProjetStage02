@@ -439,7 +439,7 @@ public class GestionnaireRootController {
             logger.log(INFO, "put /evaluateStage/id entered with id : " + token);
             authService.getToken(token, GESTIONNAIRE);
             long id = gestionnaireService.evaluateStage(millieuStageEvaluationInDTO);
-            gestionnaireService.createEvaluationMillieuStagePDF(id);
+            gestionnaireService.createEvaluationMillieuStagePDF(millieuStageEvaluationInDTO.getContractId());
             logger.log(INFO, "PutMapping: /evaluateStage/id sent 201 response");
             return ResponseEntity.status(CREATED).build();
         } catch (InvalidTokenException e) {
@@ -505,7 +505,7 @@ public class GestionnaireRootController {
     }
 
     @PutMapping("/getGestionnaireContracts")
-    public ResponseEntity<List<StageContractOutDTO>> GetGestionnaireContract(@RequestBody TokenDTO token){
+    public ResponseEntity<List<StageContractOutDTO>> GetGestionnaireContract(@RequestBody TokenDTO token) {
         logger.log(INFO, "Put getGestionnaireContracts");
         try {
             authService.getToken(token.getToken(), GESTIONNAIRE);
@@ -519,7 +519,7 @@ public class GestionnaireRootController {
     }
 
     @PutMapping("/gestionnaireSignature")
-    public ResponseEntity<StageContractOutDTO> GestionnaireSignature(@RequestBody SignatureInDTO signature){
+    public ResponseEntity<StageContractOutDTO> GestionnaireSignature(@RequestBody SignatureInDTO signature) {
         logger.log(INFO, "Put gestionnaireSignature");
 
         try {
