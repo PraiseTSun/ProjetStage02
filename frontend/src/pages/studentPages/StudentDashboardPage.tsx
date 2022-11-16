@@ -16,6 +16,7 @@ const StudentDashboard = ({user, deconnexion}: { user: IUser, deconnexion: Funct
                 <Link to="/uploaderCV" className="btn btn-primary mb-3">Uploader Mon CV</Link>
                 <Link to="/offres" className="btn btn-primary mb-3">Liste de stages</Link>
                 <Link to="/myContracts" className="btn btn-primary mb-3">Mes contrats</Link>
+                <Link to="/consulterPourLeProbleme" className="btn btn-primary mb-3">Consulter Pour le probleme</Link>
             </Row>
         </div>
     );
