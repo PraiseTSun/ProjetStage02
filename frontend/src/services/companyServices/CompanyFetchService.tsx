@@ -1,4 +1,5 @@
 import IOffer from "../../models/IOffer";
+import IStudentEvaluationFormFields from "../../models/IStudentEvaluationFormFields";
 
 export const postCreateOffre = (offer: IOffer): Promise<Response> => {
     return fetch("http://localhost:8080/createOffre", {
@@ -99,6 +100,17 @@ export const putGetCompanyInterviews = (companyId: string, token: string): Promi
     });
 }
 
+export const postEvaluateStudent = (token: string, studentEvaluationFormFields: IStudentEvaluationFormFields): Promise<Response> => {
+    return fetch(`http://localhost:8080/evaluateStudent/${token}`, {
+        method: "POST",
+        headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(studentEvaluationFormFields)
+    });
+}
+
 export const postCreateInterview = (companyDateOffers: string[],
                                     token: string,
                                     companyId: string,
@@ -117,5 +129,16 @@ export const postCreateInterview = (companyDateOffers: string[],
             offerId: offerId,
             studentId: studentId,
         })
+    });
+}
+
+export const putGetEvaluatedStudentsContracts = (token: string, companyId: string): Promise<Response> => {
+    return fetch(`http://localhost:8080/getEvaluatedStudentsContracts/${companyId}`, {
+        method: "PUT",
+        headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({"token": token})
     });
 }

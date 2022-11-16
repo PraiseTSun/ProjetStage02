@@ -675,4 +675,23 @@ public class GestionnaireService {
         map.put("_signature_", getSignature(evaluation.getSignature()));
         return map;
     }
+
+    public StageContractOutDTO contractSignature(SignatureInDTO signature)
+            throws NonExistentEntityException, NotReadyToBeSignedException {
+        Optional<Gestionnaire> gestionnaireOpt = gestionnaireRepository.findById(signature.getUserId());
+        if (gestionnaireOpt.isEmpty()) throw new NonExistentEntityException();
+
+        Optional<StageContract> contractOpt = stageContractRepository.findById(signature.getContractId());
+        if (contractOpt.isEmpty()) throw new NonExistentEntityException();
+        StageContract contract = contractOpt.get();
+
+        if (contract.getCompanySignature().isBlank() || contract.getStudentSignature().isBlank())
+            throw new NotReadyToBeSignedException();
+
+        contract.setGestionnaireSignature(signature.getSignature());
+        contract.setGestionnaireSignatureDate(LocalDateTime.now());
+        stageContractRepository.save(contract);
+
+        return new StageContractOutDTO(contract);
+    }
 }
