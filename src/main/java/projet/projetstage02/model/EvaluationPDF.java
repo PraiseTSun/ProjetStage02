@@ -1,22 +1,23 @@
 package projet.projetstage02.model;
 
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.experimental.SuperBuilder;
 
-import javax.persistence.Entity;
-import javax.persistence.Id;
 import javax.persistence.Lob;
+import javax.persistence.MappedSuperclass;
+import javax.validation.constraints.Min;
 import javax.validation.constraints.NotBlank;
 
-@Entity
+@MappedSuperclass
 @Data
-@NoArgsConstructor
+@SuperBuilder
 @AllArgsConstructor
-@Builder
+@NoArgsConstructor
 public class EvaluationPDF {
-    @Id
+
+    @Min(1)
     private long contractId;
 
     @NotBlank

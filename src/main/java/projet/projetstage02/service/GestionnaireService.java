@@ -20,9 +20,6 @@ import projet.projetstage02.repository.*;
 import projet.projetstage02.utils.PDFCreationUtil;
 
 import javax.validation.constraints.NotNull;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
 import java.time.LocalDateTime;
 import java.util.*;
 
@@ -388,7 +385,7 @@ public class GestionnaireService {
         EvaluationInfoDTO evaluationInfoDTO =
                 getEvaluationInfoForContract(contractId);
 
-        evaluationMillieuStagePDFRepository.save(EvaluationPDF.builder()
+        evaluationMillieuStagePDFRepository.save(EvaluationMilieuDeStagePDF.builder()
                 .pdf(PDFCreationUtil.createPDFFromMap("Évaluation du millieu stage",
                         evaluationMillieuStageToMap(evaluationInfoDTO, evaluationMillieuStage)))
                 .contractId(contractId)
@@ -481,7 +478,7 @@ public class GestionnaireService {
     }
 
     public PdfOutDTO getEvaluationMillieuStagePDF(long id) throws NonExistentEntityException {
-        Optional<EvaluationPDF> optional = evaluationMillieuStagePDFRepository.findById(id);
+        Optional<EvaluationPDF> optional = evaluationMillieuStagePDFRepository.findByContractId(id);
         if (optional.isEmpty()) throw new NonExistentEntityException();
         EvaluationPDF evaluationPDF = optional.get();
         return new PdfOutDTO(evaluationPDF.getContractId(), evaluationPDF.getPdf());
@@ -551,7 +548,7 @@ public class GestionnaireService {
         if (contractOpt.isEmpty()) throw new NonExistentEntityException();
         StageContract contract = contractOpt.get();
 
-        if(contract.getCompanySignature().isBlank() || contract.getStudentSignature().isBlank())
+        if (contract.getCompanySignature().isBlank() || contract.getStudentSignature().isBlank())
             throw new NotReadyToBeSignedException();
 
         contract.setGestionnaireSignature(signature.getSignature());
@@ -568,7 +565,7 @@ public class GestionnaireService {
     }
 
     public PdfOutDTO getEvaluationPDFEtudiant(long contractID) throws NonExistentEntityException {
-        Optional<EvaluationPDF> optional = evaluationEtudiantPDFRepository.findById(contractID);
+        Optional<EvaluationPDF> optional = evaluationEtudiantPDFRepository.findByContractId(contractID);
         if (optional.isEmpty()) throw new NonExistentEntityException();
         EvaluationPDF evaluationPDF = optional.get();
         return PdfOutDTO.builder().id(contractID).pdf(evaluationPDF.getPdf()).build();
@@ -583,7 +580,7 @@ public class GestionnaireService {
         Optional<StageContract> opt = stageContractRepository.findById(contractId);
         if (opt.isEmpty()) throw new NonExistentEntityException();
         EvaluationEtudiant evaluationMillieuStage = optional.get();
-        evaluationMillieuStagePDFRepository.save(EvaluationPDF.builder()
+        evaluationEtudiantPDFRepository.save(EvaluationEtudiantPDF.builder()
                 .pdf(PDFCreationUtil.createPDFFromMap("Évaluation de l'étudiant",
                         evaluationEtudiantToMap(evaluationMillieuStage, getEvaluationInfoForContract(contractId))))
                 .contractId(contractId)

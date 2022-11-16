@@ -27,7 +27,7 @@ const CompanyOffersPage = ({connectedUser}: { connectedUser: IUser }): JSX.Eleme
         <Container className="min-vh-100 p-0">
             <PageHeader title={"Mes offres"}/>
             <Row>
-                <Col className="bg-light p-0 mx-2" style={{height: 300}}>
+                <Col className="bg-light p-0 mx-2" style={{minHeight: 300}}>
                     <Table className="text-center" hover>
                         <thead className="bg-primary text-white">
                         <tr>
@@ -63,7 +63,7 @@ const CompanyOffersPage = ({connectedUser}: { connectedUser: IUser }): JSX.Eleme
                     </Table>
                 </Col>
                 {currentlySelectedOffer !== null &&
-                    <Col className="bg-light p-0 mx-2" style={{height: 300}}>
+                    <Col className="bg-light p-0 mx-2" style={{minHeight: 300}}>
                         <OfferStudentApplicationsList connectedUser={connectedUser} offerId={currentlySelectedOffer!}/>
                     </Col>
                 }
