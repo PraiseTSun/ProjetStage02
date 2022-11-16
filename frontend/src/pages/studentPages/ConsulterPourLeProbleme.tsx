@@ -1,4 +1,4 @@
-import {Container, Form} from "react-bootstrap";
+import {Button, Container, Form, Row} from "react-bootstrap";
 import PageHeader from "../../components/universalComponents/PageHeader";
 import React, {useState} from "react";
 import {BeatLoader} from "react-spinners";
@@ -34,12 +34,16 @@ const ConsulterPourLeProbleme = ({connectedUser} : {connectedUser : IUser}) => {
             <Form onSubmit={onSubmit} validated={validated} noValidate>
                 <Form.Group>
                     <Form.Label className="fw-bold mt-2 h5">Commentaires</Form.Label>
-                    <Form.Control as="textarea" type="text" minLength={2} required
+                    <Form.Control as="textarea" type="text" minLength={2} rows={5} required
                                   value={commentaires}
                                   onChange={e => setCommentaires(e.target.value)}></Form.Control>
                     <Form.Control.Feedback type="invalid">Champ
                         requis</Form.Control.Feedback>
                 </Form.Group>
+                <Row className="mt-3  mx-1">
+                    <Button type="submit"
+                            className="btn btn-success mx-auto">Envoyer</Button>
+                </Row>
             </Form>
         </Container>
     )
