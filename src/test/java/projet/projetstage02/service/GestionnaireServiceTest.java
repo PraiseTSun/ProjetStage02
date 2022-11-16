@@ -23,7 +23,6 @@ import projet.projetstage02.exception.*;
 import projet.projetstage02.model.*;
 import projet.projetstage02.repository.*;
 
-import java.time.LocalDate;
 import java.util.*;
 
 import static com.jayway.jsonpath.internal.path.PathCompiler.fail;
@@ -1088,15 +1087,16 @@ public class GestionnaireServiceTest {
 
     @Test
     void testGetEvaluationStagePDFHappyDay() throws NonExistentEntityException {
-        when(evaluationMillieuStagePDFRepository.findById(anyLong())).thenReturn(Optional.of(EvaluationPDF.builder().pdf("TestPDF").build()));
+        when(evaluationMillieuStagePDFRepository.findByContractId(anyLong())).thenReturn(
+                Optional.of(EvaluationMilieuDeStagePDF.builder().pdf("TestPDF").build()));
         gestionnaireService.getEvaluationMillieuStagePDF(1L);
 
-        verify(evaluationMillieuStagePDFRepository, times(1)).findById(anyLong());
+        verify(evaluationMillieuStagePDFRepository, times(1)).findByContractId(anyLong());
     }
 
     @Test
     void testGetEvaluationStagePDFNonExistentException() {
-        when(evaluationMillieuStagePDFRepository.findById(anyLong())).thenReturn(Optional.empty());
+        when(evaluationMillieuStagePDFRepository.findByContractId(anyLong())).thenReturn(Optional.empty());
         try {
             gestionnaireService.getEvaluationMillieuStagePDF(1L);
         } catch (NonExistentEntityException e) {
@@ -1162,15 +1162,16 @@ public class GestionnaireServiceTest {
 
     @Test
     void testGetEvaluationPDFEtudiantHappyDay() throws NonExistentEntityException {
-        when(evaluationEtudiantPDFRepository.findById(anyLong())).thenReturn(Optional.of(EvaluationPDF.builder().pdf("TestPDF").build()));
+        when(evaluationEtudiantPDFRepository.findByContractId(anyLong())).thenReturn(
+                Optional.of(EvaluationEtudiantPDF.builder().pdf("TestPDF").build()));
         gestionnaireService.getEvaluationPDFEtudiant(1L);
 
-        verify(evaluationEtudiantPDFRepository, times(1)).findById(anyLong());
+        verify(evaluationEtudiantPDFRepository, times(1)).findByContractId(anyLong());
     }
 
     @Test
     void testGetEvaluationPDFEtudiantNonExistentException() {
-        when(evaluationEtudiantPDFRepository.findById(anyLong())).thenReturn(Optional.empty());
+        when(evaluationEtudiantPDFRepository.findByContractId(anyLong())).thenReturn(Optional.empty());
         try {
             gestionnaireService.getEvaluationPDFEtudiant(1L);
         } catch (NonExistentEntityException e) {
@@ -1275,7 +1276,6 @@ public class GestionnaireServiceTest {
         }
         fail("EmptySignatureException not thrown");
     }
-
 
 
     @Test
