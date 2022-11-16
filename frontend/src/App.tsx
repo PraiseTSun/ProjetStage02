@@ -23,6 +23,7 @@ import ContractsPage from "./pages/gestionnairePages/ContractsPage";
 import ConsulterEvaluationDeStages from "./pages/gestionnairePages/ConsulterEvaluationDeStages";
 import ConsulterEvaluationDeEtudiants from "./pages/gestionnairePages/ConsulterEvaluationDeEtudiants";
 import SignerEntenteDeStageParGestionnaire from "./pages/gestionnairePages/SignerEntenteDeStageParGestionnaire";
+import ConsulterPourLeProblemeDeLEntreprise from "./pages/companyPages/ConsulterPourLeProblemeDeLEntreprise";
 
 export const LOCAL_STORAGE_KEY = "MASSI_BEST_PROGRAMMER_PROJET_STAGE_02_CURRENT_CONNECTED_USER"
 export const emptyUser: IUser = {
@@ -134,6 +135,8 @@ function App() {
                                    trouvé</h1>}/>
                         <Route path="/CompanyContractsPage"
                                element={<CompanyContractsPage connectedUser={connectedUser}/>}/>
+                        <Route path="/consulterpourleprobleme"
+                               element={<ConsulterPourLeProblemeDeLEntreprise connectedUser={connectedUser}/>}/>
                     </Routes>
                 </BrowserRouter>
             </Container>

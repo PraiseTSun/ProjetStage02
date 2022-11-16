@@ -17,6 +17,8 @@ const CompanyDashboard = ({user, deconnexion}: { user: IUser, deconnexion: Funct
                       className="btn btn-primary mt-3">Mes offres</Link>
                 <Link to="/CompanyContractsPage"
                       className="btn btn-primary mt-3">Mes contrats</Link>
+                <Link to="/consulterpourleprobleme"
+                      className="btn btn-primary mt-3">Consulter pour le problème</Link>
             </Row>
         </>
     );
