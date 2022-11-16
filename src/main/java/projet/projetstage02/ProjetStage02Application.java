@@ -21,8 +21,8 @@ import projet.projetstage02.service.GestionnaireService;
 import projet.projetstage02.service.StudentService;
 
 import java.sql.Timestamp;
-import java.time.LocalDateTime;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @SpringBootApplication
 @AllArgsConstructor
@@ -70,7 +70,7 @@ public class ProjetStage02Application implements CommandLineRunner {
 
     @Override
     public void run(String... args) throws Exception {
-        studentService.saveStudent( StudentInDTO.builder()
+        studentService.saveStudent(StudentInDTO.builder()
                 .firstName("Samir")
                 .lastName("Badi")
                 .email("Samir@gmail.com".toLowerCase())
@@ -84,7 +84,7 @@ public class ProjetStage02Application implements CommandLineRunner {
         student.setEmailConfirmed(true);
         studentService.saveStudent(new StudentInDTO(student.toModel()));
 
-        companyService.saveCompany( CompanyDTO.builder()
+        companyService.saveCompany(CompanyDTO.builder()
                 .firstName("Bob")
                 .lastName("Marley")
                 .email("Bob@bell.com".toLowerCase())
@@ -99,7 +99,7 @@ public class ProjetStage02Application implements CommandLineRunner {
         company.setEmailConfirmed(true);
         companyService.saveCompany(company);
 
-        gestionnaireService.saveGestionnaire( GestionnaireDTO.builder()
+        gestionnaireService.saveGestionnaire(GestionnaireDTO.builder()
                 .firstName("Dave")
                 .lastName("Douch")
                 .email("dave@gmail.ca".toLowerCase())
@@ -111,7 +111,7 @@ public class ProjetStage02Application implements CommandLineRunner {
         gestionnaire.setEmailConfirmed(true);
         gestionnaireService.saveGestionnaire(gestionnaire);
 
-        studentService.saveStudent( StudentInDTO.builder()
+        studentService.saveStudent(StudentInDTO.builder()
                 .firstName("Peter")
                 .lastName("Griffin")
                 .email("peter.griffin@quahog.com".toLowerCase())
@@ -279,7 +279,7 @@ public class ProjetStage02Application implements CommandLineRunner {
 //                .travailSecuritaire("plutotEnAccord")
 //                .travailEfficace("plutotEnAccord")
 //                .dateSignature(LocalDate.now().toString())
-                .build());
+//                .build());
 //        gestionnaireService.createEvaluationEtudiantPDF(stageContract.getContractId());
         gestionnaireService.createEvaluationMillieuStagePDF(stageContract.getContractId());
     }
