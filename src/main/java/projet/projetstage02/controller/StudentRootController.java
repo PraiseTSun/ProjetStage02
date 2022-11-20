@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.*;
 import projet.projetstage02.dto.SignatureInDTO;
 import projet.projetstage02.dto.applications.ApplicationDTO;
 import projet.projetstage02.dto.applications.ApplicationListDTO;
+import projet.projetstage02.dto.applications.RemoveApplicationDTO;
 import projet.projetstage02.dto.auth.TokenDTO;
 import projet.projetstage02.dto.contracts.StageContractOutDTO;
 import projet.projetstage02.dto.cv.CvStatusDTO;
@@ -278,7 +279,7 @@ public class StudentRootController {
     }
 
     @PutMapping("/studentSelectDate")
-    public ResponseEntity<InterviewOutDTO> StudentSelectDate(@RequestBody InterviewSelectInDTO interviewDTO){
+    public ResponseEntity<InterviewOutDTO> studentSelectDate(@RequestBody InterviewSelectInDTO interviewDTO){
         logger.log(INFO, "Put /studentSelectDate");
 
         try {
@@ -299,7 +300,7 @@ public class StudentRootController {
     }
 
     @PutMapping("/getStudentInterviews/{studentId}")
-    public ResponseEntity<List<InterviewOutDTO>> GetStudentInterviews
+    public ResponseEntity<List<InterviewOutDTO>> getStudentInterviews
             (@PathVariable String studentId, @RequestBody TokenDTO token){
         logger.log(INFO, "Put /getStudentInterviews/{studentId}");
 
@@ -313,6 +314,24 @@ public class StudentRootController {
             return ResponseEntity.status(FORBIDDEN).build();
         } catch (NonExistentEntityException e) {
             logger.log(INFO, "Put/getStudentInterviews/{studentId} return 404");
+            return ResponseEntity.status(NOT_FOUND).build();
+        }
+    }
+
+    @PutMapping("/removeStudentApplication")
+    public ResponseEntity<List<OffreOutDTO>> removeStudentApplication(@RequestBody RemoveApplicationDTO removeApplicationDTO){
+        logger.log(INFO, "Put /removeStudentApplication with the body: " + removeApplicationDTO);
+
+        try {
+            authService.getToken(removeApplicationDTO.getToken(), STUDENT);
+            List<OffreOutDTO> offerDTOs = studentService.removeApplication(removeApplicationDTO);
+            logger.log(INFO, "Put/getStudentInterviews/{studentId} return 200");
+            return ResponseEntity.ok(offerDTOs);
+        } catch (InvalidTokenException | CantRemoveApplicationException | InvalidOwnershipException e) {
+            logger.log(INFO, "Put /removeStudentApplication return 403");
+            return ResponseEntity.status(FORBIDDEN).build();
+        } catch (NonExistentEntityException e) {
+            logger.log(INFO, "Put /removeStudentApplication return 404");
             return ResponseEntity.status(NOT_FOUND).build();
         }
     }

@@ -252,7 +252,7 @@ public class StudentService {
         return interviews;
     }
 
-    public void removeApplication (RemoveApplicationDTO dto)
+    public List<OffreOutDTO> removeApplication (RemoveApplicationDTO dto)
             throws NonExistentEntityException, InvalidOwnershipException, CantRemoveApplicationException {
         Student student = getStudentById(dto.getStudentId());
 
@@ -282,5 +282,7 @@ public class StudentService {
         }
 
         applicationRepository.delete(application);
+
+        return getOffersByStudentDepartment(student.getId());
     }
 }
