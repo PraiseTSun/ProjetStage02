@@ -319,14 +319,14 @@ public class StudentRootController {
     }
 
     @PutMapping("/removeStudentApplication")
-    public ResponseEntity<List<OffreOutDTO>> removeStudentApplication(@RequestBody RemoveApplicationDTO removeApplicationDTO){
+    public ResponseEntity<ApplicationListDTO> removeStudentApplication(@RequestBody RemoveApplicationDTO removeApplicationDTO){
         logger.log(INFO, "Put /removeStudentApplication with the body: " + removeApplicationDTO);
 
         try {
             authService.getToken(removeApplicationDTO.getToken(), STUDENT);
-            List<OffreOutDTO> offerDTOs = studentService.removeApplication(removeApplicationDTO);
+            ApplicationListDTO applicationListDTO = studentService.removeApplication(removeApplicationDTO);
             logger.log(INFO, "Put/getStudentInterviews/{studentId} return 200");
-            return ResponseEntity.ok(offerDTOs);
+            return ResponseEntity.ok(applicationListDTO);
         } catch (InvalidTokenException | CantRemoveApplicationException | InvalidOwnershipException e) {
             logger.log(INFO, "Put /removeStudentApplication return 403");
             return ResponseEntity.status(FORBIDDEN).build();

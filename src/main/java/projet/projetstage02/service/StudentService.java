@@ -154,16 +154,29 @@ public class StudentService {
         Student student = getStudentById(studentId);
 
         List<Long> offersId = new ArrayList<>();
+        List<Long> removableOffersId = new ArrayList<>();
         applicationRepository.findByStudentId(studentId)
                 .forEach(
-                        application -> offersId.add(application.getOfferId())
+                        application -> {
+                            long offerId = application.getOfferId();
+                            offersId.add(offerId);
+                            if(canRemovePostul(studentId, offerId))
+                                removableOffersId.add(offerId);
+                        }
                 );
 
         return ApplicationListDTO.builder()
                 .studentId(student.getId())
                 .offersId(offersId)
+                .removableOffersId(removableOffersId)
                 .build();
     }
+
+    private boolean canRemovePostul(long studentId, long offerId) {
+        Optional<StageContract> contractOpt = stageContractRepository.findByStudentIdAndOfferId(studentId, offerId);
+        return contractOpt.isEmpty();
+    }
+
 
     public CvStatusDTO getStudentCvStatus(long studentId) throws NonExistentEntityException {
         getStudentById(studentId);
@@ -252,7 +265,7 @@ public class StudentService {
         return interviews;
     }
 
-    public List<OffreOutDTO> removeApplication (RemoveApplicationDTO dto)
+    public ApplicationListDTO removeApplication (RemoveApplicationDTO dto)
             throws NonExistentEntityException, InvalidOwnershipException, CantRemoveApplicationException {
         Student student = getStudentById(dto.getStudentId());
 
@@ -283,6 +296,6 @@ public class StudentService {
 
         applicationRepository.delete(application);
 
-        return getOffersByStudentDepartment(student.getId());
+        return getPostulsOfferId(student.getId());
     }
 }

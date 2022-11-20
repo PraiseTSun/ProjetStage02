@@ -655,17 +655,20 @@ public class StudentRootControllerTest {
 
     @Test
     void testRemoveStudentApplicationHappyDay() throws Exception{
-        when(studentService.removeApplication(any())).thenReturn(new ArrayList<>(){{
-                add(new OffreOutDTO());
-                add(new OffreOutDTO());
-                add(new OffreOutDTO());
-        }});
+        when(studentService.removeApplication(any())).thenReturn(ApplicationListDTO.builder()
+                        .studentId(1L)
+                        .offersId(new ArrayList<>(){{
+                            add(0L);
+                            add(0L);
+                            add(0L);
+                        }})
+                .build());
 
         studentMockMvc.perform(put("/removeStudentApplication")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(jsonRemoveApplicationDTO.write(removeApplicationDTO).getJson()))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.size()", is(3)));
+                .andExpect(jsonPath("$.offersId.size()", is(3)));
     }
 
     @Test
