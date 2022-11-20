@@ -148,7 +148,7 @@ public class StudentServiceTest {
         removeApplicationDTO = RemoveApplicationDTO.builder()
                 .token("I am dead inside")
                 .studentId(0L)
-                .applicationId(0L)
+                .offerId(0L)
                 .build();
     }
 
@@ -689,7 +689,8 @@ public class StudentServiceTest {
     @Test
     void testRemoveApplicationHappyDay() throws Exception {
         when(studentRepository.findById(anyLong())).thenReturn(Optional.of(bart));
-        when(applicationRepository.findById(anyLong())).thenReturn(Optional.of(bartApplication));
+        when(offreRepository.findById(anyLong())).thenReturn(Optional.of(duffOffer));
+        when(applicationRepository.findByStudentIdAndOfferId(anyLong(), anyLong())).thenReturn(Optional.of(bartApplication));
         when(stageContractRepository.findByStudentIdAndOfferId(anyLong(), anyLong())).thenReturn(Optional.empty());
         when(interviewRepository.findByStudentIdAndOfferId(anyLong(), anyLong())).thenReturn(Optional.of(interview));
         when(applicationAcceptationRepository.findByOfferIdAndStudentId(anyLong(), anyLong()))
@@ -705,43 +706,44 @@ public class StudentServiceTest {
     @Test
     void testRemoveApplicationContractForbidden() {
         when(studentRepository.findById(anyLong())).thenReturn(Optional.of(bart));
-        when(applicationRepository.findById(anyLong())).thenReturn(Optional.of(bartApplication));
+        when(offreRepository.findById(anyLong())).thenReturn(Optional.of(duffOffer));
+        when(applicationRepository.findByStudentIdAndOfferId(anyLong(), anyLong())).thenReturn(Optional.of(bartApplication));
         when(stageContractRepository.findByStudentIdAndOfferId(anyLong(), anyLong())).thenReturn(Optional.of(stageContract));
 
         try {
             studentService.removeApplication(removeApplicationDTO);
         } catch (CantRemoveApplicationException e) {
             return;
-        } catch (InvalidOwnershipException | NonExistentEntityException ignored) {}
+        } catch (NonExistentEntityException ignored) {}
 
         fail("Fail to catch the error CantRemoveApplicationException!");
     }
 
     @Test
-    void testRemoveApplicationOwnershipForbidden() {
-        bartApplication.setStudentId(0L);
-        when(studentRepository.findById(anyLong())).thenReturn(Optional.of(bart));
-        when(applicationRepository.findById(anyLong())).thenReturn(Optional.of(bartApplication));
-
-        try {
-            studentService.removeApplication(removeApplicationDTO);
-        } catch (InvalidOwnershipException e) {
-            return;
-        } catch (CantRemoveApplicationException | NonExistentEntityException ignored) {}
-
-        fail("Fail to catch the error InvalidOwnershipException!");
-    }
-
-    @Test
     void testRemoveApplicationApplicationNotFound() {
         when(studentRepository.findById(anyLong())).thenReturn(Optional.of(bart));
-        when(applicationRepository.findById(anyLong())).thenReturn(Optional.empty());
+        when(offreRepository.findById(anyLong())).thenReturn(Optional.of(duffOffer));
+        when(applicationRepository.findByStudentIdAndOfferId(anyLong(), anyLong())).thenReturn(Optional.empty());
 
         try {
             studentService.removeApplication(removeApplicationDTO);
         } catch (NonExistentEntityException e) {
             return;
-        } catch (CantRemoveApplicationException | InvalidOwnershipException ignored) {}
+        } catch (CantRemoveApplicationException ignored) {}
+
+        fail("Fail to catch the error NonExistentEntityException!");
+    }
+
+    @Test
+    void testRemoveApplicationOfferNotFound() {
+        when(studentRepository.findById(anyLong())).thenReturn(Optional.of(bart));
+        when(offreRepository.findById(anyLong())).thenReturn(Optional.empty());
+
+        try {
+            studentService.removeApplication(removeApplicationDTO);
+        } catch (NonExistentEntityException e) {
+            return;
+        } catch (CantRemoveApplicationException ignored) {}
 
         fail("Fail to catch the error NonExistentEntityException!");
     }
@@ -754,7 +756,7 @@ public class StudentServiceTest {
             studentService.removeApplication(removeApplicationDTO);
         } catch (NonExistentEntityException e) {
             return;
-        } catch (CantRemoveApplicationException | InvalidOwnershipException ignored) {}
+        } catch (CantRemoveApplicationException ignored) {}
 
         fail("Fail to catch the error NonExistentEntityException!");
     }

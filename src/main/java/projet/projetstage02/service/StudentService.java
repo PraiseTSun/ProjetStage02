@@ -266,29 +266,28 @@ public class StudentService {
     }
 
     public ApplicationListDTO removeApplication (RemoveApplicationDTO dto)
-            throws NonExistentEntityException, InvalidOwnershipException, CantRemoveApplicationException {
+            throws NonExistentEntityException, CantRemoveApplicationException {
         Student student = getStudentById(dto.getStudentId());
 
-        Optional<Application> applicationOpt = applicationRepository.findById(dto.getApplicationId());
+        Offre offer = getOfferById(dto.getOfferId());
+
+        Optional<Application> applicationOpt = applicationRepository.findByStudentIdAndOfferId(student.getId(), offer.getId());
         if(applicationOpt.isEmpty()) throw new NonExistentEntityException();
         Application application = applicationOpt.get();
 
-        if(student.getId() != application.getStudentId())
-            throw new InvalidOwnershipException();
-
         Optional<StageContract> contract
-                = stageContractRepository.findByStudentIdAndOfferId(student.getId(), application.getOfferId());
+                = stageContractRepository.findByStudentIdAndOfferId(student.getId(), offer.getId());
         if(contract.isPresent()) throw new CantRemoveApplicationException();
 
         Optional<Interview> interviewOpt
-                = interviewRepository.findByStudentIdAndOfferId(student.getId(), application.getOfferId());
+                = interviewRepository.findByStudentIdAndOfferId(student.getId(), offer.getId());
         if(interviewOpt.isPresent()){
             Interview interview = interviewOpt.get();
             interviewRepository.delete(interview);
         }
 
         Optional<ApplicationAcceptation> applicationAcceptationOpt
-                = applicationAcceptationRepository.findByOfferIdAndStudentId(application.getOfferId(), student.getId());
+                = applicationAcceptationRepository.findByOfferIdAndStudentId(offer.getId(), student.getId());
         if(applicationAcceptationOpt.isPresent()){
             ApplicationAcceptation applicationAcceptation = applicationAcceptationOpt.get();
             applicationAcceptationRepository.delete(applicationAcceptation);
