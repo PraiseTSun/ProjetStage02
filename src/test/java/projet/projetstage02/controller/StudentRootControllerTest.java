@@ -14,6 +14,7 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import projet.projetstage02.dto.SignatureInDTO;
 import projet.projetstage02.dto.applications.ApplicationDTO;
 import projet.projetstage02.dto.applications.ApplicationListDTO;
+import projet.projetstage02.dto.applications.RemoveApplicationDTO;
 import projet.projetstage02.dto.auth.TokenDTO;
 import projet.projetstage02.dto.contracts.ContractsDTO;
 import projet.projetstage02.dto.contracts.StageContractOutDTO;
@@ -65,6 +66,7 @@ public class StudentRootControllerTest {
     JacksonTester<PdfDTO> jsonPdfDTO;
     JacksonTester<SignatureInDTO> jsonSignatureDTO;
     JacksonTester<InterviewSelectInDTO> jsonInterviewSelectDTO;
+    JacksonTester<RemoveApplicationDTO> jsonRemoveApplicationDTO;
 
     StudentInDTO bart;
     StudentOutDTO bartOut;
@@ -83,6 +85,8 @@ public class StudentRootControllerTest {
     CvStatusDTO cvStatusDTO;
     InterviewOutDTO interviewOutDTO;
     InterviewSelectInDTO interviewSelectInDTO;
+    RemoveApplicationDTO removeApplicationDTO;
+
     // https://thepracticaldeveloper.com/guide-spring-boot-controller-tests/
     @BeforeEach
     void setup() {
@@ -208,6 +212,12 @@ public class StudentRootControllerTest {
                 .interviewId(interviewOutDTO.getInterviewId())
                 .studentId(bart.getId())
                 .selectedDate("2022-11-29T12:30")
+                .build();
+
+        removeApplicationDTO = RemoveApplicationDTO.builder()
+                .token("I am tired.")
+                .studentId(bart.getId())
+                .applicationId(0L)
                 .build();
     }
 
@@ -643,4 +653,61 @@ public class StudentRootControllerTest {
                 .andExpect(status().isForbidden());
     }
 
+    @Test
+    void testRemoveStudentApplicationHappyDay() throws Exception{
+        when(studentService.removeApplication(any())).thenReturn(ApplicationListDTO.builder()
+                        .studentId(1L)
+                        .offersId(new ArrayList<>(){{
+                            add(0L);
+                            add(0L);
+                            add(0L);
+                        }})
+                .build());
+
+        studentMockMvc.perform(put("/removeStudentApplication")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(jsonRemoveApplicationDTO.write(removeApplicationDTO).getJson()))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.offersId.size()", is(3)));
+    }
+
+    @Test
+    void testRemoveStudentApplicationNotFound() throws Exception{
+        when(studentService.removeApplication(any())).thenThrow(new NonExistentEntityException());
+
+        studentMockMvc.perform(put("/removeStudentApplication")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(jsonRemoveApplicationDTO.write(removeApplicationDTO).getJson()))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    void testRemoveStudentApplicationCantRemoveForbidden() throws Exception{
+        when(studentService.removeApplication(any())).thenThrow(new CantRemoveApplicationException());
+
+        studentMockMvc.perform(put("/removeStudentApplication")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(jsonRemoveApplicationDTO.write(removeApplicationDTO).getJson()))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    void testRemoveStudentApplicationOwnershipForbidden() throws Exception{
+        when(studentService.removeApplication(any())).thenThrow(new InvalidOwnershipException());
+
+        studentMockMvc.perform(put("/removeStudentApplication")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(jsonRemoveApplicationDTO.write(removeApplicationDTO).getJson()))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    void testRemoveStudentApplicationInvalidToken() throws Exception{
+        when(authService.getToken(anyString(), any())).thenThrow(new InvalidTokenException());
+
+        studentMockMvc.perform(put("/removeStudentApplication")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(jsonRemoveApplicationDTO.write(removeApplicationDTO).getJson()))
+                .andExpect(status().isForbidden());
+    }
 }
