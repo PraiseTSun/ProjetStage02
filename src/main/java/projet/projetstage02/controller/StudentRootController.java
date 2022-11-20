@@ -327,7 +327,7 @@ public class StudentRootController {
             ApplicationListDTO applicationListDTO = studentService.removeApplication(removeApplicationDTO);
             logger.log(INFO, "Put/getStudentInterviews/{studentId} return 200");
             return ResponseEntity.ok(applicationListDTO);
-        } catch (InvalidTokenException | CantRemoveApplicationException | InvalidOwnershipException e) {
+        } catch (InvalidTokenException | CantRemoveApplicationException e) {
             logger.log(INFO, "Put /removeStudentApplication return 403");
             return ResponseEntity.status(FORBIDDEN).build();
         } catch (NonExistentEntityException e) {

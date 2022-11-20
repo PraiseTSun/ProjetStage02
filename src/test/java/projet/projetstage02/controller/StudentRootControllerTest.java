@@ -217,7 +217,7 @@ public class StudentRootControllerTest {
         removeApplicationDTO = RemoveApplicationDTO.builder()
                 .token("I am tired.")
                 .studentId(bart.getId())
-                .applicationId(0L)
+                .offerId(duffOffreOut.getId())
                 .build();
     }
 
@@ -672,7 +672,7 @@ public class StudentRootControllerTest {
     }
 
     @Test
-    void testRemoveStudentApplicationNotFound() throws Exception{
+    void testRemoveStudentNotFound() throws Exception{
         when(studentService.removeApplication(any())).thenThrow(new NonExistentEntityException());
 
         studentMockMvc.perform(put("/removeStudentApplication")
@@ -684,16 +684,6 @@ public class StudentRootControllerTest {
     @Test
     void testRemoveStudentApplicationCantRemoveForbidden() throws Exception{
         when(studentService.removeApplication(any())).thenThrow(new CantRemoveApplicationException());
-
-        studentMockMvc.perform(put("/removeStudentApplication")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(jsonRemoveApplicationDTO.write(removeApplicationDTO).getJson()))
-                .andExpect(status().isForbidden());
-    }
-
-    @Test
-    void testRemoveStudentApplicationOwnershipForbidden() throws Exception{
-        when(studentService.removeApplication(any())).thenThrow(new InvalidOwnershipException());
 
         studentMockMvc.perform(put("/removeStudentApplication")
                         .contentType(MediaType.APPLICATION_JSON)

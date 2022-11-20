@@ -11,6 +11,6 @@ import lombok.NoArgsConstructor;
 @Builder
 public class RemoveApplicationDTO {
     private String token;
-    private long applicationId;
+    private long offerId;
     private long studentId;
 }
