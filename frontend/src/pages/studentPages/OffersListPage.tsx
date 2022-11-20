@@ -23,7 +23,8 @@ const OffersListPage = ({connectedUser}:
     const [showPdf, setShowPDF] = useState<boolean>(false)
     const [interviews, setInterviews] = useState<IInterview[]>([])
     const [studentApplys, setStudentApplys] =
-        useState<IStudentApplys>({studentId: connectedUser.id, offersId: new Array<string>()});
+        useState<IStudentApplys>({studentId: connectedUser.id, offersId: new Array<string>(),
+            removableOffersId: new Array<string>()});
 
     const fetchInterviews = useCallback(async () => {
         universalFetch(async () => await putGetStudentInterviews(connectedUser.id, connectedUser.token),
@@ -62,13 +63,23 @@ const OffersListPage = ({connectedUser}:
                 setStudentApplys(
                     {
                         studentId: connectedUser.id,
-                        offersId: [...studentApplys.offersId, offerId]
+                        offersId: [...studentApplys.offersId, offerId],
+                        removableOffersId: [...studentApplys.removableOffersId]
                     });
             });
     }
 
-    const retirerOffre = async (offreId : string): Promise<void> => {
-        removeStudentApplication(connectedUser.token, 0, Number(connectedUser.id));
+    const retirerOffre = async (removableOffersId : string): Promise<void> => {
+        universalFetch(async () => await removeStudentApplication(connectedUser.token,
+                Number(removableOffersId), Number(connectedUser.id)),
+            async (response: Response) => {
+                setStudentApplys(
+                    {
+                        studentId: connectedUser.id,
+                        offersId: [...studentApplys.offersId],
+                        removableOffersId: [...studentApplys.removableOffersId, removableOffersId]
+                    });
+            });
     }
 
     const confirmInterview = async (interviewId: string, selectedDate: string): Promise<void> => {

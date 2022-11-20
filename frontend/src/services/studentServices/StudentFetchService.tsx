@@ -1,3 +1,6 @@
+import {Simulate} from "react-dom/test-utils";
+import submit = Simulate.submit;
+
 export const putGetOffers = (studentId: string, token: string): Promise<Response> => {
     return fetch("http://localhost:8080/getOffers/" + studentId, {
         method: "PUT",
@@ -119,7 +122,9 @@ export const putStudentSelectDate = (studentId: string,
     });
 }
 
-export const removeStudentApplication = (token: string,applicationId:number, studentId: number): Promise<Response> => {
+export const removeStudentApplication = (token: string, offerId: number, studentId: number): Promise<Response> => {
+    console.log(token)
+    console.log(offerId + " studentId : "+ studentId)
     return fetch("http://localhost:8080/removeStudentApplication", {
         method: "PUT",
         headers:{
@@ -128,7 +133,7 @@ export const removeStudentApplication = (token: string,applicationId:number, stu
         },
         body: JSON.stringify({
             token: token,
-            applicationId: applicationId,
+            offerId:  offerId,
             studentId: studentId
         })
     })
