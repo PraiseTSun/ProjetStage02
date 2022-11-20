@@ -9,7 +9,7 @@ import {
     putGetOfferStudent,
     putGetStudentInterviews,
     putStudentApplys,
-    putStudentSelectDate
+    putStudentSelectDate, removeStudentApplication
 } from "../../services/studentServices/StudentFetchService";
 import IInterview from "../../models/IInterview";
 import PdfComponent from "../../components/universalComponents/PdfComponent";
@@ -65,6 +65,10 @@ const OffersListPage = ({connectedUser}:
                         offersId: [...studentApplys.offersId, offerId]
                     });
             });
+    }
+
+    const retirerOffre = async (offreId : string): Promise<void> => {
+        removeStudentApplication(connectedUser.token, 0, Number(connectedUser.id));
     }
 
     const confirmInterview = async (interviewId: string, selectedDate: string): Promise<void> => {
@@ -181,7 +185,9 @@ const OffersListPage = ({connectedUser}:
                                         {connectedUser.cv!.length > 2 &&
                                             <>
                                                 {studentApplys.offersId.includes(offer.id) ?
-                                                    <Button className="btn btn-danger">Retirer</Button>
+                                                    <Button className="btn btn-danger" onClick={async () => {
+                                                    await retirerOffre(offer.id)}
+                                                    }>Retirer</Button>
                                                     :
                                                     <Button className="btn btn-success" onClick={async () => {
                                                         await applyToOffer(offer.id)

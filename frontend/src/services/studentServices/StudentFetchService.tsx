@@ -119,4 +119,18 @@ export const putStudentSelectDate = (studentId: string,
     });
 }
 
+export const removeStudentApplication = (token: string,applicationId:number, studentId: number): Promise<Response> => {
+    return fetch("http://localhost:8080/removeStudentApplication", {
+        method: "PUT",
+        headers:{
+            'Accept': 'application/json',
+            'Content-Type':'application/json',
+        },
+        body: JSON.stringify({
+            token: token,
+            applicationId: applicationId,
+            studentId: studentId
+        })
+    })
+}
 
