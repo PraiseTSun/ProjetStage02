@@ -5,6 +5,7 @@ import org.springframework.stereotype.Service;
 import projet.projetstage02.dto.*;
 import projet.projetstage02.dto.applications.ApplicationDTO;
 import projet.projetstage02.dto.applications.ApplicationListDTO;
+import projet.projetstage02.dto.applications.RemoveApplicationDTO;
 import projet.projetstage02.dto.cv.CvStatusDTO;
 import projet.projetstage02.dto.contracts.StageContractOutDTO;
 import projet.projetstage02.dto.interview.InterviewOutDTO;
@@ -18,8 +19,6 @@ import projet.projetstage02.exception.*;
 import projet.projetstage02.model.*;
 import projet.projetstage02.repository.*;
 
-import javax.swing.text.html.Option;
-import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -36,6 +35,7 @@ public class StudentService {
     private final StudentRepository studentRepository;
     private final OffreRepository offreRepository;
     private final ApplicationRepository applicationRepository;
+    private final ApplicationAcceptationRepository applicationAcceptationRepository;
     private final StageContractRepository stageContractRepository;
     private final CvStatusRepository cvStatusRepository;
     private final InterviewRepository interviewRepository;
@@ -250,5 +250,37 @@ public class StudentService {
                 );
 
         return interviews;
+    }
+
+    public void removeApplication (RemoveApplicationDTO dto)
+            throws NonExistentEntityException, InvalidOwnershipException, CantRemoveApplicationException {
+        Student student = getStudentById(dto.getStudentId());
+
+        Optional<Application> applicationOpt = applicationRepository.findById(dto.getApplicationId());
+        if(applicationOpt.isEmpty()) throw new NonExistentEntityException();
+        Application application = applicationOpt.get();
+
+        if(student.getId() != application.getStudentId())
+            throw new InvalidOwnershipException();
+
+        Optional<StageContract> contract
+                = stageContractRepository.findByStudentIdAndOfferId(student.getId(), application.getOfferId());
+        if(contract.isPresent()) throw new CantRemoveApplicationException();
+
+        Optional<Interview> interviewOpt
+                = interviewRepository.findByStudentIdAndOfferId(student.getId(), application.getOfferId());
+        if(interviewOpt.isPresent()){
+            Interview interview = interviewOpt.get();
+            interviewRepository.delete(interview);
+        }
+
+        Optional<ApplicationAcceptation> applicationAcceptationOpt
+                = applicationAcceptationRepository.findByOfferIdAndStudentId(application.getOfferId(), student.getId());
+        if(applicationAcceptationOpt.isPresent()){
+            ApplicationAcceptation applicationAcceptation = applicationAcceptationOpt.get();
+            applicationAcceptationRepository.delete(applicationAcceptation);
+        }
+
+        applicationRepository.delete(application);
     }
 }
