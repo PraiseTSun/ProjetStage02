@@ -10,6 +10,7 @@ import projet.projetstage02.dto.cv.CvStatusDTO;
 import projet.projetstage02.dto.contracts.StageContractOutDTO;
 import projet.projetstage02.dto.interview.InterviewOutDTO;
 import projet.projetstage02.dto.interview.InterviewSelectInDTO;
+import projet.projetstage02.dto.notification.StudentNotificationDTO;
 import projet.projetstage02.dto.offres.OffreOutDTO;
 import projet.projetstage02.dto.pdf.PdfDTO;
 import projet.projetstage02.dto.pdf.PdfOutDTO;
@@ -23,6 +24,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Stream;
 
 import static projet.projetstage02.model.AbstractUser.Department;
 import static projet.projetstage02.utils.ByteConverter.byteToString;
@@ -296,5 +298,41 @@ public class StudentService {
         applicationRepository.delete(application);
 
         return getPostulsOfferId(student.getId());
+    }
+
+    public StudentNotificationDTO getStudentNotification (long studentId) throws NonExistentEntityException {
+        return StudentNotificationDTO.builder()
+                .nbUploadCv(getCvNotification(studentId))
+                .nbStages(getStageNotification(studentId))
+                .nbContracts(getContractNotifications(studentId))
+                .build();
+    }
+
+    private int getCvNotification(long studentId) {
+        if(cvStatusRepository.findById(studentId).isEmpty())
+            return 0;
+        return 1;
+    }
+
+    private int getStageNotification(long studentId) throws NonExistentEntityException {
+        int nb = 0;
+        List<OffreOutDTO> offers = getOffersByStudentDepartment(studentId);
+        ApplicationListDTO applications = getPostulsOfferId(studentId);
+
+        for(OffreOutDTO dto : offers){
+            if(applications.hasApply(dto.getId()))
+                nb++;
+        }
+
+        return nb;
+    }
+
+    private int getContractNotifications(long studentId) {
+        long count = stageContractRepository.findByStudentId(studentId)
+                .stream()
+                .filter(stageContract -> stageContract.getStudentSignature().isBlank())
+                .count();
+
+        return (int) count;
     }
 }
