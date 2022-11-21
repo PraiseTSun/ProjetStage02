@@ -66,6 +66,7 @@ const OffersListPage = ({connectedUser}:
                         offersId: [...studentApplys.offersId, offerId],
                         removableOffersId: [...studentApplys.removableOffersId]
                     });
+                window.location.href = "/offres"
             });
     }
 
@@ -79,6 +80,7 @@ const OffersListPage = ({connectedUser}:
                         offersId: [...studentApplys.offersId],
                         removableOffersId: [...studentApplys.removableOffersId, removableOffersId]
                     });
+                window.location.href = "/offres"
             });
     }
 
@@ -196,7 +198,9 @@ const OffersListPage = ({connectedUser}:
                                         {connectedUser.cv!.length > 2 &&
                                             <>
                                                 {studentApplys.offersId.includes(offer.id) ?
-                                                    <Button className="btn btn-danger" onClick={async () => {
+                                                    <Button className="btn btn-danger"
+                                                            disabled={!studentApplys.removableOffersId.includes(offer.id)}
+                                                            onClick={async () => {
                                                     await retirerOffre(offer.id)}
                                                     }>Retirer</Button>
                                                     :
