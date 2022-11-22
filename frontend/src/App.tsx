@@ -122,17 +122,17 @@ function App() {
         );
     } else if (connectedUser.userType === "company") {
         return (
-            <Container className="min-vh-100">
+            <Container>
                 <BrowserRouter>
                     <Routes>
                         <Route path="/" element={<CompanyDashboard deconnexion={deconnexion} user={connectedUser}/>}/>
                         <Route path="/soumettreOffre" element={<OffreSoumissionPage user={connectedUser}/>}/>
                         <Route path="/myOffers" element={<CompanyOffersPage connectedUser={connectedUser}/>}/>
+                        <Route path="/CompanyContractsPage"
+                               element={<CompanyContractsPage connectedUser={connectedUser}/>}/>
                         <Route path="*"
                                element={<h1 className="min-vh-100 text-center text-white display-1">404 - Page pas
                                    trouvé</h1>}/>
-                        <Route path="/CompanyContractsPage"
-                               element={<CompanyContractsPage connectedUser={connectedUser}/>}/>
                     </Routes>
                 </BrowserRouter>
             </Container>
