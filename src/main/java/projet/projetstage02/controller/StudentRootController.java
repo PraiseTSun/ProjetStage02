@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.aspectj.weaver.ast.Not;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -16,6 +17,7 @@ import projet.projetstage02.dto.contracts.StageContractOutDTO;
 import projet.projetstage02.dto.cv.CvStatusDTO;
 import projet.projetstage02.dto.interview.InterviewOutDTO;
 import projet.projetstage02.dto.interview.InterviewSelectInDTO;
+import projet.projetstage02.dto.notification.StudentNotificationDTO;
 import projet.projetstage02.dto.offres.OffreOutDTO;
 import projet.projetstage02.dto.pdf.PdfDTO;
 import projet.projetstage02.dto.pdf.PdfOutDTO;
@@ -333,6 +335,25 @@ public class StudentRootController {
         } catch (NonExistentEntityException e) {
             logger.log(INFO, "Put /removeStudentApplication return 404");
             return ResponseEntity.status(NOT_FOUND).build();
+        }
+    }
+
+    @PutMapping("/studentNotification/{studentId}")
+    public ResponseEntity<StudentNotificationDTO> getStudentNotification
+            (@PathVariable String studentId, @RequestBody TokenDTO token){
+        logger.log(INFO, "Put /studentNotification/{studentId} with the id: " + studentId);
+
+        try {
+            authService.getToken(token.getToken(), STUDENT);
+            StudentNotificationDTO notification = studentService.getNotification(Long.parseLong(studentId));
+            logger.log(INFO, "Put /studentNotification/{studentId} return 200");
+            return ResponseEntity.ok(notification);
+        } catch (NonExistentEntityException e) {
+            logger.log(INFO, "Put /studentNotification/{studentId} return 404");
+            return ResponseEntity.status(NOT_FOUND).build();
+        } catch (InvalidTokenException e) {
+            logger.log(INFO, "Put /studentNotification/{studentId} return 403");
+            return ResponseEntity.status(FORBIDDEN).build();
         }
     }
 }
