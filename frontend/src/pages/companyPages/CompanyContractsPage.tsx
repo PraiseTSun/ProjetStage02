@@ -141,12 +141,12 @@ const CompanyContractsPage = ({connectedUser}: { connectedUser: IUser }): JSX.El
                                             {
                                                 (evaluatedStudentContracts.includes(contrat.contractId) && "Déjà évalué")
                                                 || (!evaluatedStudentContracts.includes(contrat.contractId) &&
-                                                contrat.companySignature.length > 0
+                                                contrat.gestionnaireSignature.length > 0
                                                     ? <Button variant="warning" onClick={() => {
                                                         setCurrentlySelectedContract(contrat.contractId)
                                                         setShowEvaluationForm(true)
                                                     }}>Évaluer</Button>
-                                                    : "Vous devez signé avant")
+                                                    : "Vous devez attendre que tout les partis signent")
                                             }
                                         </td>
                                         <td>
