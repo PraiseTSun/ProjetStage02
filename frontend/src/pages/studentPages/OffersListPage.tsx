@@ -140,7 +140,7 @@ const OffersListPage = ({connectedUser}:
 
     return (
         <Container className="min-vh-100">
-            <PageHeader title={"Liste de stages"}/>
+            <PageHeader title={"Offres de stages"}/>
             <Row>
                 <Col className="bg-light p-0" style={{minHeight: 400}}>
                     <Table className="text-center" hover>
@@ -159,38 +159,44 @@ const OffersListPage = ({connectedUser}:
                         </tr>
                         </thead>
                         <tbody className="bg-light">
-                        {offers.map((offer, index) => {
-                            return (
-                                <tr key={index}>
-                                    <td>{offer.nomDeCompagnie}</td>
-                                    <td>{offer.adresse}</td>
-                                    <td>{offer.position}</td>
-                                    <td>{offer.heureParSemaine}</td>
-                                    <td>{offer.salaire}$/h</td>
-                                    <td>{offer.dateStageDebut}</td>
-                                    <td>{offer.dateStageFin}</td>
-                                    <td>{getInterviewTableCell(offer.id)}</td>
-                                    <td><Button className="btn btn-warning" onClick={
-                                        async () => {
-                                            await getPDF(offer.id)
-                                        }
-                                    }>PDF</Button></td>
-                                    <td>
-                                        {connectedUser.cv!.length <= 2 &&
-                                            <p className="h4 text-danger">Vous n'avez pas de CV</p>}
-                                        {connectedUser.cv!.length > 2 &&
-                                            <>
-                                                {studentApplys.offersId.includes(offer.id) &&
-                                                    <p className="h4 text-success">Déjà Postulé</p>}
-                                                <Button disabled={studentApplys.offersId.includes(offer.id)}
-                                                        className="btn btn-success" onClick={async () => {
-                                                    await applyToOffer(offer.id)
-                                                }}>Postuler</Button>
-                                            </>}
-                                    </td>
-                                </tr>
-                            );
-                        })}
+                        {offers.length === 0
+                            ? <tr>
+                                <td colSpan={10}>
+                                    <p className="h1">Aucune offre</p>
+                                </td>
+                            </tr>
+                            : offers.map((offer, index) => {
+                                return (
+                                    <tr key={index}>
+                                        <td>{offer.nomDeCompagnie}</td>
+                                        <td>{offer.adresse}</td>
+                                        <td>{offer.position}</td>
+                                        <td>{offer.heureParSemaine}</td>
+                                        <td>{offer.salaire}$/h</td>
+                                        <td>{offer.dateStageDebut}</td>
+                                        <td>{offer.dateStageFin}</td>
+                                        <td>{getInterviewTableCell(offer.id)}</td>
+                                        <td><Button className="btn btn-warning" onClick={
+                                            async () => {
+                                                await getPDF(offer.id)
+                                            }
+                                        }>PDF</Button></td>
+                                        <td>
+                                            {connectedUser.cv!.length <= 2 &&
+                                                <p className="h4 text-danger">Vous n'avez pas de CV</p>}
+                                            {connectedUser.cv!.length > 2 &&
+                                                <>
+                                                    {studentApplys.offersId.includes(offer.id) &&
+                                                        <p className="h4 text-success">Déjà Postulé</p>}
+                                                    <Button disabled={studentApplys.offersId.includes(offer.id)}
+                                                            className="btn btn-success" onClick={async () => {
+                                                        await applyToOffer(offer.id)
+                                                    }}>Postuler</Button>
+                                                </>}
+                                        </td>
+                                    </tr>
+                                );
+                            })}
                         </tbody>
                     </Table>
                 </Col>

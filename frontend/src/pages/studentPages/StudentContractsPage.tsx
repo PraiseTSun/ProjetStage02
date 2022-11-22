@@ -64,14 +64,14 @@ const StudentContractsPage = ({connectedUser}: { connectedUser: IUser }): JSX.El
                         <thead className="bg-primary text-white">
                         <tr>
                             <th>Description</th>
-                            <th>Status de signature</th>
+                            <th>Signature</th>
                         </tr>
                         </thead>
                         <tbody>
                         {contrats.length === 0
                             ? <tr>
                                 <td colSpan={2}>
-                                    <p className="h1">Aucun contrats</p>
+                                    <p className="h1">Aucun contrat</p>
                                 </td>
                             </tr>
                             : contrats.map((contract, index) => {

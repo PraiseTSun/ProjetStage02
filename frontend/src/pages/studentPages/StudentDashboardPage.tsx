@@ -13,8 +13,8 @@ const StudentDashboard = ({user, deconnexion}: { user: IUser, deconnexion: Funct
             <h1 data-testid="titleStudentDashboard"
                 className="p-5 text-center fw-bold text-white display-4">Bienvenue {user.firstName} {user.lastName}</h1>
             <Row className="d-flex justify-content-center">
-                <Link to="/uploaderCV" className="btn btn-primary mb-3">Uploader Mon CV</Link>
-                <Link to="/offres" className="btn btn-primary mb-3">Liste de stages</Link>
+                <Link to="/uploaderCV" className="btn btn-primary mb-3">Mon curriculum vitae</Link>
+                <Link to="/offres" className="btn btn-primary mb-3">Offres de stage</Link>
                 <Link to="/myContracts" className="btn btn-primary mb-3">Mes contrats</Link>
             </Row>
         </div>
