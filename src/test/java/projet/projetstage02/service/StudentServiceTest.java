@@ -720,7 +720,7 @@ public class StudentServiceTest {
     }
 
     @Test
-    void testRemoveApplicationApplicationNotFound() {
+    void testRemoveApplicationNotFound() {
         when(studentRepository.findById(anyLong())).thenReturn(Optional.of(bart));
         when(offreRepository.findById(anyLong())).thenReturn(Optional.of(duffOffer));
         when(applicationRepository.findByStudentIdAndOfferId(anyLong(), anyLong())).thenReturn(Optional.empty());
