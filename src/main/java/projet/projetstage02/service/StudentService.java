@@ -90,8 +90,9 @@ public class StudentService {
         Department department = getStudentById(id).getDepartment();
 
         List<OffreOutDTO> offers = new ArrayList<>();
-        offreRepository.findAll().stream().
-                filter(offre ->
+        offreRepository.findAll()
+                .stream()
+                .filter(offre ->
                         offre.isValide()
                                 && offre.getDepartment().equals(department)
                 )
@@ -300,7 +301,7 @@ public class StudentService {
         return getPostulsOfferId(student.getId());
     }
 
-    public StudentNotificationDTO getStudentNotification (long studentId) throws NonExistentEntityException {
+    public StudentNotificationDTO getNotification (long studentId) throws NonExistentEntityException {
         return StudentNotificationDTO.builder()
                 .nbUploadCv(getCvNotification(studentId))
                 .nbStages(getStageNotification(studentId))
@@ -320,7 +321,7 @@ public class StudentService {
         ApplicationListDTO applications = getPostulsOfferId(studentId);
 
         for(OffreOutDTO dto : offers){
-            if(applications.hasApply(dto.getId()))
+            if(!applications.hasApply(dto.getId()))
                 nb++;
         }
 
