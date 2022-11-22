@@ -142,7 +142,7 @@ const OffersListPage = ({connectedUser}:
         <Container className="min-vh-100">
             <PageHeader title={"Liste de stages"}/>
             <Row>
-                <Col>
+                <Col className="bg-light p-0" style={{minHeight: 400}}>
                     <Table className="text-center" hover>
                         <thead className="bg-primary text-white">
                         <tr>
