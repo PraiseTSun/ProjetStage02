@@ -5,14 +5,13 @@ import PageHeader from "../../components/universalComponents/PageHeader";
 import IContract from "../../models/IContract";
 import {putStudentContracts, putStudentSignatureContract} from "../../services/studentServices/StudentFetchService";
 import {generateAlert} from "../../services/universalServices/UniversalUtilService";
-import SignaturePad from "react-signature-canvas"
+import SignaturePopup from "../../components/universalComponents/SignaturePopup";
 
 const StudentContractsPage = ({connectedUser}: { connectedUser: IUser }): JSX.Element => {
     const nextYear = new Date().getFullYear() + 1
     const [signing, setSigning] = useState<boolean>(false);
     const [contrats, setContrats] = useState<IContract[]>([]);
     const [lastSelectedContract, setLastSelectedContract] = useState<IContract>();
-    let sigPad: SignaturePad | null
 
     const fetchContracts = useCallback(async () => {
         try {
@@ -57,48 +56,7 @@ const StudentContractsPage = ({connectedUser}: { connectedUser: IUser }): JSX.El
 
     return (
         <Container className="min-vh-100">
-            {signing &&
-                <div>
-                    <Container
-                        className="position-absolute min-vh-100 p-0 m-0 min-vw-100 bg-dark p-0 top-0 start-0 end-0 opacity-50">
-                    </Container>
-                    <Container
-                        className="position-absolute min-vh-100 min-vw-100 p-0 top-0 start-0 end-0">
-                        <Row className="min-vh-100 m-0">
-                            <Col sm={4} className="rounded m-auto bg-white">
-                                <Row className="bg-dark rounded-top p-2">
-                                    <Col className="p-0">
-                                        <Button variant="danger" onClick={() => {
-                                            setSigning(false)
-                                        }}>Fermer</Button>
-                                    </Col>
-                                    <Col className="p-0 text-end">
-                                        <Button variant="success" onClick={() => {
-                                            if (sigPad!.isEmpty()) {
-                                                alert("Vous devez signer!")
-                                            } else {
-                                                signContract(sigPad!.toDataURL())
-                                            }
-                                        }}>Signer</Button>
-                                    </Col>
-                                </Row>
-                                <Col className="px-2 pt-2 text-center">
-                                    <SignaturePad
-                                        canvasProps={{height: 300, className: 'border col-12 border-5 bg-light'}}
-                                        ref={(ref) => {
-                                            sigPad = ref
-                                        }}/>
-                                    <Row className="p-2">
-                                        <Button onClick={() => {
-                                            sigPad!.clear()
-                                        }}>Recommencer</Button>
-                                    </Row>
-                                </Col>
-                            </Col>
-                        </Row>
-                    </Container>
-                </div>
-            }
+            {signing && <SignaturePopup setSigning={setSigning} onSignature={signContract}/>}
             <PageHeader title="Mes contrats"/>
             <Row>
                 <Col className="bg-light p-0" style={{minHeight: 400}}>
