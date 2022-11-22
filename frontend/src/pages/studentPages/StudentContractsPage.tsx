@@ -55,42 +55,53 @@ const StudentContractsPage = ({connectedUser}: { connectedUser: IUser }): JSX.El
         }
     }
 
-    if (signing) {
-        return (
-            <Container className="vh-100">
-                <Row className="bg-dark p-2">
-                    <Col sm={1}><Button variant="danger" onClick={() => {
-                        setSigning(false)
-                    }}>Fermer</Button></Col>
-                    <Col sm={10}></Col>
-                    <Col sm={1}><Button variant="success" onClick={() => {
-                        if (sigPad!.isEmpty()) {
-                            alert("Vous devez signer!")
-                        } else {
-                            signContract(sigPad!.toDataURL())
-                        }
-                    }}>Signer</Button></Col>
-                </Row>
-                <Row>
-                    <Col sm={4} className="mx-auto mt-3">
-                        <SignaturePad canvasProps={{width: 500, height: 200, className: 'border border-5 bg-light'}}
-                                      ref={(ref) => {
-                                          sigPad = ref
-                                      }}/>
-                        <Button onClick={() => {
-                            sigPad!.clear()
-                        }}>Recommencer</Button>
-                    </Col>
-                </Row>
-            </Container>
-        );
-    }
-
     return (
-        <Container className="vh-100">
+        <Container className="min-vh-100">
+            {signing &&
+                <div>
+                    <Container
+                        className="position-absolute min-vh-100 p-0 m-0 min-vw-100 bg-dark p-0 top-0 start-0 end-0 opacity-50">
+                    </Container>
+                    <Container
+                        className="position-absolute min-vh-100 min-vw-100 p-0 top-0 start-0 end-0">
+                        <Row className="min-vh-100 m-0">
+                            <Col sm={4} className="rounded m-auto bg-white">
+                                <Row className="bg-dark rounded-top p-2">
+                                    <Col className="p-0">
+                                        <Button variant="danger" onClick={() => {
+                                            setSigning(false)
+                                        }}>Fermer</Button>
+                                    </Col>
+                                    <Col className="p-0 text-end">
+                                        <Button variant="success" onClick={() => {
+                                            if (sigPad!.isEmpty()) {
+                                                alert("Vous devez signer!")
+                                            } else {
+                                                signContract(sigPad!.toDataURL())
+                                            }
+                                        }}>Signer</Button>
+                                    </Col>
+                                </Row>
+                                <Col className="px-2 pt-2 text-center">
+                                    <SignaturePad
+                                        canvasProps={{height: 300, className: 'border col-12 border-5 bg-light'}}
+                                        ref={(ref) => {
+                                            sigPad = ref
+                                        }}/>
+                                    <Row className="p-2">
+                                        <Button onClick={() => {
+                                            sigPad!.clear()
+                                        }}>Recommencer</Button>
+                                    </Row>
+                                </Col>
+                            </Col>
+                        </Row>
+                    </Container>
+                </div>
+            }
             <PageHeader title="Mes contrats"/>
             <Row>
-                <Col className="bg-light p-0" style={{height: 400}}>
+                <Col className="bg-light p-0" style={{minHeight: 400}}>
                     <Table className="text-center" hover>
                         <thead className="bg-primary text-white">
                         <tr>
@@ -113,7 +124,7 @@ const StudentContractsPage = ({connectedUser}: { connectedUser: IUser }): JSX.El
                                             {contract.studentSignature.length > 0 ?
                                                 <p className="text-success">Vous avez signé</p> :
                                                 <p className="text-danger">Vous n'avez pas signé!</p>}
-                                            <Button disabled={contract.studentSignature.length > 0}
+                                            <Button variant="success" disabled={contract.studentSignature.length > 0}
                                                     onClick={() => {
                                                         setLastSelectedContract(contract);
                                                         setSigning(true)
