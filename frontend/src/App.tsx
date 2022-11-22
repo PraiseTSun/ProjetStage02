@@ -65,7 +65,6 @@ function App() {
     const deconnexion = () => {
         setConnectedUser(emptyUser)
         localStorage.removeItem(LOCAL_STORAGE_KEY)
-        window.location.href = "/"
     }
 
     const loginFromLocalStorage = async () => {
