@@ -34,7 +34,6 @@ import java.util.Map;
 
 import static org.apache.logging.log4j.Level.INFO;
 import static org.springframework.http.HttpStatus.*;
-import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
 import static projet.projetstage02.model.Token.UserTypes.COMPANY;
 import static projet.projetstage02.utils.TimeUtil.*;
 
@@ -255,7 +254,6 @@ public class CompanyRootController {
     }
 
     @PutMapping("/company/validatedOffers/{id}")
-    //todo replace tokens with @RequestHeader("Authorization") String token
     public ResponseEntity<List<OffreOutDTO>> getValidatedOffers
             (@PathVariable long id, @RequestBody TokenDTO tokenId) {
         try {
@@ -271,7 +269,7 @@ public class CompanyRootController {
     }
 
     @PostMapping("/createInterview")
-    public ResponseEntity<InterviewOutDTO> createInterview(@RequestBody @Valid CreateInterviewDTO interviewDTO){
+    public ResponseEntity<InterviewOutDTO> createInterview(@RequestBody @Valid CreateInterviewDTO interviewDTO) {
         logger.log(INFO, "Post /createInterview");
 
         try {
@@ -282,7 +280,7 @@ public class CompanyRootController {
         } catch (NonExistentEntityException e) {
             logger.log(INFO, "Post /createInterview return 404 request");
             return ResponseEntity.status(NOT_FOUND).build();
-        } catch (InvalidDateFormatException  e) {
+        } catch (InvalidDateFormatException e) {
             logger.log(INFO, "Post /createInterview return 400 request");
             return ResponseEntity.status(BAD_REQUEST).build();
         } catch (InvalidTokenException | InvalidOwnershipException e) {
@@ -293,7 +291,7 @@ public class CompanyRootController {
 
     @PutMapping("/getCompanyInterviews/{companyId}")
     public ResponseEntity<List<InterviewOutDTO>> getCompanyInterviews
-            (@PathVariable String companyId, @RequestBody TokenDTO tokenId){
+            (@PathVariable String companyId, @RequestBody TokenDTO tokenId) {
         logger.log(INFO, "Put /getCompanyInterviews/{companyId}");
 
         try {
@@ -323,7 +321,6 @@ public class CompanyRootController {
             return ResponseEntity.status(FORBIDDEN).build();
         }
     }
-
 
 
     @PostMapping("/evaluateStudent/{token}")
