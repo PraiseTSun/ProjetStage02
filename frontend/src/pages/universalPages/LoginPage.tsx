@@ -13,7 +13,7 @@ const LoginPage = (props: { setUser: Function }): JSX.Element => {
                 <Row>
                     <Col className="bg-white rounded p-0">
                         {isLogginPage ? <LoginForm setUser={props.setUser}/> :
-                            <InscriptionForm setIsLogginPage={setIsLogginPage}/>}
+                            <InscriptionForm/>}
                         <Row>
                             <Col className="text-center mb-2">
                                 <Button variant="link" className="text-warning"
