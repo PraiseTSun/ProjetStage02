@@ -97,36 +97,42 @@ const CompanyContractsPage = ({connectedUser}: { connectedUser: IUser }): JSX.El
                             <th>Ententes</th>
                         </tr>
                         </thead>
-                        <tbody className="bg-light">
-                        {contratsNonSigner.map((contrat, index) => {
-                            return (
-                                <tr key={index}>
-                                    <td>{contrat.description}</td>
-                                    <td>
-                                        {
-                                            (evaluatedStudentContracts.includes(contrat.contractId) &&
-                                                <p className="text-success">Vous avez déjà évalué</p>)
-                                            || (!evaluatedStudentContracts.includes(contrat.contractId) &&
-                                            contrat.companySignature.length > 0
-                                                ? <Button variant="warning" onClick={() => {
-                                                    setCurrentlySelectedContract(contrat.contractId)
-                                                    setShowEvaluationForm(true)
-                                                }}>Évaluer</Button>
-                                                : "Vous devez signé avant")
-                                        }
-                                    </td>
-                                    <td>
-                                        {contrat.companySignature.length > 0 ?
-                                            <p className="text-success">Vous avez signé</p> :
-                                            <p className="text-danger">Vous n'avez pas signé!</p>}
-                                        <Button variant="success" disabled={contrat.companySignature.length > 0}
-                                                onClick={async () => {
-                                                    await getEntente(contrat.contractId)
-                                                }}>Signer</Button>
-                                    </td>
-                                </tr>
-                            );
-                        })}
+                        <tbody>
+                        {contratsNonSigner.length === 0
+                            ? <tr>
+                                <td colSpan={3}>
+                                    <p className="h1">Aucun contrat</p>
+                                </td>
+                            </tr>
+                            : contratsNonSigner.map((contrat, index) => {
+                                return (
+                                    <tr key={index}>
+                                        <td>{contrat.description}</td>
+                                        <td>
+                                            {
+                                                (evaluatedStudentContracts.includes(contrat.contractId) &&
+                                                    <p className="text-success">Vous avez déjà évalué</p>)
+                                                || (!evaluatedStudentContracts.includes(contrat.contractId) &&
+                                                contrat.companySignature.length > 0
+                                                    ? <Button variant="warning" onClick={() => {
+                                                        setCurrentlySelectedContract(contrat.contractId)
+                                                        setShowEvaluationForm(true)
+                                                    }}>Évaluer</Button>
+                                                    : "Vous devez signé avant")
+                                            }
+                                        </td>
+                                        <td>
+                                            {contrat.companySignature.length > 0 ?
+                                                <p className="text-success">Vous avez signé</p> :
+                                                <p className="text-danger">Vous n'avez pas signé!</p>}
+                                            <Button variant="success" disabled={contrat.companySignature.length > 0}
+                                                    onClick={async () => {
+                                                        await getEntente(contrat.contractId)
+                                                    }}>Signer</Button>
+                                        </td>
+                                    </tr>
+                                );
+                            })}
                         </tbody>
                     </Table>
                 </Col>

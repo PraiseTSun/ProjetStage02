@@ -24,11 +24,11 @@ const CompanyOffersPage = ({connectedUser}: { connectedUser: IUser }): JSX.Eleme
     }, [connectedUser, fetchOffers]);
 
     return (
-        <Container className="min-vh-100 p-0">
+        <Container className="min-vh-100">
             <PageHeader title={"Mes offres"}/>
             <Row>
-                <Col className="bg-light p-0 mx-2" style={{minHeight: 300}}>
-                    <Table className="text-center" hover>
+                <Col className="bg-light p-0 me-3" style={{minHeight: 400}}>
+                    <Table className="text-center" hover responsive>
                         <thead className="bg-primary text-white">
                         <tr>
                             <th>Compagnie</th>
@@ -42,28 +42,34 @@ const CompanyOffersPage = ({connectedUser}: { connectedUser: IUser }): JSX.Eleme
                         </tr>
                         </thead>
                         <tbody>
-                        {offers.map((offer, index) => {
-                            return (
-                                <tr key={index}>
-                                    <td>{offer.nomDeCompagnie}</td>
-                                    <td>{offer.adresse}</td>
-                                    <td>{offer.position}</td>
-                                    <td>{offer.heureParSemaine}</td>
-                                    <td>{offer.salaire}$/h</td>
-                                    <td>{offer.dateStageDebut}</td>
-                                    <td>{offer.dateStageFin}</td>
-                                    <th><Button disabled={currentlySelectedOffer === offer.id} variant="warning"
-                                                onClick={async () => {
-                                                    setCurrentlySelectedOffer(offer.id)
-                                                }}>Applicants</Button></th>
-                                </tr>
-                            );
-                        })}
+                        {offers.length === 0
+                            ? <tr>
+                                <td colSpan={8}>
+                                    <p className="h1">Aucune offre</p>
+                                </td>
+                            </tr>
+                            : offers.map((offer, index) => {
+                                return (
+                                    <tr key={index}>
+                                        <td>{offer.nomDeCompagnie}</td>
+                                        <td>{offer.adresse}</td>
+                                        <td>{offer.position}</td>
+                                        <td>{offer.heureParSemaine}</td>
+                                        <td>{offer.salaire}$/h</td>
+                                        <td>{offer.dateStageDebut}</td>
+                                        <td>{offer.dateStageFin}</td>
+                                        <th><Button disabled={currentlySelectedOffer === offer.id} variant="warning"
+                                                    onClick={async () => {
+                                                        setCurrentlySelectedOffer(offer.id)
+                                                    }}>Applicants</Button></th>
+                                    </tr>
+                                );
+                            })}
                         </tbody>
                     </Table>
                 </Col>
                 {currentlySelectedOffer !== null &&
-                    <Col className="bg-light p-0 mx-2" style={{minHeight: 300}}>
+                    <Col className="bg-light p-0 mt-sm-3 mt-lg-3 mt-xl-0" style={{minHeight: 400}}>
                         <OfferStudentApplicationsList connectedUser={connectedUser} offerId={currentlySelectedOffer!}/>
                     </Col>
                 }
