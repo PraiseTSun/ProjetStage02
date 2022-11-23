@@ -6,8 +6,10 @@ import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
 import projet.projetstage02.model.AbstractUser;
 import projet.projetstage02.model.Company;
+import projet.projetstage02.model.Offre;
 import projet.projetstage02.model.Student;
 
+import java.util.List;
 import java.util.Properties;
 
 public class EmailUtil {
@@ -55,5 +57,31 @@ public class EmailUtil {
             return false;
         }
         return true;
+    }
+
+    public static void sendNotificationMail(List<String> email, Offre offre) {
+        String mailSubject = "Nouvelle offre de stage";
+        SimpleMailMessage mail = new SimpleMailMessage();
+        mail.setFrom("osekillerservice@outlook.com");
+        mail.setSubject(mailSubject);
+        mail.setTo(email.toArray(new String[0]));
+        mail.setText("""
+                Nouvelle offre de stage sur OseKiller:
+
+                """ + "Poste: " + offre.getPosition() + """
+                                
+                """ + "Compagnie: " + offre.getNomDeCompagnie() + """
+                                
+                """ + "Salaire: " + offre.getSalaire() + "$/h" + """
+                                
+                """ + "Addresse: " + offre.getAdresse() + """
+                                
+                """ + "Date de début: " + offre.getDateStageDebut() + """
+                                
+                """ + "Date de fin: " + offre.getDateStageFin());
+        try {
+            getJavaMailSender().send(mail);
+        } catch (MailException ignored) {
+        }
     }
 }
