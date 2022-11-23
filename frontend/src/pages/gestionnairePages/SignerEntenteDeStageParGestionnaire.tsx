@@ -60,7 +60,7 @@ const SignerEntenteDeStageParGestionnaire = ({connectedUser}: { connectedUser: I
             <PageHeader title={"Signer Entente De Stage"}/>
             {isSigner && <SignaturePopup setSigning={setIsSigner} onSignature={signer}/>}
             <Col>
-                <Row className="mt-5">
+                <Row>
                     <Col className="bg-light p-0" style={{minHeight: 400}}>
                         <Table className="text-center" hover responsive>
                             <thead className="bg-primary text-white">
