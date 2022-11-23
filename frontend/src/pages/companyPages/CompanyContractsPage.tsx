@@ -79,9 +79,7 @@ const CompanyContractsPage = ({connectedUser}: { connectedUser: IUser }): JSX.El
             <StudentEvaluationForm
                 contractId={currentlySelectedContract}
                 connectedUser={connectedUser}
-                setShowEvaluationForm={setShowEvaluationForm}
-                setEvaluatedStudentContracts={fetchEvaluatedStudentContracts}
-                evaluatedStudentContracts={evaluatedStudentContracts}/>
+                setShowEvaluationForm={setShowEvaluationForm}/>
         );
     }
 
