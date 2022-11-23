@@ -9,7 +9,8 @@ import {
     putGetOfferStudent,
     putGetStudentInterviews,
     putStudentApplys,
-    putStudentSelectDate, removeStudentApplication
+    putStudentSelectDate,
+    removeStudentApplication
 } from "../../services/studentServices/StudentFetchService";
 import IInterview from "../../models/IInterview";
 import PdfComponent from "../../components/universalComponents/PdfComponent";
@@ -23,8 +24,10 @@ const OffersListPage = ({connectedUser}:
     const [showPdf, setShowPDF] = useState<boolean>(false)
     const [interviews, setInterviews] = useState<IInterview[]>([])
     const [studentApplys, setStudentApplys] =
-        useState<IStudentApplys>({studentId: connectedUser.id, offersId: new Array<string>(),
-            removableOffersId: new Array<string>()});
+        useState<IStudentApplys>({
+            studentId: connectedUser.id, offersId: new Array<string>(),
+            removableOffersId: new Array<string>()
+        });
 
     const fetchInterviews = useCallback(async () => {
         universalFetch(async () => await putGetStudentInterviews(connectedUser.id, connectedUser.token),
@@ -51,38 +54,37 @@ const OffersListPage = ({connectedUser}:
             })
     }, [connectedUser]);
 
+
     useEffect(() => {
         fetchStudentApplys();
         fetchOffers();
         fetchInterviews();
     }, [connectedUser, fetchOffers, fetchInterviews, fetchStudentApplys]);
 
-    const applyToOffer = async (offerId: string): Promise<void> => {
+    const applyToOffer = useCallback(async (offerId: string): Promise<void> => {
         universalFetch(async () => await putApplyToOffer(connectedUser.id, offerId, connectedUser.token),
             async (response: Response) => {
                 setStudentApplys(
                     {
-                        studentId: connectedUser.id,
+                        ...studentApplys,
                         offersId: [...studentApplys.offersId, offerId],
-                        removableOffersId: [...studentApplys.removableOffersId]
+                        removableOffersId: [...studentApplys.removableOffersId, offerId]
                     });
-                window.location.href = "/offres"
             });
-    }
+    }, [connectedUser, studentApplys]);
 
-    const retirerOffre = async (removableOffersId : string): Promise<void> => {
+    const retirerOffre = useCallback(async (removableOffersId: string): Promise<void> => {
         universalFetch(async () => await removeStudentApplication(connectedUser.token,
                 Number(removableOffersId), Number(connectedUser.id)),
             async (response: Response) => {
+                studentApplys.removableOffersId = studentApplys.removableOffersId.filter((id) =>
+                    id !== removableOffersId);
+                studentApplys.offersId = studentApplys.offersId.filter((id) =>
+                    id !== removableOffersId);
                 setStudentApplys(
-                    {
-                        studentId: connectedUser.id,
-                        offersId: [...studentApplys.offersId],
-                        removableOffersId: [...studentApplys.removableOffersId, removableOffersId]
-                    });
-                window.location.href = "/offres"
+                    {...studentApplys});
             });
-    }
+    }, [connectedUser, studentApplys]);
 
     const confirmInterview = async (interviewId: string, selectedDate: string): Promise<void> => {
         universalFetch(async () => await putStudentSelectDate(
@@ -200,12 +202,13 @@ const OffersListPage = ({connectedUser}:
                                                 {studentApplys.offersId.includes(offer.id) ?
                                                     <Button className="btn btn-danger"
                                                             disabled={!studentApplys.removableOffersId.includes(offer.id)}
-                                                            onClick={async () => {
-                                                    await retirerOffre(offer.id)}
-                                                    }>Retirer</Button>
+                                                            onClick={() => {
+                                                                retirerOffre(offer.id)
+                                                            }
+                                                            }>Retirer</Button>
                                                     :
-                                                    <Button className="btn btn-success" onClick={async () => {
-                                                        await applyToOffer(offer.id)
+                                                    <Button className="btn btn-success" onClick={() => {
+                                                        applyToOffer(offer.id)
                                                     }}>Postuler</Button>
                                                 }
                                             </>}
