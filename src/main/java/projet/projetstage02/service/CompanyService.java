@@ -10,6 +10,7 @@ import projet.projetstage02.dto.contracts.StageContractOutDTO;
 import projet.projetstage02.dto.evaluations.Etudiant.EvaluationEtudiantInDTO;
 import projet.projetstage02.dto.interview.CreateInterviewDTO;
 import projet.projetstage02.dto.interview.InterviewOutDTO;
+import projet.projetstage02.dto.notification.CompanyNotificationDTO;
 import projet.projetstage02.dto.offres.OfferAcceptedStudentsDTO;
 import projet.projetstage02.dto.offres.OffreInDTO;
 import projet.projetstage02.dto.offres.OffreOutDTO;
@@ -271,5 +272,44 @@ public class CompanyService {
             Optional<EvaluationEtudiant> opt = evaluationEtudiantRepository.findByContractId(stageContract.getId());
             return opt.isPresent();
         }).map(StageContract::getId).toList();
+    }
+
+    public CompanyNotificationDTO getNotification(long companyId) throws NonExistentEntityException {
+        getCompanyById(companyId);
+
+        return CompanyNotificationDTO.builder()
+                .nbOffers(getOfferNotification(companyId))
+                .nbContracts(getContractNotifications(companyId))
+                .build();
+    }
+
+    private int getOfferNotification(long companyId) {
+        List<Offre> offers = offreRepository.findAllByIdCompagnie(companyId);
+
+        if(offers.size() == 0)
+            return 0;
+
+        int nb = 0;
+
+        for(Offre offer : offers){
+            long count = applicationRepository.findByOfferId(offer.getId())
+                    .stream()
+                    .filter(application -> applicationAcceptationRepository
+                            .findByOfferIdAndStudentId(offer.getId(), application.getStudentId()).isEmpty())
+                    .count();
+
+            nb += (int) count;
+        }
+
+        return nb;
+    }
+
+    private int getContractNotifications(long companyId) {
+        long count = stageContractRepository.findByCompanyId(companyId)
+                .stream()
+                .filter(stageContract -> stageContract.getCompanySignature().isBlank())
+                .count();
+
+        return (int) count;
     }
 }

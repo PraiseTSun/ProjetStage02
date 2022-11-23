@@ -302,6 +302,8 @@ public class StudentService {
     }
 
     public StudentNotificationDTO getNotification (long studentId) throws NonExistentEntityException {
+        getStudentById(studentId);
+
         return StudentNotificationDTO.builder()
                 .nbUploadCv(getCvNotification(studentId))
                 .nbStages(getStageNotification(studentId))
