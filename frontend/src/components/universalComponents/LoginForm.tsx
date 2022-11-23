@@ -18,30 +18,35 @@ const LoginForm = (props: { setUser: Function }): JSX.Element => {
         event.preventDefault();
 
         if (form.checkValidity()) {
-            setWaiting(true)
-            const tokenRes = await postUserTypeLogin(userType, email, password)
-            if (tokenRes.ok) {
-                const tokenData = await tokenRes.json()
-                const res = await putUserType(userType, tokenData.token)
-                if (res.ok) {
-                    const data = await res.json()
-                    const user: IUser = {
-                        id: data.id,
-                        firstName: data.firstName,
-                        lastName: data.lastName,
-                        userType: userType,
-                        token: tokenData.token,
-                        cvToValidate: data.cvToValidate,
-                        cv: data.cv,
-                        companyName: data.companyName
-                    }
-                    props.setUser(user)
-                    localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(user))
-                } else setIsInvalidLoggin(true)
-            } else setIsInvalidLoggin(true)
+            try {
+                setWaiting(true)
+                const tokenRes = await postUserTypeLogin(userType, email, password)
+                if (tokenRes.ok) {
+                    const tokenData = await tokenRes.json()
+                    const res = await putUserType(userType, tokenData.token)
+                    if (res.ok) {
+                        const data = await res.json()
+                        const user: IUser = {
+                            id: data.id,
+                            firstName: data.firstName,
+                            lastName: data.lastName,
+                            userType: userType,
+                            token: tokenData.token,
+                            cvToValidate: data.cvToValidate,
+                            cv: data.cv,
+                            companyName: data.companyName
+                        }
+                        props.setUser(user)
+                        localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(user))
+                    } else setIsInvalidLoggin(true)
+                } else setIsInvalidLoggin(true);
+                setWaiting(false)
+                setValidated(true);
+            } catch {
+                setWaiting(false)
+                setValidated(true);
+            }
         }
-        setWaiting(false)
-        setValidated(true);
     }
 
     if (waiting) {
