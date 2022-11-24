@@ -2,21 +2,9 @@ import React, {useState} from "react";
 import {Col, Container, ListGroup, Tab} from "react-bootstrap";
 import FormulaireInscriptionEtudiant from "./FormulaireInscriptionEtudiant";
 import FormulaireInscriptionEntreprise from "./FormulaireInscriptionEntreprise";
-import {postUserType} from "../../services/universalServices/UniversalFetchService";
 
 const InscriptionForm = (): JSX.Element => {
     const [signupSent, setSignupSent] = useState<boolean>(false);
-
-    const onInscrire = async (compte: object, type: string) => {
-        const res = await postUserType(type, compte);
-
-        if (!res.ok) {
-            const data = await res.json();
-            alert(data.error);
-        } else {
-            setSignupSent(true);
-        }
-    }
 
     if (signupSent) {
         return (
@@ -41,10 +29,10 @@ const InscriptionForm = (): JSX.Element => {
 
                 <Tab.Content className="mt-3 p-2">
                     <Tab.Pane eventKey="#etudiant">
-                        <FormulaireInscriptionEtudiant onInscrire={onInscrire}/>
+                        <FormulaireInscriptionEtudiant onInscrire={setSignupSent}/>
                     </Tab.Pane>
                     <Tab.Pane eventKey="#entreprise">
-                        <FormulaireInscriptionEntreprise onInscrire={onInscrire}/>
+                        <FormulaireInscriptionEntreprise onInscrire={setSignupSent}/>
                     </Tab.Pane>
                 </Tab.Content>
             </Tab.Container>
