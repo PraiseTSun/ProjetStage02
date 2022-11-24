@@ -23,6 +23,7 @@ import ContractsPage from "./pages/gestionnairePages/ContractsPage";
 import ConsulterEvaluationDeStages from "./pages/gestionnairePages/ConsulterEvaluationDeStages";
 import ConsulterEvaluationDeEtudiants from "./pages/gestionnairePages/ConsulterEvaluationDeEtudiants";
 import SignerEntenteDeStageParGestionnaire from "./pages/gestionnairePages/SignerEntenteDeStageParGestionnaire";
+import NotFoundPage from "./pages/universalPages/NotFoundPage";
 
 export const LOCAL_STORAGE_KEY = "MASSI_BEST_PROGRAMMER_PROJET_STAGE_02_CURRENT_CONNECTED_USER"
 export const emptyUser: IUser = {
@@ -95,9 +96,7 @@ function App() {
                     <Routes>
                         <Route path="/" element={<LoginPage setUser={setConnectedUser}/>}/>
                         <Route path="/confirmEmail/:id" element={<ConfirmationPage/>}/>
-                        <Route path="*"
-                               element={<h1 className="min-vh-100 text-center text-white display-1">404 - Page pas
-                                   trouvé</h1>}/>
+                        <Route path="*" element={<NotFoundPage/>}/>
                     </Routes>
                 </BrowserRouter>
             </Container>
@@ -113,9 +112,7 @@ function App() {
                         <Route path="/offres" element={<OffersListPage connectedUser={connectedUser}/>}/>
                         <Route path="/uploaderCV" element={<StudentCvUploadPage connectedUser={connectedUser}/>}/>
                         <Route path="/myContracts" element={<StudentContractsPage connectedUser={connectedUser}/>}/>
-                        <Route path="*"
-                               element={<h1 className="min-vh-100 text-center text-white display-1 min-vh-100">404 -
-                                   Page pas trouvé</h1>}/>
+                        <Route path="*" element={<NotFoundPage/>}/>
                     </Routes>
                 </BrowserRouter>
             </Container>
@@ -130,9 +127,7 @@ function App() {
                         <Route path="/myOffers" element={<CompanyOffersPage connectedUser={connectedUser}/>}/>
                         <Route path="/CompanyContractsPage"
                                element={<CompanyContractsPage connectedUser={connectedUser}/>}/>
-                        <Route path="*"
-                               element={<h1 className="min-vh-100 text-center text-white display-1">404 - Page pas
-                                   trouvé</h1>}/>
+                        <Route path="*" element={<NotFoundPage/>}/>
                     </Routes>
                 </BrowserRouter>
             </Container>
@@ -161,9 +156,7 @@ function App() {
                                element={<ConsulterEvaluationDeEtudiants connectedUser={connectedUser}/>}></Route>
                         <Route path="/signerententedestage"
                                element={<SignerEntenteDeStageParGestionnaire connectedUser={connectedUser}/>}/>
-                        <Route path="*"
-                               element={<h1 className="min-vh-100 text-center text-white display-1">404 - Page pas
-                                   trouvé</h1>}/>
+                        <Route path="*" element={<NotFoundPage/>}/>
                     </Routes>
                 </BrowserRouter>
             </Container>
