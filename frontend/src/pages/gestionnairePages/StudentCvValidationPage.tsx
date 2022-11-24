@@ -142,7 +142,7 @@ const StudentCvValidationPage = ({connectedUser}:
             <Row>
                 <Col className="bg-light p-0" style={{height: 400}}>
                     <Table className="text-center" hover>
-                        <thead className="bg-primary">
+                        <thead className="bg-primary text-white">
                         <tr>
                             <th>Prénom</th>
                             <th>Nom</th>

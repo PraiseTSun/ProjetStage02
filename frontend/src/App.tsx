@@ -151,9 +151,6 @@ function App() {
                                element={<StudentCvValidationPage connectedUser={connectedUser}/>}/>
                         <Route path="/offerHistory"
                                element={<OfferHistoryPage connectedUser={connectedUser}/>}/>
-                        <Route path="*"
-                               element={<h1 className="min-vh-100 text-center text-white display-1">404 - Page pas
-                                   trouvé</h1>}/>
                         <Route path="/validerNouvelleOffre"
                                element={<ValiderNouvelleOffreStagePage connectedUser={connectedUser}/>}/>
                         <Route path="/evaluerLeMilieuDeStage"
@@ -164,6 +161,9 @@ function App() {
                                element={<ConsulterEvaluationDeEtudiants connectedUser={connectedUser}/>}></Route>
                         <Route path="/signerententedestage"
                                element={<SignerEntenteDeStageParGestionnaire connectedUser={connectedUser}/>}/>
+                        <Route path="*"
+                               element={<h1 className="min-vh-100 text-center text-white display-1">404 - Page pas
+                                   trouvé</h1>}/>
                     </Routes>
                 </BrowserRouter>
             </Container>
