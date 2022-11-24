@@ -149,7 +149,8 @@ public class GestionnaireService {
 
     public List<CompanyDTO> getUnvalidatedCompanies() {
         List<CompanyDTO> unvalidatedCompaniesDTOs = new ArrayList<>();
-        companyRepository.findAll().stream()
+        companyRepository.findAll()
+                .stream()
                 .filter(company ->
                         !company.isConfirm() && company.isEmailConfirmed()
                 )
@@ -687,9 +688,9 @@ public class GestionnaireService {
 
     public GestionnaireNotificationDTO getNotification(){
         return GestionnaireNotificationDTO.builder()
-                .nbValidationUser(getUnvalidatedUserNumber())
-                .nbValidationCV(getCvToValidateNumber())
-                .nbValidationOffer(getOfferToValidateNumber())
+                .nbUnvalidatedUser(getUnvalidatedUserNumber())
+                .nbUnvalidatedCV(getCvToValidateNumber())
+                .nbUnvalidatedOffer(getOfferToValidateNumber())
                 .nbEvaluateMilieuStage(getContractInNeedToBeEvaluated())
                 .nbCreateContract(getContractInNeedToBeCreate())
                 .nbConsultStageEvaluation(getStageEvaluationNotification())

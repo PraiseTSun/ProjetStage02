@@ -10,9 +10,9 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Builder
 public class GestionnaireNotificationDTO {
-    private int nbValidationUser;
-    private int nbValidationCV;
-    private int nbValidationOffer;
+    private int nbUnvalidatedUser;
+    private int nbUnvalidatedCV;
+    private int nbUnvalidatedOffer;
     private int nbEvaluateMilieuStage;
     private int nbCreateContract;
     private int nbConsultStageEvaluation;
