@@ -9,7 +9,7 @@ const CompanyDashboard = ({user, deconnexion}: { user: IUser, deconnexion: Funct
             <Button className="btn btn-danger my-2" onClick={() => deconnexion()}>
                 Déconnexion
             </Button>
-            <h1 className="p-5 text-center fw-bold text-white display-4">Bienvenue {user.firstName} {user.lastName}</h1>
+            <h1 className="p-5 pb-3 text-center fw-bold text-white display-4">Bienvenue {user.firstName} {user.lastName}</h1>
             <Row className="d-flex justify-content-center">
                 <Link to="/soumettreOffre"
                       className="btn btn-primary">Soumettre une offre de stage</Link>

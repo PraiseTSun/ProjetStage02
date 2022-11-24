@@ -10,7 +10,7 @@ const GestionnaireDashboard = ({user, deconnexion}: { user: IUser, deconnexion: 
             <Button className="btn btn-danger my-2" onClick={() => deconnexion()}>
                 Déconnexion
             </Button>
-            <h1 className="p-5 text-center fw-bold text-white display-4">Bienvenue {user.firstName} {user.lastName}</h1>
+            <h1 className="p-5 pb-3 text-center fw-bold text-white display-4">Bienvenue {user.firstName} {user.lastName}</h1>
             <Row className="d-flex justify-content-center">
                 <Link to="/userValidation" className="btn btn-primary">Validation des utilisateurs</Link>
                 <Link to="/cvValidation" className="btn btn-primary mt-3">Validation des curriculums vitae des
@@ -25,7 +25,8 @@ const GestionnaireDashboard = ({user, deconnexion}: { user: IUser, deconnexion: 
                     stages</Link>
                 <Link to="/consulterEvaluationParEntreprise" className="btn btn-primary mt-3">Consulter les évaluations
                     des étudiants</Link>
-                <Link to="/signerententedestage" className="btn btn-primary mt-3">Signer les ententes de stage</Link>
+                <Link to="/signerententedestage" className="btn btn-primary mt-3">Signer les ententes de
+                    stage</Link>
             </Row>
         </div>
     );
