@@ -21,6 +21,7 @@ import projet.projetstage02.dto.cv.CvRefusalDTO;
 import projet.projetstage02.dto.evaluations.EvaluationInfoDTO;
 import projet.projetstage02.dto.evaluations.MillieuStage.MillieuStageEvaluationInDTO;
 import projet.projetstage02.dto.interview.InterviewSelectInDTO;
+import projet.projetstage02.dto.notification.GestionnaireNotificationDTO;
 import projet.projetstage02.dto.offres.OffreInDTO;
 import projet.projetstage02.dto.offres.OffreOutDTO;
 import projet.projetstage02.dto.pdf.PdfOutDTO;
@@ -1133,6 +1134,26 @@ public class GestionnaireRootControllerTest {
         when(authService.getToken(anyString(), any())).thenThrow(new InvalidTokenException());
 
         gestionnaireMockMvc.perform(put("/getEvaluatedContracts/etudiants")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(jsonTokenDTO.write(token).getJson()))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    void testGetGestionnaireNotificationHappyDay() throws Exception{
+        when(gestionnaireService.getNotification()).thenReturn(new GestionnaireNotificationDTO());
+
+        gestionnaireMockMvc.perform(put("/getGestionnaireNotification")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(jsonTokenDTO.write(token).getJson()))
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    void testGetGestionnaireNotificationInvalidToken() throws Exception {
+        when(authService.getToken(anyString(), any())).thenThrow(new InvalidTokenException());
+
+        gestionnaireMockMvc.perform(put("/getGestionnaireNotification")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(jsonTokenDTO.write(token).getJson()))
                 .andExpect(status().isForbidden());
