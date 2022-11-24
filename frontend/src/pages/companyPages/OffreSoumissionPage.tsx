@@ -105,7 +105,7 @@ const OffreSoumissionPage = ({user}: { user: IUser }): JSX.Element => {
     }
 
     return (
-        <Container className="min-vh-100">
+        <Container className="min-vh-100 pb-5">
             <PageHeader title={"Soumettre une offre"}/>
             <Row className="card">
                 <h3 className="card-header text-center">Formulaire de soumission de stage</h3>

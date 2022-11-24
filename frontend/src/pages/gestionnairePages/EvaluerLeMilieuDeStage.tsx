@@ -39,7 +39,7 @@ const EvaluerLeMilieuDeStage = ({user}: { user: IUser }): JSX.Element => {
                 const response: Response = await putGetContrats(user.token);
                 if (response.ok) {
                     const data = await response.json()
-                    setContrats(await data.contracts)
+                    setContrats(data.contracts)
                 } else {
                     generateAlert()
                 }
@@ -86,8 +86,8 @@ const EvaluerLeMilieuDeStage = ({user}: { user: IUser }): JSX.Element => {
         <Container className="min-vh-100">
             <PageHeader title={"Évaluation des contrats"}></PageHeader>
             <Row>
-                <Col>
-                    <Table className="text-center" hover>
+                <Col className="bg-light p-0 mb-5" style={{minHeight: 400}}>
+                    <Table className="text-center" hover responsive>
                         <thead className="bg-primary text-white">
                         <tr>
                             <th>Compagnie</th>
@@ -98,19 +98,25 @@ const EvaluerLeMilieuDeStage = ({user}: { user: IUser }): JSX.Element => {
                         </tr>
                         </thead>
                         <tbody className="bg-light">
-                        {contrats.map((contrat, index) => {
-                            return (
-                                <tr key={index}>
-                                    <td>{contrat.companyName}</td>
-                                    <td>{contrat.position}</td>
-                                    <td>{contrat.studentFullName}</td>
-                                    <td>{contrat.description}</td>
-                                    <td><Button className="btn btn-warning" onClick={() => {
-                                        showFormulaires(Number(contrat.contractId))
-                                    }}>Évaluer</Button></td>
-                                </tr>
-                            );
-                        })}
+                        {contrats.length === 0
+                            ? <tr>
+                                <td colSpan={5}>
+                                    <p className="h1">Aucune entente a évaluer</p>
+                                </td>
+                            </tr>
+                            : contrats.map((contrat, index) => {
+                                return (
+                                    <tr key={index}>
+                                        <td>{contrat.companyName}</td>
+                                        <td>{contrat.position}</td>
+                                        <td>{contrat.studentFullName}</td>
+                                        <td>{contrat.description}</td>
+                                        <td><Button className="btn btn-warning" onClick={() => {
+                                            showFormulaires(Number(contrat.contractId))
+                                        }}>Évaluer</Button></td>
+                                    </tr>
+                                );
+                            })}
                         </tbody>
                     </Table>
                 </Col>
