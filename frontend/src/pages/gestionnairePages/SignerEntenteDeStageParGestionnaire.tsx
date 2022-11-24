@@ -61,7 +61,7 @@ const SignerEntenteDeStageParGestionnaire = ({connectedUser}: { connectedUser: I
             {isSigner && <SignaturePopup setSigning={setIsSigner} onSignature={signer}/>}
             <Col>
                 <Row>
-                    <Col className="bg-light p-0" style={{minHeight: 400}}>
+                    <Col className="bg-light p-0 mb-5" style={{minHeight: 400}}>
                         <Table className="text-center" hover responsive>
                             <thead className="bg-primary text-white">
                             <tr className="text-white">
