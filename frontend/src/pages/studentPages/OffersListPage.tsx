@@ -9,7 +9,8 @@ import {
     putGetOfferStudent,
     putGetStudentInterviews,
     putStudentApplys,
-    putStudentSelectDate
+    putStudentSelectDate,
+    removeStudentApplication
 } from "../../services/studentServices/StudentFetchService";
 import IInterview from "../../models/IInterview";
 import PdfComponent from "../../components/universalComponents/PdfComponent";
@@ -23,7 +24,10 @@ const OffersListPage = ({connectedUser}:
     const [showPdf, setShowPDF] = useState<boolean>(false)
     const [interviews, setInterviews] = useState<IInterview[]>([])
     const [studentApplys, setStudentApplys] =
-        useState<IStudentApplys>({studentId: connectedUser.id, offersId: new Array<string>()});
+        useState<IStudentApplys>({
+            studentId: connectedUser.id, offersId: new Array<string>(),
+            removableOffersId: new Array<string>()
+        });
 
     const fetchInterviews = useCallback(async () => {
         universalFetch(async () => await putGetStudentInterviews(connectedUser.id, connectedUser.token),
@@ -50,22 +54,37 @@ const OffersListPage = ({connectedUser}:
             })
     }, [connectedUser]);
 
+
     useEffect(() => {
         fetchStudentApplys();
         fetchOffers();
         fetchInterviews();
     }, [connectedUser, fetchOffers, fetchInterviews, fetchStudentApplys]);
 
-    const applyToOffer = async (offerId: string): Promise<void> => {
+    const applyToOffer = useCallback(async (offerId: string): Promise<void> => {
         universalFetch(async () => await putApplyToOffer(connectedUser.id, offerId, connectedUser.token),
             async (response: Response) => {
                 setStudentApplys(
                     {
-                        studentId: connectedUser.id,
-                        offersId: [...studentApplys.offersId, offerId]
+                        ...studentApplys,
+                        offersId: [...studentApplys.offersId, offerId],
+                        removableOffersId: [...studentApplys.removableOffersId, offerId]
                     });
             });
-    }
+    }, [connectedUser, studentApplys]);
+
+    const retirerOffre = useCallback(async (removableOffersId: string): Promise<void> => {
+        universalFetch(async () => await removeStudentApplication(connectedUser.token,
+                Number(removableOffersId), Number(connectedUser.id)),
+            async (response: Response) => {
+                studentApplys.removableOffersId = studentApplys.removableOffersId.filter((id) =>
+                    id !== removableOffersId);
+                studentApplys.offersId = studentApplys.offersId.filter((id) =>
+                    id !== removableOffersId);
+                setStudentApplys(
+                    {...studentApplys});
+            });
+    }, [connectedUser, studentApplys]);
 
     const confirmInterview = async (interviewId: string, selectedDate: string): Promise<void> => {
         universalFetch(async () => await putStudentSelectDate(
@@ -180,12 +199,18 @@ const OffersListPage = ({connectedUser}:
                                             <p className="h4 text-danger">Vous n'avez pas de CV</p>}
                                         {connectedUser.cv!.length > 2 &&
                                             <>
-                                                {studentApplys.offersId.includes(offer.id) &&
-                                                    <p className="h4 text-success">Déjà Postulé</p>}
-                                                <Button disabled={studentApplys.offersId.includes(offer.id)}
-                                                        className="btn btn-success" onClick={async () => {
-                                                    await applyToOffer(offer.id)
-                                                }}>Postuler</Button>
+                                                {studentApplys.offersId.includes(offer.id) ?
+                                                    <Button className="btn btn-danger"
+                                                            disabled={!studentApplys.removableOffersId.includes(offer.id)}
+                                                            onClick={() => {
+                                                                retirerOffre(offer.id)
+                                                            }
+                                                            }>Retirer</Button>
+                                                    :
+                                                    <Button className="btn btn-success" onClick={() => {
+                                                        applyToOffer(offer.id)
+                                                    }}>Postuler</Button>
+                                                }
                                             </>}
                                     </td>
                                 </tr>
