@@ -56,10 +56,10 @@ const OfferHistoryPage = ({connectedUser}:
     }
 
     return (
-        <Container className="min-vh-100">
+        <Container className="min-vh-100 pb-5">
             <PageHeader title={"Historique des offres"}/>
             <Row>
-                <Col className="bg-light p-0" style={{height: 400}}>
+                <Col className="bg-light p-0" style={{minHeight: 400}}>
                     <Table className="text-center" hover responsive>
                         <thead className="bg-primary text-white">
                         <tr>

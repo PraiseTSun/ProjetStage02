@@ -77,7 +77,7 @@ const EvaluerLeMilieuDeStage = ({user}: { user: IUser }): JSX.Element => {
         return (
             <EvaluationLeMilleuDeStageForm user={user} hideFormulaires={hideFormulaires}
                                            infosContrat={infosContrat}
-                                           contratId={contratId}></EvaluationLeMilleuDeStageForm>
+                                           contratId={contratId}/>
         )
     }
 

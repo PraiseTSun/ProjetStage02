@@ -3,9 +3,7 @@ import IEvaluationLeMilieuDeStageForm from "../../models/IEvaluationLeMilieuDeSt
 import {Button, Col, Container, Form, ListGroup, Row, Tab} from "react-bootstrap";
 import {Link} from "react-router-dom";
 import SignaturePad from "react-signature-canvas";
-import {
-    postEvaluationStage
-} from "../../services/gestionnaireServices/GestionnaireFetchService";
+import {postEvaluationStage} from "../../services/gestionnaireServices/GestionnaireFetchService";
 import IUser from "../../models/IUser";
 import {BeatLoader} from "react-spinners";
 import InfoDuContrat from "../../models/InfoDuContrat";
@@ -144,16 +142,15 @@ const EvaluationLeMilleuDeStageForm = ({
                             <Col className="bg-light px-4 pb-2 pt-1">
                                 <Row>
                                     <Col className="col-3">
-                                        <p className="fw-bold  mt-2 h5">Nom Stagiaire</p>
+                                        <p className="fw-bold h5">Nom Stagiaire</p>
                                         <p>{`${infosContrat?.nomEtudiant} ${infosContrat?.prenomEtudiant}`}</p>
                                     </Col>
                                     <Col className="col-5">
-                                        <p>Date Stage(Début à
-                                            Fin)</p>
+                                        <p className="fw-bold h5">Date Stage (Début à Fin)</p>
                                         <p>{infosContrat?.dateStageDebut} à {infosContrat.dateStageFin}</p>
                                     </Col>
                                     <Col className="col-3">
-                                        <p>Stage Session</p>
+                                        <p className="fw-bold h5">Stage Session</p>
                                         <p>{infosContrat?.session}</p>
                                     </Col>
                                 </Row>

@@ -27,7 +27,7 @@ const CompanyOffersPage = ({connectedUser}: { connectedUser: IUser }): JSX.Eleme
         <Container className="min-vh-100">
             <PageHeader title={"Mes offres"}/>
             <Row>
-                <Col className="bg-light p-0 me-3" style={{minHeight: 400}}>
+                <Col className="bg-light p-0 me-lg-0 me-xl-3" style={{minHeight: 400}}>
                     <Table className="text-center" hover responsive>
                         <thead className="bg-primary text-white">
                         <tr>
