@@ -11,6 +11,7 @@ import projet.projetstage02.dto.evaluations.EvaluationInfoDTO;
 import projet.projetstage02.dto.evaluations.MillieuStage.MillieuStageEvaluationInDTO;
 import projet.projetstage02.dto.offres.OffreOutDTO;
 import projet.projetstage02.dto.pdf.PdfOutDTO;
+import projet.projetstage02.dto.problems.ProblemInDTO;
 import projet.projetstage02.dto.users.CompanyDTO;
 import projet.projetstage02.dto.users.GestionnaireDTO;
 import projet.projetstage02.dto.users.Students.StudentOutDTO;
@@ -42,6 +43,7 @@ public class GestionnaireService {
     private final EvaluationEtudiantRepository evaluationEtudiantRepository;
     private final EvaluationMillieuStagePDFRepository evaluationMillieuStagePDFRepository;
     private final EvaluationEtudiantPDFRepository evaluationEtudiantPDFRepository;
+    private final ProblemsRepository problemsRepository;
 
     public long saveGestionnaire(GestionnaireDTO dto) {
         return gestionnaireRepository.save(dto.toModel()).getId();
@@ -698,5 +700,9 @@ public class GestionnaireService {
                         .map(Student::getEmail)
                         .toList();
         ThreadUtil.threadPool().addTask(() -> EmailUtil.sendNotificationMail(emails, offer));
+    }
+
+    public void reportProblem(ProblemInDTO problem) {
+        problemsRepository.save(problem.toModel());
     }
 }
