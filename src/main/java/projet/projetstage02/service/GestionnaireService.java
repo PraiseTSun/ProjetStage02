@@ -691,7 +691,12 @@ public class GestionnaireService {
     public void sendNewOfferEmail(long offerId) throws NonExistentOfferExeption {
         Offre offer = getOfferById(offerId);
         List<String> emails =
-                studentRepository.findAll().stream().filter(AbstractUser::isConfirm).map(Student::getEmail).toList();
+                studentRepository.findAll()
+                        .stream()
+                        .filter(AbstractUser::isConfirm)
+                        .filter(student -> student.getDepartment().departement.equals(offer.getDepartment().departement))
+                        .map(Student::getEmail)
+                        .toList();
         ThreadUtil.threadPool().addTask(() -> EmailUtil.sendNotificationMail(emails, offer));
     }
 }
