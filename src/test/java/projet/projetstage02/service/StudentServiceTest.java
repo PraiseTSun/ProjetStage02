@@ -9,6 +9,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import projet.projetstage02.dto.SignatureInDTO;
 import projet.projetstage02.dto.applications.ApplicationDTO;
 import projet.projetstage02.dto.applications.ApplicationListDTO;
+import projet.projetstage02.dto.applications.RemoveApplicationDTO;
 import projet.projetstage02.dto.contracts.StageContractOutDTO;
 import projet.projetstage02.dto.cv.CvStatusDTO;
 import projet.projetstage02.dto.interview.InterviewOutDTO;
@@ -17,7 +18,6 @@ import projet.projetstage02.dto.offres.OffreOutDTO;
 import projet.projetstage02.dto.pdf.PdfDTO;
 import projet.projetstage02.dto.pdf.PdfOutDTO;
 import projet.projetstage02.dto.users.Students.StudentInDTO;
-import projet.projetstage02.dto.users.Students.StudentOutDTO;
 import projet.projetstage02.exception.*;
 import projet.projetstage02.model.AbstractUser.Department;
 import projet.projetstage02.model.*;
@@ -48,6 +48,8 @@ public class StudentServiceTest {
     @Mock
     ApplicationRepository applicationRepository;
     @Mock
+    ApplicationAcceptationRepository applicationAcceptationRepository;
+    @Mock
     InterviewRepository interviewRepository;
     @Mock
     StageContractRepository stageContractRepository;
@@ -58,11 +60,13 @@ public class StudentServiceTest {
     PdfDTO bartCv;
     Offre duffOffer;
     Application bartApplication;
+    ApplicationAcceptation bartAcceptation;
     CvStatus cvStatus;
     SignatureInDTO signatureInDTO;
     StageContract stageContract;
     Interview interview;
     InterviewSelectInDTO interviewSelectInDTO;
+    RemoveApplicationDTO removeApplicationDTO;
 
     @BeforeEach
     void setup() {
@@ -95,6 +99,15 @@ public class StudentServiceTest {
                 .studentId(2L)
                 .offerId(1L)
                 .build();
+
+        bartAcceptation = ApplicationAcceptation.builder()
+                .id(4L)
+                .offerId(duffOffer.getId())
+                .studentId(bart.getId())
+                .companyName("Duff bear")
+                .studentName("Bart Simpson")
+                .build();
+
         cvStatus = CvStatus.builder().build();
 
         stageContract = StageContract.builder()
@@ -130,6 +143,12 @@ public class StudentServiceTest {
                 .interviewId(interview.getId())
                 .studentId(bart.getId())
                 .selectedDate("2022-11-29T12:30:30")
+                .build();
+
+        removeApplicationDTO = RemoveApplicationDTO.builder()
+                .token("I am dead inside")
+                .studentId(0L)
+                .offerId(0L)
                 .build();
     }
 
@@ -665,5 +684,80 @@ public class StudentServiceTest {
         }
 
         fail("Fail to catch the exception NonExistentEntityException");
+    }
+
+    @Test
+    void testRemoveApplicationHappyDay() throws Exception {
+        when(studentRepository.findById(anyLong())).thenReturn(Optional.of(bart));
+        when(offreRepository.findById(anyLong())).thenReturn(Optional.of(duffOffer));
+        when(applicationRepository.findByStudentIdAndOfferId(anyLong(), anyLong())).thenReturn(Optional.of(bartApplication));
+        when(stageContractRepository.findByStudentIdAndOfferId(anyLong(), anyLong())).thenReturn(Optional.empty());
+        when(interviewRepository.findByStudentIdAndOfferId(anyLong(), anyLong())).thenReturn(Optional.of(interview));
+        when(applicationAcceptationRepository.findByOfferIdAndStudentId(anyLong(), anyLong()))
+                .thenReturn(Optional.of(bartAcceptation));
+
+        studentService.removeApplication(removeApplicationDTO);
+
+        verify(applicationRepository, times(1)).delete(any());
+        verify(applicationAcceptationRepository, times(1)).delete(any());
+        verify(interviewRepository, times(1)).delete(any());
+    }
+
+    @Test
+    void testRemoveApplicationContractForbidden() {
+        when(studentRepository.findById(anyLong())).thenReturn(Optional.of(bart));
+        when(offreRepository.findById(anyLong())).thenReturn(Optional.of(duffOffer));
+        when(applicationRepository.findByStudentIdAndOfferId(anyLong(), anyLong())).thenReturn(Optional.of(bartApplication));
+        when(stageContractRepository.findByStudentIdAndOfferId(anyLong(), anyLong())).thenReturn(Optional.of(stageContract));
+
+        try {
+            studentService.removeApplication(removeApplicationDTO);
+        } catch (CantRemoveApplicationException e) {
+            return;
+        } catch (NonExistentEntityException ignored) {}
+
+        fail("Fail to catch the error CantRemoveApplicationException!");
+    }
+
+    @Test
+    void testRemoveApplicationNotFound() {
+        when(studentRepository.findById(anyLong())).thenReturn(Optional.of(bart));
+        when(offreRepository.findById(anyLong())).thenReturn(Optional.of(duffOffer));
+        when(applicationRepository.findByStudentIdAndOfferId(anyLong(), anyLong())).thenReturn(Optional.empty());
+
+        try {
+            studentService.removeApplication(removeApplicationDTO);
+        } catch (NonExistentEntityException e) {
+            return;
+        } catch (CantRemoveApplicationException ignored) {}
+
+        fail("Fail to catch the error NonExistentEntityException!");
+    }
+
+    @Test
+    void testRemoveApplicationOfferNotFound() {
+        when(studentRepository.findById(anyLong())).thenReturn(Optional.of(bart));
+        when(offreRepository.findById(anyLong())).thenReturn(Optional.empty());
+
+        try {
+            studentService.removeApplication(removeApplicationDTO);
+        } catch (NonExistentEntityException e) {
+            return;
+        } catch (CantRemoveApplicationException ignored) {}
+
+        fail("Fail to catch the error NonExistentEntityException!");
+    }
+
+    @Test
+    void testRemoveApplicationStudentNotFound() {
+        when(studentRepository.findById(anyLong())).thenReturn(Optional.empty());
+
+        try {
+            studentService.removeApplication(removeApplicationDTO);
+        } catch (NonExistentEntityException e) {
+            return;
+        } catch (CantRemoveApplicationException ignored) {}
+
+        fail("Fail to catch the error NonExistentEntityException!");
     }
 }

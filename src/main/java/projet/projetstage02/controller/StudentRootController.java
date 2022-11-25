@@ -1,7 +1,6 @@
 package projet.projetstage02.controller;
 
 import lombok.AllArgsConstructor;
-import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.http.HttpStatus;
@@ -10,6 +9,7 @@ import org.springframework.web.bind.annotation.*;
 import projet.projetstage02.dto.SignatureInDTO;
 import projet.projetstage02.dto.applications.ApplicationDTO;
 import projet.projetstage02.dto.applications.ApplicationListDTO;
+import projet.projetstage02.dto.applications.RemoveApplicationDTO;
 import projet.projetstage02.dto.auth.TokenDTO;
 import projet.projetstage02.dto.contracts.StageContractOutDTO;
 import projet.projetstage02.dto.cv.CvStatusDTO;
@@ -33,7 +33,6 @@ import java.util.Map;
 
 import static org.apache.logging.log4j.Level.INFO;
 import static org.springframework.http.HttpStatus.*;
-import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
 import static projet.projetstage02.model.Token.UserTypes.STUDENT;
 import static projet.projetstage02.utils.TimeUtil.MILLI_SECOND_DAY;
 import static projet.projetstage02.utils.TimeUtil.currentTimestamp;
@@ -278,7 +277,7 @@ public class StudentRootController {
     }
 
     @PutMapping("/studentSelectDate")
-    public ResponseEntity<InterviewOutDTO> StudentSelectDate(@RequestBody InterviewSelectInDTO interviewDTO){
+    public ResponseEntity<InterviewOutDTO> studentSelectDate(@RequestBody InterviewSelectInDTO interviewDTO) {
         logger.log(INFO, "Put /studentSelectDate");
 
         try {
@@ -299,8 +298,8 @@ public class StudentRootController {
     }
 
     @PutMapping("/getStudentInterviews/{studentId}")
-    public ResponseEntity<List<InterviewOutDTO>> GetStudentInterviews
-            (@PathVariable String studentId, @RequestBody TokenDTO token){
+    public ResponseEntity<List<InterviewOutDTO>> getStudentInterviews
+            (@PathVariable String studentId, @RequestBody TokenDTO token) {
         logger.log(INFO, "Put /getStudentInterviews/{studentId}");
 
         try {
@@ -313,6 +312,24 @@ public class StudentRootController {
             return ResponseEntity.status(FORBIDDEN).build();
         } catch (NonExistentEntityException e) {
             logger.log(INFO, "Put/getStudentInterviews/{studentId} return 404");
+            return ResponseEntity.status(NOT_FOUND).build();
+        }
+    }
+
+    @PutMapping("/removeStudentApplication")
+    public ResponseEntity<ApplicationListDTO> removeStudentApplication(@RequestBody RemoveApplicationDTO removeApplicationDTO) {
+        logger.log(INFO, "Put /removeStudentApplication with the body: " + removeApplicationDTO);
+
+        try {
+            authService.getToken(removeApplicationDTO.getToken(), STUDENT);
+            ApplicationListDTO applicationListDTO = studentService.removeApplication(removeApplicationDTO);
+            logger.log(INFO, "Put/getStudentInterviews/{studentId} return 200");
+            return ResponseEntity.ok(applicationListDTO);
+        } catch (InvalidTokenException | CantRemoveApplicationException e) {
+            logger.log(INFO, "Put /removeStudentApplication return 403");
+            return ResponseEntity.status(FORBIDDEN).build();
+        } catch (NonExistentEntityException e) {
+            logger.log(INFO, "Put /removeStudentApplication return 404");
             return ResponseEntity.status(NOT_FOUND).build();
         }
     }

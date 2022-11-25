@@ -13,4 +13,6 @@ public interface StageContractRepository extends JpaRepository<StageContract, Lo
     List<StageContract> findByCompanyId(long companyId);
 
     List<StageContract> findByStudentId(long studentId);
+
+    Optional<StageContract> findByStudentIdAndOfferId(long student, long offerId);
 }

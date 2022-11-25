@@ -17,7 +17,9 @@ import projet.projetstage02.dto.users.Students.StudentOutDTO;
 import projet.projetstage02.exception.*;
 import projet.projetstage02.model.*;
 import projet.projetstage02.repository.*;
+import projet.projetstage02.utils.EmailUtil;
 import projet.projetstage02.utils.PDFCreationUtil;
+import projet.projetstage02.utils.ThreadUtil;
 
 import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
@@ -45,19 +47,20 @@ public class GestionnaireService {
         return gestionnaireRepository.save(dto.toModel()).getId();
     }
 
-    public GestionnaireDTO getGestionnaireById(Long id) throws NonExistentEntityException {
+    public GestionnaireDTO getGestionnaireById(long id) throws NonExistentEntityException {
         Optional<Gestionnaire> gestionnaireOpt = gestionnaireRepository.findById(id);
         if (gestionnaireOpt.isEmpty()) throw new NonExistentEntityException();
         return new GestionnaireDTO(gestionnaireOpt.get());
     }
 
-    public void validateCompany(Long id) throws NonExistentEntityException {
+
+    public void validateCompany(long id) throws NonExistentEntityException {
         Company company = getCompanyById(id);
         company.setConfirm(true);
         companyRepository.save(company);
     }
 
-    public void validateStudent(Long id) throws NonExistentEntityException {
+    public void validateStudent(long id) throws NonExistentEntityException {
         Student student = getStudentById(id);
         student.setConfirm(true);
         studentRepository.save(student);
@@ -119,7 +122,7 @@ public class GestionnaireService {
         return offres;
     }
 
-    public OffreOutDTO validateOfferById(Long id) throws NonExistentOfferExeption, ExpiredSessionException {
+    public OffreOutDTO validateOfferById(long id) throws NonExistentOfferExeption, ExpiredSessionException {
 
         Offre offre = getOfferById(id);
         if (!isRightSession(offre.getSession(), getNextYear())) {
@@ -290,7 +293,6 @@ public class GestionnaireService {
         List<ApplicationAcceptation> all = applicationAcceptationRepository.findAll();
         all
                 .forEach(application -> {
-
                     Optional<Offre> offerOpt = offreRepository.findById(application.getOfferId());
                     if (offerOpt.isEmpty()) return;
                     Offre offer = offerOpt.get();
@@ -349,7 +351,9 @@ public class GestionnaireService {
     public ContractsDTO getContractsToEvaluateMillieuStage() {
         List<StageContractOutDTO> contracts = new ArrayList<>();
         stageContractRepository.findAll().stream().filter(
-                stageContract -> evaluationMillieuStageRepository.findByContractId(stageContract.getId()).isEmpty()
+                stageContract ->
+                        evaluationMillieuStageRepository.findByContractId(stageContract.getId()).isEmpty()
+                                && !stageContract.getGestionnaireSignature().isBlank()
         ).forEach(stageContract -> {
             Optional<Company> companyOptional = companyRepository.findById(stageContract.getCompanyId());
             Optional<Student> studentOptional = studentRepository.findById(stageContract.getStudentId());
@@ -682,5 +686,17 @@ public class GestionnaireService {
         stageContractRepository.save(contract);
 
         return new StageContractOutDTO(contract);
+    }
+
+    public void sendNewOfferEmail(long offerId) throws NonExistentOfferExeption {
+        Offre offer = getOfferById(offerId);
+        List<String> emails =
+                studentRepository.findAll()
+                        .stream()
+                        .filter(AbstractUser::isConfirm)
+                        .filter(student -> student.getDepartment().departement.equals(offer.getDepartment().departement))
+                        .map(Student::getEmail)
+                        .toList();
+        ThreadUtil.threadPool().addTask(() -> EmailUtil.sendNotificationMail(emails, offer));
     }
 }

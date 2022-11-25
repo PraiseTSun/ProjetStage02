@@ -90,20 +90,21 @@ public class CompanyService {
         return studentOpt.get();
     }
 
-    private Offre getOfferById(long id) throws NonExistentEntityException {
-        Optional<Offre> offerOpt = offreRepository.findById(id);
-        if (offerOpt.isEmpty()) throw new NonExistentEntityException();
-        return offerOpt.get();
-    }
 
     private Company getCompanyById(long id) throws NonExistentEntityException {
         Optional<Company> companyOpt = companyRepository.findById(id);
-        if(companyOpt.isEmpty()) throw new NonExistentEntityException();
+        if (companyOpt.isEmpty()) throw new NonExistentEntityException();
         return companyOpt.get();
     }
 
     public CompanyDTO getCompanyByIdDTO(long id) throws NonExistentEntityException {
         return new CompanyDTO(getCompanyById(id));
+    }
+
+    private Offre getOfferById(long id) throws NonExistentEntityException {
+        Optional<Offre> offerOpt = offreRepository.findById(id);
+        if (offerOpt.isEmpty()) throw new NonExistentEntityException();
+        return offerOpt.get();
     }
 
     public ApplicationAcceptationDTO saveStudentApplicationAccepted(long offerId, long studentId) throws NonExistentEntityException, NonExistentOfferExeption, AlreadyExistingAcceptationException {
@@ -272,4 +273,6 @@ public class CompanyService {
             return opt.isPresent();
         }).map(StageContract::getId).toList();
     }
+
+
 }
