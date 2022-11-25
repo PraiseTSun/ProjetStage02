@@ -1,7 +1,6 @@
 package projet.projetstage02.controller;
 
 import lombok.AllArgsConstructor;
-import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.http.HttpStatus;
@@ -34,7 +33,6 @@ import java.util.Map;
 
 import static org.apache.logging.log4j.Level.INFO;
 import static org.springframework.http.HttpStatus.*;
-import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
 import static projet.projetstage02.model.Token.UserTypes.STUDENT;
 import static projet.projetstage02.utils.TimeUtil.MILLI_SECOND_DAY;
 import static projet.projetstage02.utils.TimeUtil.currentTimestamp;
@@ -279,7 +277,7 @@ public class StudentRootController {
     }
 
     @PutMapping("/studentSelectDate")
-    public ResponseEntity<InterviewOutDTO> studentSelectDate(@RequestBody InterviewSelectInDTO interviewDTO){
+    public ResponseEntity<InterviewOutDTO> studentSelectDate(@RequestBody InterviewSelectInDTO interviewDTO) {
         logger.log(INFO, "Put /studentSelectDate");
 
         try {
@@ -301,7 +299,7 @@ public class StudentRootController {
 
     @PutMapping("/getStudentInterviews/{studentId}")
     public ResponseEntity<List<InterviewOutDTO>> getStudentInterviews
-            (@PathVariable String studentId, @RequestBody TokenDTO token){
+            (@PathVariable String studentId, @RequestBody TokenDTO token) {
         logger.log(INFO, "Put /getStudentInterviews/{studentId}");
 
         try {
@@ -319,7 +317,7 @@ public class StudentRootController {
     }
 
     @PutMapping("/removeStudentApplication")
-    public ResponseEntity<ApplicationListDTO> removeStudentApplication(@RequestBody RemoveApplicationDTO removeApplicationDTO){
+    public ResponseEntity<ApplicationListDTO> removeStudentApplication(@RequestBody RemoveApplicationDTO removeApplicationDTO) {
         logger.log(INFO, "Put /removeStudentApplication with the body: " + removeApplicationDTO);
 
         try {

@@ -17,7 +17,9 @@ import projet.projetstage02.dto.users.Students.StudentOutDTO;
 import projet.projetstage02.exception.*;
 import projet.projetstage02.model.*;
 import projet.projetstage02.repository.*;
+import projet.projetstage02.utils.EmailUtil;
 import projet.projetstage02.utils.PDFCreationUtil;
+import projet.projetstage02.utils.ThreadUtil;
 
 import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
@@ -684,5 +686,17 @@ public class GestionnaireService {
         stageContractRepository.save(contract);
 
         return new StageContractOutDTO(contract);
+    }
+
+    public void sendNewOfferEmail(long offerId) throws NonExistentOfferExeption {
+        Offre offer = getOfferById(offerId);
+        List<String> emails =
+                studentRepository.findAll()
+                        .stream()
+                        .filter(AbstractUser::isConfirm)
+                        .filter(student -> student.getDepartment().departement.equals(offer.getDepartment().departement))
+                        .map(Student::getEmail)
+                        .toList();
+        ThreadUtil.threadPool().addTask(() -> EmailUtil.sendNotificationMail(emails, offer));
     }
 }
