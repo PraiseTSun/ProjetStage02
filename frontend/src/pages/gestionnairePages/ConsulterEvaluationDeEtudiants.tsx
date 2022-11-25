@@ -56,27 +56,33 @@ const ConsulterEvaluationDeEtudiants = ({connectedUser}:
 
     return (
         <Container className="min-vh-100">
-            <PageHeader title={"Évaluations par l'entreprise"}/>
+            <PageHeader title={"Évaluations des étudiants"}/>
             <Row>
-                <Col className="bg-light p-0">
-                    <Table className="text-center text-light" hover>
-                        <thead className="bg-primary">
+                <Col className="bg-light p-0" style={{minHeight: 400}}>
+                    <Table className="text-center" hover>
+                        <thead className="bg-primary text-white">
                         <tr>
                             <th>Description du contrat</th>
                             <th>Évaluation par l'entreprise</th>
                         </tr>
                         </thead>
                         <tbody className="bg-light text-dark">
-                        {contrats.map((contrat: IContract, index: number) => {
-                            return (
-                                <tr key={index}>
-                                    <td>{contrat.description}</td>
-                                    <td><Button className="btn btn-warning"
-                                                onClick={async () => await getEvaluationParEntreprise(Number(contrat.contractId))}>pdf</Button>
-                                    </td>
-                                </tr>
-                            );
-                        })}
+                        {contrats.length === 0
+                            ? <tr>
+                                <td colSpan={2}>
+                                    <p className="h1">Aucune évaluation</p>
+                                </td>
+                            </tr>
+                            : contrats.map((contrat: IContract, index: number) => {
+                                return (
+                                    <tr key={index}>
+                                        <td>{contrat.description}</td>
+                                        <td><Button className="btn btn-warning"
+                                                    onClick={async () => await getEvaluationParEntreprise(Number(contrat.contractId))}>pdf</Button>
+                                        </td>
+                                    </tr>
+                                );
+                            })}
                         </tbody>
                     </Table>
                 </Col>

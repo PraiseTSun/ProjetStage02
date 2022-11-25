@@ -1,15 +1,11 @@
 import React, {useEffect, useState} from "react";
 import {Button, Col, Container, Row, Table, ToggleButton, ToggleButtonGroup} from "react-bootstrap";
-import {Link} from "react-router-dom";
 import IUser from "../../models/IUser";
-import {Viewer} from '@react-pdf-viewer/core';
-import {
-    putEvaluationPdf,
-    putOfferPdf,
-    putValidatedOffersByYear
-} from "../../services/gestionnaireServices/GestionnaireFetchService";
+import {putOfferPdf, putValidatedOffersByYear} from "../../services/gestionnaireServices/GestionnaireFetchService";
 import {generateAlert} from "../../services/universalServices/UniversalUtilService";
 import IOffer from "../../models/IOffer";
+import PdfComponent from "../../components/universalComponents/PdfComponent";
+import PageHeader from "../../components/universalComponents/PageHeader";
 
 const OfferHistoryPage = ({connectedUser}:
                               { connectedUser: IUser }): JSX.Element => {
@@ -55,36 +51,17 @@ const OfferHistoryPage = ({connectedUser}:
 
     if (showPDF) {
         return (
-            <Container>
-                <Container className="min-vh-100 bg-white p-0">
-                    <div className="bg-dark p-2">
-                        <Button className="Btn btn-primary" onClick={() => setShowPDF(false)}>
-                            Fermer
-                        </Button>
-                    </div>
-                    <div>
-                        <Viewer fileUrl={pdf}/>
-                    </div>
-                </Container>
-            </Container>
+            <PdfComponent pdf={pdf} setShowPdf={setShowPDF}/>
         );
     }
 
     return (
-        <Container className="min-vh-100">
+        <Container className="min-vh-100 pb-5">
+            <PageHeader title={"Historique des offres"}/>
             <Row>
-                <Col sm={2}>
-                    <Link to="/" className="btn btn-primary my-3">Home</Link>
-                </Col>
-                <Col sm={8} className="text-center pt-2">
-                    <h1 className="fw-bold text-white display-3 pb-2">Historique des offres</h1>
-                </Col>
-                <Col sm={2}></Col>
-            </Row>
-            <Row>
-                <Col className="bg-light p-0" style={{height: 400}}>
-                    <Table className="text-center" hover>
-                        <thead className="bg-primary">
+                <Col className="bg-light p-0" style={{minHeight: 400}}>
+                    <Table className="text-center" hover responsive>
+                        <thead className="bg-primary text-white">
                         <tr>
                             <th>Compagnie</th>
                             <th>Adresse</th>
@@ -97,21 +74,27 @@ const OfferHistoryPage = ({connectedUser}:
                         </tr>
                         </thead>
                         <tbody className="bg-light">
-                        {offers.map((offer, index) => {
-                            return (
-                                <tr key={index}>
-                                    <td>{offer.nomDeCompagnie}</td>
-                                    <td>{offer.adresse}</td>
-                                    <td>{offer.position}</td>
-                                    <td>{offer.heureParSemaine}</td>
-                                    <td>{offer.salaire}$/h</td>
-                                    <td>{offer.dateStageDebut}</td>
-                                    <td>{offer.dateStageFin}</td>
-                                    <td><Button className="btn btn-warning"
-                                                onClick={async () => await getPDF(offer.id)}>pdf</Button></td>
-                                </tr>
-                            );
-                        })}
+                        {offers.length === 0
+                            ? <tr>
+                                <td colSpan={10}>
+                                    <p className="h1">Aucune offre</p>
+                                </td>
+                            </tr>
+                            : offers.map((offer, index) => {
+                                return (
+                                    <tr key={index}>
+                                        <td>{offer.nomDeCompagnie}</td>
+                                        <td>{offer.adresse}</td>
+                                        <td>{offer.position}</td>
+                                        <td>{offer.heureParSemaine}</td>
+                                        <td>{offer.salaire}$/h</td>
+                                        <td>{offer.dateStageDebut}</td>
+                                        <td>{offer.dateStageFin}</td>
+                                        <td><Button className="btn btn-warning"
+                                                    onClick={async () => await getPDF(offer.id)}>pdf</Button></td>
+                                    </tr>
+                                );
+                            })}
                         </tbody>
                     </Table>
                 </Col>

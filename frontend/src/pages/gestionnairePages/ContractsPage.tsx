@@ -44,10 +44,10 @@ const ContractsPage = ({connectedUser}: { connectedUser: IUser }): JSX.Element =
     }
 
     return (
-        <Container className="vh-100">
+        <Container className="min-vh-100">
             <PageHeader title="Ententes à créer"/>
             <Row>
-                <Col className="bg-light p-0" style={{height: 400}}>
+                <Col className="bg-light p-0 mb-5" style={{minHeight: 400}}>
                     <Table className="text-center" hover>
                         <thead className="bg-primary text-white">
                         <tr>
