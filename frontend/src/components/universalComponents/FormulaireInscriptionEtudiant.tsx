@@ -1,6 +1,7 @@
 import React, {useState} from "react";
 import {Button, Container, Form, FormGroup, Row} from "react-bootstrap";
 import {BeatLoader} from "react-spinners";
+import {postUserType} from "../../services/universalServices/UniversalFetchService";
 
 const FormulaireInscriptionEtudiant = ({onInscrire}: { onInscrire: Function }) => {
     const [waiting, setWaiting] = useState(false);
@@ -10,41 +11,53 @@ const FormulaireInscriptionEtudiant = ({onInscrire}: { onInscrire: Function }) =
     const [departement, setDepartement] = useState('')
     const [courriel, setCourriel] = useState('')
     const [motDePasse, setMotDePasse] = useState('')
+    const [passwordsMatch, setPasswordsMatch] = useState(true)
+    const [emailValid, setEmailValid] = useState(true)
     const [validationMotDePasse, setValidationMotDePasse] = useState('')
+    const [accountCreationError, setAccountCreationError] = useState<string>("")
 
     const validEmail = new RegExp(
-        '^[a-zA-Z0-9._:$!%-]+@[a-zA-Z0-9.-]+.[a-zA-Z]$'
+        '^[\\w-\\.]+@([\\w-]+\\.)+[\\w-]{2,4}$'
     );
 
-    const onSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    const onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         const form: any = e.currentTarget;
         e.preventDefault();
+
+        setValidated(true)
+        setPasswordsMatch(true)
+        setEmailValid(true)
+        setAccountCreationError("")
         if (form.checkValidity()) {
-            setWaiting(true)
+
             if (motDePasse !== validationMotDePasse) {
-                alert("Vérifier le mot de passe et le mot de passe ne correspondent pas")
+                setPasswordsMatch(false)
                 return
             }
 
             if (!validEmail.test(courriel)) {
+                setEmailValid(false)
                 return;
             }
 
-            onInscrire({
+            setWaiting(true)
+            const res = await postUserType('Student', {
                 lastName: nom, firstName: prenom, department: departement,
                 email: courriel, password: motDePasse
-            }, 'Student')
-        }
-        setValidated(true)
-    }
+            });
 
-    if (waiting) {
-        return <BeatLoader className="text-center" color="#292b2c" size={100}/>
+            if (!res.ok) {
+                const data = await res.json();
+                setAccountCreationError(data.error)
+            } else {
+                onInscrire(true);
+            }
+            setWaiting(false)
+        }
     }
 
     return (
         <Container>
-
             <Form onSubmit={onSubmit} validated={validated} noValidate>
                 <Row>
                     <FormGroup className="mb-3 col-6">
@@ -119,11 +132,20 @@ const FormulaireInscriptionEtudiant = ({onInscrire}: { onInscrire: Function }) =
                     <Form.Control.Feedback type="invalid">Champ invalide</Form.Control.Feedback>
 
                 </FormGroup>
-
-                <Button data-testid="button_inscrire_etudiant" type='submit'
-                        className="mt-3 btn btn-success col-12">S'inscrire</Button>
+                {accountCreationError !== "" &&
+                    <p className="text-danger fw-bold text-center h3">{accountCreationError}</p>}
+                {!emailValid &&
+                    <p className="text-danger fw-bold text-center h3">Le courriel est invalide</p>}
+                {!passwordsMatch &&
+                    <p className="text-danger fw-bold text-center h3">Les mots de passe ne sont pas pareils</p>}
+                {
+                    waiting
+                        ? <BeatLoader color="#0275d8" className="text-center" size={25}/>
+                        : <Row className="mt-3">
+                            <Button type="submit" className="btn btn-success mx-auto">Inscrire</Button>
+                        </Row>
+                }
             </Form>
-
         </Container>
 
     )

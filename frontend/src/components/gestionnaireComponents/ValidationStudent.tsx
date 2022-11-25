@@ -39,24 +39,26 @@ const ValidationStudent = ({
 
     return (
         <Col className="mx-3">
-            {students.map((data, idx) => {
-                return (
-                    <div key={data.id}>
-                        <Row className="square border-bottom bg-light py-3">
-                            <div className="d-flex justify-content-between">
-                                <div className="my-auto">{data.firstName} {data.lastName}</div>
-                                <div className="my-auto">{data.department}</div>
-                                <div>
-                                    <Button className="me-2" variant="success"
-                                            onClick={() => approve(data.id, idx)}>O</Button>
-                                    <Button variant="danger" onClick={() => remove(data.id, idx)}>X</Button>
+            {students.length === 0
+                ? <p className="h1 text-center">Aucun étudiant</p>
+                : students.map((data, idx) => {
+                    return (
+                        <div key={data.id}>
+                            <Row className="square border-bottom bg-light py-3">
+                                <div className="d-flex justify-content-between">
+                                    <div className="my-auto">{data.firstName} {data.lastName}</div>
+                                    <div className="my-auto">{data.department}</div>
+                                    <div>
+                                        <Button className="me-2" variant="success"
+                                                onClick={() => approve(data.id, idx)}>O</Button>
+                                        <Button variant="danger" onClick={() => remove(data.id, idx)}>X</Button>
+                                    </div>
                                 </div>
-                            </div>
-                        </Row>
-                    </div>
+                            </Row>
+                        </div>
 
-                );
-            })}
+                    );
+                })}
         </Col>
     );
 }

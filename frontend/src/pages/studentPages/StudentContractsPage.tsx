@@ -5,14 +5,13 @@ import PageHeader from "../../components/universalComponents/PageHeader";
 import IContract from "../../models/IContract";
 import {putStudentContracts, putStudentSignatureContract} from "../../services/studentServices/StudentFetchService";
 import {generateAlert} from "../../services/universalServices/UniversalUtilService";
-import SignaturePad from "react-signature-canvas"
+import SignaturePopup from "../../components/universalComponents/SignaturePopup";
 
 const StudentContractsPage = ({connectedUser}: { connectedUser: IUser }): JSX.Element => {
     const nextYear = new Date().getFullYear() + 1
     const [signing, setSigning] = useState<boolean>(false);
     const [contrats, setContrats] = useState<IContract[]>([]);
     const [lastSelectedContract, setLastSelectedContract] = useState<IContract>();
-    let sigPad: SignaturePad | null
 
     const fetchContracts = useCallback(async () => {
         try {
@@ -55,54 +54,24 @@ const StudentContractsPage = ({connectedUser}: { connectedUser: IUser }): JSX.El
         }
     }
 
-    if (signing) {
-        return (
-            <Container className="vh-100">
-                <Row className="bg-dark p-2">
-                    <Col sm={1}><Button variant="danger" onClick={() => {
-                        setSigning(false)
-                    }}>Fermer</Button></Col>
-                    <Col sm={10}></Col>
-                    <Col sm={1}><Button variant="success" onClick={() => {
-                        if (sigPad!.isEmpty()) {
-                            alert("Vous devez signer!")
-                        } else {
-                            signContract(sigPad!.toDataURL())
-                        }
-                    }}>Signer</Button></Col>
-                </Row>
-                <Row>
-                    <Col sm={4} className="mx-auto mt-3">
-                        <SignaturePad canvasProps={{width: 500, height: 200, className: 'border border-5 bg-light'}}
-                                      ref={(ref) => {
-                                          sigPad = ref
-                                      }}/>
-                        <Button onClick={() => {
-                            sigPad!.clear()
-                        }}>Recommencer</Button>
-                    </Col>
-                </Row>
-            </Container>
-        );
-    }
-
     return (
-        <Container className="vh-100">
+        <Container className="min-vh-100">
+            {signing && <SignaturePopup setSigning={setSigning} onSignature={signContract}/>}
             <PageHeader title="Mes contrats"/>
             <Row>
-                <Col className="bg-light p-0" style={{height: 400}}>
+                <Col className="bg-light p-0" style={{minHeight: 400}}>
                     <Table className="text-center" hover>
                         <thead className="bg-primary text-white">
                         <tr>
                             <th>Description</th>
-                            <th>Status de signature</th>
+                            <th>Signature</th>
                         </tr>
                         </thead>
                         <tbody>
                         {contrats.length === 0
                             ? <tr>
                                 <td colSpan={2}>
-                                    <p className="h1">Aucun contrats</p>
+                                    <p className="h1">Aucun contrat</p>
                                 </td>
                             </tr>
                             : contrats.map((contract, index) => {
@@ -113,7 +82,7 @@ const StudentContractsPage = ({connectedUser}: { connectedUser: IUser }): JSX.El
                                             {contract.studentSignature.length > 0 ?
                                                 <p className="text-success">Vous avez signé</p> :
                                                 <p className="text-danger">Vous n'avez pas signé!</p>}
-                                            <Button disabled={contract.studentSignature.length > 0}
+                                            <Button variant="success" disabled={contract.studentSignature.length > 0}
                                                     onClick={() => {
                                                         setLastSelectedContract(contract);
                                                         setSigning(true)

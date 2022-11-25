@@ -6,7 +6,7 @@ const PdfComponent = ({pdf, setShowPdf}: { pdf: Uint8Array, setShowPdf: Function
     return (
         <Container className="position-absolute bg-white p-0 top-0 start-0 end-0 mw-100">
             <div className="bg-dark p-2">
-                <Button variant="primary" onClick={() => setShowPdf(false)}>
+                <Button variant="danger" onClick={() => setShowPdf(false)}>
                     Fermer
                 </Button>
             </div>
