@@ -25,6 +25,7 @@ import ConsulterEvaluationDeEtudiants from "./pages/gestionnairePages/ConsulterE
 import SignerEntenteDeStageParGestionnaire from "./pages/gestionnairePages/SignerEntenteDeStageParGestionnaire";
 import ReportProblemPage from "./pages/universalPages/ReportProblemPage";
 import NotFoundPage from "./pages/universalPages/NotFoundPage";
+import ReportedProblemsPage from "./pages/gestionnairePages/ReportedProblemsPage";
 
 export const LOCAL_STORAGE_KEY = "MASSI_BEST_PROGRAMMER_PROJET_STAGE_02_CURRENT_CONNECTED_USER"
 export const emptyUser: IUser = {
@@ -163,6 +164,8 @@ function App() {
                                element={<ConsulterEvaluationDeEtudiants connectedUser={connectedUser}/>}></Route>
                         <Route path="/signerententedestage"
                                element={<SignerEntenteDeStageParGestionnaire connectedUser={connectedUser}/>}/>
+                        <Route path="/reportedProblems"
+                               element={<ReportedProblemsPage connectedUser={connectedUser}/>}/>
                         <Route path="*" element={<NotFoundPage/>}/>
                     </Routes>
                 </BrowserRouter>
