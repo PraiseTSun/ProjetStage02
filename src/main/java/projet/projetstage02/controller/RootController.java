@@ -78,7 +78,9 @@ public class RootController {
 
     @PostMapping("/reportProblem")
     public ResponseEntity<?> reportProblem(@RequestBody ProblemInDTO problem) {
+        logger.log(INFO, "PostMapping: /reportProblem entered");
         gestionnaireService.reportProblem(problem);
+        logger.log(INFO, "PostMapping: /reportProblem sent 201 response");
         return ResponseEntity.status(201).build();
     }
 }
