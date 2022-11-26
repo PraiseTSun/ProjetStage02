@@ -1,7 +1,6 @@
 import PageHeader from "../../components/universalComponents/PageHeader";
 import React, {useState} from "react";
 import {postReport} from "../../services/universalServices/UniversalFetchService";
-import {generateAlert} from "../../services/universalServices/UniversalUtilService";
 import LocationChangeConfirmationPopup from "../../components/universalComponents/LocationChangeConfirmationPopup";
 import {BeatLoader} from "react-spinners";
 import {Button, Col, Container, Form, Row} from "react-bootstrap";
@@ -26,12 +25,8 @@ const ReportProblemPage = () => {
 
         if (form.checkValidity()) {
             setLoading(true)
-            const res = await postReport(formFields);
-            if (res.ok) {
-                setProblemReported(true)
-            } else {
-                generateAlert()
-            }
+            await postReport(formFields);
+            setProblemReported(true)
             setLoading(false)
         }
         setValidated(true)
