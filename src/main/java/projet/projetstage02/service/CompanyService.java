@@ -10,6 +10,7 @@ import projet.projetstage02.dto.contracts.StageContractOutDTO;
 import projet.projetstage02.dto.evaluations.Etudiant.EvaluationEtudiantInDTO;
 import projet.projetstage02.dto.interview.CreateInterviewDTO;
 import projet.projetstage02.dto.interview.InterviewOutDTO;
+import projet.projetstage02.dto.notification.CompanyNotificationDTO;
 import projet.projetstage02.dto.offres.OfferAcceptedStudentsDTO;
 import projet.projetstage02.dto.offres.OffreInDTO;
 import projet.projetstage02.dto.offres.OffreOutDTO;
@@ -272,4 +273,41 @@ public class CompanyService {
             return opt.isPresent();
         }).map(StageContract::getId).toList();
     }
+
+    public CompanyNotificationDTO getNotification(long companyId) throws NonExistentEntityException {
+        getCompanyById(companyId);
+
+        return CompanyNotificationDTO.builder()
+                .nbOffers(getOfferNotification(companyId))
+                .nbContracts(getContractNotifications(companyId))
+                .build();
+    }
+
+    private long getOfferNotification(long companyId) {
+        List<Offre> offers = offreRepository.findAllByIdCompagnie(companyId);
+
+        if(offers.size() == 0)
+            return 0L;
+
+        long nb = 0L;
+
+        for(Offre offer : offers){
+            long count = applicationRepository.findByOfferId(offer.getId())
+                    .stream()
+                    .filter(application -> applicationAcceptationRepository
+                            .findByOfferIdAndStudentId(offer.getId(), application.getStudentId()).isEmpty())
+                    .count();
+
+            nb += count;
+        }
+
+        return nb;
+    }
+
+    private long getContractNotifications(long companyId) {
+        return stageContractRepository.findByCompanyId(companyId)
+                .stream()
+                .filter(stageContract -> stageContract.getCompanySignature().isBlank())
+                .count();
+        }
 }

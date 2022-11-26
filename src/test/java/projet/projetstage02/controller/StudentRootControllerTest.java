@@ -14,12 +14,14 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import projet.projetstage02.dto.SignatureInDTO;
 import projet.projetstage02.dto.applications.ApplicationDTO;
 import projet.projetstage02.dto.applications.ApplicationListDTO;
+import projet.projetstage02.dto.applications.RemoveApplicationDTO;
 import projet.projetstage02.dto.auth.TokenDTO;
 import projet.projetstage02.dto.contracts.ContractsDTO;
 import projet.projetstage02.dto.contracts.StageContractOutDTO;
 import projet.projetstage02.dto.cv.CvStatusDTO;
 import projet.projetstage02.dto.interview.InterviewOutDTO;
 import projet.projetstage02.dto.interview.InterviewSelectInDTO;
+import projet.projetstage02.dto.notification.StudentNotificationDTO;
 import projet.projetstage02.dto.offres.OffreInDTO;
 import projet.projetstage02.dto.offres.OffreOutDTO;
 import projet.projetstage02.dto.pdf.PdfDTO;
@@ -65,6 +67,7 @@ public class StudentRootControllerTest {
     JacksonTester<PdfDTO> jsonPdfDTO;
     JacksonTester<SignatureInDTO> jsonSignatureDTO;
     JacksonTester<InterviewSelectInDTO> jsonInterviewSelectDTO;
+    JacksonTester<RemoveApplicationDTO> jsonRemoveApplicationDTO;
 
     StudentInDTO bart;
     StudentOutDTO bartOut;
@@ -83,6 +86,8 @@ public class StudentRootControllerTest {
     CvStatusDTO cvStatusDTO;
     InterviewOutDTO interviewOutDTO;
     InterviewSelectInDTO interviewSelectInDTO;
+    RemoveApplicationDTO removeApplicationDTO;
+
     // https://thepracticaldeveloper.com/guide-spring-boot-controller-tests/
     @BeforeEach
     void setup() {
@@ -208,6 +213,12 @@ public class StudentRootControllerTest {
                 .interviewId(interviewOutDTO.getInterviewId())
                 .studentId(bart.getId())
                 .selectedDate("2022-11-29T12:30")
+                .build();
+
+        removeApplicationDTO = RemoveApplicationDTO.builder()
+                .token("I am tired.")
+                .studentId(bart.getId())
+                .offerId(duffOffreOut.getId())
                 .build();
     }
 
@@ -643,4 +654,81 @@ public class StudentRootControllerTest {
                 .andExpect(status().isForbidden());
     }
 
+    @Test
+    void testRemoveStudentApplicationHappyDay() throws Exception{
+        when(studentService.removeApplication(any())).thenReturn(ApplicationListDTO.builder()
+                        .studentId(1L)
+                        .offersId(new ArrayList<>(){{
+                            add(0L);
+                            add(0L);
+                            add(0L);
+                        }})
+                .build());
+
+        studentMockMvc.perform(put("/removeStudentApplication")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(jsonRemoveApplicationDTO.write(removeApplicationDTO).getJson()))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.offersId.size()", is(3)));
+    }
+
+    @Test
+    void testRemoveStudentNotFound() throws Exception{
+        when(studentService.removeApplication(any())).thenThrow(new NonExistentEntityException());
+
+        studentMockMvc.perform(put("/removeStudentApplication")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(jsonRemoveApplicationDTO.write(removeApplicationDTO).getJson()))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    void testRemoveStudentApplicationCantRemoveForbidden() throws Exception{
+        when(studentService.removeApplication(any())).thenThrow(new CantRemoveApplicationException());
+
+        studentMockMvc.perform(put("/removeStudentApplication")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(jsonRemoveApplicationDTO.write(removeApplicationDTO).getJson()))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    void testRemoveStudentApplicationInvalidToken() throws Exception{
+        when(authService.getToken(anyString(), any())).thenThrow(new InvalidTokenException());
+
+        studentMockMvc.perform(put("/removeStudentApplication")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(jsonRemoveApplicationDTO.write(removeApplicationDTO).getJson()))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    void testGetStudentNotificationHappyDay() throws Exception {
+        when(studentService.getNotification(anyLong())).thenReturn(new StudentNotificationDTO());
+
+        studentMockMvc.perform(put("/studentNotification/{studentId}", 1)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(jsonTokenDTO.write(token).getJson()))
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    void testGetStudentNotificationNotFound() throws Exception {
+        when(studentService.getNotification(anyLong())).thenThrow(new NonExistentEntityException());
+
+        studentMockMvc.perform(put("/studentNotification/{studentId}", 1)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(jsonTokenDTO.write(token).getJson()))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    void testGetStudentNotificationInvalidToken() throws Exception {
+        when(authService.getToken(anyString(), any())).thenThrow(new InvalidTokenException());
+
+        studentMockMvc.perform(put("/studentNotification/{studentId}", 1)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(jsonTokenDTO.write(token).getJson()))
+                .andExpect(status().isForbidden());
+    }
 }

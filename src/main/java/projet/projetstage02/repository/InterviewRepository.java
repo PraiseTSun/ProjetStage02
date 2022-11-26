@@ -11,4 +11,6 @@ public interface InterviewRepository extends JpaRepository<Interview, Long> {
     List<Interview> findByStudentId(long studentId);
 
     List<Interview> findByCompanyId(long companyId);
+
+    Optional<Interview> findByStudentIdAndOfferId(long studentId, Long offerId);
 }

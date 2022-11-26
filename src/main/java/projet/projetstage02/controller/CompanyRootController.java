@@ -15,6 +15,7 @@ import projet.projetstage02.dto.contracts.StageContractOutDTO;
 import projet.projetstage02.dto.evaluations.Etudiant.EvaluationEtudiantInDTO;
 import projet.projetstage02.dto.interview.CreateInterviewDTO;
 import projet.projetstage02.dto.interview.InterviewOutDTO;
+import projet.projetstage02.dto.notification.CompanyNotificationDTO;
 import projet.projetstage02.dto.offres.OfferAcceptedStudentsDTO;
 import projet.projetstage02.dto.offres.OffreInDTO;
 import projet.projetstage02.dto.offres.OffreOutDTO;
@@ -36,6 +37,7 @@ import static org.apache.logging.log4j.Level.INFO;
 import static org.springframework.http.HttpStatus.*;
 import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
 import static projet.projetstage02.model.Token.UserTypes.COMPANY;
+import static projet.projetstage02.model.Token.UserTypes.STUDENT;
 import static projet.projetstage02.utils.TimeUtil.*;
 
 @RestController
@@ -271,7 +273,7 @@ public class CompanyRootController {
     }
 
     @PostMapping("/createInterview")
-    public ResponseEntity<InterviewOutDTO> createInterview(@RequestBody @Valid CreateInterviewDTO interviewDTO){
+    public ResponseEntity<InterviewOutDTO> createInterview(@RequestBody @Valid CreateInterviewDTO interviewDTO) {
         logger.log(INFO, "Post /createInterview");
 
         try {
@@ -282,7 +284,7 @@ public class CompanyRootController {
         } catch (NonExistentEntityException e) {
             logger.log(INFO, "Post /createInterview return 404 request");
             return ResponseEntity.status(NOT_FOUND).build();
-        } catch (InvalidDateFormatException  e) {
+        } catch (InvalidDateFormatException e) {
             logger.log(INFO, "Post /createInterview return 400 request");
             return ResponseEntity.status(BAD_REQUEST).build();
         } catch (InvalidTokenException | InvalidOwnershipException e) {
@@ -293,7 +295,7 @@ public class CompanyRootController {
 
     @PutMapping("/getCompanyInterviews/{companyId}")
     public ResponseEntity<List<InterviewOutDTO>> getCompanyInterviews
-            (@PathVariable String companyId, @RequestBody TokenDTO tokenId){
+            (@PathVariable String companyId, @RequestBody TokenDTO tokenId) {
         logger.log(INFO, "Put /getCompanyInterviews/{companyId}");
 
         try {
@@ -325,7 +327,6 @@ public class CompanyRootController {
     }
 
 
-
     @PostMapping("/evaluateStudent/{token}")
     public ResponseEntity<?> evaluateStudent(@PathVariable String token, @RequestBody @Valid EvaluationEtudiantInDTO studentEvaluationInDTO) {
         try {
@@ -347,6 +348,25 @@ public class CompanyRootController {
         } catch (DocumentException e) {
             logger.log(INFO, "PutMapping: /evaluateStudent sent 500 response");
             return ResponseEntity.status(INTERNAL_SERVER_ERROR).build();
+        }
+    }
+
+    @PutMapping("/companyNotification/{companyId}")
+    public ResponseEntity<CompanyNotificationDTO> getCompanyNotification
+            (@PathVariable String companyId, @RequestBody TokenDTO token) {
+        logger.log(INFO, "Put /companyNotification/{companyId} with the id: " + companyId);
+
+        try {
+            authService.getToken(token.getToken(), COMPANY);
+            CompanyNotificationDTO notification = companyService.getNotification(Long.parseLong(companyId));
+            logger.log(INFO, "Put /companyNotification/{companyId} return 200");
+            return ResponseEntity.ok(notification);
+        } catch (InvalidTokenException e) {
+            logger.log(INFO, "Put /companyNotification/{companyId} return 403");
+            return ResponseEntity.status(FORBIDDEN).build();
+        } catch (NonExistentEntityException e) {
+            logger.log(INFO, "Put /companyNotification/{companyId} return 404");
+            return ResponseEntity.status(NOT_FOUND).build();
         }
     }
 }

@@ -5,10 +5,12 @@ import org.springframework.stereotype.Service;
 import projet.projetstage02.dto.*;
 import projet.projetstage02.dto.applications.ApplicationDTO;
 import projet.projetstage02.dto.applications.ApplicationListDTO;
+import projet.projetstage02.dto.applications.RemoveApplicationDTO;
 import projet.projetstage02.dto.cv.CvStatusDTO;
 import projet.projetstage02.dto.contracts.StageContractOutDTO;
 import projet.projetstage02.dto.interview.InterviewOutDTO;
 import projet.projetstage02.dto.interview.InterviewSelectInDTO;
+import projet.projetstage02.dto.notification.StudentNotificationDTO;
 import projet.projetstage02.dto.offres.OffreOutDTO;
 import projet.projetstage02.dto.pdf.PdfDTO;
 import projet.projetstage02.dto.pdf.PdfOutDTO;
@@ -18,12 +20,11 @@ import projet.projetstage02.exception.*;
 import projet.projetstage02.model.*;
 import projet.projetstage02.repository.*;
 
-import javax.swing.text.html.Option;
-import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Stream;
 
 import static projet.projetstage02.model.AbstractUser.Department;
 import static projet.projetstage02.utils.ByteConverter.byteToString;
@@ -36,6 +37,7 @@ public class StudentService {
     private final StudentRepository studentRepository;
     private final OffreRepository offreRepository;
     private final ApplicationRepository applicationRepository;
+    private final ApplicationAcceptationRepository applicationAcceptationRepository;
     private final StageContractRepository stageContractRepository;
     private final CvStatusRepository cvStatusRepository;
     private final InterviewRepository interviewRepository;
@@ -88,8 +90,9 @@ public class StudentService {
         Department department = getStudentById(id).getDepartment();
 
         List<OffreOutDTO> offers = new ArrayList<>();
-        offreRepository.findAll().stream().
-                filter(offre ->
+        offreRepository.findAll()
+                .stream()
+                .filter(offre ->
                         offre.isValide()
                                 && offre.getDepartment().equals(department)
                 )
@@ -154,16 +157,29 @@ public class StudentService {
         Student student = getStudentById(studentId);
 
         List<Long> offersId = new ArrayList<>();
+        List<Long> removableOffersId = new ArrayList<>();
         applicationRepository.findByStudentId(studentId)
                 .forEach(
-                        application -> offersId.add(application.getOfferId())
+                        application -> {
+                            long offerId = application.getOfferId();
+                            offersId.add(offerId);
+                            if(canRemovePostul(studentId, offerId))
+                                removableOffersId.add(offerId);
+                        }
                 );
 
         return ApplicationListDTO.builder()
                 .studentId(student.getId())
                 .offersId(offersId)
+                .removableOffersId(removableOffersId)
                 .build();
     }
+
+    private boolean canRemovePostul(long studentId, long offerId) {
+        Optional<StageContract> contractOpt = stageContractRepository.findByStudentIdAndOfferId(studentId, offerId);
+        return contractOpt.isEmpty();
+    }
+
 
     public CvStatusDTO getStudentCvStatus(long studentId) throws NonExistentEntityException {
         getStudentById(studentId);
@@ -250,5 +266,74 @@ public class StudentService {
                 );
 
         return interviews;
+    }
+
+    public ApplicationListDTO removeApplication (RemoveApplicationDTO dto)
+            throws NonExistentEntityException, CantRemoveApplicationException {
+        Student student = getStudentById(dto.getStudentId());
+
+        Offre offer = getOfferById(dto.getOfferId());
+
+        Optional<Application> applicationOpt = applicationRepository.findByStudentIdAndOfferId(student.getId(), offer.getId());
+        if(applicationOpt.isEmpty()) throw new NonExistentEntityException();
+        Application application = applicationOpt.get();
+
+        Optional<StageContract> contract
+                = stageContractRepository.findByStudentIdAndOfferId(student.getId(), offer.getId());
+        if(contract.isPresent()) throw new CantRemoveApplicationException();
+
+        Optional<Interview> interviewOpt
+                = interviewRepository.findByStudentIdAndOfferId(student.getId(), offer.getId());
+        if(interviewOpt.isPresent()){
+            Interview interview = interviewOpt.get();
+            interviewRepository.delete(interview);
+        }
+
+        Optional<ApplicationAcceptation> applicationAcceptationOpt
+                = applicationAcceptationRepository.findByOfferIdAndStudentId(offer.getId(), student.getId());
+        if(applicationAcceptationOpt.isPresent()){
+            ApplicationAcceptation applicationAcceptation = applicationAcceptationOpt.get();
+            applicationAcceptationRepository.delete(applicationAcceptation);
+        }
+
+        applicationRepository.delete(application);
+
+        return getPostulsOfferId(student.getId());
+    }
+
+    public StudentNotificationDTO getNotification (long studentId) throws NonExistentEntityException {
+        getStudentById(studentId);
+
+        return StudentNotificationDTO.builder()
+                .nbUploadCv(getCvNotification(studentId))
+                .nbStages(getStageNotification(studentId))
+                .nbContracts(getContractNotifications(studentId))
+                .build();
+    }
+
+    private long getCvNotification(long studentId) {
+        if(cvStatusRepository.findById(studentId).isEmpty())
+            return 0L;
+        return 1L;
+    }
+
+    private long getStageNotification(long studentId) throws NonExistentEntityException {
+        long nb = 0L;
+        List<OffreOutDTO> offers = getOffersByStudentDepartment(studentId);
+        ApplicationListDTO applications = getPostulsOfferId(studentId);
+
+        for(OffreOutDTO dto : offers){
+            if(!applications.hasApplied(dto.getId()))
+                nb++;
+        }
+
+        return nb;
+    }
+
+    private long getContractNotifications(long studentId) {
+        return stageContractRepository.findByStudentId(studentId)
+                .stream()
+                .filter(stageContract -> stageContract.getStudentSignature().isBlank())
+                .count();
     }
 }

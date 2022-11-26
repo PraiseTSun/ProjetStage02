@@ -14,6 +14,7 @@ import projet.projetstage02.dto.contracts.StageContractOutDTO;
 import projet.projetstage02.dto.evaluations.Etudiant.EvaluationEtudiantInDTO;
 import projet.projetstage02.dto.evaluations.EvaluationInfoDTO;
 import projet.projetstage02.dto.evaluations.MillieuStage.MillieuStageEvaluationInDTO;
+import projet.projetstage02.dto.notification.GestionnaireNotificationDTO;
 import projet.projetstage02.dto.offres.OffreOutDTO;
 import projet.projetstage02.dto.pdf.PdfOutDTO;
 import projet.projetstage02.dto.users.CompanyDTO;
@@ -31,6 +32,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.*;
 import static projet.projetstage02.model.AbstractUser.Department.Informatique;
+import static projet.projetstage02.model.AbstractUser.Department.Transport;
 import static projet.projetstage02.utils.TimeUtil.currentTimestamp;
 
 @ExtendWith(MockitoExtension.class)
@@ -1403,5 +1405,114 @@ public class GestionnaireServiceTest {
         }
 
         fail("Fail to catch the NonExistentEntityException");
+    }
+
+    @Test
+    void testGetNotificationHappyDay(){
+        Company validCompany = new Company();
+        validCompany.setConfirm(false);
+        validCompany.setEmailConfirmed(true);
+        validCompany.setDepartment(Transport);
+
+        Company unvalidatedCompany1 = new Company();
+        unvalidatedCompany1.setConfirm(true);
+        unvalidatedCompany1.setEmailConfirmed(true);
+        unvalidatedCompany1.setDepartment(Transport);
+
+        Company unvalidatedCompany2 = new Company();
+        unvalidatedCompany2.setConfirm(false);
+        unvalidatedCompany2.setEmailConfirmed(false);
+        unvalidatedCompany2.setDepartment(Transport);
+
+        Student validStudent = new Student();
+        validStudent.setConfirm(false);
+        validStudent.setEmailConfirmed(true);
+        validStudent.setDepartment(Transport);
+
+        Student unvalidatedStudent1 = new Student();
+        unvalidatedStudent1.setConfirm(true);
+        unvalidatedStudent1.setEmailConfirmed(true);
+        unvalidatedStudent1.setDepartment(Transport);
+
+        Student unvalidatedStudent2 = new Student();
+        unvalidatedStudent2.setConfirm(false);
+        unvalidatedStudent2.setEmailConfirmed(false);
+        unvalidatedStudent1.setDepartment(Transport);
+
+        List<Company> companies = new ArrayList<>(){{
+            add(validCompany);
+            add(validCompany);
+            add(unvalidatedCompany1);
+            add(unvalidatedCompany2);
+        }};
+
+        List<Student> students = new ArrayList<>(){{
+            add(validStudent);
+            add(validStudent);
+            add(unvalidatedStudent1);
+            add(unvalidatedStudent2);
+        }};
+
+        List<CvStatus> pendingCv = new ArrayList<>(){{
+            add(CvStatus.builder().status("NOTHING").build());
+            add(CvStatus.builder().status("PENDING").build());
+            add(CvStatus.builder().status("PENDING").build());
+            add(CvStatus.builder().status("ACCEPTED").build());
+            add(CvStatus.builder().status("REFUSED").build());
+        }};
+
+        List<Offre> offers = new ArrayList<>(){{
+           add(Offre.builder().valide(true).build());
+           add(Offre.builder().valide(false).build());
+           add(Offre.builder().valide(false).build());
+        }};
+
+        List<ApplicationAcceptation> applicationAcceptations = new ArrayList<>(){{
+            add(ApplicationAcceptation.builder().studentId(0L).offerId(0L).build());
+            add(ApplicationAcceptation.builder().studentId(0L).offerId(0L).build());
+            add(ApplicationAcceptation.builder().studentId(0L).offerId(0L).build());
+        }};
+
+        List<EvaluationMillieuStage> evaluationMillieuStages = new ArrayList<>(){{
+            add(new EvaluationMillieuStage());
+            add(new EvaluationMillieuStage());
+            add(new EvaluationMillieuStage());
+        }};
+
+        List<EvaluationEtudiant> evaluationEtudiants = new ArrayList<>(){{
+            add(new EvaluationEtudiant());
+            add(new EvaluationEtudiant());
+            add(new EvaluationEtudiant());
+        }};
+
+        List<StageContract> stageContracts = new ArrayList<>(){{
+            add(StageContract.builder().studentSignature("Signe").companySignature("Signe").gestionnaireSignature("").build());
+            add(StageContract.builder().studentSignature("Signe").companySignature("Signe").gestionnaireSignature("Signe").build());
+            add(StageContract.builder().studentSignature("Signe").companySignature("").gestionnaireSignature("").build());
+            add(StageContract.builder().studentSignature("").companySignature("Signe").gestionnaireSignature("").build());
+            add(StageContract.builder().studentSignature("").companySignature("").gestionnaireSignature("").build());
+            add(StageContract.builder().studentSignature("Signe").companySignature("Signe").gestionnaireSignature("").build());
+        }};
+
+        when(companyRepository.findAll()).thenReturn(companies);
+        when(studentRepository.findAll()).thenReturn(students);
+        when(cvStatusRepository.findAll()).thenReturn(pendingCv);
+        when(offreRepository.findAll()).thenReturn(offers);
+        when(applicationAcceptationRepository.findAll()).thenReturn(applicationAcceptations);
+        when(stageContractRepository.findByStudentIdAndOfferId(anyLong(), anyLong()))
+                .thenReturn(Optional.of(new StageContract()), Optional.empty());
+        when(evaluationMillieuStageRepository.findAll()).thenReturn(evaluationMillieuStages);
+        when(evaluationEtudiantRepository.findAll()).thenReturn(evaluationEtudiants);
+        when(stageContractRepository.findAll()).thenReturn(stageContracts);
+
+        GestionnaireNotificationDTO notification = gestionnaireService.getNotification();
+
+        assertThat(notification.getNbUnvalidatedUser()).isEqualTo(4);
+        assertThat(notification.getNbUnvalidatedCV()).isEqualTo(2);
+        assertThat(notification.getNbUnvalidatedOffer()).isEqualTo(2);
+        assertThat(notification.getNbCreateContract()).isEqualTo(2);
+        assertThat(notification.getNbConsultStageEvaluation()).isEqualTo(3);
+        assertThat(notification.getNbConsultStudentEvaluation()).isEqualTo(3);
+        assertThat(notification.getNbSigneContract()).isEqualTo(2);
     }
 }

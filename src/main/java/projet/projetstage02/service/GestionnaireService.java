@@ -9,6 +9,7 @@ import projet.projetstage02.dto.contracts.StageContractInDTO;
 import projet.projetstage02.dto.contracts.StageContractOutDTO;
 import projet.projetstage02.dto.evaluations.EvaluationInfoDTO;
 import projet.projetstage02.dto.evaluations.MillieuStage.MillieuStageEvaluationInDTO;
+import projet.projetstage02.dto.notification.GestionnaireNotificationDTO;
 import projet.projetstage02.dto.offres.OffreOutDTO;
 import projet.projetstage02.dto.pdf.PdfOutDTO;
 import projet.projetstage02.dto.users.CompanyDTO;
@@ -148,7 +149,8 @@ public class GestionnaireService {
 
     public List<CompanyDTO> getUnvalidatedCompanies() {
         List<CompanyDTO> unvalidatedCompaniesDTOs = new ArrayList<>();
-        companyRepository.findAll().stream()
+        companyRepository.findAll()
+                .stream()
                 .filter(company ->
                         !company.isConfirm() && company.isEmailConfirmed()
                 )
@@ -299,6 +301,13 @@ public class GestionnaireService {
                     Optional<Student> studentOpt = studentRepository.findById(application.getStudentId());
                     if (studentOpt.isEmpty()) return;
 
+
+                    Optional<StageContract> opt = stageContractRepository.findByStudentIdAndCompanyIdAndOfferId(
+                            studentOpt.get().getId(),
+                            companyOpt.get().getId(),
+                            offer.getId());
+
+                    if (opt.isPresent()) return;
                     Student student = studentOpt.get();
                     Company company = companyOpt.get();
                     Offre offre = offerOpt.get();
@@ -675,5 +684,74 @@ public class GestionnaireService {
         stageContractRepository.save(contract);
 
         return new StageContractOutDTO(contract);
+    }
+
+    public GestionnaireNotificationDTO getNotification(){
+        return GestionnaireNotificationDTO.builder()
+                .nbUnvalidatedUser(getAmountOfUnvalidatedUsers())
+                .nbUnvalidatedCV(getAmountOfUnvalidatedCV())
+                .nbUnvalidatedOffer(getAmountOfUnvalidatedOffer())
+                .nbEvaluateMilieuStage(getAmountOfUnvalidatedContract())
+                .nbCreateContract(getContractInNeedToBeCreated())
+                .nbConsultStageEvaluation(getStageEvaluationNotification())
+                .nbConsultStudentEvaluation(getStudentEvaluationNotification())
+                .nbSigneContract(getContractToSigne())
+                .build();
+    }
+
+    private long getAmountOfUnvalidatedUsers() {
+        List<CompanyDTO> unvalidatedCompanies = getUnvalidatedCompanies();
+        List<StudentOutDTO> unvalidatedStudents = getUnvalidatedStudents();
+
+        return unvalidatedCompanies.size() + unvalidatedStudents.size();
+    }
+
+    private long getAmountOfUnvalidatedCV() {
+        return cvStatusRepository.findAll()
+                .stream()
+                .filter(cvStatus -> cvStatus.getStatus().equals("PENDING"))
+                .count();
+    }
+
+    private long getAmountOfUnvalidatedOffer() {
+        return offreRepository.findAll()
+                .stream()
+                .filter(offre -> !offre.isValide())
+                .count();
+    }
+
+    private long getAmountOfUnvalidatedContract() {
+        return stageContractRepository.findAll()
+                .stream()
+                .filter(stageContract -> evaluationMillieuStageRepository.findByContractId(stageContract.getId()).isEmpty())
+                .count();
+    }
+
+    private long getContractInNeedToBeCreated() {
+        return applicationAcceptationRepository.findAll()
+                .stream()
+                .filter(applicationAcceptation ->
+                        stageContractRepository.findByStudentIdAndOfferId
+                                (applicationAcceptation.getStudentId(), applicationAcceptation.getOfferId()).isEmpty())
+                .count();
+    }
+
+    private long getStageEvaluationNotification() {
+        List<EvaluationMillieuStage> evaluations = evaluationMillieuStageRepository.findAll();
+        return evaluations.size();
+    }
+
+    private long getStudentEvaluationNotification() {
+        List<EvaluationEtudiant> evaluations = evaluationEtudiantRepository.findAll();
+        return evaluations.size();
+    }
+
+    private long getContractToSigne() {
+        return stageContractRepository.findAll()
+                .stream()
+                .filter(stageContract -> !stageContract.getCompanySignature().isBlank()
+                        && !stageContract.getStudentSignature().isBlank()
+                        && stageContract.getGestionnaireSignature().isBlank())
+                .count();
     }
 }
