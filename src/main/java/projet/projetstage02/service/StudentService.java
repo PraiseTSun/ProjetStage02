@@ -311,31 +311,29 @@ public class StudentService {
                 .build();
     }
 
-    private int getCvNotification(long studentId) {
+    private long getCvNotification(long studentId) {
         if(cvStatusRepository.findById(studentId).isEmpty())
-            return 0;
-        return 1;
+            return 0L;
+        return 1L;
     }
 
-    private int getStageNotification(long studentId) throws NonExistentEntityException {
-        int nb = 0;
+    private long getStageNotification(long studentId) throws NonExistentEntityException {
+        long nb = 0L;
         List<OffreOutDTO> offers = getOffersByStudentDepartment(studentId);
         ApplicationListDTO applications = getPostulsOfferId(studentId);
 
         for(OffreOutDTO dto : offers){
-            if(!applications.hasApply(dto.getId()))
+            if(!applications.hasApplied(dto.getId()))
                 nb++;
         }
 
         return nb;
     }
 
-    private int getContractNotifications(long studentId) {
-        long count = stageContractRepository.findByStudentId(studentId)
+    private long getContractNotifications(long studentId) {
+        return stageContractRepository.findByStudentId(studentId)
                 .stream()
                 .filter(stageContract -> stageContract.getStudentSignature().isBlank())
                 .count();
-
-        return (int) count;
     }
 }

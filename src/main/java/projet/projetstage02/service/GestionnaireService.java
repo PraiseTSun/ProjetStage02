@@ -688,80 +688,70 @@ public class GestionnaireService {
 
     public GestionnaireNotificationDTO getNotification(){
         return GestionnaireNotificationDTO.builder()
-                .nbUnvalidatedUser(getUnvalidatedUserNumber())
-                .nbUnvalidatedCV(getCvToValidateNumber())
-                .nbUnvalidatedOffer(getOfferToValidateNumber())
-                .nbEvaluateMilieuStage(getContractInNeedToBeEvaluated())
-                .nbCreateContract(getContractInNeedToBeCreate())
+                .nbUnvalidatedUser(getAmountOfUnvalidatedUsers())
+                .nbUnvalidatedCV(getAmountOfUnvalidatedCV())
+                .nbUnvalidatedOffer(getAmountOfUnvalidatedOffer())
+                .nbEvaluateMilieuStage(getAmountOfUnvalidatedContract())
+                .nbCreateContract(getContractInNeedToBeCreated())
                 .nbConsultStageEvaluation(getStageEvaluationNotification())
                 .nbConsultStudentEvaluation(getStudentEvaluationNotification())
                 .nbSigneContract(getContractToSigne())
                 .build();
     }
 
-    private int getUnvalidatedUserNumber() {
+    private long getAmountOfUnvalidatedUsers() {
         List<CompanyDTO> unvalidatedCompanies = getUnvalidatedCompanies();
         List<StudentOutDTO> unvalidatedStudents = getUnvalidatedStudents();
 
         return unvalidatedCompanies.size() + unvalidatedStudents.size();
     }
 
-    private int getCvToValidateNumber() {
-        long count = cvStatusRepository.findAll()
+    private long getAmountOfUnvalidatedCV() {
+        return cvStatusRepository.findAll()
                 .stream()
                 .filter(cvStatus -> cvStatus.getStatus().equals("PENDING"))
                 .count();
-
-        return (int) count;
     }
 
-    private int getOfferToValidateNumber() {
-        long count = offreRepository.findAll()
+    private long getAmountOfUnvalidatedOffer() {
+        return offreRepository.findAll()
                 .stream()
                 .filter(offre -> !offre.isValide())
                 .count();
-
-        return (int) count;
     }
 
-    private int getContractInNeedToBeEvaluated() {
-        long count = stageContractRepository.findAll()
+    private long getAmountOfUnvalidatedContract() {
+        return stageContractRepository.findAll()
                 .stream()
                 .filter(stageContract -> evaluationMillieuStageRepository.findByContractId(stageContract.getId()).isEmpty())
                 .count();
-
-        return (int) count;
     }
 
-    private int getContractInNeedToBeCreate() {
-        long count = applicationAcceptationRepository.findAll()
+    private long getContractInNeedToBeCreated() {
+        return applicationAcceptationRepository.findAll()
                 .stream()
                 .filter(applicationAcceptation ->
                         stageContractRepository.findByStudentIdAndOfferId
                                 (applicationAcceptation.getStudentId(), applicationAcceptation.getOfferId()).isEmpty())
                 .count();
-
-        return (int) count;
     }
 
-    private int getStageEvaluationNotification() {
+    private long getStageEvaluationNotification() {
         List<EvaluationMillieuStage> evaluations = evaluationMillieuStageRepository.findAll();
         return evaluations.size();
     }
 
-    private int getStudentEvaluationNotification() {
+    private long getStudentEvaluationNotification() {
         List<EvaluationEtudiant> evaluations = evaluationEtudiantRepository.findAll();
         return evaluations.size();
     }
 
-    private int getContractToSigne() {
-        long count = stageContractRepository.findAll()
+    private long getContractToSigne() {
+        return stageContractRepository.findAll()
                 .stream()
                 .filter(stageContract -> !stageContract.getCompanySignature().isBlank()
                         && !stageContract.getStudentSignature().isBlank()
                         && stageContract.getGestionnaireSignature().isBlank())
                 .count();
-
-        return (int) count;
     }
 }

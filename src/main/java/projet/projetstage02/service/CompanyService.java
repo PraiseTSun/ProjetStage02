@@ -283,13 +283,13 @@ public class CompanyService {
                 .build();
     }
 
-    private int getOfferNotification(long companyId) {
+    private long getOfferNotification(long companyId) {
         List<Offre> offers = offreRepository.findAllByIdCompagnie(companyId);
 
         if(offers.size() == 0)
-            return 0;
+            return 0L;
 
-        int nb = 0;
+        long nb = 0L;
 
         for(Offre offer : offers){
             long count = applicationRepository.findByOfferId(offer.getId())
@@ -298,18 +298,16 @@ public class CompanyService {
                             .findByOfferIdAndStudentId(offer.getId(), application.getStudentId()).isEmpty())
                     .count();
 
-            nb += (int) count;
+            nb += count;
         }
 
         return nb;
     }
 
-    private int getContractNotifications(long companyId) {
-        long count = stageContractRepository.findByCompanyId(companyId)
+    private long getContractNotifications(long companyId) {
+        return stageContractRepository.findByCompanyId(companyId)
                 .stream()
                 .filter(stageContract -> stageContract.getCompanySignature().isBlank())
                 .count();
-
-        return (int) count;
-    }
+        }
 }

@@ -10,6 +10,6 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Builder
 public class CompanyNotificationDTO {
-    private int nbOffers;
-    private int nbContracts;
+    private long nbOffers;
+    private long nbContracts;
 }

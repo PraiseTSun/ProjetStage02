@@ -10,7 +10,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Builder
 public class StudentNotificationDTO {
-    private int nbUploadCv;
-    private int nbStages;
-    private int nbContracts;
+    private long nbUploadCv;
+    private long nbStages;
+    private long nbContracts;
 }

@@ -14,7 +14,7 @@ public class ApplicationListDTO {
     List<Long> offersId;
     List<Long> removableOffersId;
 
-    public boolean hasApply(long id){
+    public boolean hasApplied(long id){
         return offersId.contains(id);
     }
 }

@@ -10,12 +10,12 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Builder
 public class GestionnaireNotificationDTO {
-    private int nbUnvalidatedUser;
-    private int nbUnvalidatedCV;
-    private int nbUnvalidatedOffer;
-    private int nbEvaluateMilieuStage;
-    private int nbCreateContract;
-    private int nbConsultStageEvaluation;
-    private int nbConsultStudentEvaluation;
-    private int nbSigneContract;
+    private long nbUnvalidatedUser;
+    private long nbUnvalidatedCV;
+    private long nbUnvalidatedOffer;
+    private long nbEvaluateMilieuStage;
+    private long nbCreateContract;
+    private long nbConsultStageEvaluation;
+    private long nbConsultStudentEvaluation;
+    private long nbSigneContract;
 }
