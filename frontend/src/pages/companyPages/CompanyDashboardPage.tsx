@@ -2,6 +2,7 @@ import React from "react";
 import {Button, Container, Row} from "react-bootstrap";
 import IUser from "../../models/IUser";
 import {Link} from 'react-router-dom';
+import ReportButton from "../../components/universalComponents/ReportButton";
 
 const CompanyDashboard = ({user, deconnexion}: { user: IUser, deconnexion: Function }): JSX.Element => {
     return (
@@ -9,7 +10,8 @@ const CompanyDashboard = ({user, deconnexion}: { user: IUser, deconnexion: Funct
             <Button className="btn btn-danger my-2" onClick={() => deconnexion()}>
                 Déconnexion
             </Button>
-            <h1 className="p-5 pb-3 text-center fw-bold text-white display-4">Bienvenue {user.firstName} {user.lastName}</h1>
+            <h1 className="pt-5 text-center fw-bold text-white display-4">Bienvenue {user.firstName} {user.lastName}</h1>
+            <ReportButton/>
             <Row className="d-flex justify-content-center">
                 <Link to="/soumettreOffre"
                       className="btn btn-outline-primary text-white">Soumettre une offre de stage</Link>

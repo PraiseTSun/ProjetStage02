@@ -2,6 +2,7 @@ import React, {useState} from "react";
 import {Button, Col, Row} from "react-bootstrap";
 import InscriptionForm from "../../components/universalComponents/InscriptionForm";
 import LoginForm from "../../components/universalComponents/LoginForm";
+import ReportButton from "../../components/universalComponents/ReportButton";
 
 const LoginPage = (props: { setUser: Function }): JSX.Element => {
     const [isLogginPage, setIsLogginPage] = useState(true)
@@ -23,6 +24,7 @@ const LoginPage = (props: { setUser: Function }): JSX.Element => {
                             </Col>
                         </Row>
                     </Col>
+                    <ReportButton/>
                 </Row>
             </Col>
         </Row>

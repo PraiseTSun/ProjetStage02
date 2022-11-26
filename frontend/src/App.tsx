@@ -23,6 +23,7 @@ import ContractsPage from "./pages/gestionnairePages/ContractsPage";
 import ConsulterEvaluationDeStages from "./pages/gestionnairePages/ConsulterEvaluationDeStages";
 import ConsulterEvaluationDeEtudiants from "./pages/gestionnairePages/ConsulterEvaluationDeEtudiants";
 import SignerEntenteDeStageParGestionnaire from "./pages/gestionnairePages/SignerEntenteDeStageParGestionnaire";
+import ReportProblemPage from "./pages/universalPages/ReportProblemPage";
 import NotFoundPage from "./pages/universalPages/NotFoundPage";
 
 export const LOCAL_STORAGE_KEY = "MASSI_BEST_PROGRAMMER_PROJET_STAGE_02_CURRENT_CONNECTED_USER"
@@ -97,6 +98,8 @@ function App() {
                         <Route path="/" element={<LoginPage setUser={setConnectedUser}/>}/>
                         <Route path="/confirmEmail/:id" element={<ConfirmationPage/>}/>
                         <Route path="*" element={<NotFoundPage/>}/>
+                        <Route path="/report"
+                               element={<ReportProblemPage/>}/>
                     </Routes>
                 </BrowserRouter>
             </Container>
@@ -113,6 +116,8 @@ function App() {
                         <Route path="/uploaderCV" element={<StudentCvUploadPage connectedUser={connectedUser}/>}/>
                         <Route path="/myContracts" element={<StudentContractsPage connectedUser={connectedUser}/>}/>
                         <Route path="*" element={<NotFoundPage/>}/>
+                        <Route path="/report"
+                               element={<ReportProblemPage/>}/>
                     </Routes>
                 </BrowserRouter>
             </Container>
@@ -128,6 +133,8 @@ function App() {
                         <Route path="/CompanyContractsPage"
                                element={<CompanyContractsPage connectedUser={connectedUser}/>}/>
                         <Route path="*" element={<NotFoundPage/>}/>
+                        <Route path="/report"
+                               element={<ReportProblemPage/>}/>
                     </Routes>
                 </BrowserRouter>
             </Container>
