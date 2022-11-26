@@ -339,3 +339,14 @@ export const putSignatureContract = (token: string, gestionnaireId: number, cont
         body: JSON.stringify({token: token, userId: gestionnaireId, contractId: contratId,signature : signature})
     })
 }
+
+export const putGestionnaireNotification = (token: string): Promise<Response> => {
+    return fetch(`http://localhost:8080/getGestionnaireNotification`, {
+        method: "PUT",
+        headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({"token": token})
+    });
+}

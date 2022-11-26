@@ -1,18 +1,41 @@
-import React, {useState} from "react";
+import React, {useEffect, useState} from "react";
 import {Button, Row} from "react-bootstrap";
 import {Link} from "react-router-dom";
 import IUser from "../../models/IUser";
+import {generateAlert} from "../../services/universalServices/UniversalUtilService";
+import {putGestionnaireNotification} from "../../services/gestionnaireServices/GestionnaireFetchService";
 
 const GestionnaireDashboard = ({user, deconnexion}: { user: IUser, deconnexion: Function }): JSX.Element => {
     const [changementPourValidationDesUtilisateurs, setChangementPourValidationDesUtilisateurs] = useState<number>(0)
     const [changementPourValidationDesCurriculumsVitaeDesEtudiants, setChangementPourValidationDesCurriculumsVitaeDesEtudiants] = useState<number>(0)
     const [changementPourValidationNouvelleOffreStage, setChangementPourValidationNouvelleOffreStage] = useState<number>(0)
-    const [changementPourHistoriqueDesOffres, setChangementPourHistoriqueDesOffres] = useState<number>(0)
     const [changementPourEvaluerLeMilieuDeStage, setChangementPourEvaluerLeMilieuDeStage] = useState<number>(0)
     const [changementPourCreerLesEntentesDeStage, setChangementPourCreerLesEntentesDeStage] = useState<number>(0)
     const [changementPourConsulterLesEvaluationsDesStages, setChangementPourConsulterLesEvaluationsDesStages] = useState<number>(0)
     const [changementPourConsulterLesEvaluationsDesEtudiant, setChangementPourConsulterLesEvaluationsDesEtudiant] = useState<number>(0)
     const [changementPourSignerLEntenteDeStage, setChangementPourSignerLEntenteDeStage] = useState<number>(0)
+
+    useEffect(() => {
+        const fetchGestionnaireNotification = async () => {
+            await putGestionnaireNotification(user.token).then(async reponse => {
+                if (reponse.status === 200) {
+                    const data = await reponse.json()
+                    setChangementPourValidationDesUtilisateurs(data.nbUnvalidatedUser)
+                    setChangementPourValidationDesCurriculumsVitaeDesEtudiants(data.nbUnvalidatedCV)
+                    setChangementPourValidationNouvelleOffreStage(data.nbUnvalidatedOffer)
+                    setChangementPourEvaluerLeMilieuDeStage(data.nbEvaluateMilieuStage)
+                    setChangementPourCreerLesEntentesDeStage(data.nbCreateContract)
+                    setChangementPourConsulterLesEvaluationsDesStages(data.nbConsultStageEvaluation)
+                    setChangementPourConsulterLesEvaluationsDesEtudiant(data.nbConsultStudentEvaluation)
+                    setChangementPourSignerLEntenteDeStage(data.nbSigneContract)
+                } else {
+                    generateAlert()
+                }
+            })
+        }
+        fetchGestionnaireNotification()
+    }, [user])
+
     return (
         <div className="min-vh-100">
             <Button className="btn btn-danger my-2" onClick={() => deconnexion()}>
@@ -39,12 +62,6 @@ const GestionnaireDashboard = ({user, deconnexion}: { user: IUser, deconnexion: 
                             stage</Link> :
                         <Link to="/validerNouvelleOffre" className="btn btn-danger mt-3">Validation nouvelle offre
                             stage ({changementPourValidationNouvelleOffreStage})</Link>
-                }
-                {
-                    changementPourHistoriqueDesOffres === 0 ?
-                        <Link to="/offerHistory" className="btn btn-primary mt-3">Historique des offres</Link> :
-                        <Link to="/offerHistory" className="btn btn-danger mt-3">Historique des offres
-                            ({changementPourHistoriqueDesOffres})</Link>
                 }
                 {
                     changementPourEvaluerLeMilieuDeStage === 0 ?

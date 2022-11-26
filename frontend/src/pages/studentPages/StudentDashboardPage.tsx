@@ -1,12 +1,31 @@
-import React, {useState} from "react";
+import React, {useEffect, useState} from "react";
 import {Button, Row} from "react-bootstrap";
 import {Link} from "react-router-dom";
 import IUser from "../../models/IUser";
+import {putStudentNotification} from "../../services/studentServices/StudentFetchService";
+import {generateAlert} from "../../services/universalServices/UniversalUtilService";
 
 const StudentDashboard = ({user, deconnexion}: { user: IUser, deconnexion: Function }): JSX.Element => {
     const [changementPourUploaderMonCV, setChangementPourUploaderMonCV] = useState<number>(0)
     const [changementPourListeDeStages, setChangementPourListeDeStages] = useState<number>(0)
     const [changementPourMesContrats, setChangementPourMesContrats] = useState<number>(0)
+
+    useEffect(() => {
+        const fetchStudentNotification = async () => {
+            await putStudentNotification(user.id, user.token).then(async reponse => {
+                if (reponse.status === 200) {
+                    const data = await reponse.json()
+                    setChangementPourUploaderMonCV(data.nbUploadCv)
+                    setChangementPourListeDeStages(data.nbStages)
+                    setChangementPourMesContrats(data.nbContracts)
+                } else {
+                    generateAlert()
+                }
+            })
+        }
+        fetchStudentNotification()
+    }, [user])
+
     return (
         <div className="min-vh-100">
             <Button className="btn btn-danger my-2" onClick={() => deconnexion()}>
@@ -40,7 +59,6 @@ const StudentDashboard = ({user, deconnexion}: { user: IUser, deconnexion: Funct
                         <Link to="/myContracts" className="btn btn-danger mb-3">Mes
                             contrats ({changementPourMesContrats})</Link>
                 }
-
             </Row>
         </div>
     );

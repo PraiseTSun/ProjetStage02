@@ -142,3 +142,14 @@ export const putGetEvaluatedStudentsContracts = (token: string, companyId: strin
         body: JSON.stringify({"token": token})
     });
 }
+
+export const putCompanyNotification = (companyId: string, token: string): Promise<Response> => {
+    return fetch(`http://localhost:8080/companyNotification/${companyId}`, {
+        method: "PUT",
+        headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({"token": token})
+    });
+}
