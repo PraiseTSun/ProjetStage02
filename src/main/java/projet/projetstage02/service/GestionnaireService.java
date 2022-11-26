@@ -12,6 +12,7 @@ import projet.projetstage02.dto.evaluations.MillieuStage.MillieuStageEvaluationI
 import projet.projetstage02.dto.offres.OffreOutDTO;
 import projet.projetstage02.dto.pdf.PdfOutDTO;
 import projet.projetstage02.dto.problems.ProblemInDTO;
+import projet.projetstage02.dto.problems.ProblemOutDTO;
 import projet.projetstage02.dto.users.CompanyDTO;
 import projet.projetstage02.dto.users.GestionnaireDTO;
 import projet.projetstage02.dto.users.Students.StudentOutDTO;
@@ -704,5 +705,22 @@ public class GestionnaireService {
 
     public void reportProblem(ProblemInDTO problem) {
         problemsRepository.save(problem.toModel());
+    }
+
+    public List<ProblemOutDTO> getUnresolvedProblems() {
+        return problemsRepository.findAll().stream().filter(problem -> !problem.isResolved()).map(ProblemOutDTO::new).toList();
+    }
+
+    public void resolveProblem(long id) throws NonExistentEntityException, AlreadyResolvedException {
+        Problem problem = findProblemById(id);
+        if (problem.isResolved()) throw new AlreadyResolvedException();
+        problem.setResolved(true);
+        problemsRepository.save(problem);
+    }
+
+    private Problem findProblemById(long id) throws NonExistentEntityException {
+        Optional<Problem> problemOpt = problemsRepository.findById(id);
+        if (problemOpt.isEmpty()) throw new NonExistentEntityException();
+        return problemOpt.get();
     }
 }

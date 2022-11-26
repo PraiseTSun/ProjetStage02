@@ -24,6 +24,7 @@ import projet.projetstage02.dto.interview.InterviewSelectInDTO;
 import projet.projetstage02.dto.offres.OffreInDTO;
 import projet.projetstage02.dto.offres.OffreOutDTO;
 import projet.projetstage02.dto.pdf.PdfOutDTO;
+import projet.projetstage02.dto.problems.ProblemOutDTO;
 import projet.projetstage02.dto.users.CompanyDTO;
 import projet.projetstage02.dto.users.GestionnaireDTO;
 import projet.projetstage02.dto.users.Students.StudentInDTO;
@@ -41,11 +42,8 @@ import java.util.List;
 
 import static org.hamcrest.core.Is.is;
 import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.*;
-import static org.mockito.Mockito.doThrow;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static projet.projetstage02.model.Token.UserTypes.GESTIONNAIRE;
@@ -65,7 +63,6 @@ public class GestionnaireRootControllerTest {
     @Mock
     AuthService authService;
 
-    JacksonTester<MillieuStageEvaluationInDTO> jsonEvalInDTO;
     JacksonTester<GestionnaireDTO> jsonGestionnaireDTO;
     JacksonTester<OffreInDTO> jsonOffreDTO;
     JacksonTester<TokenDTO> jsonTokenDTO;
@@ -91,6 +88,7 @@ public class GestionnaireRootControllerTest {
     EvaluationInfoDTO evalInfoDTO;
     MillieuStageEvaluationInDTO evalInDTO;
     InterviewSelectInDTO interviewSelectInDTO;
+    ProblemOutDTO problemOutDTO;
 
     // https://thepracticaldeveloper.com/guide-spring-boot-controller-tests/
     @BeforeEach
@@ -245,6 +243,7 @@ public class GestionnaireRootControllerTest {
                 .build();
 
         evalInfoDTO = new EvaluationInfoDTO(duffBeer.toModel(), duffOffre.toModel(), bart.toModel());
+        problemOutDTO = ProblemOutDTO.builder().build();
     }
 
     @Test
@@ -971,8 +970,8 @@ public class GestionnaireRootControllerTest {
     }
 
     @Test
-    void testGetGestionnaireContractsHappyDay() throws Exception{
-        when(gestionnaireService.getContractsToSigne()).thenReturn(new ArrayList<>(){{
+    void testGetGestionnaireContractsHappyDay() throws Exception {
+        when(gestionnaireService.getContractsToSigne()).thenReturn(new ArrayList<>() {{
             add(new StageContractOutDTO());
             add(new StageContractOutDTO());
             add(new StageContractOutDTO());
@@ -986,7 +985,7 @@ public class GestionnaireRootControllerTest {
     }
 
     @Test
-    void testGetGestionnaireContractsInvalidToken() throws Exception{
+    void testGetGestionnaireContractsInvalidToken() throws Exception {
         when(authService.getToken(anyString(), any())).thenThrow(new InvalidTokenException());
 
         gestionnaireMockMvc.perform(put("/getGestionnaireContracts")
@@ -996,7 +995,7 @@ public class GestionnaireRootControllerTest {
     }
 
     @Test
-    void testGestionnaireSignatureHappyDay() throws Exception{
+    void testGestionnaireSignatureHappyDay() throws Exception {
         when(gestionnaireService.contractSignature(any())).thenReturn(new StageContractOutDTO());
 
         gestionnaireMockMvc.perform(put("/gestionnaireSignature")
@@ -1006,7 +1005,7 @@ public class GestionnaireRootControllerTest {
     }
 
     @Test
-    void testGestionnaireSignatureNotFound() throws Exception{
+    void testGestionnaireSignatureNotFound() throws Exception {
         when(gestionnaireService.contractSignature(any())).thenThrow(new NonExistentEntityException());
 
         gestionnaireMockMvc.perform(put("/gestionnaireSignature")
@@ -1017,7 +1016,7 @@ public class GestionnaireRootControllerTest {
 
 
     @Test
-    void testGestionnaireSignatureConflict() throws Exception{
+    void testGestionnaireSignatureConflict() throws Exception {
         when(gestionnaireService.contractSignature(any())).thenThrow(new NotReadyToBeSignedException());
 
         gestionnaireMockMvc.perform(put("/gestionnaireSignature")
@@ -1027,7 +1026,7 @@ public class GestionnaireRootControllerTest {
     }
 
     @Test
-    void testGestionnaireSignatureInvalidToken() throws Exception{
+    void testGestionnaireSignatureInvalidToken() throws Exception {
         when(authService.getToken(anyString(), any())).thenThrow(new InvalidTokenException());
 
         gestionnaireMockMvc.perform(put("/gestionnaireSignature")
@@ -1136,5 +1135,55 @@ public class GestionnaireRootControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(jsonTokenDTO.write(token).getJson()))
                 .andExpect(status().isForbidden());
+    }
+
+    @Test
+    void testGetUnresolvedReportedProblemsHappyDay() throws Exception {
+        when(gestionnaireService.getUnresolvedProblems()).thenReturn(List.of(problemOutDTO));
+
+        gestionnaireMockMvc.perform(put("/getUnresolvedProblems")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(jsonTokenDTO.write(token).getJson()))
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    void testGetUnresolvedReportedProblemsInvalidToken() throws Exception {
+        when(authService.getToken(any(), any())).thenThrow(new InvalidTokenException());
+
+        gestionnaireMockMvc.perform(put("/getUnresolvedProblems")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(jsonTokenDTO.write(token).getJson()))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    void testResolveProblemHappyDay() throws Exception {
+        doNothing().when(gestionnaireService).resolveProblem(anyLong());
+
+        gestionnaireMockMvc.perform(put("/resolveProblem/{id}", 1)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(jsonTokenDTO.write(token).getJson()))
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    void testResolveProblemInvalidToken() throws Exception {
+        when(authService.getToken(any(), any())).thenThrow(new InvalidTokenException());
+
+        gestionnaireMockMvc.perform(put("/resolveProblem/{id}", 1)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(jsonTokenDTO.write(token).getJson()))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    void testResolveProblemNotFound() throws Exception {
+        doThrow(new NonExistentEntityException()).when(gestionnaireService).resolveProblem(anyLong());
+
+        gestionnaireMockMvc.perform(put("/resolveProblem/{id}", 1)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(jsonTokenDTO.write(token).getJson()))
+                .andExpect(status().isNotFound());
     }
 }
