@@ -20,6 +20,7 @@ import projet.projetstage02.dto.contracts.ContractsDTO;
 import projet.projetstage02.dto.contracts.StageContractOutDTO;
 import projet.projetstage02.dto.evaluations.Etudiant.EvaluationEtudiantInDTO;
 import projet.projetstage02.dto.interview.InterviewOutDTO;
+import projet.projetstage02.dto.notification.CompanyNotificationDTO;
 import projet.projetstage02.dto.offres.OfferAcceptedStudentsDTO;
 import projet.projetstage02.dto.offres.OffreInDTO;
 import projet.projetstage02.dto.offres.OffreOutDTO;
@@ -791,6 +792,36 @@ public class CompanyRootControllerTest {
         when(authService.getToken(anyString(), any())).thenThrow(new InvalidTokenException());
 
         companyMockMvc.perform(put("/getEvaluatedStudentsContracts/{companyId}", 1)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(jsonTokenDTO.write(token).getJson()))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    void testGetCompanyNotificationHappyDay() throws Exception{
+        when(companyService.getNotification(anyLong())).thenReturn(new CompanyNotificationDTO());
+
+        companyMockMvc.perform(put("/companyNotification/{companyId}", 1)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(jsonTokenDTO.write(token).getJson()))
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    void testGetCompanyNotificationNotFound() throws Exception{
+        when(companyService.getNotification(anyLong())).thenThrow(new NonExistentEntityException());
+
+        companyMockMvc.perform(put("/companyNotification/{companyId}", 1)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(jsonTokenDTO.write(token).getJson()))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    void testGetCompanyNotificationInvalidToken() throws Exception{
+        when(authService.getToken(anyString(), any())).thenThrow(new InvalidTokenException());
+
+        companyMockMvc.perform(put("/companyNotification/{companyId}", 1)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(jsonTokenDTO.write(token).getJson()))
                 .andExpect(status().isForbidden());

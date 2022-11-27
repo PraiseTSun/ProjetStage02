@@ -15,6 +15,7 @@ import projet.projetstage02.dto.contracts.StageContractOutDTO;
 import projet.projetstage02.dto.evaluations.Etudiant.EvaluationEtudiantInDTO;
 import projet.projetstage02.dto.interview.CreateInterviewDTO;
 import projet.projetstage02.dto.interview.InterviewOutDTO;
+import projet.projetstage02.dto.notification.CompanyNotificationDTO;
 import projet.projetstage02.dto.offres.OfferAcceptedStudentsDTO;
 import projet.projetstage02.dto.offres.OffreInDTO;
 import projet.projetstage02.dto.offres.OffreOutDTO;
@@ -35,6 +36,7 @@ import java.util.Map;
 import static org.apache.logging.log4j.Level.INFO;
 import static org.springframework.http.HttpStatus.*;
 import static projet.projetstage02.model.Token.UserTypes.COMPANY;
+import static projet.projetstage02.model.Token.UserTypes.STUDENT;
 import static projet.projetstage02.utils.TimeUtil.*;
 
 @RestController
@@ -344,6 +346,25 @@ public class CompanyRootController {
         } catch (DocumentException e) {
             logger.log(INFO, "PutMapping: /evaluateStudent sent 500 response");
             return ResponseEntity.status(INTERNAL_SERVER_ERROR).build();
+        }
+    }
+
+    @PutMapping("/companyNotification/{companyId}")
+    public ResponseEntity<CompanyNotificationDTO> getCompanyNotification
+            (@PathVariable String companyId, @RequestBody TokenDTO token) {
+        logger.log(INFO, "Put /companyNotification/{companyId} with the id: " + companyId);
+
+        try {
+            authService.getToken(token.getToken(), COMPANY);
+            CompanyNotificationDTO notification = companyService.getNotification(Long.parseLong(companyId));
+            logger.log(INFO, "Put /companyNotification/{companyId} return 200");
+            return ResponseEntity.ok(notification);
+        } catch (InvalidTokenException e) {
+            logger.log(INFO, "Put /companyNotification/{companyId} return 403");
+            return ResponseEntity.status(FORBIDDEN).build();
+        } catch (NonExistentEntityException e) {
+            logger.log(INFO, "Put /companyNotification/{companyId} return 404");
+            return ResponseEntity.status(NOT_FOUND).build();
         }
     }
 }

@@ -14,6 +14,7 @@ import projet.projetstage02.dto.contracts.StageContractOutDTO;
 import projet.projetstage02.dto.cv.CvStatusDTO;
 import projet.projetstage02.dto.interview.InterviewOutDTO;
 import projet.projetstage02.dto.interview.InterviewSelectInDTO;
+import projet.projetstage02.dto.notification.StudentNotificationDTO;
 import projet.projetstage02.dto.offres.OffreOutDTO;
 import projet.projetstage02.dto.pdf.PdfDTO;
 import projet.projetstage02.dto.pdf.PdfOutDTO;
@@ -759,5 +760,58 @@ public class StudentServiceTest {
         } catch (CantRemoveApplicationException ignored) {}
 
         fail("Fail to catch the error NonExistentEntityException!");
+    }
+
+    @Test
+    void testGetNotificationHappyDay() throws NonExistentEntityException {
+        bart.setDepartment(Department.Informatique);
+        List<Offre> offers = new ArrayList<>(){{
+            add(Offre.builder().id(1L).valide(true).department(Department.Informatique).build());
+            add(Offre.builder().id(2L).valide(true).department(Department.Informatique).build());
+            add(Offre.builder().id(3L).valide(true).department(Department.Informatique).build());
+            add(Offre.builder().id(8L).valide(true).department(Department.Informatique).build());
+            add(Offre.builder().id(9L).valide(true).department(Department.Informatique).build());
+            add(Offre.builder().id(4L).valide(false).department(Department.Informatique).build());
+            add(Offre.builder().id(5L).valide(true).department(Department.Transport).build());
+            add(Offre.builder().id(6L).valide(true).department(Department.Transport).build());
+            add(Offre.builder().id(7L).valide(false).department(Department.Transport).build());
+        }};
+        List<Application> applications = new ArrayList<>(){{
+            add(Application.builder().offerId(1L).build());
+            add(Application.builder().offerId(2L).build());
+        }};
+        List<StageContract> contracts = new ArrayList<>(){{
+            add(StageContract.builder().studentSignature("").build());
+            add(StageContract.builder().studentSignature("").build());
+            add(StageContract.builder().studentSignature("test").build());
+        }};
+
+        when(cvStatusRepository.findById(anyLong())).thenReturn(Optional.empty());
+        when(studentRepository.findById(anyLong())).thenReturn(Optional.of(bart));
+        when(offreRepository.findAll()).thenReturn(offers);
+        when(applicationRepository.findByStudentId(anyLong())).thenReturn(applications);
+        when(stageContractRepository.findByStudentIdAndOfferId(anyLong(), anyLong()))
+                .thenReturn(Optional.empty(), Optional.of(new StageContract()));
+        when(stageContractRepository.findByStudentId(anyLong()))
+                .thenReturn(contracts);
+
+        StudentNotificationDTO notification = studentService.getNotification(1L);
+
+        assertThat(notification.getNbUploadCv()).isEqualTo(0);
+        assertThat(notification.getNbStages()).isEqualTo(3);
+        assertThat(notification.getNbContracts()).isEqualTo(2);
+    }
+
+    @Test
+    void testGetNotificationNotFound() {
+        when(studentRepository.findById(anyLong())).thenReturn(Optional.empty());
+
+        try {
+            studentService.getNotification(1L);
+        } catch (NonExistentEntityException e) {
+            return;
+        }
+
+        fail("Fail to catch NonExistentEntityException!");
     }
 }

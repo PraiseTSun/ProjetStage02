@@ -21,6 +21,7 @@ import projet.projetstage02.dto.contracts.StageContractOutDTO;
 import projet.projetstage02.dto.cv.CvStatusDTO;
 import projet.projetstage02.dto.interview.InterviewOutDTO;
 import projet.projetstage02.dto.interview.InterviewSelectInDTO;
+import projet.projetstage02.dto.notification.StudentNotificationDTO;
 import projet.projetstage02.dto.offres.OffreInDTO;
 import projet.projetstage02.dto.offres.OffreOutDTO;
 import projet.projetstage02.dto.pdf.PdfDTO;
@@ -698,6 +699,36 @@ public class StudentRootControllerTest {
         studentMockMvc.perform(put("/removeStudentApplication")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(jsonRemoveApplicationDTO.write(removeApplicationDTO).getJson()))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    void testGetStudentNotificationHappyDay() throws Exception {
+        when(studentService.getNotification(anyLong())).thenReturn(new StudentNotificationDTO());
+
+        studentMockMvc.perform(put("/studentNotification/{studentId}", 1)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(jsonTokenDTO.write(token).getJson()))
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    void testGetStudentNotificationNotFound() throws Exception {
+        when(studentService.getNotification(anyLong())).thenThrow(new NonExistentEntityException());
+
+        studentMockMvc.perform(put("/studentNotification/{studentId}", 1)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(jsonTokenDTO.write(token).getJson()))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    void testGetStudentNotificationInvalidToken() throws Exception {
+        when(authService.getToken(anyString(), any())).thenThrow(new InvalidTokenException());
+
+        studentMockMvc.perform(put("/studentNotification/{studentId}", 1)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(jsonTokenDTO.write(token).getJson()))
                 .andExpect(status().isForbidden());
     }
 }
