@@ -27,5 +27,7 @@ public class Problem {
     private String problemCategory;
     @NotBlank
     private String problemDetails;
+    @NotBlank
+    private String email;
     private boolean resolved;
 }

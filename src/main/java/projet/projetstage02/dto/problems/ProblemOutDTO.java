@@ -17,6 +17,7 @@ public class ProblemOutDTO {
     @Pattern(regexp = "Connexion|Inscription|Offres de stage|Contrats|Autre")
     private String problemCategory;
     private String problemDetails;
+    private String email;
     private boolean resolved;
 
     public ProblemOutDTO(Problem problem) {
@@ -24,5 +25,6 @@ public class ProblemOutDTO {
         this.problemCategory = problem.getProblemCategory();
         this.problemDetails = problem.getProblemDetails();
         this.resolved = problem.isResolved();
+        this.email = problem.getEmail();
     }
 }

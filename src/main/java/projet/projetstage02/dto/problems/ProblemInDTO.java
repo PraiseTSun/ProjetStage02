@@ -20,10 +20,14 @@ public class ProblemInDTO {
     @NotBlank
     private String problemDetails;
 
+    @NotBlank
+    private String email;
+
     public Problem toModel() {
         return Problem.builder()
                 .problemCategory(this.problemCategory)
                 .problemDetails(this.problemDetails)
+                .email(this.email)
                 .resolved(false)
                 .build();
     }
