@@ -100,7 +100,8 @@ const OffreSoumissionPage = ({user}: { user: IUser }): JSX.Element => {
 
     if (formSent) {
         return (
-            <LocationChangeConfirmationPopup message={"Formulaire envoyé"} locationOnConfirm={"/"}/>
+            <LocationChangeConfirmationPopup message={"Offre envoyé. En attente d'approbation."}
+                                             locationOnConfirm={"/"}/>
         );
     }
 
