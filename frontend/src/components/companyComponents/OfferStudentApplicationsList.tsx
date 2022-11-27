@@ -117,7 +117,7 @@ const OfferStudentApplicationsList = ({
         }
 
         return (
-            <Button variant="primary" onClick={
+            <Button variant="warning" onClick={
                 () => {
                     setCurrentlySelectedStudent(studentId)
                     setShowDateSelector(true)
@@ -126,7 +126,7 @@ const OfferStudentApplicationsList = ({
     }
 
     return (
-        <Table className="text-center" hover>
+        <Table className="text-center" hover responsive>
             <thead className="bg-primary text-white">
             <tr>
                 <th>Prénom</th>

@@ -3,7 +3,6 @@ import {Col, Container, Row, ToggleButton, ToggleButtonGroup} from "react-bootst
 import ValidationStudent from "../../components/gestionnaireComponents/ValidationStudent";
 import ValidationCompany from "../../components/gestionnaireComponents/ValidationCompany";
 import CreateGestionnaireForm from "../../components/gestionnaireComponents/CreateGestionnaireForm";
-import {Link} from "react-router-dom";
 import IUser from "../../models/IUser";
 import {
     deleteRemoveCompany,
@@ -12,6 +11,7 @@ import {
     putValidateStudent
 } from "../../services/gestionnaireServices/GestionnaireFetchService";
 import {generateAlert} from "../../services/universalServices/UniversalUtilService";
+import PageHeader from "../../components/universalComponents/PageHeader";
 
 const UserValidation = ({connectedUser}: { connectedUser: IUser }) => {
     const [user, setUser] = useState("Student");
@@ -46,39 +46,34 @@ const UserValidation = ({connectedUser}: { connectedUser: IUser }) => {
 
     return (
         <Container className="min-vh-100">
+            <PageHeader title={"Validation d'utilisateurs"}/>
             <Row>
-                <Col sm={2}>
-                    <Link to="/" className="btn btn-primary my-3">Home</Link>
+                <Col className="bg-light p-0" style={{minHeight: 300}}>
+                    <Row>
+                        <ToggleButtonGroup className="" type="radio" name="options" defaultValue="Student">
+                            <ToggleButton data-testid="studentInput" id="StudentValid" value="Student"
+                                          onClick={() => setUser("Student")}>
+                                Étudiants
+                            </ToggleButton>
+                            <ToggleButton id="CompanyValid" data-testid="companyInput" value="Company"
+                                          onClick={() => setUser("Company")}>
+                                Compagnies
+                            </ToggleButton>
+                            <ToggleButton id="GestionnairValid" value="Gestionnaire" onClick={() => {
+                                setUser("Gestionnaire")
+                            }}>
+                                Gestionnaires
+                            </ToggleButton>
+                        </ToggleButtonGroup>
+                        {user === "Student" ?
+                            <ValidationStudent connectedUser={connectedUser} onRemove={onRemove}
+                                               onValidation={onValidation}/> :
+                            user === "Company" ? <ValidationCompany connectedUser={connectedUser} onRemove={onRemove}
+                                                                    onValidation={onValidation}/> :
+                                <CreateGestionnaireForm connectedUser={connectedUser}/>
+                        }
+                    </Row>
                 </Col>
-                <Col sm={8} className="text-center pt-2">
-                    <h1 className="fw-bold text-white display-3 pb-2">Validation d'utilisateurs</h1>
-                </Col>
-                <Col sm={2}></Col>
-            </Row>
-            <Row>
-                <ToggleButtonGroup className="" type="radio" name="options" defaultValue="Student">
-                    <ToggleButton data-testid="studentInput" id="StudentValid" value="Student"
-                                  onClick={() => setUser("Student")}>
-                        Étudiants
-                    </ToggleButton>
-                    <ToggleButton id="CompanyValid" data-testid="companyInput" value="Company"
-                                  onClick={() => setUser("Company")}>
-                        Compagnies
-                    </ToggleButton>
-                    <ToggleButton id="GestionnairValid" value="Gestionnaire" onClick={() => {
-                        setUser("Gestionnaire")
-                    }}>
-                        Gestionnaires
-                    </ToggleButton>
-                </ToggleButtonGroup>
-            </Row>
-            <Row>
-                {user === "Student" ?
-                    <ValidationStudent connectedUser={connectedUser} onRemove={onRemove} onValidation={onValidation}/> :
-                    user === "Company" ? <ValidationCompany connectedUser={connectedUser} onRemove={onRemove}
-                                                            onValidation={onValidation}/> :
-                        <CreateGestionnaireForm connectedUser={connectedUser}/>
-                }
             </Row>
         </Container>
     );

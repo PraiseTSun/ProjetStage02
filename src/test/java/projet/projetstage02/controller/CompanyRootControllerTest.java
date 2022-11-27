@@ -35,7 +35,6 @@ import projet.projetstage02.model.Token;
 import projet.projetstage02.service.AuthService;
 import projet.projetstage02.service.CompanyService;
 import projet.projetstage02.service.GestionnaireService;
-import projet.projetstage02.utils.EmailUtil;
 
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
@@ -88,6 +87,7 @@ public class CompanyRootControllerTest {
     OfferApplicationDTO offerApplicationDTO;
     InterviewOutDTO interviewOutDTO;
     EvaluationEtudiantInDTO evaluationEtudiantInDTO;
+
     // https://thepracticaldeveloper.com/guide-spring-boot-controller-tests/
     @BeforeEach
     void setup() {
@@ -199,7 +199,7 @@ public class CompanyRootControllerTest {
                 .companyId(duffBeer.getId())
                 .offerId(duffOffreOut.getId())
                 .studentId(bartOut.getId())
-                .companyDateOffers(new ArrayList<>(){{
+                .companyDateOffers(new ArrayList<>() {{
                     add("2022-11-28T12:30:00");
                     add("2022-11-29T12:30:00");
                     add("2022-11-30T12:30:00");
@@ -324,7 +324,7 @@ public class CompanyRootControllerTest {
 
     @Test
     void testCreateOffreInvalidToken() throws Exception {
-        duffOffre.setToken(token.getToken());
+
         when(authService.getToken(any(), any())).thenThrow(new InvalidTokenException());
         companyMockMvc.perform(post("/createOffre")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -332,7 +332,6 @@ public class CompanyRootControllerTest {
 
                 .andExpect(status().isForbidden());
     }
-
 
     @Test
     void testConfirmCompanyEmailHappyDay() throws Exception {
@@ -636,7 +635,7 @@ public class CompanyRootControllerTest {
     }
 
     @Test
-    void testCreateInterviewHappyDay() throws Exception{
+    void testCreateInterviewHappyDay() throws Exception {
         when(companyService.createInterview(any())).thenReturn(interviewOutDTO);
 
         companyMockMvc.perform(post("/createInterview")
@@ -689,7 +688,7 @@ public class CompanyRootControllerTest {
 
     @Test
     void testGetCompanyInterviewsHappyDay() throws Exception {
-        when(companyService.getInterviews(anyLong())).thenReturn(new ArrayList<>(){{
+        when(companyService.getInterviews(anyLong())).thenReturn(new ArrayList<>() {{
             add(new InterviewOutDTO());
             add(new InterviewOutDTO());
             add(new InterviewOutDTO());

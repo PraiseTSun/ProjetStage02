@@ -973,6 +973,8 @@ public class GestionnaireServiceTest {
         expected.setEmployFullName(companyTest.getFirstName() + " " + companyTest.getLastName());
         expected.setPosition(offerTest.getPosition());
         expected.setCompanyName(companyTest.getCompanyName());
+        expected.setGestionnaireSignature("test");
+        stageContract.setGestionnaireSignature("test");
         when(evaluationMillieuStageRepository.findByContractId(anyLong())).thenReturn(Optional.empty());
         when(stageContractRepository.findAll()).thenReturn(List.of(stageContract, stageContract, stageContract));
         when(companyRepository.findById(anyLong())).thenReturn(Optional.of(companyTest));

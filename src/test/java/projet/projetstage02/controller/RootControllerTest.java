@@ -17,12 +17,14 @@ import projet.projetstage02.dto.auth.TokenDTO;
 import projet.projetstage02.dto.contracts.ContractsDTO;
 import projet.projetstage02.dto.contracts.StageContractOutDTO;
 import projet.projetstage02.dto.offres.OffreInDTO;
+import projet.projetstage02.dto.problems.ProblemInDTO;
 import projet.projetstage02.dto.users.CompanyDTO;
 import projet.projetstage02.dto.users.GestionnaireDTO;
 import projet.projetstage02.dto.users.Students.StudentInDTO;
 import projet.projetstage02.exception.InvalidTokenException;
 import projet.projetstage02.model.AbstractUser.Department;
 import projet.projetstage02.service.AuthService;
+import projet.projetstage02.service.GestionnaireService;
 
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
@@ -44,8 +46,11 @@ public class RootControllerTest {
 
     @Mock
     AuthService authService;
+    @Mock
+    GestionnaireService gestionnaireService;
 
     JacksonTester<LoginDTO> jsonLoginDTO;
+    JacksonTester<ProblemInDTO> jsonProblemInDTO;
 
 
     StudentInDTO bart;
@@ -57,6 +62,7 @@ public class RootControllerTest {
     StageContractOutDTO stageContractOutDTO;
     SignatureInDTO signatureInDTO;
     ContractsDTO contractsDTO;
+    ProblemInDTO problemInDTO;
 
     // https://thepracticaldeveloper.com/guide-spring-boot-controller-tests/
     @BeforeEach
@@ -130,6 +136,10 @@ public class RootControllerTest {
                 .studentSignature(signatureInDTO.getSignature())
                 .build();
 
+        problemInDTO = ProblemInDTO.builder()
+                .problemCategory("Login")
+                .problemDetails("Login problem")
+                .build();
         contractsDTO = new ContractsDTO();
         contractsDTO.add(stageContractOutDTO);
         contractsDTO.add(stageContractOutDTO);
@@ -218,5 +228,15 @@ public class RootControllerTest {
 
                 .andExpect(status().isForbidden());
         verify(authService, times(1)).loginIfValid(any(), any());
+    }
+
+    @Test
+    void testReportProblemHappyDay() throws Exception {
+        doNothing().when(gestionnaireService).reportProblem(any());
+        mockMvc.perform(post("/reportProblem")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(jsonProblemInDTO.write(problemInDTO).getJson()))
+                .andExpect(status().isCreated());
+        verify(gestionnaireService, times(1)).reportProblem(any());
     }
 }

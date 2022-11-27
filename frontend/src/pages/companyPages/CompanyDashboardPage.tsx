@@ -1,24 +1,26 @@
 import React from "react";
-import {Button, Row} from "react-bootstrap";
+import {Button, Container, Row} from "react-bootstrap";
 import IUser from "../../models/IUser";
 import {Link} from 'react-router-dom';
+import ReportButton from "../../components/universalComponents/ReportButton";
 
 const CompanyDashboard = ({user, deconnexion}: { user: IUser, deconnexion: Function }): JSX.Element => {
-
-    return (<>
+    return (
+        <Container className="min-vh-100">
             <Button className="btn btn-danger my-2" onClick={() => deconnexion()}>
                 Déconnexion
             </Button>
-            <h1 className="p-5 text-center fw-bold text-white display-4">Bienvenue {user.firstName} {user.lastName}</h1>
+            <h1 className="pt-5 text-center fw-bold text-white display-4">Bienvenue {user.firstName} {user.lastName}</h1>
+            <ReportButton/>
             <Row className="d-flex justify-content-center">
                 <Link to="/soumettreOffre"
-                      className="btn btn-primary">Soumettre une offre de stage</Link>
+                      className="btn btn-outline-primary text-white">Soumettre une offre de stage</Link>
                 <Link to="/myOffers"
-                      className="btn btn-primary mt-3">Mes offres</Link>
+                      className="btn btn-outline-primary text-white mt-3">Mes offres</Link>
                 <Link to="/CompanyContractsPage"
-                      className="btn btn-primary mt-3">Mes contrats</Link>
+                      className="btn btn-outline-primary text-white mt-3">Mes contrats</Link>
             </Row>
-        </>
+        </Container>
     );
 }
 

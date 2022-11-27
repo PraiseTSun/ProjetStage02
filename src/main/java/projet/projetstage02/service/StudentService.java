@@ -163,7 +163,7 @@ public class StudentService {
                         application -> {
                             long offerId = application.getOfferId();
                             offersId.add(offerId);
-                            if(canRemovePostul(studentId, offerId))
+                            if(canRemoveApplication(studentId, offerId))
                                 removableOffersId.add(offerId);
                         }
                 );
@@ -175,7 +175,7 @@ public class StudentService {
                 .build();
     }
 
-    private boolean canRemovePostul(long studentId, long offerId) {
+    private boolean canRemoveApplication(long studentId, long offerId) {
         Optional<StageContract> contractOpt = stageContractRepository.findByStudentIdAndOfferId(studentId, offerId);
         return contractOpt.isEmpty();
     }

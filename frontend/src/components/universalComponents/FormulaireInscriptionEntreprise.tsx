@@ -1,6 +1,7 @@
 import React, {useState} from "react";
 import {Button, Container, Form, FormGroup, Row} from "react-bootstrap";
 import {BeatLoader} from "react-spinners";
+import {postUserType} from "../../services/universalServices/UniversalFetchService";
 
 const FormulaireInscriptionEntreprise = ({onInscrire}: { onInscrire: Function }) => {
     const [waiting, setWaiting] = useState(false);
@@ -11,43 +12,49 @@ const FormulaireInscriptionEntreprise = ({onInscrire}: { onInscrire: Function })
     const [departement, setDepartement] = useState('')
     const [courriel, setCourriel] = useState('')
     const [motDePasse, setMotDePasse] = useState('')
+    const [passwordsMatch, setPasswordsMatch] = useState(true)
+    const [emailValid, setEmailValid] = useState(true)
     const [validationMotDePasse, setValidationMotDePasse] = useState('')
+    const [accountCreationError, setAccountCreationError] = useState<string>("")
 
     const validEmail = new RegExp(
-        '^[a-zA-Z0-9._:$!%-]+@[a-zA-Z0-9.-]+.[a-zA-Z]$'
+        '^[\\w-\\.]+@([\\w-]+\\.)+[\\w-]{2,4}$'
     );
 
-    const onSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    const onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         const form: any = e.currentTarget;
         e.preventDefault();
-        if (form.checkValidity()) {
-            setWaiting(true)
-            if (departement === '' || departement === 'Choix un département') {
-                alert("Dois choisir departement")
-                return
-            }
 
+        setValidated(true)
+        setPasswordsMatch(true)
+        setEmailValid(true)
+        setAccountCreationError("")
+        if (form.checkValidity()) {
 
             if (motDePasse !== validationMotDePasse) {
-                alert("Vérifier le mot de passe et le mot de passe ne correspondent pas")
+                setPasswordsMatch(false)
                 return
             }
 
             if (!validEmail.test(courriel)) {
+                setEmailValid(false)
                 return;
             }
 
-            onInscrire({
+            setWaiting(true)
+            const res = await postUserType('Company', {
                 lastName: nom, firstName: prenom, companyName: entreprise, department: departement,
                 email: courriel, password: motDePasse
-            }, 'Company')
+            });
+
+            if (!res.ok) {
+                const data = await res.json();
+                setAccountCreationError(data.error)
+            } else {
+                onInscrire(true);
+            }
+            setWaiting(false)
         }
-        setValidated(true)
-
-    }
-
-    if (waiting) {
-        return <BeatLoader className="text-center" color="#292b2c" size={100}/>
     }
 
     return (
@@ -136,11 +143,20 @@ const FormulaireInscriptionEntreprise = ({onInscrire}: { onInscrire: Function })
                         </Form.Select>
                     </Form.Label>
                     <Form.Control.Feedback type="invalid">Champ invalide</Form.Control.Feedback>
-
                 </FormGroup>
-
-                <Button data-testid="button_inscrire" type='submit'
-                        className="mt-3 btn btn-success col-12">S'inscrire</Button>
+                {accountCreationError !== "" &&
+                    <p className="text-danger fw-bold text-center h3">{accountCreationError}</p>}
+                {!emailValid &&
+                    <p className="text-danger fw-bold text-center h3">Le courriel est invalide</p>}
+                {!passwordsMatch &&
+                    <p className="text-danger fw-bold text-center h3">Les mots de passe ne sont pas pareils</p>}
+                {
+                    waiting
+                        ? <BeatLoader color="#0275d8" className="text-center" size={25}/>
+                        : <Row className="mt-3">
+                            <Button type="submit" className="btn btn-success mx-auto">Inscrire</Button>
+                        </Row>
+                }
             </Form>
 
         </Container>

@@ -23,6 +23,8 @@ import ContractsPage from "./pages/gestionnairePages/ContractsPage";
 import ConsulterEvaluationDeStages from "./pages/gestionnairePages/ConsulterEvaluationDeStages";
 import ConsulterEvaluationDeEtudiants from "./pages/gestionnairePages/ConsulterEvaluationDeEtudiants";
 import SignerEntenteDeStageParGestionnaire from "./pages/gestionnairePages/SignerEntenteDeStageParGestionnaire";
+import ReportProblemPage from "./pages/universalPages/ReportProblemPage";
+import NotFoundPage from "./pages/universalPages/NotFoundPage";
 
 export const LOCAL_STORAGE_KEY = "MASSI_BEST_PROGRAMMER_PROJET_STAGE_02_CURRENT_CONNECTED_USER"
 export const emptyUser: IUser = {
@@ -65,7 +67,6 @@ function App() {
     const deconnexion = () => {
         setConnectedUser(emptyUser)
         localStorage.removeItem(LOCAL_STORAGE_KEY)
-        window.location.href = "/"
     }
 
     const loginFromLocalStorage = async () => {
@@ -96,9 +97,9 @@ function App() {
                     <Routes>
                         <Route path="/" element={<LoginPage setUser={setConnectedUser}/>}/>
                         <Route path="/confirmEmail/:id" element={<ConfirmationPage/>}/>
-                        <Route path="*"
-                               element={<h1 className="min-vh-100 text-center text-white display-1">404 - Page pas
-                                   trouvé</h1>}/>
+                        <Route path="*" element={<NotFoundPage/>}/>
+                        <Route path="/report"
+                               element={<ReportProblemPage/>}/>
                     </Routes>
                 </BrowserRouter>
             </Container>
@@ -114,26 +115,26 @@ function App() {
                         <Route path="/offres" element={<OffersListPage connectedUser={connectedUser}/>}/>
                         <Route path="/uploaderCV" element={<StudentCvUploadPage connectedUser={connectedUser}/>}/>
                         <Route path="/myContracts" element={<StudentContractsPage connectedUser={connectedUser}/>}/>
-                        <Route path="*"
-                               element={<h1 className="min-vh-100 text-center text-white display-1 min-vh-100">404 -
-                                   Page pas trouvé</h1>}/>
+                        <Route path="*" element={<NotFoundPage/>}/>
+                        <Route path="/report"
+                               element={<ReportProblemPage/>}/>
                     </Routes>
                 </BrowserRouter>
             </Container>
         );
     } else if (connectedUser.userType === "company") {
         return (
-            <Container className="min-vh-100">
+            <Container>
                 <BrowserRouter>
                     <Routes>
                         <Route path="/" element={<CompanyDashboard deconnexion={deconnexion} user={connectedUser}/>}/>
                         <Route path="/soumettreOffre" element={<OffreSoumissionPage user={connectedUser}/>}/>
                         <Route path="/myOffers" element={<CompanyOffersPage connectedUser={connectedUser}/>}/>
-                        <Route path="*"
-                               element={<h1 className="min-vh-100 text-center text-white display-1">404 - Page pas
-                                   trouvé</h1>}/>
                         <Route path="/CompanyContractsPage"
                                element={<CompanyContractsPage connectedUser={connectedUser}/>}/>
+                        <Route path="*" element={<NotFoundPage/>}/>
+                        <Route path="/report"
+                               element={<ReportProblemPage/>}/>
                     </Routes>
                 </BrowserRouter>
             </Container>
@@ -152,9 +153,6 @@ function App() {
                                element={<StudentCvValidationPage connectedUser={connectedUser}/>}/>
                         <Route path="/offerHistory"
                                element={<OfferHistoryPage connectedUser={connectedUser}/>}/>
-                        <Route path="*"
-                               element={<h1 className="min-vh-100 text-center text-white display-1">404 - Page pas
-                                   trouvé</h1>}/>
                         <Route path="/validerNouvelleOffre"
                                element={<ValiderNouvelleOffreStagePage connectedUser={connectedUser}/>}/>
                         <Route path="/evaluerLeMilieuDeStage"
@@ -165,6 +163,7 @@ function App() {
                                element={<ConsulterEvaluationDeEtudiants connectedUser={connectedUser}/>}></Route>
                         <Route path="/signerententedestage"
                                element={<SignerEntenteDeStageParGestionnaire connectedUser={connectedUser}/>}/>
+                        <Route path="*" element={<NotFoundPage/>}/>
                     </Routes>
                 </BrowserRouter>
             </Container>
