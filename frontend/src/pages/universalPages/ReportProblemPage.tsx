@@ -6,21 +6,35 @@ import {BeatLoader} from "react-spinners";
 import {Button, Col, Container, Form, Row} from "react-bootstrap";
 
 const ReportProblemPage = () => {
-    const [formFields, setFormFields] = useState<{ problemCategory: string, problemDetails: string }>({
+    const [formFields, setFormFields] = useState<{ problemCategory: string, problemDetails: string, email: string }>({
         problemCategory: "",
         problemDetails: "",
+        email: "",
     })
     const [loading, setLoading] = useState<boolean>(false)
     const [problemReported, setProblemReported] = useState<boolean>(false)
     const [validated, setValidated] = useState<boolean>(false)
+    const [error, setError] = useState<string>("")
     const changeProblemCategory = (newCategory: string) => {
         setFormFields({...formFields, problemCategory: newCategory})
     }
     const changeProblemDetails = (newDetails: string) => {
         setFormFields({...formFields, problemDetails: newDetails})
     }
+    const changeEmail = (newEmail: string) => {
+        setFormFields({...formFields, email: newEmail})
+    }
+    const validateEmail = (email: string): boolean => {
+        const regex = /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/
+        return regex.test(email)
+    }
     const onSubmit = async (event: React.SyntheticEvent): Promise<void> => {
         event.preventDefault();
+        if (!validateEmail(formFields.email)) {
+            setError("L'adresse email n'est pas valide.")
+            setValidated(true)
+            return
+        }
         const form: any = event.currentTarget;
 
         if (form.checkValidity()) {
@@ -42,9 +56,16 @@ const ReportProblemPage = () => {
         return <>
             <Row className="card">
                 <h3 className="card-header text-center">Rapport d'erreur</h3>
+                {error.length > 0 ?
+                    <Row>
+                        <Col>
+                            <h5 className="text-danger text-center">{error}</h5>
+                        </Col>
+                    </Row> : null
+                }
                 <Form className="card-body p-3" onSubmit={onSubmit} validated={validated} noValidate>
                     <Form.Group>
-                        <Form.Label className="fw-bold mt-2 h5">Type de problème</Form.Label>
+                        <Form.Label className="fw-bold mt-2 h5 mt-3">Type de problème</Form.Label>
                         <Form.Select data-testid="departmentFormulaireSoumission" required
                                      value={formFields.problemCategory}
                                      onChange={(e) => changeProblemCategory(e.target.value)}>
@@ -68,7 +89,15 @@ const ReportProblemPage = () => {
                         <Form.Control.Feedback type="invalid">Champ requis</Form.Control.Feedback>
                     </Form.Group>
                     <Form.Group>
-                        <Form.Label className="fw-bold h5">Description du problème</Form.Label>
+                        <Form.Label className="fw-bold h5 mt-3">Addresse email</Form.Label>
+                        <Form.Control data-testid="nomCompanyFormulaireSoumission" type="text"
+                                      required
+                                      value={formFields.email}
+                                      onChange={(e) => changeEmail(e.target.value)}/>
+                        <Form.Control.Feedback type="invalid">Champ requis</Form.Control.Feedback>
+                    </Form.Group>
+                    <Form.Group>
+                        <Form.Label className="fw-bold h5 mt-3">Description du problème</Form.Label>
                         <Form.Control data-testid="nomCompanyFormulaireSoumission" type="text" as="textarea" rows={5}
                                       required
                                       value={formFields.problemDetails}
