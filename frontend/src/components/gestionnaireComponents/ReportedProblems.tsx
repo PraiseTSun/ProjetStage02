@@ -42,9 +42,10 @@ const ReportedProblems = ({user: connectedUser}: { user: IUser }) => {
         return (
             <thead className="bg-primary text-white">
             <tr>
-                <th className="col-4">Catégorie</th>
-                <th className="col-4">Détails</th>
-                <th className="col-4">Résoudre</th>
+                <th className="col-3">Catégorie</th>
+                <th className="col-3">Email</th>
+                <th className="col-3">Détails</th>
+                <th className="col-3">Résoudre</th>
             </tr>
             </thead>)
     }
@@ -55,9 +56,10 @@ const ReportedProblems = ({user: connectedUser}: { user: IUser }) => {
                 problems.map((problem: IReportedProblem, idx: number) => {
                     return (
                         <tr key={idx}>
-                            <td className="col-4">{problem.problemCategory}</td>
-                            <td className="col-4">{problem.problemDetails}</td>
-                            <td className="col-4">
+                            <td className="col-3">{problem.problemCategory}</td>
+                            <td className="col-3">{problem.email}</td>
+                            <td className="col-3">{problem.problemDetails}</td>
+                            <td className="col-3">
                                 <Button variant="primary" onClick={() => resolve(problem.id, idx)}>Problème
                                     résolu</Button>
                             </td>
