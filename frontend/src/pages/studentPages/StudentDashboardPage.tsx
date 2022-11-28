@@ -41,7 +41,7 @@ const StudentDashboard = ({user, deconnexion}: { user: IUser, deconnexion: Funct
                         ?
                         <Link to="/uploaderCV" className="btn btn-outline-primary text-white mb-3">Mon curriculum vitae</Link>
                         :
-                        <Link to="/uploaderCV" className="btn btn-danger text-white mb-3">Mon curriculum vitae
+                        <Link to="/uploaderCV" className="btn btn-outline-danger text-white mb-3">Mon curriculum vitae
                             ({changementPourUploaderMonCV})</Link>
                 }
                 {
@@ -49,7 +49,7 @@ const StudentDashboard = ({user, deconnexion}: { user: IUser, deconnexion: Funct
                         ?
                         <Link to="/offres" className="btn btn-outline-primary text-white mb-3">Offres de stage</Link>
                         :
-                        <Link to="/offres" className="btn btn-danger text-white mb-3">Offres de stage
+                        <Link to="/offres" className="btn btn-outline-danger text-white mb-3">Offres de stage
                             ({changementPourListeDeStages})</Link>
 
                 }
@@ -58,7 +58,7 @@ const StudentDashboard = ({user, deconnexion}: { user: IUser, deconnexion: Funct
                         ?
                         <Link to="/myContracts" className="btn btn-outline-primary text-white mb-3">Mes contrats</Link>
                         :
-                        <Link to="/myContracts" className="btn btn-danger text-white mb-3">Mes contrats
+                        <Link to="/myContracts" className="btn btn-outline-danger text-white mb-3">Mes contrats
                             ({changementPourMesContrats})</Link>
                 }
             </Row>
