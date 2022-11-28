@@ -312,9 +312,13 @@ public class StudentService {
     }
 
     private long getCvNotification(long studentId) {
-        if(cvStatusRepository.findById(studentId).isEmpty())
-            return 0L;
-        return 1L;
+        Optional<CvStatus> cvStatusOpt = cvStatusRepository.findById(studentId);
+        if(cvStatusOpt.isPresent()) {
+            CvStatus cvStatus = cvStatusOpt.get();
+            if (cvStatus.getStatus().equals("REFUSED"))
+                return 1L;
+        }
+        return 0L;
     }
 
     private long getStageNotification(long studentId) throws NonExistentEntityException {
