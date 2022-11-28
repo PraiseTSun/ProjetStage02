@@ -796,9 +796,10 @@ public class CompanyServiceTest {
     @Test
     void testGetNotificationHappyDay() throws NonExistentEntityException {
         List<Offre> offers = new ArrayList<>(){{
-            add(Offre.builder().id(1L).build());
-            add(Offre.builder().id(2L).build());
-            add(Offre.builder().id(3L).build());
+            add(Offre.builder().id(1L).valide(true).build());
+            add(Offre.builder().id(2L).valide(true).build());
+            add(Offre.builder().id(3L).valide(true).build());
+            add(Offre.builder().id(11L).valide(false).build());
         }};
         List<Application> applicationFirstOffer = new ArrayList<>(){{
             add(Application.builder().studentId(4L).build());
