@@ -41,63 +41,65 @@ const GestionnaireDashboard = ({user, deconnexion}: { user: IUser, deconnexion: 
             <Button className="btn btn-danger my-2" onClick={() => deconnexion()}>
                 Déconnexion
             </Button>
-            <h1 className="p-5 text-center fw-bold text-white display-4">Bienvenue {user.firstName} {user.lastName}</h1>
-            <Row className="d-flex justify-content-center">
+            <h1 className="p-5 pb-3 text-center fw-bold text-white display-4">Bienvenue {user.firstName} {user.lastName}</h1>
+            <Row sm={10}>
                 {
                     changementPourValidationDesUtilisateurs === 0 ?
-                        <Link to="/userValidation" className="btn btn-primary">Validation des utilisateurs</Link> :
-                        <Link to="/userValidation" className="btn btn-danger">Validation des
+                        <Link to="/userValidation" className="btn text-white btn-outline-primary">Validation des
+                            utilisateurs</Link> :
+                        <Link to="/userValidation" className="btn text-white btn btn-danger">Validation des
                             utilisateurs ({changementPourValidationDesUtilisateurs})</Link>
                 }
                 {
                     changementPourValidationDesCurriculumsVitaeDesEtudiants === 0 ?
-                        <Link to="/cvValidation" className="btn btn-primary mt-3">Validation des curriculums vitae des
-                            étudiants</Link> :
-                        <Link to="/cvValidation" className="btn btn-danger mt-3">Validation des curriculums vitae des
-                            étudiants ({changementPourValidationDesCurriculumsVitaeDesEtudiants})</Link>
+                        <Link to="/cvValidation" className="btn btn-outline-primary text-white mt-3">Validation des
+                            curriculums vitae des étudiants</Link> :
+                        <Link to="/cvValidation" className="btn btn-danger text-white mt-3">Validation des
+                            curriculums vitae des  étudiants ({changementPourValidationDesCurriculumsVitaeDesEtudiants})</Link>
                 }
                 {
                     changementPourValidationNouvelleOffreStage === 0 ?
-                        <Link to="/validerNouvelleOffre" className="btn btn-primary mt-3">Validation nouvelle offre
-                            stage</Link> :
-                        <Link to="/validerNouvelleOffre" className="btn btn-danger mt-3">Validation nouvelle offre
-                            stage ({changementPourValidationNouvelleOffreStage})</Link>
+                        <Link to="/validerNouvelleOffre" className="btn btn-outline-primary text-white mt-3">Validation des
+                            nouvelles offres de stage</Link> :
+                        <Link to="/validerNouvelleOffre" className="btn btn-danger text-white mt-3">Validation des
+                            nouvelles offres de stage ({changementPourValidationNouvelleOffreStage})</Link>
                 }
+                <Link to="/offerHistory" className="btn btn-outline-primary text-white mt-3">Historique des
+                    offres</Link>
                 {
                     changementPourEvaluerLeMilieuDeStage === 0 ?
-                        <Link to="/evaluerLeMilieuDeStage" className="btn btn-primary mt-3">Évaluer le milieu de
-                            stage</Link> :
-                        <Link to="/evaluerLeMilieuDeStage" className="btn btn-danger mt-3">Évaluer le milieu de stage
-                            ({changementPourEvaluerLeMilieuDeStage})</Link>
+                        <Link to="/evaluerLeMilieuDeStage" className="btn btn-outline-primary text-white mt-3">Évaluation
+                            des milieux de stage</Link> :
+                        <Link to="/evaluerLeMilieuDeStage" className="btn btn-danger text-white mt-3">Évaluation
+                            des milieux de stage ({changementPourEvaluerLeMilieuDeStage})</Link>
                 }
                 {
                     changementPourCreerLesEntentesDeStage === 0 ?
-                        <Link to="/acceptationsValidation" className="btn btn-primary mt-3">Créer les ententes de
-                            stage</Link> :
-                        <Link to="/acceptationsValidation" className="btn btn-danger mt-3">Créer les ententes de stage
-                            ({changementPourCreerLesEntentesDeStage})</Link>
+                        <Link to="/acceptationsValidation" className="btn btn-outline-primary text-white mt-3">Création
+                            d'ententes de stage</Link> :
+                        <Link to="/acceptationsValidation" className="btn btn-danger text-white mt-3">Création
+                            d'ententes de stage ({changementPourCreerLesEntentesDeStage})</Link>
                 }
                 {
                     changementPourConsulterLesEvaluationsDesStages === 0 ?
-                        <Link to="/consulterEvaluation" className="btn btn-primary mt-3">Consulter les évaluations des
-                            stages</Link> :
-                        <Link to="/consulterEvaluation" className="btn btn-danger mt-3">Consulter les évaluations des
-                            stages ({changementPourConsulterLesEvaluationsDesStages})</Link>
+                        <Link to="/consulterEvaluation" className="btn btn-outline-primary text-white mt-3">Consulter les
+                            évaluations des stages</Link> :
+                        <Link to="/consulterEvaluation" className="btn btn-danger text-white mt-3">Consulter les
+                            évaluations des stages ({changementPourConsulterLesEvaluationsDesStages})</Link>
                 }
                 {
                     changementPourConsulterLesEvaluationsDesEtudiant === 0 ?
-                        <Link to="/consulterEvaluationParEntreprise" className="btn btn-primary mt-3">Consulter les
-                            évaluations
-                            des étudiants</Link> :
-                        <Link to="/consulterEvaluationParEntreprise" className="btn btn-danger mt-3">Consulter les
-                            évaluations des étudiants ({changementPourConsulterLesEvaluationsDesEtudiant})</Link>
+                        <Link to="/consulterEvaluationParEntreprise" className="btn btn-outline-primary text-white mt-3">Consulter
+                            les évaluations des étudiants</Link> :
+                        <Link to="/consulterEvaluationParEntreprise" className="btn btn-danger text-white mt-3">Consulter
+                            les évaluations  des étudiants ({changementPourConsulterLesEvaluationsDesEtudiant})</Link>
                 }
                 {
                     changementPourSignerLEntenteDeStage === 0 ?
-                        <Link to="/signerententedestage" className="btn btn-primary mt-3">Signer l'entente de
-                            stage</Link> :
-                        <Link to="/signerententedestage" className="btn btn-danger mt-3">Signer l'entente de stage
-                            ({changementPourSignerLEntenteDeStage})</Link>
+                        <Link to="/signerententedestage" className="btn btn-outline-primary text-white mt-3">Signer les
+                            ententes de stage</Link> :
+                        <Link to="/signerententedestage" className="btn btn-danger text-white mt-3">Signer les
+                            ententes de stage  ({changementPourSignerLEntenteDeStage})</Link>
                 }
             </Row>
         </div>

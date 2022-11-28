@@ -7,8 +7,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import projet.projetstage02.dto.auth.LoginDTO;
 import projet.projetstage02.dto.auth.TokenDTO;
+import projet.projetstage02.dto.problems.ProblemInDTO;
 import projet.projetstage02.exception.InvalidTokenException;
 import projet.projetstage02.service.AuthService;
+import projet.projetstage02.service.GestionnaireService;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -24,7 +26,8 @@ import static projet.projetstage02.model.Token.UserTypes.*;
 @CrossOrigin(origins = "http://localhost:3000")
 @RequestMapping("/")
 public class RootController {
-    final AuthService authService;
+    private final AuthService authService;
+    private final GestionnaireService gestionnaireService;
 
     private final Logger logger = LogManager.getLogger(RootController.class);
 
@@ -71,5 +74,13 @@ public class RootController {
             logger.log(INFO, "PostMapping: /company/login sent 403 response");
             return ResponseEntity.status(FORBIDDEN).build();
         }
+    }
+
+    @PostMapping("/reportProblem")
+    public ResponseEntity<?> reportProblem(@RequestBody ProblemInDTO problem) {
+        logger.log(INFO, "PostMapping: /reportProblem entered");
+        gestionnaireService.reportProblem(problem);
+        logger.log(INFO, "PostMapping: /reportProblem sent 201 response");
+        return ResponseEntity.status(201).build();
     }
 }

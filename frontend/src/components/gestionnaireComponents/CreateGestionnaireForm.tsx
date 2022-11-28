@@ -12,53 +12,57 @@ const CreateGestionnaireForm = ({connectedUser}: { connectedUser: IUser }) => {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [confirmPassword, setConfirmPassword] = useState("");
+    const [passwordsMatch, setPasswordsMatch] = useState<boolean>(true);
+    const [emailValid, setEmailValid] = useState<boolean>(true);
+    const [accountCreated, setAccountCreated] = useState<boolean>(false);
+    const [accountCreationError, setAccountCreationError] = useState<string>("");
 
     const validEmail = new RegExp(
-        '^[a-zA-Z0-9._:$!%-]+@[a-zA-Z0-9.-]+.[a-zA-Z]$'
+        '^[\\w-\\.]+@([\\w-]+\\.)+[\\w-]{2,4}$'
     );
 
     const onSubmit = async (event: React.SyntheticEvent) => {
         const form: any = event.currentTarget;
         event.preventDefault();
+        
+        setValidated(true)
         if (form.checkValidity()) {
-            setWaiting(true)
             if (password !== confirmPassword) {
-                alert("La confirmation du mot de passe n'est pas pareille.")
-                setWaiting(false)
+                setPasswordsMatch(false)
                 return;
+            } else {
+                setPasswordsMatch(true)
             }
+
+            console.log(validEmail.test(email))
+            console.log(email)
 
             if (!validEmail.test(email)) {
-                alert("La syntax du courriel est mauvaise.");
-                setWaiting(false)
+                setEmailValid(false)
                 return;
+            } else {
+                setEmailValid(true)
             }
 
+            setWaiting(true)
             const res = await postCreateGestionnaire(firstName, lastName, email, password, connectedUser.token)
 
             if (!res.ok) {
                 const data = await res.json();
-                alert(data.error);
+                setAccountCreationError(data.error)
             } else {
-                alert("Le courriel de confirmation à été envoyé.");
+                setEmailValid(true)
+                setPasswordsMatch(true)
+                setAccountCreated(true)
+                setFirstName("")
+                setLastName("")
+                setEmail("")
+                setPassword("")
+                setConfirmPassword("")
             }
             setWaiting(false)
             setValidated(false)
-            setFirstName("")
-            setLastName("")
-            setEmail("")
-            setPassword("")
-            setConfirmPassword("")
         }
-        setValidated(true)
-    }
-
-    if (waiting) {
-        return (
-            <div className="d-flex justify-content-center py-5 bg-light">
-                <BeatLoader className="text-center" color="#292b2c" size={100}/>
-            </div>
-        );
     }
 
     return (
@@ -112,10 +116,23 @@ const CreateGestionnaireForm = ({connectedUser}: { connectedUser: IUser }) => {
                         </Form.Group>
                     </Col>
                 </Row>
-                <Row className="mt-3">
-                    <Button type="submit" className="btn btn-success mx-auto">Enregistrer</Button>
-
-                </Row>
+                {
+                    accountCreated &&
+                    <p className="text-success fw-bold text-center h3">Compte créé</p>}
+                {
+                    accountCreationError !== "" &&
+                    <p className="text-danger fw-bold text-center h3">{accountCreationError}</p>}
+                {!passwordsMatch &&
+                    <p className="text-danger fw-bold text-center h3">Les mots de passe ne sont pas pareils</p>}
+                {!emailValid &&
+                    <p className="text-danger fw-bold text-center h3">Le courriel est invalide</p>}
+                {
+                    waiting
+                        ? <BeatLoader color="#0275d8" className="text-center" size={25}/>
+                        : <Row className="mt-3">
+                            <Button type="submit" className="btn btn-success mx-auto">Enregistrer</Button>
+                        </Row>
+                }
             </Col>
         </Form>
     );

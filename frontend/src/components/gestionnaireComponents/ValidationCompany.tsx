@@ -39,23 +39,25 @@ const ValidationCompany = ({
 
     return (
         <Col className="mx-3">
-            {companies.map((company: any, idx: number) => {
-                return (
-                    <div key={company.id}>
-                        <Row className="square border-bottom bg-light py-3">
-                            <div className="d-flex justify-content-between">
-                                <div className="my-auto">{company.companyName}</div>
-                                <div className="my-auto">{company.department}</div>
-                                <div>
-                                    <Button className="me-2" variant="success"
-                                            onClick={() => approve(company.id, idx)}>O</Button>
-                                    <Button variant="danger" onClick={() => remove(company.id, idx)}>X</Button>
+            {companies.length === 0
+                ? <p className="h1 text-center">Aucune compagnie</p>
+                : companies.map((company: any, idx: number) => {
+                    return (
+                        <div key={company.id}>
+                            <Row className="square border-bottom bg-light py-3">
+                                <div className="d-flex justify-content-between">
+                                    <div className="my-auto">{company.companyName}</div>
+                                    <div className="my-auto">{company.department}</div>
+                                    <div>
+                                        <Button className="me-2" variant="success"
+                                                onClick={() => approve(company.id, idx)}>O</Button>
+                                        <Button variant="danger" onClick={() => remove(company.id, idx)}>X</Button>
+                                    </div>
                                 </div>
-                            </div>
-                        </Row>
-                    </div>
-                );
-            })}
+                            </Row>
+                        </div>
+                    );
+                })}
         </Col>
     );
 }

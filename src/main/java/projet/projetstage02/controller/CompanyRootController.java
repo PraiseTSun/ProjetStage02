@@ -35,7 +35,6 @@ import java.util.Map;
 
 import static org.apache.logging.log4j.Level.INFO;
 import static org.springframework.http.HttpStatus.*;
-import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
 import static projet.projetstage02.model.Token.UserTypes.COMPANY;
 import static projet.projetstage02.model.Token.UserTypes.STUDENT;
 import static projet.projetstage02.utils.TimeUtil.*;
@@ -257,7 +256,6 @@ public class CompanyRootController {
     }
 
     @PutMapping("/company/validatedOffers/{id}")
-    //todo replace tokens with @RequestHeader("Authorization") String token
     public ResponseEntity<List<OffreOutDTO>> getValidatedOffers
             (@PathVariable long id, @RequestBody TokenDTO tokenId) {
         try {

@@ -121,6 +121,16 @@ public class ProjetStage02Application implements CommandLineRunner {
                 .emailConfirmed(false)
                 .inscriptionTimestamp(Timestamp.valueOf(LocalDateTime.now()).getTime())
                 .build());
+        studentService.saveStudent(StudentInDTO.builder()
+                .firstName("massi")
+                .lastName("djel")
+                .email("massidjel@gmail.com".toLowerCase())
+                .password("12345678")
+                .department(AbstractUser.Department.Informatique.departement)
+                .isConfirmed(true)
+                .emailConfirmed(true)
+                .inscriptionTimestamp(Timestamp.valueOf(LocalDateTime.now()).getTime())
+                .build());
         StudentOutDTO student2 = studentService.getStudentByEmailPassword("peter.griffin@quahog.com", "loislois");
         student2.setEmailConfirmed(true);
         studentService.saveStudent(new StudentInDTO(student2.toModel()));

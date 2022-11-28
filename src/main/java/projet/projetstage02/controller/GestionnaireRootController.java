@@ -267,6 +267,7 @@ public class GestionnaireRootController {
         try {
             authService.getToken(tokenDTO.getToken(), GESTIONNAIRE);
             gestionnaireService.validateOfferById(Long.parseLong(id));
+            gestionnaireService.sendNewOfferEmail(Long.parseLong(id));
             logger.log(INFO, "PutMapping: /validateOffer sent 200 response");
             OffreOutDTO offreInDTO = gestionnaireService.validateOfferById(Long.parseLong(id));
             return ResponseEntity.ok(offreInDTO);

@@ -1,22 +1,17 @@
-import React from "react";
-import {Container, ListGroup, Tab} from "react-bootstrap";
+import React, {useState} from "react";
+import {Col, Container, ListGroup, Tab} from "react-bootstrap";
 import FormulaireInscriptionEtudiant from "./FormulaireInscriptionEtudiant";
 import FormulaireInscriptionEntreprise from "./FormulaireInscriptionEntreprise";
-import {postUserType} from "../../services/universalServices/UniversalFetchService";
 
-const InscriptionForm = ({setIsLogginPage}: { setIsLogginPage: Function }): JSX.Element => {
+const InscriptionForm = (): JSX.Element => {
+    const [signupSent, setSignupSent] = useState<boolean>(false);
 
-    const onInscrire = async (compte: object, type: string) => {
-        const res = await postUserType(type, compte);
-
-        if (!res.ok) {
-            const data = await res.json();
-            alert(data.error);
-            setIsLogginPage(true);
-        } else {
-            alert("Courriel de confirmation envoyé");
-            setIsLogginPage(true);
-        }
+    if (signupSent) {
+        return (
+            <Col className="p-2 text-center">
+                <h1 className="text-success fw-bold">Courriel de confirmation envoyé</h1>
+            </Col>
+        );
     }
 
     return (
@@ -34,10 +29,10 @@ const InscriptionForm = ({setIsLogginPage}: { setIsLogginPage: Function }): JSX.
 
                 <Tab.Content className="mt-3 p-2">
                     <Tab.Pane eventKey="#etudiant">
-                        <FormulaireInscriptionEtudiant onInscrire={onInscrire}/>
+                        <FormulaireInscriptionEtudiant onInscrire={setSignupSent}/>
                     </Tab.Pane>
                     <Tab.Pane eventKey="#entreprise">
-                        <FormulaireInscriptionEntreprise onInscrire={onInscrire}/>
+                        <FormulaireInscriptionEntreprise onInscrire={setSignupSent}/>
                     </Tab.Pane>
                 </Tab.Content>
             </Tab.Container>
