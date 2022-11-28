@@ -25,9 +25,6 @@ const ReportedProblems = ({user: connectedUser}: { user: IUser }) => {
     }, [connectedUser]);
 
     const getBody = () => {
-        if (problems.length === 0) {
-            return <h1 className="text-light text-center">Aucun problèmes signalés</h1>
-        }
         return table()
     }
     const table = () => {
@@ -50,6 +47,13 @@ const ReportedProblems = ({user: connectedUser}: { user: IUser }) => {
             </thead>)
     }
     const tableBody = () => {
+        if (problems.length === 0) {
+            return (
+                <tbody className="bg-light">
+                <td colSpan={4} className="col-12 h1 py-4 text-center">Aucun problèmes signalés</td>
+                </tbody>
+            )
+        }
         return (
             <tbody className="bg-light">
             {

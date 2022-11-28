@@ -117,9 +117,12 @@ const ReportProblemPage = () => {
             </Row>
         </>
     }
+    const header = () => {
+        return problemReported ? null : <PageHeader title="Signaler un problème"/>
+    }
     return (
         <Container className="min-vh-100 pb-5">
-            <PageHeader title="Signaler un problème"/>
+            {header()}
             {pageBody()}
         </Container>)
 }

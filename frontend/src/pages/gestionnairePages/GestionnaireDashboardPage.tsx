@@ -40,7 +40,7 @@ const GestionnaireDashboard = ({user, deconnexion}: { user: IUser, deconnexion: 
                     de
                     stage</Link>
                 <Link to="/reportedProblems" className="btn btn-outline-primary text-white mt-3">Problèmes
-                    reportés</Link>
+                    signalés</Link>
             </Row>
         </div>
     );
