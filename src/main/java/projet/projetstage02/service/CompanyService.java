@@ -292,13 +292,20 @@ public class CompanyService {
         long nb = 0L;
 
         for(Offre offer : offers){
-            long count = applicationRepository.findByOfferId(offer.getId())
-                    .stream()
-                    .filter(application -> applicationAcceptationRepository
-                            .findByOfferIdAndStudentId(offer.getId(), application.getStudentId()).isEmpty())
-                    .count();
+            if(offer.isValide()){
+                long count = applicationRepository.findByOfferId(offer.getId())
+                        .stream()
+                        .filter(application -> applicationAcceptationRepository
+                                    .findByOfferIdAndStudentId(offer.getId(), application.getStudentId()).isEmpty()
+                                && stageContractRepository.findByStudentIdAndOfferId(
+                                    application.getStudentId(),
+                                    offer.getId()
+                                ).isEmpty()
+                        )
+                        .count();
 
-            nb += count;
+                nb += count;
+            }
         }
 
         return nb;
