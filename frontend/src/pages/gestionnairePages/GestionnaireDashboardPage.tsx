@@ -14,6 +14,7 @@ const GestionnaireDashboard = ({user, deconnexion}: { user: IUser, deconnexion: 
     const [changementPourConsulterLesEvaluationsDesStages, setChangementPourConsulterLesEvaluationsDesStages] = useState<number>(0)
     const [changementPourConsulterLesEvaluationsDesEtudiant, setChangementPourConsulterLesEvaluationsDesEtudiant] = useState<number>(0)
     const [changementPourSignerLEntenteDeStage, setChangementPourSignerLEntenteDeStage] = useState<number>(0)
+    const [changementProblems, setChagementProblems] = useState<number>(0)
 
     useEffect(() => {
         const fetchGestionnaireNotification = async () => {
@@ -28,6 +29,7 @@ const GestionnaireDashboard = ({user, deconnexion}: { user: IUser, deconnexion: 
                     setChangementPourConsulterLesEvaluationsDesStages(data.nbConsultStageEvaluation)
                     setChangementPourConsulterLesEvaluationsDesEtudiant(data.nbConsultStudentEvaluation)
                     setChangementPourSignerLEntenteDeStage(data.nbSigneContract)
+                    setChagementProblems(data.nbProblems)
                 } else {
                     generateAlert()
                 }
@@ -55,13 +57,16 @@ const GestionnaireDashboard = ({user, deconnexion}: { user: IUser, deconnexion: 
                         <Link to="/cvValidation" className="btn btn-outline-primary text-white mt-3">Validation des
                             curriculums vitae des étudiants</Link> :
                         <Link to="/cvValidation" className="btn btn-outline-danger text-white mt-3">Validation des
-                            curriculums vitae des  étudiants ({changementPourValidationDesCurriculumsVitaeDesEtudiants})</Link>
+                            curriculums vitae des étudiants
+                            ({changementPourValidationDesCurriculumsVitaeDesEtudiants})</Link>
                 }
                 {
                     changementPourValidationNouvelleOffreStage === 0 ?
-                        <Link to="/validerNouvelleOffre" className="btn btn-outline-primary text-white mt-3">Validation des
+                        <Link to="/validerNouvelleOffre" className="btn btn-outline-primary text-white mt-3">Validation
+                            des
                             nouvelles offres de stage</Link> :
-                        <Link to="/validerNouvelleOffre" className="btn btn-outline-danger text-white mt-3">Validation des
+                        <Link to="/validerNouvelleOffre" className="btn btn-outline-danger text-white mt-3">Validation
+                            des
                             nouvelles offres de stage ({changementPourValidationNouvelleOffreStage})</Link>
                 }
                 <Link to="/offerHistory" className="btn btn-outline-primary text-white mt-3">Historique des
@@ -82,27 +87,35 @@ const GestionnaireDashboard = ({user, deconnexion}: { user: IUser, deconnexion: 
                 }
                 {
                     changementPourConsulterLesEvaluationsDesStages === 0 ?
-                        <Link to="/consulterEvaluation" className="btn btn-outline-primary text-white mt-3">Consulter les
+                        <Link to="/consulterEvaluation" className="btn btn-outline-primary text-white mt-3">Consulter
+                            les
                             évaluations des stages</Link> :
                         <Link to="/consulterEvaluation" className="btn btn-outline-danger text-white mt-3">Consulter les
                             évaluations des stages ({changementPourConsulterLesEvaluationsDesStages})</Link>
                 }
                 {
                     changementPourConsulterLesEvaluationsDesEtudiant === 0 ?
-                        <Link to="/consulterEvaluationParEntreprise" className="btn btn-outline-primary text-white mt-3">Consulter
+                        <Link to="/consulterEvaluationParEntreprise"
+                              className="btn btn-outline-primary text-white mt-3">Consulter
                             les évaluations des étudiants</Link> :
                         <Link to="/consulterEvaluationParEntreprise" className="btn btn-outline-danger text-white mt-3">Consulter
-                            les évaluations  des étudiants ({changementPourConsulterLesEvaluationsDesEtudiant})</Link>
+                            les évaluations des étudiants ({changementPourConsulterLesEvaluationsDesEtudiant})</Link>
                 }
                 {
                     changementPourSignerLEntenteDeStage === 0 ?
                         <Link to="/signerententedestage" className="btn btn-outline-primary text-white mt-3">Signer les
                             ententes de stage</Link> :
                         <Link to="/signerententedestage" className="btn btn-outline-danger text-white mt-3">Signer les
-                            ententes de stage  ({changementPourSignerLEntenteDeStage})</Link>
+                            ententes de stage ({changementPourSignerLEntenteDeStage})</Link>
                 }
-                <Link to="/reportedProblems" className="btn btn-outline-primary text-white mt-3">Problèmes
-                    signalés</Link>
+                {
+                    changementProblems === 0 ?
+                        <Link to="/reportedProblems" className="btn btn-outline-primary text-white mt-3">Problèmes
+                            signalés</Link> :
+                        <Link to="/reportedProblems" className="btn btn-outline-danger text-white mt-3">Problèmes
+                            signalés ({changementProblems})</Link>
+                }
+
             </Row>
         </div>
     );

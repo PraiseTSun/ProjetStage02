@@ -693,7 +693,7 @@ public class GestionnaireService {
         return new StageContractOutDTO(contract);
     }
 
-    public GestionnaireNotificationDTO getNotification(){
+    public GestionnaireNotificationDTO getNotification() {
         return GestionnaireNotificationDTO.builder()
                 .nbUnvalidatedUser(getAmountOfUnvalidatedUsers())
                 .nbUnvalidatedCV(getAmountOfUnvalidatedCV())
@@ -703,7 +703,12 @@ public class GestionnaireService {
                 .nbConsultStageEvaluation(getStageEvaluationNotification())
                 .nbConsultStudentEvaluation(getStudentEvaluationNotification())
                 .nbSigneContract(getContractToSigne())
+                .nbProblems(getAmountOfProblemNotification())
                 .build();
+    }
+
+    private long getAmountOfProblemNotification() {
+        return problemsRepository.findAll().stream().filter(problem -> !problem.isResolved()).count();
     }
 
     private long getAmountOfUnvalidatedUsers() {
@@ -761,6 +766,7 @@ public class GestionnaireService {
                         && stageContract.getGestionnaireSignature().isBlank())
                 .count();
     }
+
     public void sendNewOfferEmail(long offerId) throws NonExistentOfferExeption {
         Offre offer = getOfferById(offerId);
         List<String> emails =

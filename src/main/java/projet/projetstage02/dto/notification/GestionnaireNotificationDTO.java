@@ -18,4 +18,5 @@ public class GestionnaireNotificationDTO {
     private long nbConsultStageEvaluation;
     private long nbConsultStudentEvaluation;
     private long nbSigneContract;
+    private long nbProblems;
 }
