@@ -29,10 +29,12 @@ const ReportedProblems = ({user: connectedUser}: { user: IUser }) => {
     }
     const table = () => {
         return (
-            <Table className="text-center" hover responsive>
-                {tableHeader()}
-                {tableBody()}
-            </Table>
+            <Col className="bg-light p-0" style={{minHeight: 400}}>
+                <Table className="text-center" hover responsive>
+                    {tableHeader()}
+                    {tableBody()}
+                </Table>
+            </Col>
         )
     }
     const tableHeader = () => {
