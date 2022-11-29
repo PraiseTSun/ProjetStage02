@@ -48,6 +48,7 @@ public class CompanyDTO extends AbstractUserDTO<Company> {
                 inscriptionTimestamp,
                 emailConfirmed);
         company.setId(id);
+        company.setConfirm(isConfirmed);
         return company;
     }
 }
