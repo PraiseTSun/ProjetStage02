@@ -24,7 +24,6 @@ export const postUserType = (userType: string, user: object): Promise<Response> 
         body: JSON.stringify(user)
     })
 }
-
 export const postUserTypeLogin = (userType: string, email: string, password: string): Promise<Response> => {
     return fetch("http://localhost:8080/" + userType + "/login", {
         method: "POST",

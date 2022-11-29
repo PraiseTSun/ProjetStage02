@@ -4,9 +4,10 @@ import {BeatLoader} from "react-spinners";
 import IUser from "../../models/IUser";
 import {Link} from "react-router-dom";
 import {putStatusCv, putUploadStudentCV} from "../../services/studentServices/StudentFetchService";
-import {generateAlert} from "../../services/universalServices/UniversalUtilService";
+import {generateAlert, hasCv, hasCvToValidate} from "../../services/universalServices/UniversalUtilService";
 import CvStatus from "../../models/CvStatus";
 import PdfComponent from "../../components/universalComponents/PdfComponent";
+import {LOCAL_STORAGE_KEY} from "../../App";
 
 export const statusCV: CvStatus = {
     status: "",
@@ -22,18 +23,18 @@ const StudentCvUploadPage = ({connectedUser}: { connectedUser: IUser }) => {
     const [showCV, setShowCV] = useState<boolean>(false)
     const [sentCv, setSentCv] = useState<boolean>(false)
     const [showCvToValidate, setShowCvToValidate] = useState<boolean>(false)
-
+    const fetchStatusCV = async () => {
+        await putStatusCv(connectedUser.id, connectedUser.token).then(async reponse => {
+            if (reponse.status === 200) {
+                const data = await reponse.json()
+                setCvStatus(data)
+            } else {
+                generateAlert()
+            }
+        })
+    }
     useEffect(() => {
-        const fetchStatusCV = async () => {
-            await putStatusCv(connectedUser.id, connectedUser.token).then(async reponse => {
-                if (reponse.status === 200) {
-                    const data = await reponse.json()
-                    setCvStatus(data)
-                } else {
-                    generateAlert()
-                }
-            })
-        }
+
         fetchStatusCV()
     }, [connectedUser])
 
@@ -48,8 +49,10 @@ const StudentCvUploadPage = ({connectedUser}: { connectedUser: IUser }) => {
 
                 if (response.ok) {
                     connectedUser.cvToValidate = JSON.stringify(cvToValidate);
+                    localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(connectedUser))
                     setSentCv(true)
                     setWaiting(false)
+                    fetchStatusCV()
                 } else {
                     generateAlert()
                 }
@@ -96,6 +99,7 @@ const StudentCvUploadPage = ({connectedUser}: { connectedUser: IUser }) => {
             <PdfComponent pdf={new Uint8Array(JSON.parse(connectedUser.cv!))} setShowPdf={setShowCV}/>
         );
     }
+    console.log(connectedUser)
 
     if (showCvToValidate) {
         return (
@@ -103,9 +107,6 @@ const StudentCvUploadPage = ({connectedUser}: { connectedUser: IUser }) => {
                           setShowPdf={setShowCvToValidate}/>
         );
     }
-    const hasCv = () => connectedUser.cv !== null && connectedUser.cv !== undefined && connectedUser.cv !== "" && connectedUser.cv !== "null"
-    const hasCvToValidate = () => connectedUser.cvToValidate !== null && connectedUser.cvToValidate !== undefined && connectedUser.cvToValidate !== "" && connectedUser.cvToValidate !== "null"
-    console.log()
     return (
         <Container className="min-vh-100">
             <Row>
@@ -131,13 +132,13 @@ const StudentCvUploadPage = ({connectedUser}: { connectedUser: IUser }) => {
                         <tbody className="bg-white">
                         <tr>
                             <td className="text-center">
-                                <Button variant="warning" disabled={!hasCv()}
+                                <Button variant="warning" disabled={!hasCv(connectedUser)}
                                         onClick={() => setShowCV(true)}>CV</Button>
                             </td>
                             <td className="text-center">{translateStatus(cvStatus.status)}</td>
                             <td className="text-center">{cvStatus.refusalMessage}</td>
                             <td data-testid="CvToValidate" className="text-center">
-                                <Button variant="warning" disabled={!hasCvToValidate()}
+                                <Button variant="warning" disabled={!hasCvToValidate(connectedUser)}
                                         onClick={() => setShowCvToValidate(true)}>Cv à valider</Button>
                             </td>
                         </tr>

@@ -16,6 +16,7 @@ import IInterview from "../../models/IInterview";
 import PdfComponent from "../../components/universalComponents/PdfComponent";
 import PageHeader from "../../components/universalComponents/PageHeader";
 import {universalFetch} from "../../services/universalServices/UniversalFetchService";
+import {hasCv} from "../../services/universalServices/UniversalUtilService";
 
 const OffersListPage = ({connectedUser}:
                             { connectedUser: IUser }): JSX.Element => {
@@ -201,9 +202,9 @@ const OffersListPage = ({connectedUser}:
                                             }
                                         }>PDF</Button></td>
                                         <td>
-                                            {connectedUser.cv!.length <= 2 &&
+                                            {!hasCv(connectedUser) &&
                                                 <p className="h4 text-danger">Vous n'avez pas de CV</p>}
-                                            {connectedUser.cv!.length > 2 &&
+                                            {hasCv(connectedUser) &&
                                                 <>
                                                     {studentApplys.offersId.includes(offer.id) ?
                                                         <Button className="btn btn-danger"
