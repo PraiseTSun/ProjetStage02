@@ -75,13 +75,6 @@ const OffreSoumissionPage = ({user}: { user: IUser }): JSX.Element => {
             setHoursPerWeek(hoursPerWeek)
         }
     }
-    const setSalaryFromField = (event: React.ChangeEvent<FormControlElement>) => {
-        if (numbersRegEx.test(event.target.value)) {
-            setSalary(Number.parseInt(event.target.value))
-        } else {
-            setSalary(hoursPerWeek)
-        }
-    }
 
     const intToByteArray = (array: Uint8Array): number[] => {
         let bytes: number[] = []
@@ -148,8 +141,8 @@ const OffreSoumissionPage = ({user}: { user: IUser }): JSX.Element => {
                     <Form.Group>
                         <Form.Label className="fw-bold h5">Salaire horaire</Form.Label>
                         <Form.Control data-testid="salaryFormulaireSoumission" id={"number"} type="number" min="15"
-                                      max="1000" required value={salary}
-                                      onChange={field => setSalaryFromField(field)}></Form.Control>
+                                      max="1000" required value={salary} step="0.01"
+                                      onChange={field => setSalary(parseFloat(field.target.value))}></Form.Control>
                         <Form.Control.Feedback type="invalid">Salaire doit etre plus haut que
                             15</Form.Control.Feedback>
                     </Form.Group>

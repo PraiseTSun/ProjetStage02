@@ -12,7 +12,7 @@ public class EvaluationInfoDTO {
     private String dateStageDebut;
     private String dateStageFin;
     private String poste;
-    private long salaire;
+    private float salaire;
     private long heureParSemaine;
     private String departement;
     private String nomCompagnie;

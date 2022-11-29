@@ -32,10 +32,9 @@ public class OffreOutDTO {
     @Max(40)
     private int heureParSemaine;
 
-    @NotNull
-    @Min(15)
-    @Max(999)
-    private int salaire;
+    @DecimalMin("15.00")
+    @DecimalMax("999.99")
+    private float salaire;
     @NotBlank
     @Size(min = 2)
     private String adresse;
