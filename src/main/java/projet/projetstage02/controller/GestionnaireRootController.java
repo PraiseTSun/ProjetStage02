@@ -18,6 +18,7 @@ import projet.projetstage02.dto.evaluations.MillieuStage.MillieuStageEvaluationI
 import projet.projetstage02.dto.notification.GestionnaireNotificationDTO;
 import projet.projetstage02.dto.offres.OffreOutDTO;
 import projet.projetstage02.dto.pdf.PdfOutDTO;
+import projet.projetstage02.dto.problems.ProblemOutDTO;
 import projet.projetstage02.dto.users.CompanyDTO;
 import projet.projetstage02.dto.users.GestionnaireDTO;
 import projet.projetstage02.dto.users.Students.StudentOutDTO;
@@ -575,7 +576,6 @@ public class GestionnaireRootController {
     @PutMapping("/getGestionnaireNotification")
     public ResponseEntity<GestionnaireNotificationDTO> getGestionnaireNotification(@RequestBody TokenDTO tokenId) {
         logger.log(INFO, "Put /getGestionnaireNotification");
-
         try {
             authService.getToken(tokenId.getToken(), GESTIONNAIRE);
             GestionnaireNotificationDTO notification = gestionnaireService.getNotification();
@@ -584,6 +584,36 @@ public class GestionnaireRootController {
         } catch (InvalidTokenException e) {
             logger.log(INFO, "Put /getGestionnaireNotification return 403");
             return ResponseEntity.status(FORBIDDEN).build();
+        }
+    }
+    @PutMapping("/getUnresolvedProblems")
+    public ResponseEntity<List<ProblemOutDTO>> getUnresolvedReportedProblems(@RequestBody TokenDTO tokenId) {
+        logger.log(INFO, "Put /getUnresolvedProblems");
+        try {
+            authService.getToken(tokenId.getToken(), GESTIONNAIRE);
+            List<ProblemOutDTO> problems = gestionnaireService.getUnresolvedProblems();
+            logger.log(INFO, "Put /getUnresolvedProblems sent request 200");
+            return ResponseEntity.ok(problems);
+        } catch (InvalidTokenException e) {
+            logger.log(INFO, "Put /getUnresolvedProblems sent request 403");
+            return ResponseEntity.status(FORBIDDEN).build();
+        }
+    }
+
+    @PutMapping("/resolveProblem/{id}")
+    public ResponseEntity<Long> resolveReportedProblem(@RequestBody TokenDTO tokenDTO, @PathVariable long id) {
+        logger.log(INFO, "Put /resolveProblem");
+        try {
+            authService.getToken(tokenDTO.getToken(), GESTIONNAIRE);
+            gestionnaireService.resolveProblem(id);
+            logger.log(INFO, "Put /resolveProblem sent request 200");
+            return ResponseEntity.ok(id);
+        } catch (InvalidTokenException e) {
+            logger.log(INFO, "Put /resolveProblem sent request 403");
+            return ResponseEntity.status(FORBIDDEN).build();
+        } catch (NonExistentEntityException | AlreadyResolvedException e) {
+            logger.log(INFO, "Put /resolveProblem sent request 404");
+            return ResponseEntity.notFound().build();
         }
     }
 }

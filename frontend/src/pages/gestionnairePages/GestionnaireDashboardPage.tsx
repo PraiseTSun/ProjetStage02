@@ -101,6 +101,8 @@ const GestionnaireDashboard = ({user, deconnexion}: { user: IUser, deconnexion: 
                         <Link to="/signerententedestage" className="btn btn-outline-danger text-white mt-3">Signer les
                             ententes de stage  ({changementPourSignerLEntenteDeStage})</Link>
                 }
+                <Link to="/reportedProblems" className="btn btn-outline-primary text-white mt-3">Problèmes
+                    signalés</Link>
             </Row>
         </div>
     );

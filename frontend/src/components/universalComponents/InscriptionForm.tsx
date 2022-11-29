@@ -9,7 +9,7 @@ const InscriptionForm = (): JSX.Element => {
     if (signupSent) {
         return (
             <Col className="p-2 text-center">
-                <h1 className="text-success fw-bold">Courriel de confirmation envoyé</h1>
+                <h1 className="text-success fw-bold">Courriel de confirmation envoyé. En attente d'approbation.</h1>
             </Col>
         );
     }
