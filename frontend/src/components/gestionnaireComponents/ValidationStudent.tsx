@@ -12,14 +12,14 @@ const ValidationStudent = ({
     const user = "Student";
     const [students, setStudents] = useState<any[]>([]);
 
-    function approve(id: string, index: number) {
+    function approve(id: string) {
         onValidation(id, user);
-        setStudents(students.splice(index + 1, 1));
+        setStudents(students.filter(student => student.id !== id));
     }
 
-    function remove(id: string, index: number) {
+    function remove(id: string) {
         onRemove(id, user);
-        setStudents(students.splice(index + 1, 1));
+        setStudents(students.filter(student => student.id !== id));
     }
 
     useEffect(() => {
@@ -50,8 +50,8 @@ const ValidationStudent = ({
                                     <div className="my-auto">{data.department}</div>
                                     <div>
                                         <Button className="me-2" variant="success"
-                                                onClick={() => approve(data.id, idx)}>O</Button>
-                                        <Button variant="danger" onClick={() => remove(data.id, idx)}>X</Button>
+                                                onClick={() => approve(data.id)}>O</Button>
+                                        <Button variant="danger" onClick={() => remove(data.id)}>X</Button>
                                     </div>
                                 </div>
                             </Row>

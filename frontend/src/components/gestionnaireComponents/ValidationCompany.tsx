@@ -12,14 +12,14 @@ const ValidationCompany = ({
     const user = "Company";
     const [companies, setCompanies] = useState<any[]>([]);
 
-    function approve(id: string, index: number) {
+    function approve(id: string) {
         onValidation(id, user);
-        setCompanies(companies.splice(index + 1, 1));
+        setCompanies(companies.filter(company => company.id !== id));
     }
 
-    function remove(id: string, index: number) {
+    function remove(id: string) {
         onRemove(id, user);
-        setCompanies(companies.splice(index + 1, 1));
+        setCompanies(companies.filter(company => company.id !== id));
     }
 
     useEffect(() => {
@@ -50,8 +50,8 @@ const ValidationCompany = ({
                                     <div className="my-auto">{company.department}</div>
                                     <div>
                                         <Button className="me-2" variant="success"
-                                                onClick={() => approve(company.id, idx)}>O</Button>
-                                        <Button variant="danger" onClick={() => remove(company.id, idx)}>X</Button>
+                                                onClick={() => approve(company.id)}>O</Button>
+                                        <Button variant="danger" onClick={() => remove(company.id)}>X</Button>
                                     </div>
                                 </div>
                             </Row>
