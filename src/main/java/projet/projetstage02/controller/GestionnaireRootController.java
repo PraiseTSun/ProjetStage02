@@ -15,6 +15,7 @@ import projet.projetstage02.dto.contracts.StageContractOutDTO;
 import projet.projetstage02.dto.cv.CvRefusalDTO;
 import projet.projetstage02.dto.evaluations.EvaluationInfoDTO;
 import projet.projetstage02.dto.evaluations.MillieuStage.MillieuStageEvaluationInDTO;
+import projet.projetstage02.dto.notification.GestionnaireNotificationDTO;
 import projet.projetstage02.dto.offres.OffreOutDTO;
 import projet.projetstage02.dto.pdf.PdfOutDTO;
 import projet.projetstage02.dto.problems.ProblemOutDTO;
@@ -572,6 +573,19 @@ public class GestionnaireRootController {
         }
     }
 
+    @PutMapping("/getGestionnaireNotification")
+    public ResponseEntity<GestionnaireNotificationDTO> getGestionnaireNotification(@RequestBody TokenDTO tokenId) {
+        logger.log(INFO, "Put /getGestionnaireNotification");
+        try {
+            authService.getToken(tokenId.getToken(), GESTIONNAIRE);
+            GestionnaireNotificationDTO notification = gestionnaireService.getNotification();
+            logger.log(INFO, "Put /getGestionnaireNotification return 200");
+            return ResponseEntity.ok(notification);
+        } catch (InvalidTokenException e) {
+            logger.log(INFO, "Put /getGestionnaireNotification return 403");
+            return ResponseEntity.status(FORBIDDEN).build();
+        }
+    }
     @PutMapping("/getUnresolvedProblems")
     public ResponseEntity<List<ProblemOutDTO>> getUnresolvedReportedProblems(@RequestBody TokenDTO tokenId) {
         logger.log(INFO, "Put /getUnresolvedProblems");
@@ -602,5 +616,4 @@ public class GestionnaireRootController {
             return ResponseEntity.notFound().build();
         }
     }
-
 }

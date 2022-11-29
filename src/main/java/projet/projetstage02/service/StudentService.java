@@ -10,6 +10,7 @@ import projet.projetstage02.dto.cv.CvStatusDTO;
 import projet.projetstage02.dto.contracts.StageContractOutDTO;
 import projet.projetstage02.dto.interview.InterviewOutDTO;
 import projet.projetstage02.dto.interview.InterviewSelectInDTO;
+import projet.projetstage02.dto.notification.StudentNotificationDTO;
 import projet.projetstage02.dto.offres.OffreOutDTO;
 import projet.projetstage02.dto.pdf.PdfDTO;
 import projet.projetstage02.dto.pdf.PdfOutDTO;
@@ -23,6 +24,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Stream;
 
 import static projet.projetstage02.model.AbstractUser.Department;
 import static projet.projetstage02.utils.ByteConverter.byteToString;
@@ -88,8 +90,9 @@ public class StudentService {
         Department department = getStudentById(id).getDepartment();
 
         List<OffreOutDTO> offers = new ArrayList<>();
-        offreRepository.findAll().stream().
-                filter(offre ->
+        offreRepository.findAll()
+                .stream()
+                .filter(offre ->
                         offre.isValide()
                                 && offre.getDepartment().equals(department)
                 )
@@ -296,5 +299,41 @@ public class StudentService {
         applicationRepository.delete(application);
 
         return getPostulsOfferId(student.getId());
+    }
+
+    public StudentNotificationDTO getNotification (long studentId) throws NonExistentEntityException {
+        getStudentById(studentId);
+
+        return StudentNotificationDTO.builder()
+                .nbUploadCv(getCvNotification(studentId))
+                .nbStages(getStageNotification(studentId))
+                .nbContracts(getContractNotifications(studentId))
+                .build();
+    }
+
+    private long getCvNotification(long studentId) {
+        if(cvStatusRepository.findById(studentId).isEmpty())
+            return 0L;
+        return 1L;
+    }
+
+    private long getStageNotification(long studentId) throws NonExistentEntityException {
+        long nb = 0L;
+        List<OffreOutDTO> offers = getOffersByStudentDepartment(studentId);
+        ApplicationListDTO applications = getPostulsOfferId(studentId);
+
+        for(OffreOutDTO dto : offers){
+            if(!applications.hasApplied(dto.getId()))
+                nb++;
+        }
+
+        return nb;
+    }
+
+    private long getContractNotifications(long studentId) {
+        return stageContractRepository.findByStudentId(studentId)
+                .stream()
+                .filter(stageContract -> stageContract.getStudentSignature().isBlank())
+                .count();
     }
 }

@@ -16,6 +16,7 @@ import projet.projetstage02.dto.contracts.StageContractOutDTO;
 import projet.projetstage02.dto.evaluations.Etudiant.EvaluationEtudiantInDTO;
 import projet.projetstage02.dto.interview.CreateInterviewDTO;
 import projet.projetstage02.dto.interview.InterviewOutDTO;
+import projet.projetstage02.dto.notification.CompanyNotificationDTO;
 import projet.projetstage02.dto.offres.OfferAcceptedStudentsDTO;
 import projet.projetstage02.dto.offres.OffreInDTO;
 import projet.projetstage02.dto.offres.OffreOutDTO;
@@ -790,5 +791,65 @@ public class CompanyServiceTest {
         List<Long> evaluations = companyService.getEvaluatedStudentsContracts(1L);
 
         assertThat(evaluations.size()).isEqualTo(0);
+    }
+
+    @Test
+    void testGetNotificationHappyDay() throws NonExistentEntityException {
+        List<Offre> offers = new ArrayList<>(){{
+            add(Offre.builder().id(1L).build());
+            add(Offre.builder().id(2L).build());
+            add(Offre.builder().id(3L).build());
+        }};
+        List<Application> applicationFirstOffer = new ArrayList<>(){{
+            add(Application.builder().studentId(4L).build());
+            add(Application.builder().studentId(5L).build());
+            add(Application.builder().studentId(6L).build());
+        }};
+        List<Application> applicationSecondOffer = new ArrayList<>(){{
+            add(Application.builder().studentId(7L).build());
+            add(Application.builder().studentId(8L).build());
+            add(Application.builder().studentId(9L).build());
+            add(Application.builder().studentId(10L).build());
+        }};
+        List<StageContract> contracts = new ArrayList<>(){{
+            add(StageContract.builder().companySignature("").build());
+            add(StageContract.builder().companySignature("Not a answer").build());
+            add(StageContract.builder().companySignature("").build());
+        }};
+
+
+        when(companyRepository.findById(anyLong())).thenReturn(Optional.of(duffBeer));
+
+        when(offreRepository.findAllByIdCompagnie(anyLong())).thenReturn(offers);
+        when(applicationRepository.findByOfferId(anyLong()))
+                .thenReturn(applicationFirstOffer, applicationSecondOffer, new ArrayList<>());
+        when(applicationAcceptationRepository.findByOfferIdAndStudentId(anyLong(), anyLong())).thenReturn(
+                Optional.empty(),
+                Optional.of(new ApplicationAcceptation()),
+                Optional.empty(),
+                Optional.empty(),
+                Optional.of(new ApplicationAcceptation()),
+                Optional.of(new ApplicationAcceptation()),
+                Optional.empty());
+
+        when(stageContractRepository.findByCompanyId(anyLong())).thenReturn(contracts);
+
+        CompanyNotificationDTO notification = companyService.getNotification(1L);
+
+        assertThat(notification.getNbOffers()).isEqualTo(4);
+        assertThat(notification.getNbContracts()).isEqualTo(2);
+    }
+
+    @Test
+    void testGetNotificationNotFound(){
+        when(companyRepository.findById(anyLong())).thenReturn(Optional.empty());
+
+        try {
+            companyService.getNotification(1L);
+        } catch (NonExistentEntityException e) {
+            return;
+        }
+
+        fail("Fail to catch NonExistentEntityException");
     }
 }
