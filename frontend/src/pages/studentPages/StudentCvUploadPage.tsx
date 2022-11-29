@@ -103,7 +103,9 @@ const StudentCvUploadPage = ({connectedUser}: { connectedUser: IUser }) => {
                           setShowPdf={setShowCvToValidate}/>
         );
     }
-
+    const hasCv = () => connectedUser.cv !== null && connectedUser.cv !== undefined && connectedUser.cv !== "" && connectedUser.cv !== "null"
+    const hasCvToValidate = () => connectedUser.cvToValidate !== null && connectedUser.cvToValidate !== undefined && connectedUser.cvToValidate !== "" && connectedUser.cvToValidate !== "null"
+    console.log()
     return (
         <Container className="min-vh-100">
             <Row>
@@ -129,13 +131,13 @@ const StudentCvUploadPage = ({connectedUser}: { connectedUser: IUser }) => {
                         <tbody className="bg-white">
                         <tr>
                             <td className="text-center">
-                                <Button variant="warning" disabled={connectedUser.cv?.length === 2}
+                                <Button variant="warning" disabled={!hasCv()}
                                         onClick={() => setShowCV(true)}>CV</Button>
                             </td>
                             <td className="text-center">{translateStatus(cvStatus.status)}</td>
                             <td className="text-center">{cvStatus.refusalMessage}</td>
                             <td data-testid="CvToValidate" className="text-center">
-                                <Button variant="warning" disabled={connectedUser.cvToValidate?.length === 2}
+                                <Button variant="warning" disabled={!hasCvToValidate()}
                                         onClick={() => setShowCvToValidate(true)}>Cv à valider</Button>
                             </td>
                         </tr>

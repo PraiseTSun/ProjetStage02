@@ -10,11 +10,9 @@ const root = ReactDOM.createRoot(
     document.getElementById('root') as HTMLElement
 );
 root.render(
-    <React.StrictMode>
-        <div className="root">
-            <Worker workerUrl="https://unpkg.com/pdfjs-dist@2.16.105/build/pdf.worker.min.js">
-                <App/>
-            </Worker>
-        </div>
-    </React.StrictMode>
+    <div className="root">
+        <Worker workerUrl="https://unpkg.com/pdfjs-dist@2.16.105/build/pdf.worker.min.js">
+            <App/>
+        </Worker>
+    </div>
 );
