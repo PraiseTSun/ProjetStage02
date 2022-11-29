@@ -32,10 +32,10 @@ const UserValidation = ({connectedUser}: { connectedUser: IUser }) => {
 
     const onRemove = async (id: string, type: string) => {
         let response: Response
-
-        if (type === "student") {
+        console.log(type)
+        if (type === "Student") {
             response = await deleteRemoveStudent(id, connectedUser.token);
-        } else if (type === "company") {
+        } else if (type === "Company") {
             response = await deleteRemoveCompany(id, connectedUser.token);
         }
 
