@@ -9,9 +9,9 @@ import {IReportedProblem} from "../../models/IReportedProblem";
 
 const ReportedProblems = ({user: connectedUser}: { user: IUser }) => {
     const [problems, setProblems] = useState<IReportedProblem[]>([]);
-    const resolve = async (id: number, index: number) => {
+    const resolve = async (id: number) => {
         await putResolveProblem(connectedUser.token, id);
-        setProblems(problems.splice(index + 1, 1));
+        setProblems(problems.filter(problem => problem.id !== id));
     }
     useEffect(() => {
         const fetchProblems = async () => {
@@ -66,7 +66,7 @@ const ReportedProblems = ({user: connectedUser}: { user: IUser }) => {
                             <td className="col-3">{problem.email}</td>
                             <td className="col-3">{problem.problemDetails}</td>
                             <td className="col-3">
-                                <Button variant="primary" onClick={() => resolve(problem.id, idx)}>Problème
+                                <Button variant="primary" onClick={() => resolve(problem.id)}>Problème
                                     résolu</Button>
                             </td>
                         </tr>
